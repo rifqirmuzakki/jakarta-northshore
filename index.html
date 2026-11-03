@@ -1960,7 +1960,7 @@ function tAssignDay(day,V,F,carry){
    Indonesian registration database. */
 const V128_GA_LETTERS='ACDEFGHIJKLMNOPQRSTUVWXYZ';
 const V128_GA_SERIES=Object.freeze({
-  'Boeing 737-800':['GF','GM','GN','GO','GU','GW','GX','GY','GZ','GC','GE'],
+  'Boeing 737-800':['GF','GM','GN','GO','GU','GW','GX','GZ','GC','GE'],
   'Boeing 737 MAX 8':['GD','GR'],
   'Airbus A330-200':['GP'],
   'Airbus A330-300':['GH','GK'],
@@ -1968,7 +1968,8 @@ const V128_GA_SERIES=Object.freeze({
   'Airbus A330-800':['GL'],
   'Boeing 777-300ER':['GI','GS'],
   'Boeing 787-9':['GV','GJ'],
-  'Boeing 787-10':['GA']
+  'Boeing 787-10':['GA'],
+  'ATR 72-600':['GY']
 });
 function v128GarudaReg(ac,index){
   const type=String(ac||'');
@@ -2249,7 +2250,7 @@ function bake(pct){
     else{if(e.a&&!e.k.t.length)return;if(e.pre&&e.overnightMissing)return;jobD(e)}
   });
   ENTS=ENTS.filter(e=>e.k.t.length>1);
-  try{tailsAssign()}catch(err){console.error('tails',err)}
+  try{tailsAssign()}catch(err){console.error('Aircraft registration / rotation assignment:',err);window.JN_TAIL_ERROR=String(err&&err.message||err)}
   ENTS.forEach(e=>{e.t0=e.k.t[0];e.t1=e.tEnd!=null?e.tEnd:e.k.t[e.k.t.length-1]});
   ENTS.sort((p,q)=>p.t0-q.t0);
   STAT.ms=performance.now()-tt;
@@ -2914,7 +2915,7 @@ function cardHTML(e){
  const timeValue=t=>t==null?'—':fmt(t);
  const timeGrid='<section class="v53-time-grid" aria-label="Flight times"><div><small>'+(arr?'Scheduled in-block':'Scheduled off-block')+'</small><b>'+timeValue(sched)+'</b></div><div><small>'+(arr?'Actual / estimated in-block':'Actual / estimated off-block')+'</small><b>'+timeValue(eventTime)+'</b></div><div><small>'+(arr?'Touchdown':'Take-off')+'</small><b>'+timeValue(arr?e.td:e.takeoff)+'</b></div></section>';
  const rotNote='';
- const aircraftPanel='<div class="v57-aircraft"><div class="v57-section-label">Aircraft information</div><div class="v57-spec"><span>Model</span><strong>'+esc(f.ac)+'</strong></div><div class="v57-spec"><span>Airline</span><strong>'+esc(NAME[f.c]||f.c)+'</strong></div><div class="v57-spec"><span>Aircraft category</span><strong>Code '+esc(e.stand.cls)+'</strong></div><div class="v57-spec"><span>Assigned stand</span><strong>'+esc(e.stand.id)+'</strong></div>'+(()=>{const ti=C.tailInfo?C.tailInfo(e):null;if(!ti)return '<div class="v57-spec"><span>Registration</span><strong>Not provided</strong></div></div>';
+ const aircraftPanel='<div class="v57-aircraft"><div class="v57-section-label">Aircraft information</div><div class="v57-spec"><span>Model</span><strong>'+esc(f.ac)+'</strong></div><div class="v57-spec"><span>Airline</span><strong>'+esc(NAME[f.c]||f.c)+'</strong></div><div class="v57-spec"><span>Aircraft category</span><strong>Code '+esc(e.stand.cls)+'</strong></div><div class="v57-spec"><span>Assigned stand</span><strong>'+esc(e.stand.id)+'</strong></div>'+(()=>{const ti=C.tailInfo?C.tailInfo(e):null;if(!ti)return '<div class="v57-spec"><span>Registration</span><strong>Unavailable'+(window.JN_TAIL_ERROR?' — tail assignment error':'')+'</strong></div></div>';
   const hm=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
   const ap=c=>esc(airportCodeForCity(c)||c);
   const li=ti.line.map(v=>{
