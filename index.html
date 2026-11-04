@@ -5165,4 +5165,99 @@ html body #jnSearchLaunch svg{flex:none;width:17px;height:17px}
 }
 </style>
 
+
+<style id="v147-search-dialog-mobile-fix">
+/* v147: The map's global svg{width:100%;height:100%} must never size toolbar icons. */
+html body #jnSearchShade #jnSearchPanel {
+  box-sizing:border-box;
+  min-width:0;
+}
+html body #jnSearchShade #jnSearchHead {
+  display:flex!important;
+  align-items:center!important;
+  flex-direction:row!important;
+  gap:10px!important;
+  min-height:68px;
+  box-sizing:border-box;
+}
+html body #jnSearchShade #jnSearchHead > svg {
+  display:block!important;
+  position:static!important;
+  width:20px!important;
+  height:20px!important;
+  min-width:20px!important;
+  min-height:20px!important;
+  max-width:20px!important;
+  max-height:20px!important;
+  flex:0 0 20px!important;
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:2!important;
+  cursor:default!important;
+  touch-action:auto!important;
+  overflow:visible!important;
+}
+html body #jnSearchShade #jnSearchInput {
+  display:block!important;
+  position:static!important;
+  flex:1 1 0!important;
+  min-width:0!important;
+  width:100%!important;
+  height:42px!important;
+  max-height:42px!important;
+  margin:0!important;
+  padding:0 4px!important;
+  box-sizing:border-box!important;
+  border:0!important;
+  border-radius:0!important;
+  outline:none!important;
+  background:transparent!important;
+  color:#142c3a!important;
+  font-size:16px!important;
+  line-height:42px!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  opacity:1!important;
+  visibility:visible!important;
+}
+html body #jnSearchShade #jnSearchInput::placeholder {color:#8a9aa3!important;opacity:1!important}
+html body #jnSearchShade #jnSearchClose {
+  display:flex!important;
+  flex:0 0 38px!important;
+  width:38px!important;
+  height:38px!important;
+  justify-content:center!important;
+  align-items:center!important;
+  padding:0!important;
+  font-size:23px!important;
+}
+@media(max-width:700px){
+ html body #jnSearchShade {padding:calc(env(safe-area-inset-top,0px) + 16px) 12px 14px!important;align-items:flex-start!important}
+ html body #jnSearchPanel {max-height:calc(100dvh - env(safe-area-inset-top,0px) - 32px)!important}
+ html body #jnSearchShade #jnSearchHead {padding:10px 12px!important;min-height:62px!important}
+ html body #jnSearchShade #jnSearchInput {font-size:16px!important}
+}
+</style>
+
+<style id="v148-search-position">
+/* v148: compact map action, rather than a full-width bar floating mid-screen. */
+html body #jnSearchLaunch{
+ position:fixed!important;top:76px!important;right:18px!important;left:auto!important;
+ width:44px!important;max-width:44px!important;min-width:44px!important;
+ height:44px!important;min-height:44px!important;padding:0!important;
+ display:flex!important;justify-content:center!important;align-items:center!important;
+ gap:0!important;border-radius:13px!important;z-index:10020!important;
+ background:#fff!important;box-shadow:0 3px 12px #1933431a!important;
+}
+html body #jnSearchLaunch svg{width:20px!important;height:20px!important;min-width:20px!important;min-height:20px!important;flex:none!important;fill:none!important;stroke:currentColor!important;}
+html body #jnSearchLaunch span{display:none!important}
+html body #jnSearchLaunch::after{content:none!important;display:none!important}
+@media(max-width:700px){
+ html body #jnSearchLaunch{
+   top:112px!important;right:12px!important;left:auto!important;
+   width:44px!important;max-width:44px!important;min-width:44px!important;
+   height:44px!important;min-height:44px!important;
+ }
+}
+</style>
 </body></html>
