@@ -5124,7 +5124,8 @@ html body #card .airline-logo.sm{width:28px!important;height:28px!important;bord
 <script id="v145-global-search-js">(function(){'use strict';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const launch=document.createElement('button');launch.type='button';launch.id='jnSearchLaunch';launch.setAttribute('aria-label','Search flights or aircraft');launch.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="7.5"/><path d="m16.3 16.3 5 5"/></svg><span>Search</span>';
-const controls=document.querySelector('#hud .live-controls');if(controls)controls.prepend(launch);else{launch.style.position='fixed';launch.style.top='12px';launch.style.right='12px';launch.style.zIndex='9999';document.body.appendChild(launch)}
+// v146: the shell hides .live-controls (v42 CSS). Mount search outside that hidden container.
+document.body.appendChild(launch);
 const shade=document.createElement('div');shade.id='jnSearchShade';shade.innerHTML='<section id="jnSearchPanel" role="dialog" aria-modal="true" aria-label="Search flights and aircraft"><div id="jnSearchHead"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.8" cy="10.8" r="7.5"/><path d="m16.3 16.3 5 5"/></svg><input id="jnSearchInput" type="search" autocomplete="off" spellcheck="false" placeholder="Flight GA114 or aircraft PK-GFA"><button id="jnSearchClose" type="button" aria-label="Close search">×</button></div><div id="jnSearchHint">Search across scheduled flights and assigned aircraft · Tap a result to open</div><div id="jnSearchResults"></div></section>';
 document.body.appendChild(shade);
 const input=shade.querySelector('#jnSearchInput'),results=shade.querySelector('#jnSearchResults');
@@ -5144,4 +5145,24 @@ results.querySelectorAll('[data-kind="flight"]').forEach(el=>el.onclick=()=>{con
 results.querySelectorAll('[data-kind="tail"]').forEach(el=>el.onclick=()=>{const t=ts[+el.dataset.i];close();window.location.hash='/aircraft/'+t.reg})}
 launch.onclick=open;shade.querySelector('#jnSearchClose').onclick=close;shade.onclick=e=>{if(e.target===shade)close()};input.oninput=draw;document.addEventListener('keydown',e=>{if(e.key==='Escape'&&shade.classList.contains('open')){e.stopPropagation();close()}else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();open()}});
 })();</script>
+
+<style id="v146-search-visible-fix">
+/* Always-visible search is independent of the intentionally hidden legacy HUD controls. */
+html body #jnSearchLaunch {
+  position:fixed!important;z-index:10020!important;top:154px;right:18px;
+  display:flex!important;align-items:center;justify-content:flex-start;gap:9px;
+  width:245px;max-width:calc(100vw - 36px);min-height:42px;box-sizing:border-box;
+  background:#fff!important;color:#183240!important;border:1px solid #d6e1e7!important;
+  border-radius:12px!important;box-shadow:0 3px 12px #1933431a!important;
+  font:500 13px var(--jn-font,system-ui)!important;padding:10px 13px!important;
+}
+html body #jnSearchLaunch::after{content:'Flight, tail or destination';font-size:11px;color:#758791;margin-left:auto;white-space:nowrap}
+html body #jnSearchLaunch svg{flex:none;width:17px;height:17px}
+@media(max-width:700px){
+ html body #jnSearchLaunch{top:142px!important;left:16px!important;right:16px!important;width:auto!important;max-width:none!important;min-height:43px!important;}
+ html body #jnSearchShade{padding-top:calc(55px + env(safe-area-inset-top,0px))!important;}
+ html body #jnSearchInput{font-size:16px!important;}
+}
+</style>
+
 </body></html>
