@@ -728,6 +728,52 @@ AIR_CITY["Silangit"]=[2.2597,98.992,'E']; SEED_CODES["Silangit"]="DTB";
 AIR_CITY["Gunungsitoli"]=[1.1664,97.7047,'E']; SEED_CODES["Gunungsitoli"]="GNS";
 FLD.OUT.push(...[["GA","246","Malang",415,"T1","D","Boeing 737-800","GA-V115-MLG-1"],["GA","124","Jambi",390,"T1","D","Boeing 737-800","GA-V115-DJB-1"],["GA","126","Jambi",875,"T1","D","Boeing 737-800","GA-V115-DJB-2"],["GA","668","Ternate",350,"T1","D","Boeing 737-800","GA-V115-TTE-1"],["GA","670","Ternate",830,"T1","D","Boeing 737-800","GA-V115-TTE-2"],["GA","660","Palu",395,"T1","D","Boeing 737-800","GA-V115-PLW-1"],["GA","662","Palu",865,"T1","D","Boeing 737-800","GA-V115-PLW-2"],["GA","610","Gorontalo",455,"T1","D","Boeing 737-800","GA-V115-GTO-1"],["GA","428","Labuan Bajo",430,"T1","D","Boeing 737-800","GA-V115-LBJ-1"],["GA","430","Labuan Bajo",890,"T1","D","Boeing 737-800","GA-V115-LBJ-2"],["GA","658","Manokwari",345,"T1","D","Boeing 737-800","GA-V115-MKW-1"],["GA","646","Mamuju",520,"T1","D","Boeing 737-800","GA-V115-MJU-1"],["GA","528","Berau",480,"T1","D","Boeing 737-800","GA-V115-BEJ-1"],["GA","244","Banyuwangi",505,"T1","D","Boeing 737-800","GA-V115-BWX-1"],["GA","198","Silangit",465,"T1","D","Boeing 737-800","GA-V115-DTB-1"],["GA","122","Gunungsitoli",540,"T1","D","ATR 72-600","GA-V115-GNS-1"]]);
 FLD.IN.push(...[["GA","247","Malang",645,"T1","D","Boeing 737-800","GA-V115-MLG-1"],["GA","125","Jambi",610,"T1","D","Boeing 737-800","GA-V115-DJB-1"],["GA","127","Jambi",1095,"T1","D","Boeing 737-800","GA-V115-DJB-2"],["GA","669","Ternate",880,"T1","D","Boeing 737-800","GA-V115-TTE-1"],["GA","671","Ternate",1360,"T1","D","Boeing 737-800","GA-V115-TTE-2"],["GA","661","Palu",775,"T1","D","Boeing 737-800","GA-V115-PLW-1"],["GA","663","Palu",1245,"T1","D","Boeing 737-800","GA-V115-PLW-2"],["GA","611","Gorontalo",905,"T1","D","Boeing 737-800","GA-V115-GTO-1"],["GA","429","Labuan Bajo",800,"T1","D","Boeing 737-800","GA-V115-LBJ-1"],["GA","431","Labuan Bajo",1260,"T1","D","Boeing 737-800","GA-V115-LBJ-2"],["GA","659","Manokwari",985,"T1","D","Boeing 737-800","GA-V115-MKW-1"],["GA","647","Mamuju",880,"T1","D","Boeing 737-800","GA-V115-MJU-1"],["GA","529","Berau",850,"T1","D","Boeing 737-800","GA-V115-BEJ-1"],["GA","245","Banyuwangi",775,"T1","D","Boeing 737-800","GA-V115-BWX-1"],["GA","199","Silangit",795,"T1","D","Boeing 737-800","GA-V115-DTB-1"],["GA","123","Gunungsitoli",980,"T1","D","ATR 72-600","GA-V115-GNS-1"]]);
+
+/* v151: Phase-2 selected domestic network additions. All times are Jakarta-local WIB;
+   IN records store Jakarta STA. Aircraft/tail assignments are handled by the allocator. */
+AIR_CITY["Merauke"]=[-8.5203,140.4185,"E"]; SEED_CODES["Merauke"]="MKQ";
+AIR_CITY["Samarinda"]=[-0.3733,117.2558,"E"]; SEED_CODES["Samarinda"]="AAP";
+AIR_CITY["Tanjung Pinang"]=[0.9228,104.5323,"NW"]; SEED_CODES["Tanjung Pinang"]="TNJ";
+FLD.OUT.push(
+ ["GA","678","Merauke",290,"T1","D","Boeing 737-800","GA-V151-MKQ-01"],
+ ["GA","552","Samarinda",405,"T1","D","Boeing 737-800","GA-V151-AAP-01"],
+ ["GA","272","Tanjung Pinang",455,"T1","D","Boeing 737-800","GA-V151-TNJ-01"]
+);
+FLD.IN.push(
+ ["GA","679","Merauke",1035,"T1","D","Boeing 737-800","GA-V151-MKQ-01"],
+ ["GA","553","Samarinda",710,"T1","D","Boeing 737-800","GA-V151-AAP-01"],
+ ["GA","273","Tanjung Pinang",695,"T1","D","Boeing 737-800","GA-V151-TNJ-01"]
+);
+
+/* v152: +12 new daily GA domestic round trips. All times WIB. */
+FLD.OUT.push(
+ ["GA","680","Sorong",40,"T1","D","Boeing 737-800","GA-V152-SOQ-680"],
+ ["GA","682","Ternate",485,"T1","D","Boeing 737-800","GA-V152-TTE-682"],
+ ["GA","684","Palu",550,"T1","D","Boeing 737-800","GA-V152-PLW-684"],
+ ["GA","448","Labuan Bajo",575,"T1","D","Boeing 737-800","GA-V152-LBJ-448"],
+ ["GA","274","Banda Aceh",495,"T1","D","Boeing 737-800","GA-V152-BTJ-274"],
+ ["GA","554","Tarakan",440,"T1","D","Boeing 737-800","GA-V152-TRK-554"],
+ ["GA","276","Jambi",650,"T1","D","Boeing 737-800","GA-V152-DJB-276"],
+ ["GA","686","Ambon",520,"T1","D","Boeing 737-800","GA-V152-AMQ-686"],
+ ["GA","688","Jayapura",30,"T1","D","Boeing 737-800","GA-V152-DJJ-688"],
+ ["GA","690","Gorontalo",620,"T1","D","Boeing 737-800","GA-V152-GTO-690"],
+ ["GA","692","Manokwari",20,"T1","D","Boeing 737-800","GA-V152-MKW-692"],
+ ["GA","556","Berau",570,"T1","D","Boeing 737-800","GA-V152-BEJ-556"]
+);
+FLD.IN.push(
+ ["GA","681","Sorong",625,"T1","D","Boeing 737-800","GA-V152-SOQ-680"],
+ ["GA","683","Ternate",1035,"T1","D","Boeing 737-800","GA-V152-TTE-682"],
+ ["GA","685","Palu",990,"T1","D","Boeing 737-800","GA-V152-PLW-684"],
+ ["GA","449","Labuan Bajo",875,"T1","D","Boeing 737-800","GA-V152-LBJ-448"],
+ ["GA","275","Banda Aceh",885,"T1","D","Boeing 737-800","GA-V152-BTJ-274"],
+ ["GA","555","Tarakan",890,"T1","D","Boeing 737-800","GA-V152-TRK-554"],
+ ["GA","277","Jambi",830,"T1","D","Boeing 737-800","GA-V152-DJB-276"],
+ ["GA","687","Ambon",1065,"T1","D","Boeing 737-800","GA-V152-AMQ-686"],
+ ["GA","689","Jayapura",750,"T1","D","Boeing 737-800","GA-V152-DJJ-688"],
+ ["GA","691","Gorontalo",1080,"T1","D","Boeing 737-800","GA-V152-GTO-690"],
+ ["GA","693","Manokwari",710,"T1","D","Boeing 737-800","GA-V152-MKW-692"],
+ ["GA","557","Berau",955,"T1","D","Boeing 737-800","GA-V152-BEJ-556"]
+);
 </script><style id="v131-manager-style">
 #fm-launch{position:fixed;z-index:120;right:12px;bottom:18px;background:#18394d;color:#fff;border:1px solid #87a7bc;border-radius:13px;padding:12px 16px;font:600 13px 'Geist',-apple-system,sans-serif;box-shadow:0 9px 24px #0005;cursor:pointer}
 #fm-wrap{display:none;position:fixed;inset:0;z-index:200;background:rgba(10,22,34,.65);padding:16px;box-sizing:border-box;font-family:'Geist',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1a2c3d}
