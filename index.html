@@ -4644,8 +4644,10 @@ function legRow(l,now,today,prior){
   const minTurn=/777|787|330|350|380|747/i.test(prior?.ac||'')?75:45;
   const priorReady=prior&&prior.to===l.from ? prior.arrival+minTurn : -Infinity;
   const e=l.ent;
-  const observedDeparture=l.d===today&&e&&l.kind==='d'&&Number.isFinite(e.pushT)
-    ?today*1440+e.pushT/60:null;
+  // A flight's ATD is wheels-off (takeoff), NOT pushback/off-block.
+  // The JKT simulator directly observes only departure takeoff and inbound landing.
+  const observedDeparture=l.d===today&&e&&l.kind==='d'&&Number.isFinite(e.takeoff)
+    ?today*1440+e.takeoff/60:null;
   // Already occurred actual simulator events take precedence over history estimates.
   // For historical legs, carry forward only delays supported by the previous leg.
   let predictedDeparture=Math.max(l.std+Math.max(-3,plannedDelay),priorReady);
@@ -4668,14 +4670,17 @@ function legRow(l,now,today,prior){
   const arrived=departed&&nowAbs>=predictedArrival;
   const atd=departed?predictedDeparture:null;
   const ata=arrived?predictedArrival:null;
+  const atdActual=l.d===today&&l.kind==='d'&&observedDeparture!=null&&nowAbs>=observedDeparture;
+  const ataActual=l.d===today&&l.kind==='a'&&e&&Number.isFinite(e.td)&&nowAbs>=today*1440+e.td/60;
   const depDelay=Math.round(predictedDeparture-l.std);
   const arrDelay=Math.round(predictedArrival-l.sta);
   let st='',tone='';
   if(arrived){st='Landed '+hm(ata)+(arrDelay>5?' · +'+arrDelay+' min':'');tone=arrDelay>15?'late':'ok'}
   else if(departed){st='Departed '+hm(atd)+' · en route';tone=depDelay>15?'late':'live'}
+  else if(l.d===today&&l.kind==='d'&&e&&Number.isFinite(e.pushT)&&nowAbs>=today*1440+e.pushT/60){st='Off-block · taxiing for departure';tone='live'}
   else if(nowAbs>l.std+5){st='Delayed · awaiting departure';tone='late'}
   else{st='Scheduled';tone='scheduled'}
-  return{l,atd,ata,st,tone,today:l.d===today,nextState:outState};
+  return{l,atd,ata,atdActual:!!atdActual,ataActual:!!ataActual,st,tone,today:l.d===today,nextState:outState};
 }
 const absDay=m=>Math.floor(m/1440);
 const shortDateForMin=m=>dshort(absDay(m));
@@ -4694,7 +4699,7 @@ function mobileRow(r){
   if(l.rotationMate)chips.push('<span class="v78-chip pair">'+esc(pairText(l))+'</span>');
   if(arrShift)chips.push('<span class="v78-chip night">Arrives '+arrShift+'</span>');
   if(invalid)chips.push('<span class="v78-chip warn">Continuity review</span>');
-  const atdTxt=r.atd==null?'Not departed':'Actual '+hm(r.atd);
+  const atdTxt=r.atd==null?'Not taken off':(r.atdActual?'Takeoff ':'Est. takeoff ')+hm(r.atd);
   const arrClass=r.tone?(' '+r.tone):'';
   return '<article class="row v78-card'+(r.today?' today':'')+'">'+
     '<div class="v78-head"><div class="v78-rte"><strong>'+F+'</strong><span>→</span><strong>'+T+'</strong></div><div class="v78-fno"><b>'+esc(l.flight)+'</b></div></div>'+
@@ -4771,10 +4776,10 @@ function render(H){
       const timeLabel=(m,shift)=>m==null?'—':hm(m)+(shift?'<sup>+'+shift+'d</sup>':'');
       const arrActualShift=r.ata!=null&&l.std!=null?Math.max(0,absDay(r.ata)-absDay(l.std)):0;
       const departActualShift=r.atd!=null&&l.std!=null?Math.max(0,absDay(r.atd)-absDay(l.std)):0;
-      const timeRow=(sched,actual,schedShift,actualShift,dep)=>
+      const timeRow=(sched,actual,schedShift,actualShift,dep,isObserved)=>
         '<div class="v100-times" aria-label="'+(dep?'Departure':'Arrival')+' times">'+
           '<div class="v100-time"><small>'+(dep?'STD':'STA')+'</small><b>'+timeLabel(sched,schedShift)+'</b></div>'+
-          '<div class="v100-time actual"><small>'+(dep?'ATD':'ATA')+'</small><b>'+timeLabel(actual,actualShift)+'</b></div>'+
+          '<div class="v100-time '+(isObserved?'actual':'')+'"><small>'+(isObserved?(dep?'ATD':'ATA'):(dep?'ETD':'ETA'))+'</small><b>'+timeLabel(actual,actualShift)+'</b></div>'+
         '</div>';
       return '<section class="v81-leg v100-leg">'+
         '<div class="v81-leghead"><span class="v81-dot '+statusClass+'"></span><span class="v81-date">'+esc(dateLabel)+'</span><span class="v81-flight">'+esc(l.flight)+'</span>'+pill+pairNote+'</div>'+
@@ -4784,8 +4789,8 @@ function render(H){
             '<div class="v81-line"><i>↘</i><b>'+esc(toLabel)+'</b><span class="v81-code">'+esc(toCode)+'</span></div>'+
           '</div>'+
           '<div class="v100-times-col">'+
-            timeRow(l.std,r.atd,0,departActualShift,true)+
-            timeRow(l.sta,r.ata,l.sta!=null&&l.std!=null?Math.max(0,absDay(l.sta)-absDay(l.std)):0,arrActualShift,false)+
+            timeRow(l.std,r.atd,0,departActualShift,true,r.atdActual)+
+            timeRow(l.sta,r.ata,l.sta!=null&&l.std!=null?Math.max(0,absDay(l.sta)-absDay(l.std)):0,arrActualShift,false,r.ataActual)+
           '</div>'+
         '</div>'+
         (l.v105Sector?'<div class="v105-history-sector"><span>Sector '+esc(l.v105Sector)+'</span> · '+esc(l.v105Note)+'</div>':(v104?'<div class="v104-history-sector">'+esc(v104.sector1)+' <span>• via '+esc(v104.via)+'</span> '+esc(v104.sector2)+'</div>':''))+
@@ -5123,27 +5128,54 @@ html body #card .airline-logo.sm{width:28px!important;height:28px!important;bord
 </style>
 <script id="v145-global-search-js">(function(){'use strict';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const launch=document.createElement('button');launch.type='button';launch.id='jnSearchLaunch';launch.setAttribute('aria-label','Search flights or aircraft');launch.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="7.5"/><path d="m16.3 16.3 5 5"/></svg><span>Search</span>';
-// v146: the shell hides .live-controls (v42 CSS). Mount search outside that hidden container.
-document.body.appendChild(launch);
-const shade=document.createElement('div');shade.id='jnSearchShade';shade.innerHTML='<section id="jnSearchPanel" role="dialog" aria-modal="true" aria-label="Search flights and aircraft"><div id="jnSearchHead"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.8" cy="10.8" r="7.5"/><path d="m16.3 16.3 5 5"/></svg><input id="jnSearchInput" type="search" autocomplete="off" spellcheck="false" placeholder="Flight GA114 or aircraft PK-GFA"><button id="jnSearchClose" type="button" aria-label="Close search">×</button></div><div id="jnSearchHint">Search across scheduled flights and assigned aircraft · Tap a result to open</div><div id="jnSearchResults"></div></section>';
-document.body.appendChild(shade);
+const normalize=v=>String(v??'').toUpperCase().replace(/[\s-]/g,'');
+const fmt=m=>String(Math.floor(m/60)%24).padStart(2,'0')+':'+String(Math.floor(m%60)).padStart(2,'0');
+const nowSeconds=()=>{const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date());const n=k=>+(p.find(x=>x.type===k)?.value||0);return n('hour')*3600+n('minute')*60+n('second')};
+const launch=document.createElement('button');launch.type='button';launch.id='jnSearchLaunch';launch.setAttribute('aria-label','Search flights or aircraft');launch.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="7.5"/><path d="m16.3 16.3 5 5"/></svg><span>Search</span>';document.body.appendChild(launch);
+const shade=document.createElement('div');shade.id='jnSearchShade';shade.innerHTML='<section id="jnSearchPanel" role="dialog" aria-modal="true" aria-label="Search flights and aircraft"><div id="jnSearchHead"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="7.5"/><path d="m16.3 16.3 5 5"/></svg><input id="jnSearchInput" type="search" autocomplete="off" spellcheck="false" placeholder="Flight, registration or destination"><button id="jnSearchClose" type="button" aria-label="Close search">×</button></div><div id="jnSearchResults" aria-live="polite"></div></section>';document.body.appendChild(shade);
 const input=shade.querySelector('#jnSearchInput'),results=shade.querySelector('#jnSearchResults');
-function getData(){const c=window.SIMCORE;return c?{flights:[...(c.OUTF||[]).map(f=>({...f,dir:'dep'})),...(c.INF||[]).map(f=>({...f,dir:'arr'}))],fleet:c.FLEET}:null}
-function tails(fleet){const a=[];if(fleet&&fleet.F&&typeof fleet.F.forEach==='function')fleet.F.forEach(fl=>(fl.tails||[]).forEach(t=>a.push({reg:t.reg,ac:t.model||fl.ac,c:fl.c,legs:t.seq?.length||0})));return a}
-function close(){shade.classList.remove('open');launch.focus()}
-function open(){shade.classList.add('open');input.value='';draw();setTimeout(()=>input.focus(),0)}
-function flightLabel(f){const c=String(f.city||'');return (f.dir==='dep'?'JKT → ':'')+c+(f.dir==='arr'?' → JKT':'')}
-function draw(){const d=getData(),raw=input.value.trim(),q=raw.toUpperCase().replace(/\s+/g,'');if(!d){results.innerHTML='<div class="jnSearchEmpty">The flight schedule is still initializing.</div>';return}
-const fs=d.flights.filter(f=>{if(!q)return false;return [f.id,f.c+f.num,f.city,f.ac].some(x=>String(x||'').toUpperCase().replace(/\s+/g,'').includes(q))}).slice(0,45);
-const ts=tails(d.fleet).filter(t=>q&&[t.reg,t.reg.replace('-',''),t.ac].some(x=>String(x||'').toUpperCase().replace(/\s+/g,'').includes(q))).slice(0,35);
-if(!q){results.innerHTML='<div class="jnSearchEmpty">Enter a flight number, destination or registration.<div style="margin-top:10px;font-size:12px">Try GA114, SIN, or PK-GFA</div></div>';return}
-let html='';if(fs.length){html+='<div class="jnSearchSection">FLIGHTS · '+fs.length+(fs.length===45?'+':'')+'</div>';html+=fs.map((f,i)=>'<button class="jnSearchResult" type="button" data-kind="flight" data-i="'+i+'"><span class="jnSearchCode">'+esc(f.id)+'</span><span class="jnSearchMeta">'+esc(flightLabel(f))+'<small>'+(f.dir==='dep'?'Departure':'Arrival')+' · '+String(Math.floor(f.t/60)).padStart(2,'0')+':'+String(f.t%60).padStart(2,'0')+' WIB · '+esc(f.ac)+'</small></span><span class="jnSearchArrow">›</span></button>').join('')}
-if(ts.length){html+='<div class="jnSearchSection">AIRCRAFT · '+ts.length+(ts.length===35?'+':'')+'</div>';html+=ts.map((t,i)=>'<button class="jnSearchResult" type="button" data-kind="tail" data-i="'+i+'"><span class="jnSearchCode">'+esc(t.reg)+'</span><span class="jnSearchMeta">'+esc(t.c)+' · '+esc(t.ac)+'<small>Open aircraft history and assigned flights</small></span><span class="jnSearchArrow">›</span></button>').join('')}
-results.innerHTML=html||'<div class="jnSearchEmpty">No flights or aircraft found. Check the number or registration.</div>';
-results.querySelectorAll('[data-kind="flight"]').forEach(el=>el.onclick=()=>{const f=fs[+el.dataset.i];close();const openBoard=document.getElementById('bFl'),tab=document.getElementById(f.dir==='dep'?'bDep':'bArr'),find=document.getElementById('bQ');if(!openBoard||!find)return;if(!document.getElementById('board')||getComputedStyle(document.getElementById('board')).display==='none')openBoard.click();tab?.click();find.value=f.id;find.dispatchEvent(new Event('input',{bubbles:true}));const rows=[...document.querySelectorAll('#bList .jb-row')];const matching=rows.find(row=>row.textContent.replace(/\s/g,'').toUpperCase().includes(f.id.replace(/\s/g,'').toUpperCase()));if(matching)matching.click()});
-results.querySelectorAll('[data-kind="tail"]').forEach(el=>el.onclick=()=>{const t=ts[+el.dataset.i];close();window.location.hash='/aircraft/'+t.reg})}
-launch.onclick=open;shade.querySelector('#jnSearchClose').onclick=close;shade.onclick=e=>{if(e.target===shade)close()};input.oninput=draw;document.addEventListener('keydown',e=>{if(e.key==='Escape'&&shade.classList.contains('open')){e.stopPropagation();close()}else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();open()}});
+let showAll={live:false,scheduled:false,tails:false};
+function collect(){const c=window.SIMCORE;if(!c)return null;
+ const evs=c.ENTS||[], eventById=new Map();for(const e of evs){if(e.d)eventById.set(e.d.id,e);if(e.a)eventById.set(e.a.id,e)}
+ const tailList=[],byReg=new Map();const fleet=c.FLEET;
+ if(fleet&&fleet.F&&fleet.F.forEach)fleet.F.forEach(fl=>(fl.tails||[]).forEach(t=>{if(!t.reg)return;const x={reg:t.reg,ac:t.model||fl.ac,c:fl.c};tailList.push(x);byReg.set(t.reg,x)}));
+ const flights=[...(c.OUTF||[]).map(f=>({...f,dir:'dep'})),...(c.INF||[]).map(f=>({...f,dir:'arr'}))].map(f=>{const e=eventById.get(f.id);return {...f,event:e,reg:e?.tailObj?.reg||null}});
+ return {flights,tailList,c};}
+function status(f,now,ctx){const e=f.event;if(!e)return {live:false,txt:'Scheduled'};
+ const sched=f.t*60, block=f.reg&&ctx.c.tailHistory?ctx.c.tailHistory(f.reg)?.legs?.find(l=>l.flight===f.id&&l.d===ctx.c.FLEET?.day):null;
+ if(f.dir==='dep'){
+   if(Number.isFinite(e.takeoff)&&now>=e.takeoff){const finish=block?((block.sta-block.d*1440)*60):(sched+3*3600);if(now<Math.max(e.takeoff+900,finish))return {live:true,txt:'Airborne'};}
+   if(Number.isFinite(e.pushT)&&now>=e.pushT&&(!Number.isFinite(e.takeoff)||now<e.takeoff))return {live:true,txt:'Taxiing'};
+ }else{
+   if(Number.isFinite(e.td)&&now>=e.td&&now<Math.max(e.onblock||e.td,e.td+120))return {live:true,txt:'Landed'};
+   const earliest=block?(block.std-block.d*1440)*60:(sched-3*3600);
+   if(Number.isFinite(e.td)&&now>=earliest&&now<e.td)return {live:true,txt:'Inbound · estimated en route'};
+ }
+ return {live:false,txt:'Scheduled'};}
+function flightLabel(f){return f.dir==='dep'?'JKT → '+String(f.city||''):String(f.city||'')+' → JKT'}
+function openFlight(f){close();const board=document.getElementById('board'),openBoard=document.getElementById('bFl'),tab=document.getElementById(f.dir==='dep'?'bDep':'bArr'),find=document.getElementById('bQ');if(!find)return;
+ if(board&&getComputedStyle(board).display==='none')openBoard?.click();tab?.click();find.value=f.id;find.dispatchEvent(new Event('input',{bubbles:true}));const rows=[...document.querySelectorAll('#bList .jb-row')];const matched=rows.find(row=>normalize(row.textContent).includes(normalize(f.id)));if(matched)matched.click();}
+function close(){shade.classList.remove('open');document.body.classList.remove('jn-searching');input.blur()}
+function open(){shade.classList.add('open');document.body.classList.add('jn-searching');input.value='';showAll={live:false,scheduled:false,tails:false};draw();setTimeout(()=>input.focus(),60)}
+function draw(){const ctx=collect(),q=normalize(input.value),now=nowSeconds();if(!ctx){results.innerHTML='<div class="jnSearchEmpty">The flight schedule is initializing.</div>';return;}
+ if(!q){results.innerHTML='<div class="jnSearchEmpty">Search for a flight number, destination, or aircraft registration.<small>GA114 · SIN · PK-GHA</small></div>';return;}
+ const tt=ctx.tailList.filter(t=>[t.reg,t.ac,t.c].some(v=>normalize(v).includes(q)));
+ const matched=ctx.flights.filter(f=>[f.id,f.c+f.num,f.city,f.ac,f.reg].some(v=>normalize(v).includes(q)));
+ const live=[],scheduled=[];for(const f of matched){const state=status(f,now,ctx);(state.live?live:scheduled).push({...f,operationalStatus:state.txt});}
+ live.sort((a,b)=>a.t-b.t);scheduled.sort((a,b)=>a.t-b.t);
+ let html='';const actionMap=[];
+ function section(label,key,arr,kind,limit){if(!arr.length)return;html+='<div class="jn149-section"><span>'+label+'</span><small>'+arr.length+' RESULT'+(arr.length===1?'':'S')+'</small></div>';
+ const view=showAll[key]?arr:arr.slice(0,limit);
+ for(const x of view){const idx=actionMap.push({kind,x})-1;const airline=esc(x.c||'');let main='',secondary='',chip='';
+ if(kind==='tail'){main=esc(x.reg);secondary=airline+' · '+esc(x.ac);}
+ else{main=esc(x.id);secondary=esc(flightLabel(x))+' · '+esc(x.reg||'Tail pending');chip='<span class="jn149-type">'+esc(x.ac||'')+'</span>'+(kind==='live'?'<span class="jn149-live">'+esc(x.operationalStatus)+'</span>':'');}
+ html+='<button type="button" class="jn149-row" data-result="'+idx+'"><strong class="jn149-code">'+main+'</strong><span class="jn149-info"><span class="jn149-main">'+(kind==='tail'?secondary:airline+' '+chip)+'</span><small>'+ (kind==='tail'?'Aircraft history and rotations':secondary)+'</small></span><span class="jn149-chevron">›</span></button>';}
+ if(arr.length>limit)html+='<button type="button" class="jn149-more" data-more="'+key+'">'+(showAll[key]?'Show fewer':'Show all '+arr.length.toString())+'</button>';}
+ section('LIVE FLIGHTS','live',live,'live',5);section('SCHEDULED FLIGHTS','scheduled',scheduled,'scheduled',5);section('AIRCRAFT','tails',tt,'tail',5);
+ results.innerHTML=html||'<div class="jnSearchEmpty">No matching flights or aircraft.</div>';
+ results.querySelectorAll('[data-result]').forEach(el=>el.onclick=()=>{const a=actionMap[+el.dataset.result];if(a.kind==='tail'){close();location.hash='/aircraft/'+a.x.reg}else openFlight(a.x)});
+ results.querySelectorAll('[data-more]').forEach(el=>el.onclick=()=>{showAll[el.dataset.more]=!showAll[el.dataset.more];draw()});}
+ launch.onclick=open;shade.querySelector('#jnSearchClose').onclick=close;shade.onclick=e=>{if(e.target===shade)close()};input.oninput=()=>{showAll={live:false,scheduled:false,tails:false};draw()};document.addEventListener('keydown',e=>{if(e.key==='Escape'&&shade.classList.contains('open'))close();else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();open()}});
 })();</script>
 
 <style id="v146-search-visible-fix">
@@ -5259,5 +5291,29 @@ html body #jnSearchLaunch::after{content:none!important;display:none!important}
    height:44px!important;min-height:44px!important;
  }
 }
+</style>
+<style id="v149-fr24-search">
+html body #jnSearchShade{padding:0!important;align-items:stretch!important;justify-content:center!important;background:#131f2b99!important}
+html body #jnSearchShade #jnSearchPanel{width:100%!important;max-width:680px!important;height:100dvh!important;max-height:100dvh!important;border-radius:0!important;background:#f8fafb!important;box-shadow:none!important}
+html body #jnSearchShade #jnSearchHead{height:auto!important;min-height:54px!important;padding:12px 14px!important;padding-top:calc(12px + env(safe-area-inset-top,0px))!important;display:flex!important;gap:9px!important;background:#152c39!important;border:0!important}
+html body #jnSearchShade #jnSearchHead>svg{width:18px!important;min-width:18px!important;max-width:18px!important;height:18px!important;min-height:18px!important;max-height:18px!important;stroke:#718893!important}
+html body #jnSearchShade #jnSearchInput{background:#fff!important;border-radius:9px!important;color:#172d3a!important;font-size:16px!important;height:39px!important;max-height:39px!important;padding:0 10px!important}
+html body #jnSearchShade #jnSearchInput::placeholder{color:#7d8e96!important}
+html body #jnSearchShade #jnSearchClose{width:35px!important;height:35px!important;flex-basis:35px!important;background:transparent!important;color:#f5f8f9!important;font-size:25px!important}
+html body #jnSearchResults{flex:1!important;min-height:0!important;overflow-y:auto!important;padding:0 0 calc(20px + env(safe-area-inset-bottom,0px))!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch}
+html body .jn149-section{padding:9px 14px 8px;display:flex;align-items:center;justify-content:space-between;background:#e8edf0;color:#526673;font-size:10px;font-weight:700;letter-spacing:.075em;border-top:1px solid #dbe3e7;border-bottom:1px solid #dbe3e7}
+html body .jn149-section small{color:#728692;font-size:10px;font-weight:500}
+html body .jn149-row{display:grid;grid-template-columns:82px minmax(0,1fr) 15px;align-items:center;gap:9px;padding:11px 15px;width:100%;background:#fff!important;color:#1b3542!important;border:0!important;border-bottom:1px solid #e4eaed!important;border-radius:0!important;text-align:left;font-family:var(--jn-font,system-ui)!important;cursor:pointer;min-height:65px}
+html body .jn149-code{font:600 13px var(--jn-mono,monospace);white-space:nowrap}
+html body .jn149-info{display:block;min-width:0;font-size:12px;line-height:1.4}
+html body .jn149-main{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-weight:600}
+html body .jn149-info small{display:block;font-size:11px;color:#647987;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html body .jn149-type{padding:2px 5px;background:#e5eef4;border-radius:4px;color:#3c6478;font-size:10px;font-weight:600}
+html body .jn149-live{padding:2px 6px;background:#e2f3e9;border-radius:4px;color:#17744c;font-size:10px;font-weight:600}
+html body .jn149-chevron{color:#728b99;font-size:21px}
+html body .jn149-more{width:100%;padding:12px;background:#f5f8fa;color:#266781;border:0;border-bottom:1px solid #e4eaed;font-size:12px;font-weight:600}
+html body #jnSearchResults .jnSearchEmpty{padding:32px 20px;font-size:13px;line-height:1.6}
+html body #jnSearchResults .jnSearchEmpty small{display:block;color:#7c909c;margin-top:12px}
+@media(min-width:701px){html body #jnSearchShade{padding:5vh 12px!important;align-items:flex-start!important}html body #jnSearchShade #jnSearchPanel{height:min(85vh,850px)!important;max-height:85vh!important;border-radius:15px!important;box-shadow:0 20px 70px #0006!important}html body #jnSearchShade #jnSearchHead{padding-top:12px!important}}
 </style>
 </body></html>
