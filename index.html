@@ -700,7 +700,115 @@ AIR_CITY["Silangit"]=[2.2597,98.992,'E']; SEED_CODES["Silangit"]="DTB";
 AIR_CITY["Gunungsitoli"]=[1.1664,97.7047,'E']; SEED_CODES["Gunungsitoli"]="GNS";
 FLD.OUT.push(...[["GA","246","Malang",415,"T1","D","Boeing 737-800","GA-V115-MLG-1"],["GA","124","Jambi",390,"T1","D","Boeing 737-800","GA-V115-DJB-1"],["GA","126","Jambi",875,"T1","D","Boeing 737-800","GA-V115-DJB-2"],["GA","668","Ternate",350,"T1","D","Boeing 737-800","GA-V115-TTE-1"],["GA","670","Ternate",830,"T1","D","Boeing 737-800","GA-V115-TTE-2"],["GA","660","Palu",395,"T1","D","Boeing 737-800","GA-V115-PLW-1"],["GA","662","Palu",865,"T1","D","Boeing 737-800","GA-V115-PLW-2"],["GA","610","Gorontalo",455,"T1","D","Boeing 737-800","GA-V115-GTO-1"],["GA","428","Labuan Bajo",430,"T1","D","Boeing 737-800","GA-V115-LBJ-1"],["GA","430","Labuan Bajo",890,"T1","D","Boeing 737-800","GA-V115-LBJ-2"],["GA","658","Manokwari",345,"T1","D","Boeing 737-800","GA-V115-MKW-1"],["GA","646","Mamuju",520,"T1","D","Boeing 737-800","GA-V115-MJU-1"],["GA","528","Berau",480,"T1","D","Boeing 737-800","GA-V115-BEJ-1"],["GA","244","Banyuwangi",505,"T1","D","Boeing 737-800","GA-V115-BWX-1"],["GA","198","Silangit",465,"T1","D","Boeing 737-800","GA-V115-DTB-1"],["GA","122","Gunungsitoli",540,"T1","D","ATR 72-600","GA-V115-GNS-1"]]);
 FLD.IN.push(...[["GA","247","Malang",645,"T1","D","Boeing 737-800","GA-V115-MLG-1"],["GA","125","Jambi",610,"T1","D","Boeing 737-800","GA-V115-DJB-1"],["GA","127","Jambi",1095,"T1","D","Boeing 737-800","GA-V115-DJB-2"],["GA","669","Ternate",880,"T1","D","Boeing 737-800","GA-V115-TTE-1"],["GA","671","Ternate",1360,"T1","D","Boeing 737-800","GA-V115-TTE-2"],["GA","661","Palu",775,"T1","D","Boeing 737-800","GA-V115-PLW-1"],["GA","663","Palu",1245,"T1","D","Boeing 737-800","GA-V115-PLW-2"],["GA","611","Gorontalo",905,"T1","D","Boeing 737-800","GA-V115-GTO-1"],["GA","429","Labuan Bajo",800,"T1","D","Boeing 737-800","GA-V115-LBJ-1"],["GA","431","Labuan Bajo",1260,"T1","D","Boeing 737-800","GA-V115-LBJ-2"],["GA","659","Manokwari",985,"T1","D","Boeing 737-800","GA-V115-MKW-1"],["GA","647","Mamuju",880,"T1","D","Boeing 737-800","GA-V115-MJU-1"],["GA","529","Berau",850,"T1","D","Boeing 737-800","GA-V115-BEJ-1"],["GA","245","Banyuwangi",775,"T1","D","Boeing 737-800","GA-V115-BWX-1"],["GA","199","Silangit",795,"T1","D","Boeing 737-800","GA-V115-DTB-1"],["GA","123","Gunungsitoli",980,"T1","D","ATR 72-600","GA-V115-GNS-1"]]);
-</script><script>(function(){
+</script><style id="v131-manager-style">
+#fm-launch{position:fixed;z-index:120;right:12px;bottom:18px;background:#18394d;color:#fff;border:1px solid #87a7bc;border-radius:13px;padding:12px 16px;font:600 13px 'Geist',-apple-system,sans-serif;box-shadow:0 9px 24px #0005;cursor:pointer}
+#fm-wrap{display:none;position:fixed;inset:0;z-index:200;background:rgba(10,22,34,.65);padding:16px;box-sizing:border-box;font-family:'Geist',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1a2c3d}
+#fm-wrap.open{display:flex;align-items:center;justify-content:center}
+#fm-panel{width:min(100%,980px);max-height:94dvh;min-height:0;background:#f7f9fb;border-radius:17px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 80px #0008}
+#fm-panel *{box-sizing:border-box}#fm-panel button,#fm-panel input,#fm-panel select{font:inherit}#fm-panel button{cursor:pointer}
+.fm-hd{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:15px 18px;background:#fff;border-bottom:1px solid #dbe3e9}
+.fm-hd h2{font-size:19px;margin:0}.fm-hd p{margin:4px 0 0;color:#637687;font-size:11px}
+.fm-btn{background:white;color:#203a4b;border:1px solid #cbd7df;padding:9px 11px;border-radius:9px;font-size:12px!important}
+.fm-btn.primary{background:#184e72;color:white;border-color:#184e72}.fm-btn.danger{color:#a32b2b;border-color:#e0b6b6}.fm-btn:disabled{opacity:.45}
+.fm-tools{display:flex;flex-wrap:wrap;gap:8px;padding:11px 15px;background:#fff;border-bottom:1px solid #dbe3e9;align-items:center}
+.fm-tools input,.fm-tools select,.fm-edit input,.fm-edit select{min-width:0;padding:10px;border:1px solid #cbd7df;background:white;color:#1a2c3d;border-radius:8px;font-size:13px}
+.fm-tools input{flex:2 1 175px}.fm-tools select{flex:1 1 115px}
+.fm-body{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(270px,.85fr);overflow:hidden;min-height:0;flex:1}
+.fm-list{overflow:auto;background:#fff;border-right:1px solid #dbe3e9;padding:4px 8px}.fm-item{display:grid;grid-template-columns:78px minmax(0,1fr) 51px;align-items:center;gap:8px;padding:11px 10px;border:0;border-bottom:1px solid #edf1f4;background:white;width:100%;text-align:left;color:#1a2c3d}
+.fm-item.sel{background:#e8f3ff;border-radius:8px}.fm-item strong{font-size:13px}.fm-item span{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fm-item small{font-size:10px;color:#617284}.fm-edit{overflow:auto;padding:15px}.fm-edit h3{font-size:15px;margin:0 0 10px}.fm-edit .fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}.fm-field{display:flex;flex-direction:column;gap:5px}.fm-field.wide{grid-column:1/-1}.fm-field label{font-size:11px;color:#506579;font-weight:600}.fm-edit .buttons{display:flex;gap:7px;margin-top:14px;flex-wrap:wrap}
+.fm-msg{font-size:12px;line-height:1.45;margin:12px 0;white-space:pre-wrap}.fm-note{font-size:11px;color:#627688;line-height:1.45;padding:10px 15px;border-top:1px solid #dbe3e9;background:#fff}
+@media(max-width:700px){#fm-wrap{padding:0}#fm-panel{height:100dvh;max-height:100dvh;border-radius:0}.fm-body{display:flex;flex-direction:column}.fm-list{height:34%;flex:none;border-right:0;border-bottom:1px solid #dbe3e9}.fm-edit{flex:1;min-height:0}.fm-tools{gap:5px}.fm-tools input,.fm-tools select{font-size:12px;padding:9px}#fm-launch{bottom:12px;right:10px}}
+</style>
+<script id="v131-flight-manager">
+(function(){
+'use strict';
+const KEY='jn-flight-manager-v131';
+const incoming=FLD.IN.map(r=>r.slice()),outgoing=FLD.OUT.map(r=>r.slice());
+const baseline={IN:incoming,OUT:outgoing};
+let draft={IN:incoming.map(r=>r.slice()),OUT:outgoing.map(r=>r.slice())};
+let selected=null,query='',carrier='ALL',side='ALL',dirty=false;
+const html=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isMinutes=n=>Number.isInteger(+n)&&+n>=0&&+n<1440;
+const hm=n=>String(Math.floor(+n/60)).padStart(2,'0')+':'+String(+n%60).padStart(2,'0');
+const minutes=s=>{const m=/^(\d{1,2}):(\d\d)$/.exec(String(s));return m&&+m[1]<24&&+m[2]<60?(+m[1]*60+ +m[2]):NaN;};
+const rowValid=r=>Array.isArray(r)&&r.length>=8&&/^[A-Z0-9]{2}$/.test(String(r[0]))&&/^\d{1,4}$/.test(String(r[1]))&&String(r[2]).trim()&&isMinutes(r[3])&&['T1','T2','T3','T4','CGO'].includes(r[4])&&['D','I'].includes(r[5])&&String(r[6]).trim()&&String(r[7]).trim();
+const cloneDb=d=>({IN:d.IN.map(r=>r.slice()),OUT:d.OUT.map(r=>r.slice())});
+function verify(d){
+ if(!d||!Array.isArray(d.IN)||!Array.isArray(d.OUT)||d.IN.length+d.OUT.length>5000)throw Error('Invalid or oversized timetable file.');
+ const conflicts=new Set();
+ for(const dir of ['IN','OUT'])for(const r of d[dir]){
+   if(!rowValid(r))throw Error('Invalid '+dir+' record: '+JSON.stringify(r));
+   const k=dir+'|'+r[0]+'|'+r[1];if(conflicts.has(k))throw Error('Duplicate flight number in '+dir+': '+r[0]+r[1]);conflicts.add(k);
+ }
+ return d;
+}
+function readSaved(){try{
+ const raw=localStorage.getItem(KEY);if(!raw)return;
+ const o=JSON.parse(raw);if(o.version!==1||o.baseline!==baseline.IN.length+'|'+baseline.OUT.length)throw Error('Saved schedule belongs to a different simulator build.');
+ verify(o.data);draft=cloneDb(o.data);
+}catch(e){window.__fmRestoreError=String(e.message||e);}}
+readSaved();
+// Apply saved schedule BEFORE the original engine builds INF / OUTF.
+FLD.IN.splice(0,FLD.IN.length,...draft.IN.map(r=>r.slice()));
+FLD.OUT.splice(0,FLD.OUT.length,...draft.OUT.map(r=>r.slice()));
+function mount(){
+ const launch=document.createElement('button');launch.id='fm-launch';launch.textContent='Manage flights';launch.title='Edit flight schedule';document.body.append(launch);
+ const wrap=document.createElement('div');wrap.id='fm-wrap';wrap.setAttribute('role','dialog');wrap.setAttribute('aria-label','Flight Manager');wrap.innerHTML=`<div id="fm-panel">
+ <div class="fm-hd"><div><h2>Flight Manager</h2><p>Northshore Operations · local schedule editor</p></div><button class="fm-btn" id="fm-close">Close ✕</button></div>
+ <div class="fm-tools"><input id="fm-search" placeholder="Search flight, destination, rotation…" aria-label="Search flights"><select id="fm-carrier" aria-label="Filter airline"></select><select id="fm-side" aria-label="Filter direction"><option value="ALL">Both directions</option><option value="OUT">JKT departures</option><option value="IN">JKT arrivals</option></select><button class="fm-btn primary" id="fm-add">+ New flight</button></div>
+ <div class="fm-body"><div class="fm-list" id="fm-list"></div><div class="fm-edit" id="fm-edit"><p>Select a flight to edit it.</p></div></div>
+ <div class="fm-tools"><button class="fm-btn primary" id="fm-save">Save locally & reload</button><button class="fm-btn" id="fm-export">Export JSON backup</button><button class="fm-btn" id="fm-import">Import JSON</button><input type="file" id="fm-file" accept=".json,application/json" hidden><button class="fm-btn danger" id="fm-reset">Restore original schedule</button></div>
+ <div class="fm-note" id="fm-status">Changes only save in this browser after “Save locally & reload”. GitHub Pages does not write them to your repository. Export a backup before changing devices.</div>
+ </div>`;document.body.append(wrap);
+ const $=id=>wrap.querySelector('#'+id),status=(m,bad=false)=>{$('fm-status').textContent=m;$('fm-status').style.color=bad?'#aa2525':'#526b7b';};
+ const open=()=>{wrap.classList.add('open');draw();if(window.__fmRestoreError)status('Previous local schedule was not loaded: '+window.__fmRestoreError,true)};
+ launch.onclick=open;$('fm-close').onclick=()=>wrap.classList.remove('open');
+ const items=()=>['OUT','IN'].flatMap(d=>draft[d].map((r,i)=>({d,i,r}))).filter(x=>(carrier==='ALL'||x.r[0]===carrier)&&(side==='ALL'||x.d===side)&&(!query||[x.r[0]+x.r[1],x.r[2],x.r[7],x.r[6]].some(t=>String(t).toLowerCase().includes(query)))).sort((a,b)=>a.r[3]-b.r[3]||a.r[0].localeCompare(b.r[0]));
+ function draw(){
+ const carr=[...new Set([...draft.IN,...draft.OUT].map(r=>r[0]))].sort();$('fm-carrier').innerHTML='<option value="ALL">All airlines</option>'+carr.map(c=>`<option value="${html(c)}">${html(c)}</option>`).join('');$('fm-carrier').value=carrier;
+ const a=items();$('fm-list').innerHTML=a.slice(0,650).map(x=>`<button class="fm-item ${selected&&selected.d===x.d&&selected.i===x.i?'sel':''}" data-dir="${x.d}" data-i="${x.i}"><strong>${html(x.r[0]+x.r[1])}</strong><span>${html(x.d==='OUT'?'JKT → ':'→ JKT · ')}${html(x.r[2])}<br><small>${html(x.r[6])}</small></span><strong>${hm(x.r[3])}</strong></button>`).join('')+(a.length>650?'<p class="fm-note">Showing first 650 results. Narrow your search.</p>':'');
+ $('fm-list').querySelectorAll('button[data-dir]').forEach(b=>b.onclick=()=>{selected={d:b.dataset.dir,i:+b.dataset.i};draw()});
+ showEditor();
+ }
+ function showEditor(){
+ const e=$('fm-edit');if(!selected){e.innerHTML='<p>Select a flight or choose + New flight.</p>';return;}
+ const isNew=selected.i===-1;const r=isNew?['GA','','',360,'T1','D','Boeing 737-800','']:draft[selected.d]?.[selected.i];if(!r){selected=null;showEditor();return;}
+ e.innerHTML=`<h3>${isNew?'Add a flight':'Edit '+html(r[0]+r[1])} · ${selected.d==='OUT'?'JKT departure':'JKT arrival'}</h3>
+ <div class="fields">
+ ${fld('Airline','carrier',r[0])}${fld('Flight number','number',r[1])}
+ ${fld('Destination / origin city','city',r[2],true)}${fld('Time (WIB)','time',hm(r[3]))}
+ ${choice('Terminal','terminal',['T1','T2','T3','T4','CGO'],r[4])}${choice('Route type','zone',['D','I'],r[5])}
+ ${fld('Aircraft type','aircraft',r[6],true)}${fld('Rotation / pairing ID','pid',r[7],true)}
+ </div><p class="fm-msg">${selected.d==='OUT'?'Departure time is from Jakarta.':'Arrival time is at Jakarta.'} The pairing ID does not automatically generate a matching return flight. Add the opposite direction separately.</p>
+ <div class="buttons"><button class="fm-btn primary" id="fm-apply">${isNew?'Add to draft':'Apply to draft'}</button>${isNew?'':'<button class="fm-btn danger" id="fm-delete">Delete flight</button>'}</div><p class="fm-msg" id="fm-formmsg"></p>`;
+ const formmsg=e.querySelector('#fm-formmsg');
+ e.querySelector('#fm-apply').onclick=()=>{
+ const val=k=>e.querySelector('[data-fm="'+k+'"]').value.trim();
+ const t=minutes(val('time'));
+ const nr=[val('carrier').toUpperCase(),val('number'),val('city'),t,val('terminal'),val('zone'),val('aircraft'),val('pid')];
+ if(!rowValid(nr)){formmsg.textContent='Invalid fields. Use e.g. GA, 114, 06:35, T1, D, Boeing 737-800 and a nonempty rotation ID.';formmsg.style.color='#b22';return;}
+ const existing=['IN','OUT'].flatMap(d=>draft[d].map((rr,i)=>({d,i,rr}))).find(x=>x.d===selected.d&&x.rr[0]===nr[0]&&x.rr[1]===nr[1]&&(isNew||x.i!==selected.i||x.d!==selected.d));
+ if(existing){formmsg.textContent='This direction already has flight '+nr[0]+nr[1];formmsg.style.color='#b22';return;}
+ if(isNew){draft[selected.d].push(nr);selected={d:selected.d,i:draft[selected.d].length-1}}else draft[selected.d][selected.i]=nr;
+ dirty=true;draw();status('Draft modified. Save locally & reload to apply changes to the simulation.');
+ };
+ const del=e.querySelector('#fm-delete');if(del)del.onclick=()=>{if(!confirm('Delete '+r[0]+r[1]+' '+selected.d+'? This does not remove its opposite-direction flight.'))return;draft[selected.d].splice(selected.i,1);selected=null;dirty=true;draw();status('Flight removed from draft. Save locally & reload to apply.')};
+ }
+ function fld(label,key,value,wide=false){return `<div class="fm-field ${wide?'wide':''}"><label>${html(label)}</label><input data-fm="${key}" value="${html(value)}" ${key==='time'?'placeholder="HH:MM"':''}></div>`;}
+ function choice(label,key,choices,value){return `<div class="fm-field"><label>${html(label)}</label><select data-fm="${key}">${choices.map(v=>`<option value="${v}" ${value===v?'selected':''}>${v}</option>`).join('')}</select></div>`;}
+ $('fm-search').oninput=e=>{query=e.target.value.trim().toLowerCase();draw()};$('fm-carrier').onchange=e=>{carrier=e.target.value;draw()};$('fm-side').onchange=e=>{side=e.target.value;draw()};
+ $('fm-add').onclick=()=>{selected={d:side==='IN'?'IN':'OUT',i:-1};showEditor()};
+ $('fm-save').onclick=()=>{try{verify(draft);localStorage.setItem(KEY,JSON.stringify({version:1,baseline:baseline.IN.length+'|'+baseline.OUT.length,data:draft}));location.reload()}catch(e){status('Could not save: '+e.message,true)}};
+ $('fm-reset').onclick=()=>{if(!confirm('Restore the original v130 timetable and remove saved browser edits?'))return;try{localStorage.removeItem(KEY);location.reload()}catch(e){status(String(e),true)}};
+ $('fm-export').onclick=()=>{try{verify(draft);const blob=new Blob([JSON.stringify({format:'jakarta-northshore-schedule',version:1,IN:draft.IN,OUT:draft.OUT},null,2)],{type:'application/json'});const a=document.createElement('a');const u=URL.createObjectURL(blob);a.href=u;a.download='jakarta-northshore-flight-schedule.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);status('Schedule backup exported. Save it to Files or your repository.')}catch(e){status(e.message,true)}};
+ $('fm-import').onclick=()=>$('fm-file').click();$('fm-file').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;const obj=JSON.parse(await file.text());if(obj.format!=='jakarta-northshore-schedule')throw Error('Not a Northshore schedule backup.');verify(obj);if(!confirm('Replace the current draft with this imported schedule?'))return;draft=cloneDb(obj);dirty=true;selected=null;draw();status('Imported into draft. Select Save locally & reload to apply.')}catch(err){status('Import failed: '+err.message,true)}finally{e.target.value=''}};
+ wrap.addEventListener('click',e=>{if(e.target===wrap)wrap.classList.remove('open')});
+ draw();
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+})();
+</script>
+<script>(function(){
 'use strict';
 const SD=SIMD,FD=FLD,MPP=SD.KR,KD=SD.KD,RY=SD.RY,RX0=SD.RX0,RX1=SD.RX1,HOLD=SD.hold;
 const RWS=SD.RW.map(r=>({y:r.y,x0:r.x0,x1:r.x1,j:r.junc.map(a=>a[0])}));
