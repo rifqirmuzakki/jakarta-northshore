@@ -1000,6 +1000,21 @@ for(const ch of V175_GA_INBOUND_RETIMES){
 window.JN_V175_RETIMES=V175_GA_INBOUND_RETIMES;
 window.JN_V158_WB_PAIRING_GUIDE=Object.freeze([{"city":"Singapore","pairs":[{"out":"GA904","in":"GA905","type":"789","turn":95},{"out":"GA906","in":"GA907","type":"77W","turn":100},{"out":"GA908","in":"GA911","type":"339","turn":100}]},{"city":"Kuala Lumpur","pairs":[{"out":"GA830","in":"GA837","type":"339","turn":160},{"out":"GA832","in":"GA833","type":"339","turn":100},{"out":"GA838","in":"GA831","type":"339","turn":105}]},{"city":"Surabaya","pairs":[{"out":"GA310","in":"GA321","type":"339","turn":95},{"out":"GA318","in":"GA325","type":"339","turn":105}]},{"city":"Medan","pairs":[{"out":"GA170","in":"GA189","type":"339","turn":80},{"out":"GA182","in":"GA183","type":"339","turn":80}]},{"city":"Makassar","pairs":[{"out":"GA630","in":"GA639","type":"339","turn":140},{"out":"GA632","in":"GA643","type":"339","turn":145}]},{"city":"Bangkok","pairs":[{"out":"GA740","in":"GA747","type":"339","turn":215},{"out":"GA746","in":"GA743","type":"339","turn":410},{"out":"GA748","in":"GA741","type":"339","turn":330}]},{"city":"Phuket","pairs":[{"out":"GA870","in":"GA869","type":"339","turn":475}]},{"city":"Denpasar","pairs":[{"out":"GA400","in":"GA403","type":"339","turn":115},{"out":"GA404","in":"GA421","type":"339","turn":100},{"out":"GA406","in":"GA411","type":"339","turn":95},{"out":"GA408","in":"GA427","type":"339","turn":115},{"out":"GA410","in":"GA415","type":"77W","turn":110},{"out":"GA412","in":"GA423","type":"339","turn":115},{"out":"GA414","in":"GA425","type":"339","turn":105},{"out":"GA416","in":"GA409","type":"339","turn":100}]},{"city":"Jeju","pairs":[{"out":"GA818","in":"GA819","type":"339","turn":90}]},{"city":"Ho Chi Minh City","pairs":[{"out":"GA798","in":"GA803","type":"339","turn":95},{"out":"GA800","in":"GA799","type":"339","turn":90},{"out":"GA804","in":"GA805","type":"339","turn":105}]},{"city":"Hong Kong","pairs":[{"out":"GA806","in":"GA817","type":"789","turn":620},{"out":"GA808","in":"GA807","type":"789","turn":265},{"out":"GA810","in":"GA809","type":"339","turn":415},{"out":"GA812","in":"GA811","type":"789","turn":385},{"out":"GA814","in":"GA813","type":"789","turn":535},{"out":"GA816","in":"GA815","type":"339","turn":450}]}]);
 
+</script><script id="v176-aus-weekly">
+/* v176: new Australian services with weekly (not daily) patterns. All times WIB; IN rows store Jakarta STA.
+   Optional 9th row field = operating days as ISO weekday digits (1=Mon ... 7=Sun); omitted = daily.
+   GA 714/715 Darwin (DRW): 5x weekly, Mon-Fri.  GA 728/729 Cairns (CNS): 4x weekly, Mon/Wed/Fri/Sun.
+   Inbound STA = JKT STD + 2*simulated block + 50 min outstation turn (DRW 260 min, CNS 360 min block). */
+AIR_CITY["Darwin"]=[-12.4147,130.8767,"E"]; SEED_CODES["Darwin"]="DRW";
+AIR_CITY["Cairns"]=[-16.8858,145.7553,"E"]; SEED_CODES["Cairns"]="CNS";
+FLD.OUT.push(
+ ["GA","714","Darwin",480,"T2","I","Boeing 737-800","GA-V176-DRW-714","12345"],
+ ["GA","728","Cairns",420,"T2","I","Boeing 737-800","GA-V176-CNS-728","1357"]
+);
+FLD.IN.push(
+ ["GA","715","Darwin",1050,"T2","I","Boeing 737-800","GA-V176-DRW-714","12345"],
+ ["GA","729","Cairns",1190,"T2","I","Boeing 737-800","GA-V176-CNS-728","1357"]
+);
 </script><style id="v131-manager-style">
 #fm-launch{position:fixed;z-index:120;right:12px;bottom:18px;background:#18394d;color:#fff;border:1px solid #87a7bc;border-radius:13px;padding:12px 16px;font:600 13px 'Geist',-apple-system,sans-serif;box-shadow:0 9px 24px #0005;cursor:pointer}
 #fm-wrap{display:none;position:fixed;inset:0;z-index:200;background:rgba(10,22,34,.65);padding:16px;box-sizing:border-box;font-family:'Geist',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1a2c3d}
@@ -1726,8 +1741,11 @@ function v125SinWide(f){
  }
  return f;
 }
-const INF=FD.IN.map(r=>v125SinWide(v111Equip(v108ApplyLcc(mkFl(r,false))))).sort((a,b)=>a.t-b.t||a.id.localeCompare(b.id));
-const OUTF=FD.OUT.map(r=>v125SinWide(v111Equip(mkFl(r,true)))).sort((a,b)=>a.t-b.t||a.id.localeCompare(b.id));
+/* v176: weekly patterns. Rows may carry operating days (ISO digits, 1=Mon..7=Sun) as r[8]; none = daily. */
+const v176Dow=(()=>{const i=tDayIndex().idx;return ((i+3)%7+7)%7+1})();
+const v176Runs=r=>!r[8]||String(r[8]).includes(String(v176Dow));
+const INF=FD.IN.filter(v176Runs).map(r=>v125SinWide(v111Equip(v108ApplyLcc(mkFl(r,false))))).sort((a,b)=>a.t-b.t||a.id.localeCompare(b.id));
+const OUTF=FD.OUT.filter(v176Runs).map(r=>v125SinWide(v111Equip(mkFl(r,true)))).sort((a,b)=>a.t-b.t||a.id.localeCompare(b.id));
 window.__DB=()=>({INF,OUTF,tBlk});const num=f=>+f.num||0;
 const E_SWING_CARRIERS=new Set(['GA','QG','IP']);
 const swingCarrier=f=>E_SWING_CARRIERS.has(f.c);
