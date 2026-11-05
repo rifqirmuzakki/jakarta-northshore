@@ -971,13 +971,16 @@ window.JN_V169_KIX_STD_GMT7='07:05';
 const V171_GA819=FLD.IN.find(r=>r[0]==='GA'&&r[1]==='819'&&r[2]==='Jeju');
 if(!V171_GA819||V171_GA819[3]!==680)throw Error('GA819 unexpected prior timing');
 V171_GA819[3]=200; // 03:20 WIB (next day after GA818 departure); modeled outstation turnaround 90min
-/* Experimental v171B: Beijing return retiming, NOT approved as default.
-   GA756->GA757 and GA758->GA759 each get 120-min Beijing turnaround. */
-const V171_GA757=FLD.IN.find(r=>r[0]==='GA'&&r[1]==='757'&&r[2]==='Beijing');
-const V171_GA759=FLD.IN.find(r=>r[0]==='GA'&&r[1]==='759'&&r[2]==='Beijing');
-if(!V171_GA757||V171_GA757[3]!==1395||!V171_GA759||V171_GA759[3]!==1155)throw Error('PEK return schedule unexpected');
-V171_GA757[3]=580; // 09:40 WIB
-V171_GA759[3]=820; // 13:40 WIB
+/* v172 Phase 1 + Phase 2: systematic A339 turn optimization.
+   All edits operate on IN arrival minutes (WIB) with flight count and route preserved.
+   Turn target values model outstation time using preexisting block-time estimates. */
+const V172_GA_RETIMES=Object.freeze([{"city":"Chennai","num":"987","from":1225,"to":1245,"pair":"GA986\u2192GA987","turn":90,"phase":"Phase 1"},{"city":"Amman","num":"941","from":465,"to":500,"pair":"GA940\u2192GA941","turn":90,"phase":"Phase 1"},{"city":"Beijing","num":"757","from":1395,"to":580,"pair":"GA756\u2192GA757","turn":120,"phase":"Phase 2"},{"city":"Beijing","num":"759","from":1155,"to":820,"pair":"GA758\u2192GA759","turn":120,"phase":"Phase 2"},{"city":"Chengdu","num":"771","from":1090,"to":1340,"pair":"GA770\u2192GA771","turn":90,"phase":"Phase 2"},{"city":"Chengdu","num":"773","from":480,"to":510,"pair":"GA772\u2192GA773","turn":90,"phase":"Phase 2"},{"city":"Hanoi","num":"793","from":530,"to":1375,"pair":"GA792\u2192GA793","turn":110,"phase":"Phase 2"},{"city":"Hanoi","num":"795","from":1040,"to":115,"pair":"GA794\u2192GA795","turn":110,"phase":"Phase 2"},{"city":"Hanoi","num":"797","from":775,"to":380,"pair":"GA796\u2192GA797","turn":110,"phase":"Phase 2"},{"city":"Shenzhen","num":"893","from":345,"to":580,"pair":"GA896\u2192GA893","turn":90,"phase":"Phase 2"}]);
+for(const ch of V172_GA_RETIMES){
+ const hits=FLD.IN.filter(r=>r[0]==='GA'&&r[1]===ch.num&&r[2]===ch.city);
+ if(hits.length!==1||hits[0][3]!==ch.from)throw Error('v172 arrival baseline mismatch GA'+ch.num+' '+ch.city);
+ hits[0][3]=ch.to;
+}
+window.JN_V172_RETIMES=V172_GA_RETIMES;
 window.JN_V158_WB_PAIRING_GUIDE=Object.freeze([{"city":"Singapore","pairs":[{"out":"GA904","in":"GA905","type":"789","turn":95},{"out":"GA906","in":"GA907","type":"77W","turn":100},{"out":"GA908","in":"GA911","type":"339","turn":100}]},{"city":"Kuala Lumpur","pairs":[{"out":"GA830","in":"GA837","type":"339","turn":160},{"out":"GA832","in":"GA833","type":"339","turn":100},{"out":"GA838","in":"GA831","type":"339","turn":105}]},{"city":"Surabaya","pairs":[{"out":"GA310","in":"GA321","type":"339","turn":95},{"out":"GA318","in":"GA325","type":"339","turn":105}]},{"city":"Medan","pairs":[{"out":"GA170","in":"GA189","type":"339","turn":80},{"out":"GA182","in":"GA183","type":"339","turn":80}]},{"city":"Makassar","pairs":[{"out":"GA630","in":"GA639","type":"339","turn":140},{"out":"GA632","in":"GA643","type":"339","turn":145}]},{"city":"Bangkok","pairs":[{"out":"GA740","in":"GA747","type":"339","turn":215},{"out":"GA746","in":"GA743","type":"339","turn":410},{"out":"GA748","in":"GA741","type":"339","turn":330}]},{"city":"Phuket","pairs":[{"out":"GA870","in":"GA869","type":"339","turn":475}]},{"city":"Denpasar","pairs":[{"out":"GA400","in":"GA403","type":"339","turn":115},{"out":"GA404","in":"GA421","type":"339","turn":100},{"out":"GA406","in":"GA411","type":"339","turn":95},{"out":"GA408","in":"GA427","type":"339","turn":115},{"out":"GA410","in":"GA415","type":"77W","turn":110},{"out":"GA412","in":"GA423","type":"339","turn":115},{"out":"GA414","in":"GA425","type":"339","turn":105},{"out":"GA416","in":"GA409","type":"339","turn":100}]},{"city":"Jeju","pairs":[{"out":"GA818","in":"GA819","type":"339","turn":90}]},{"city":"Ho Chi Minh City","pairs":[{"out":"GA798","in":"GA803","type":"339","turn":95},{"out":"GA800","in":"GA799","type":"339","turn":90},{"out":"GA804","in":"GA805","type":"339","turn":105}]},{"city":"Hong Kong","pairs":[{"out":"GA806","in":"GA817","type":"789","turn":620},{"out":"GA808","in":"GA807","type":"789","turn":265},{"out":"GA810","in":"GA809","type":"339","turn":415},{"out":"GA812","in":"GA811","type":"789","turn":385},{"out":"GA814","in":"GA813","type":"789","turn":535},{"out":"GA816","in":"GA815","type":"339","turn":450}]}]);
 
 </script><style id="v131-manager-style">
