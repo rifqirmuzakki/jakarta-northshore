@@ -981,6 +981,15 @@ for(const ch of V172_GA_RETIMES){
  hits[0][3]=ch.to;
 }
 window.JN_V172_RETIMES=V172_GA_RETIMES;
+/* v173: Ground-wait repair. Preserve every departure, flight count, equipment, and locked schedule.
+   Retimes 6 inbound-only services; see v173 audit for outstation arrival/return pairing. */
+const V173_GA_INBOUND_RETIMES=Object.freeze([{"city":"Kendari","num":"621","from":755,"to":760,"out":"GA620","inbound":"GA621","target":60},{"city":"Kendari","num":"627","from":1000,"to":1015,"out":"GA622","inbound":"GA627","target":60},{"city":"Kendari","num":"623","from":1140,"to":1170,"out":"GA624","inbound":"GA623","target":60},{"city":"Kendari","num":"629","from":1265,"to":1295,"out":"GA626","inbound":"GA629","target":60},{"city":"Pontianak","num":"547","from":710,"to":915,"out":"GA540","inbound":"GA547","target":60},{"city":"Pontianak","num":"539","from":1165,"to":1080,"out":"GA542","inbound":"GA539","target":120}]);
+for(const ch of V173_GA_INBOUND_RETIMES){
+ const hits=FLD.IN.filter(r=>r[0]==='GA'&&r[1]===ch.num&&r[2]===ch.city);
+ if(hits.length!==1||hits[0][3]!==ch.from)throw Error('v173 inbound baseline mismatch: '+ch.num);
+ hits[0][3]=ch.to;
+}
+window.JN_V173_GROUND_REPAIRS=V173_GA_INBOUND_RETIMES;
 window.JN_V158_WB_PAIRING_GUIDE=Object.freeze([{"city":"Singapore","pairs":[{"out":"GA904","in":"GA905","type":"789","turn":95},{"out":"GA906","in":"GA907","type":"77W","turn":100},{"out":"GA908","in":"GA911","type":"339","turn":100}]},{"city":"Kuala Lumpur","pairs":[{"out":"GA830","in":"GA837","type":"339","turn":160},{"out":"GA832","in":"GA833","type":"339","turn":100},{"out":"GA838","in":"GA831","type":"339","turn":105}]},{"city":"Surabaya","pairs":[{"out":"GA310","in":"GA321","type":"339","turn":95},{"out":"GA318","in":"GA325","type":"339","turn":105}]},{"city":"Medan","pairs":[{"out":"GA170","in":"GA189","type":"339","turn":80},{"out":"GA182","in":"GA183","type":"339","turn":80}]},{"city":"Makassar","pairs":[{"out":"GA630","in":"GA639","type":"339","turn":140},{"out":"GA632","in":"GA643","type":"339","turn":145}]},{"city":"Bangkok","pairs":[{"out":"GA740","in":"GA747","type":"339","turn":215},{"out":"GA746","in":"GA743","type":"339","turn":410},{"out":"GA748","in":"GA741","type":"339","turn":330}]},{"city":"Phuket","pairs":[{"out":"GA870","in":"GA869","type":"339","turn":475}]},{"city":"Denpasar","pairs":[{"out":"GA400","in":"GA403","type":"339","turn":115},{"out":"GA404","in":"GA421","type":"339","turn":100},{"out":"GA406","in":"GA411","type":"339","turn":95},{"out":"GA408","in":"GA427","type":"339","turn":115},{"out":"GA410","in":"GA415","type":"77W","turn":110},{"out":"GA412","in":"GA423","type":"339","turn":115},{"out":"GA414","in":"GA425","type":"339","turn":105},{"out":"GA416","in":"GA409","type":"339","turn":100}]},{"city":"Jeju","pairs":[{"out":"GA818","in":"GA819","type":"339","turn":90}]},{"city":"Ho Chi Minh City","pairs":[{"out":"GA798","in":"GA803","type":"339","turn":95},{"out":"GA800","in":"GA799","type":"339","turn":90},{"out":"GA804","in":"GA805","type":"339","turn":105}]},{"city":"Hong Kong","pairs":[{"out":"GA806","in":"GA817","type":"789","turn":620},{"out":"GA808","in":"GA807","type":"789","turn":265},{"out":"GA810","in":"GA809","type":"339","turn":415},{"out":"GA812","in":"GA811","type":"789","turn":385},{"out":"GA814","in":"GA813","type":"789","turn":535},{"out":"GA816","in":"GA815","type":"339","turn":450}]}]);
 
 </script><style id="v131-manager-style">
@@ -2293,6 +2302,7 @@ function tPlace(t,v){if(!t.model)t.model=v111FleetModel(t.fleet.c,t.fleet.ac,t.f
    tail j flies visit i on calendar day d when (d - w_i) mod k == j.
    No schedule or stand geometry changes. */
 const V116_WRAP=6000,V116_FERRY=400000,V116_PAIRS=[['GA 742','GA 741'],['GA 752','GA 753'],['GA 820','GA 821'],['GA 886','GA 887'],['GA 754','GA 755']];
+const V173_OUTSTATION_PAIRS=Object.freeze([["GA 620","GA 621"],["GA 622","GA 627"],["GA 624","GA 623"],["GA 626","GA 629"],["GA 628","GA 625"],["GA 536","GA 545"],["GA 538","GA 541"],["GA 540","GA 547"],["GA 542","GA 539"],["GA 544","GA 537"],["GA 546","GA 543"]]);
 function v116Hungarian(n,C){
   const INF=1e18,u=new Float64Array(n+1),v=new Float64Array(n+1),p=new Int32Array(n+1),way=new Int32Array(n+1);
   for(let i=1;i<=n;i++){
@@ -2319,10 +2329,18 @@ function v116Plan(vs){
       C[i*n+j]=c}}
   const force=(i,j)=>{if(i>=0&&j>=0&&X[i].dest===X[j].orig&&v116Wraps(X[i],X[j])<=1)C[i*n+j]=-1e7};
   const byDep=new Map(),byArr=new Map(),byNight=new Map(),byCarry=new Map();
-  X.forEach((v,i)=>{if(v.d)byDep.set(v.d.id,i);if(v.a&&v.kind!=='pre')byArr.set(v.a.id,i);
+  X.forEach((v,i)=>{if(v.d&&v.kind!=='ovn')byDep.set(v.d.id,i);if(v.a&&v.kind!=='pre')byArr.set(v.a.id,i);
     if(v.kind==='ovn'&&v.night)byNight.set(v.night,i);if(v.kind==='pre')byCarry.set(v.carry,i)});
   byNight.forEach((i,id)=>{if(byCarry.has(id))force(i,byCarry.get(id))});
   V116_PAIRS.forEach(([d,a])=>{if(byDep.has(d)&&byArr.has(a))force(byDep.get(d),byArr.get(a))});
+  V173_OUTSTATION_PAIRS.forEach(([d,a])=>{
+    if(!byDep.has(d)||!byArr.has(a))return; // other airlines and fleets are independent
+    const di=byDep.get(d),ai=byArr.get(a),src=X[di],dst=X[ai];
+    if(src.dest!==dst.orig||src.ac!==dst.ac)throw Error('v173 incompatible pairing '+d+' → '+a+': '+src.dest+'/'+src.ac+' -> '+dst.orig+'/'+dst.ac);
+    const days=v116Wraps(src,dst),ground=dst.S+1440*days-src.E;
+    if(days>1||ground<55)throw Error('v173 subminimum or extra-day pair '+d+' → '+a+': '+ground+'m');
+    force(di,ai);
+  });
   const succ=v116Hungarian(n,C);let ferry=0;const ferryList=[];
   const seen=new Uint8Array(n),cycles=[];
   for(let s=0;s<n;s++){if(seen[s])continue;
