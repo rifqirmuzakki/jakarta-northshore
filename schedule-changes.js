@@ -82,32 +82,32 @@ window.JN_CHANGES_REPO={
    "scope": "timetable",
    "kind": "add",
    "from": "2026-11-07",
-   "note": "New service Wellington: GA 1000/1001 Boeing 787-9 (ISO days 1357)",
+   "note": "New service Wellington: GA 56/57 Boeing 787-9 (ISO days 1357)",
    "createdAt": "2026-11-06T12:00:00.000Z",
    "rows": {
     "OUT": [
      [
       "GA",
-      "1000",
+      "56",
       "Wellington",
       260,
       "T2",
       "I",
       "Boeing 787-9",
-      "GA-CHG-WLG-1000",
+      "GA-CHG-WLG-56",
       "1357"
      ]
     ],
     "IN": [
      [
       "GA",
-      "1001",
+      "57",
       "Wellington",
       120,
       "T2",
       "I",
       "Boeing 787-9",
-      "GA-CHG-WLG-1000",
+      "GA-CHG-WLG-56",
       "1246"
      ]
     ]
@@ -129,32 +129,32 @@ window.JN_CHANGES_REPO={
    "scope": "timetable",
    "kind": "add",
    "from": "2026-11-07",
-   "note": "New service AlUla: GA 1002/1003 Airbus A330-900 (ISO days 257)",
+   "note": "New service AlUla: GA 52/53 Airbus A330-900 (ISO days 257)",
    "createdAt": "2026-11-06T12:00:00.000Z",
    "rows": {
     "OUT": [
      [
       "GA",
-      "1002",
+      "52",
       "AlUla",
       280,
       "T2",
       "I",
       "Airbus A330-900",
-      "GA-CHG-ULH-1002",
+      "GA-CHG-ULH-52",
       "257"
      ]
     ],
     "IN": [
      [
       "GA",
-      "1003",
+      "53",
       "AlUla",
       210,
       "T2",
       "I",
       "Airbus A330-900",
-      "GA-CHG-ULH-1002",
+      "GA-CHG-ULH-52",
       "136"
      ]
     ]
@@ -176,32 +176,32 @@ window.JN_CHANGES_REPO={
    "scope": "timetable",
    "kind": "add",
    "from": "2026-11-07",
-   "note": "New service Baku: GA 1004/1005 Airbus A330-900 (ISO days 136)",
+   "note": "New service Baku: GA 54/55 Airbus A330-900 (ISO days 136)",
    "createdAt": "2026-11-06T12:00:00.000Z",
    "rows": {
     "OUT": [
      [
       "GA",
-      "1004",
+      "54",
       "Baku",
       310,
       "T2",
       "I",
       "Airbus A330-900",
-      "GA-CHG-GYD-1004",
+      "GA-CHG-GYD-54",
       "136"
      ]
     ],
     "IN": [
      [
       "GA",
-      "1005",
+      "55",
       "Baku",
       170,
       "T2",
       "I",
       "Airbus A330-900",
-      "GA-CHG-GYD-1004",
+      "GA-CHG-GYD-54",
       "247"
      ]
     ]
