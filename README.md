@@ -14,6 +14,11 @@ One hub with two kinds of records, both stored in the same dated log:
   (knock-on included). Recovery options: **wait**, **swap** with another same-type aircraft whose next departure is later, or **bring in a
   spare** from the maintenance pool (the spare takes over the aircraft's line, the broken one sits out for the repair duration; on the
   ground the arriving aircraft stays parked and the spare departs).
+* *Weather or an airport issue*: choose an airport, closed or slow, a time window in that airport's local time, and a cause. At a remote
+  airport, flights leaving it in the window leave late and flights landing in the window hold and land late (and the delay carries along
+  the aircraft's rotation; inbound flights reach Jakarta late the next day, so view that date). At **Jakarta** a closure is a real runway
+  closure in the ground simulation: nothing lands or takes off in the window, aircraft hold and queue, and the backlog is released after it.
+* Delays shown are only what the events add; turns that are already short in the schedule do not create phantom delays.
 * Disruptions apply to the date being viewed (`?date=YYYY-MM-DD`, default today).
 
 **Change the timetable (planned)**
@@ -28,4 +33,4 @@ One hub with two kinds of records, both stored in the same dated log:
 * Open the page with `?nochanges=1` to ignore all changes and events.
 
 Record shapes: timetable `{id, v:1, scope:'timetable', kind:'add'|'amend'|'cancel', from, to, ...}`; operational
-`{id, v:1, scope:'ops', kind:'delay'|'swap'|'aog'|'spare', date, at, ...}`. The log is meant to be persisted as history later.
+`{id, v:1, scope:'ops', kind:'delay'|'swap'|'aog'|'spare'|'weather', date, at, ...}`. The log is meant to be persisted as history later.
