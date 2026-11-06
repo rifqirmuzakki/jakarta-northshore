@@ -1080,6 +1080,8 @@ body.jn-detail #fm-launch{display:block;top:calc(10px + env(safe-area-inset-top,
 #fm-panel #op-body .fm-tools{background:transparent;border:0;padding:0 0 10px}
 .op-alert{display:grid;grid-template-columns:10px 1fr auto;gap:10px;align-items:start;background:#fff;border:1px solid #dbe3e9;border-radius:11px;padding:11px 12px;margin-bottom:8px}.op-alert i{width:10px;height:10px;border-radius:50%;margin-top:5px}.op-alert b{display:block;font-size:13.5px}.op-alert span{display:block;font-size:12px;color:#44596a;margin-top:2px;line-height:1.4}.op-alert small{display:block;font-size:11px;color:#526678;margin-top:3px}.op-alert.done{opacity:.72}
 .op-group{margin:0 0 10px;border:1px solid #cfdde8;border-radius:12px;background:#f2f6f9;padding:0 8px 8px}.op-group>summary{cursor:pointer;font-size:12.5px;color:#1c4a63;padding:11px 4px}.op-group .op-alert{margin-bottom:6px}.op-group .op-alert>div>span{display:none}.op-gbar{display:flex;justify-content:flex-end;padding:2px 2px 0}
+.op-lq{display:block;font-size:12.5px;color:#37556b;margin:2px 0 10px}.op-lq input{margin-right:6px}
+.op-tools{display:flex;gap:8px;margin:2px 0 12px}.op-log{list-style:none;margin:0;padding:0;border-left:2px solid #d3dde4}.op-le{display:grid;grid-template-columns:48px 1fr;gap:8px;padding:0 0 14px 12px;position:relative}.op-le::before{content:'';position:absolute;left:-7px;top:4px;width:10px;height:10px;border-radius:50%;background:#8ea3b3;border:2px solid #fff}.op-le.incident::before{background:#d68910}.op-le.controller::before{background:#2e86c1}.op-le.you::before{background:#1b6b3f}.op-le time{font:600 12.5px ui-monospace,Menlo,monospace;color:#1a2c3d}.op-le b{font-size:13px}.op-le span,.op-le small{display:block;font-size:12px;color:#44596a;margin-top:2px}.op-le small{color:#526678}
 .op-tabs{display:flex;gap:6px;margin:6px 0 10px}.op-tabs button{flex:1;border:1px solid #d3dde4;background:#fff;color:#37556b;border-radius:10px;padding:9px 6px;font:600 12.5px inherit;cursor:pointer}.op-tabs button.on{background:#18394d;color:#fff;border-color:#18394d}.op-tabs i{font-style:normal;font-size:10.5px;background:#8798a5;color:#fff;border-radius:8px;padding:0 6px;margin-left:3px}.op-tabs [data-tab="needs"] i{background:#c0392b}.op-tabs button.on i{background:#fff;color:#18394d}
 .op-trigs{margin-top:16px}.op-trigs summary{cursor:pointer;font-size:12.5px;color:#37556b;padding:9px 0}.op-alert small b.bad{color:#b03030;display:inline}
 .op-sticky{position:sticky;bottom:0;margin:14px -16px 0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.96);border-top:1px solid #dbe3e9;display:flex;gap:10px;align-items:center;justify-content:space-between;z-index:3}.op-sum{font-size:12.5px;color:#37556b;min-width:0}.fm-btn.danger{background:#a83232;color:#fff;border-color:#a83232}.op-choice.cxc.on{border-color:#a83232;background:#fdf1f1}
@@ -1275,13 +1277,13 @@ const setStatus=(m,bad)=>{const e=$('#fm-status');e.textContent=m||'';e.style.co
 const go=(s,init)=>{screen=s;st=init||{};draw()};
 function open(){wrap.classList.add('open');if(!wrap.dataset.once){wrap.dataset.once='1';screen='home'}draw()}
 launch.onclick=open;
-const TITLES={home:'Operations',queue:'Jakarta queue and sequence',impact:'A flight is affected',incident:'Incident',weather:'Weather or an airport issue',aog:'An aircraft is out of service',delay:'A flight is delayed',change:'Change a flight',add:'Add a new service',cancel:'Cancel a flight',mine:'My changes and events'};
+const TITLES={home:'Operations',log:'Operations log',queue:'Jakarta queue and sequence',impact:'A flight is affected',incident:'Incident',weather:'Weather or an airport issue',aog:'An aircraft is out of service',delay:'A flight is delayed',change:'Change a flight',add:'Add a new service',cancel:'Cancel a flight',mine:'My changes and events'};
 function draw(){
   $('#op-title').textContent=((screen==='delay'||screen==='aog')&&st.inc)?'A flight is affected':(TITLES[screen]||'Operations');
   $('#op-sub').textContent=screen==='home'?'Viewing '+longDate(C.viewDs):'';
   $('#op-back').hidden=screen==='home';
   setStatus('');
-  ({home:drawHome,queue:drawQueue,impact:drawImpact,incident:drawIncident,weather:drawWeather,aog:drawAog,delay:drawDelay,change:drawChange,add:drawAdd,cancel:drawCancel,mine:drawMine}[screen]||drawHome)();
+  ({home:drawHome,log:drawLog,queue:drawQueue,impact:drawImpact,incident:drawIncident,weather:drawWeather,aog:drawAog,delay:drawDelay,change:drawChange,add:drawAdd,cancel:drawCancel,mine:drawMine}[screen]||drawHome)();
   if(wrap.classList.contains('open')&&(document.activeElement===document.body||!wrap.contains(document.activeElement))&&!wrap.classList.contains('docked'))$('#fm-panel').focus({preventScroll:true});
 }
 const card=(go,title,desc,extra,off)=>`<button class="op-card${off?' off':''}" ${off?'disabled':`data-go="${go}"`}><b>${html(title)}</b><span>${html(desc)}</span>${extra||''}</button>`;
@@ -1361,7 +1363,8 @@ ${card('queue','Jakarta queue and sequence','Who is waiting to land and take off
 ${card('change','Change a flight','New time, aircraft, days or terminal, from a date you choose.')}
 ${card('add','Add a new service','A new route or extra frequency, with its return flight.')}
 ${card('cancel','Cancel a flight','Remove a flight, and its return, from a date.')}
-<h3 class="op-h">Your log</h3>
+<h3 class="op-h">Log</h3>
+${card('log','Operations log','Every incident, controller decision and your decision today, with outcomes. Copy it for shift handover.')}
 ${card('mine','My changes and events','See, undo, export or import what you have recorded.',n+repo?`<i class="op-count">${n+repo}</i>`:'')}
 <h3 class="op-h">Ops controller</h3><p class="op-lead">You decide how each incident is handled. If nobody decides before the deadline shown on the alert, Automatic lets the controller take over (swap aircraft, call in a spare or wait). Manual never does: nothing happens until you decide.</p>
 <div class="op-chips" id="op-ctl">${[['auto','Takes over at the deadline'],['manual','Never']].map(l=>`<button class="fm-chip ${ctl===l[0]?'on':''}" data-ct="${l[0]}">${l[1]}</button>`).join('')}</div>
@@ -1768,6 +1771,46 @@ function summary(c){
   if(c.kind==='cancel')return 'Cancel '+tg;
   const s=c.set||{},p=[];if(s.time!=null)p.push('time '+hm(s.time));if(s.aircraft)p.push(s.aircraft);if(s.terminal)p.push('terminal '+s.terminal);if(s.zone)p.push(s.zone==='I'?'international':'domestic');if('days' in s)p.push(daysText(s.days));
   return tg+': '+(p.join(', ')||'change')}
+/* ================= OPERATIONS LOG: everything that happened and was decided on the viewed day ================= */
+let logFilter='all',logQuiet=false;
+function logEntries(){
+  const S=window.SIMCORE,vd=C.viewDs,vn=C.dayNum(vd),inc=(S.incidents&&S.incidents.list())||[],byId=new Map(inc.map(e=>[e.id,e]));
+  const inbound=S.ops&&S.ops.inbound?S.ops.inbound():[],dl=id=>{const f=S.INF.concat(S.OUTF).find(x=>x.id===id);return f?(f.cx?'cancelled':(f.dly>=5?'+'+durTxt(Math.round(f.dly)):'on time')):null};
+  const out=[],fmtMin=m=>hm(((Math.round(m)%1440)+1440)%1440);
+  const outcome=e=>{try{
+    if(e.kind==='aog'){const it=inbound.find(x=>x.id===e.arrival);const n=it&&it.next;return n?(n.id+': '+(dl(n.id)||'—')):null}
+    if(e.kind==='delay'||e.kind==='wimp'){const id=e.flight,it=inbound.find(x=>x.id===id);const a=id+': '+(dl(id)||'—');return it&&it.next?a+' · '+it.next.id+': '+(dl(it.next.id)||'—'):a}
+    }catch(x){}return null};
+  inc.forEach(e=>{if(C.dayNum(e.date)!==vn||!e.known||!e.applied)return;
+    if(e.kind==='weather'){const v=incView(e);out.push({t:e.atMin,actor:'incident',head:v.title,body:v.detail});return}
+    if(e.kind==='wimp')return;                       // listed through its event and its decision
+    const v=incView(e);out.push({t:e.atMin,actor:'incident',head:v.title,body:v.detail,outcome:e.handled?outcome(e):null,id:e.id})});
+  (JN_OPS.list()||[]).forEach(o=>{if(!o.resolves&&o.kind==='delay'&&C.dayNum(o.date)===vn&&!o.src)return;
+    if(!(o.resolves||['swap','spare','cancelflt','prio','rwmode','veto','delay','aog','weather'].includes(o.kind)))return;
+    if(C.dayNum(o.date)!==vn)return;
+    if(o.kind==='weather'&&!o.resolves&&o.src==='gen')return;if((o.kind==='aog'||o.kind==='delay')&&o.src==='gen'&&!o.resolves)return;
+    const auto=o.by==='auto',target=o.resolves&&byId.get(o.resolves.split('|')[0]===o.resolves?o.resolves:o.resolves);
+    const tgt=o.resolves?(byId.get(o.resolves)||byId.get(String(o.resolves).split('|')[0])):null;
+    const what=o.note?String(o.note).replace(/^(Recovery|Controller): /,''):({swap:'Swapped '+((o.arrivals||[]).join(' ↔ ')),spare:'Called in a spare',cancelflt:'Cancelled '+((o.flights||[]).join(', ')),prio:'Moved up '+((o.flights||[]).join(', ')),rwmode:'Runway configuration '+o.mode,veto:'Controller stood down',ack:'Acknowledged'}[o.kind]||o.kind);
+    let t=auto?o.atMin:(o.at&&o.at!=='00:00'?hmIn(o.at):null);
+    if(t==null||isNaN(t))t=tgt?(tgt.atMin+1):1439;
+    out.push({t,quiet:auto&&o.kind==='ack',actor:auto?'controller':'you',head:(auto?'Controller: ':'You: ')+what,body:tgt?'On: '+incView(tgt).title:'',outcome:tgt?outcome(tgt):null,rec:(!auto&&o.createdAt)?'recorded '+new Date(o.createdAt).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):''})});
+  out.sort((a,b)=>a.t-b.t);return out.map(x=>Object.assign(x,{time:fmtMin(x.t)}))}
+function logText(L){const lvl=window.JN_OPS?JN_OPS.level:'—',ctl=window.JN_OPS?JN_OPS.controller:'—',n=(k)=>L.filter(x=>x.actor===k).length;
+  return ['OPERATIONS LOG · '+longDate(C.viewDs)+' (simulated, WIB)','Disruption level: '+lvl+' · controller: '+(ctl==='auto'?'takes over at deadline':'never'),n('incident')+' incidents · '+n('controller')+' controller decisions · '+n('you')+' manager decisions','',
+    ...L.map(x=>x.time+'  ['+({incident:'INCIDENT',controller:'CONTROLLER',you:'MANAGER'}[x.actor])+']  '+x.head+(x.body?' — '+x.body:'')+(x.outcome?' => '+x.outcome:''))].join('\n')}
+function drawLog(){waitReady(()=>{
+  const all=logEntries(),quietN=all.filter(x=>x.quiet).length,vis=logQuiet?all:all.filter(x=>!x.quiet),L=logFilter==='all'?vis:vis.filter(x=>x.actor===logFilter),cnt=k=>all.filter(x=>x.actor===k&&(logQuiet||!x.quiet)).length;
+  const TAG={incident:'Incident',controller:'Controller',you:'You'};
+  $('#op-body').innerHTML=`<div class="op-pad"><div class="op-panel"><b>${html(longDate(C.viewDs))}</b><div class="op-lead" style="margin:4px 0 0">${vis.length} entries · ${cnt('incident')} incidents · ${cnt('controller')} controller decisions · ${cnt('you')} yours. Times are simulated, Jakarta time.</div></div>
+<div class="op-chips" id="op-lf">${[['all','All ('+vis.length+')'],['incident','Incidents ('+cnt('incident')+')'],['controller','Controller ('+cnt('controller')+')'],['you','You ('+cnt('you')+')']].map(f=>`<button class="fm-chip ${logFilter===f[0]?'on':''}" data-f="${f[0]}">${f[1]}</button>`).join('')}</div>
+${quietN?`<label class="op-lq"><input type="checkbox" id="op-lq" ${logQuiet?'checked':''}> Show ${quietN} routine controller notes (no action needed)</label>`:''}
+<div class="op-tools"><button class="fm-btn" id="op-lcopy">Copy handover</button><button class="fm-btn" id="op-ldl">Download .txt</button></div>
+<ol class="op-log">${L.length?L.map(x=>`<li class="op-le ${x.actor}"><time>${x.time}</time><div><em class="op-tag">${TAG[x.actor]}</em> <b>${html(x.head)}</b>${x.body?`<span>${html(x.body)}</span>`:''}${x.outcome?`<small>Outcome · ${html(x.outcome)}</small>`:''}${x.rec?`<small>${html(x.rec)}</small>`:''}</div></li>`).join(''):'<p class="op-lead">Nothing logged for this day yet.</p>'}</ol></div>`;
+  $('#op-body').querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{logFilter=b.dataset.f;drawLog()});
+  const lq=$('#op-lq');if(lq)lq.onchange=()=>{logQuiet=lq.checked;drawLog()};
+  $('#op-lcopy').onclick=async()=>{const t=logText(L);try{await navigator.clipboard.writeText(t);setStatus('Handover copied to the clipboard.')}catch(e){setStatus('Copy is not available here: use Download.',true)}};
+  $('#op-ldl').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([logText(L)],{type:'text/plain'}));a.download='operations-log-'+C.viewDs+'.txt';a.click()}})}
 function drawMine(){
   const ch=C.all().map(c=>Object.assign({_k:'chg'},c)),ops=C.ops().map(o=>Object.assign({_k:'op'},o));
   const list=[...ch,...ops].sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));

@@ -11,6 +11,11 @@ what is open, with a *Handle* button that opens the recovery screen pre-filled (
 *decisions* are saved (linked to the incident); the incidents themselves are regenerated identically from the date, so history is stable.
 `?incidents=off|calm|realistic|chaos` overrides the saved level.
 
+**Operations log** (hub > Log). A timeline of everything on the viewed day: incidents as they became known, controller decisions, and your own decisions,
+each linked to the incident it answers, with the outcome (the flight's delay and its next departure now). Filter by incidents / controller / you; routine
+"no action needed" controller notes are hidden unless asked for. *Copy handover* and *Download .txt* produce a plain-text shift summary. *My changes and
+events* remains the place to undo, export or import saved records.
+
 **The inbox** has three tabs: *Needs you* (flights whose lateness knocks on to something, with the cost of waiting on the row and a deadline),
 *No knock-on* (late arrivals nothing else depends on) and *Handled*. Weather and closure events are collapsed under "What is happening". A
 decision shows a sticky bar with the chosen action and its effect; cancelling asks for confirmation. Saving reloads the simulation, reopens
