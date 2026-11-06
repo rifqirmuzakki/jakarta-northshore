@@ -5977,7 +5977,7 @@ html body #card .jc-now{margin-bottom:12px!important}
   if(key&&!key.dataset.v70){key.dataset.v70=1;
    key.innerHTML='<span><i style="--c:#2563eb"></i>Taxiing</span><span><i style="--c:#7c3aed"></i>Pushback</span><span><i style="--c:#e8890c"></i>Holding</span><span><i style="--c:#0e9f8e"></i>Under tow</span><span><i style="--c:#e5484d"></i>Delayed 15m+</span>';}
  }
- const kpi=document.createElement('div');kpi.id='v70-kpi';kpi.setAttribute('aria-label','Live operations summary');
+ const kpi=document.createElement('div');kpi.id='v70-kpi';kpi.setAttribute('role','region');kpi.setAttribute('aria-label','Simulated operations summary');
  kpi.innerHTML='<div class="v70k"><small>On ground</small><b data-k="gnd">–</b></div><div class="v70k"><small>Taxiing</small><b data-k="tax">–</b></div>'+
   '<div class="v70k"><small>Stands</small><b data-k="std">–</b><div class="bar"><i data-k="stdbar" style="width:0"></i></div></div>'+
   '<div class="v70k"><small>On-time dep.</small><b data-k="otp">–</b></div><div class="v70k"><small>Push delay</small><b data-k="dly">–</b></div>';
