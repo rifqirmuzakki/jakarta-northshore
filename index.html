@@ -1005,16 +1005,17 @@ window.JN_V158_WB_PAIRING_GUIDE=Object.freeze([{"city":"Singapore","pairs":[{"ou
    Optional 9th row field = operating days as ISO weekday digits (1=Mon ... 7=Sun); omitted = daily.
    GA 714/715 Darwin (DRW): 5x weekly, Mon-Fri.  GA 728/729 Cairns (CNS): 4x weekly, Mon/Wed/Fri/Sun.
    Inbound STA = JKT STD + 2*simulated block + 50 min outstation turn (DRW 260 min, CNS 360 min block).
+   v182: GA 728/729 retimed 07:00/19:50 -> 05:25/18:15 so the 12h50 round trip fits an idle window of a regular aircraft.
    Equipment: A330-900 (v179) - the 737-800 pool has no idle window long enough for these round trips. */
 AIR_CITY["Darwin"]=[-12.4147,130.8767,"E"]; SEED_CODES["Darwin"]="DRW";
 AIR_CITY["Cairns"]=[-16.8858,145.7553,"E"]; SEED_CODES["Cairns"]="CNS";
 FLD.OUT.push(
  ["GA","714","Darwin",480,"T2","I","Airbus A330-900","GA-V176-DRW-714","12345"],
- ["GA","728","Cairns",420,"T2","I","Airbus A330-900","GA-V176-CNS-728","1357"]
+ ["GA","728","Cairns",325,"T2","I","Airbus A330-900","GA-V176-CNS-728","1357"]
 );
 FLD.IN.push(
  ["GA","715","Darwin",1050,"T2","I","Airbus A330-900","GA-V176-DRW-714","12345"],
- ["GA","729","Cairns",1190,"T2","I","Airbus A330-900","GA-V176-CNS-728","1357"]
+ ["GA","729","Cairns",1095,"T2","I","Airbus A330-900","GA-V176-CNS-728","1357"]
 );
 </script><script id="v177-ga904-a35k">
 /* v177: equipment-only change. GA 904/905 Singapore moved from Boeing 787-9 to Airbus A350-1000.
