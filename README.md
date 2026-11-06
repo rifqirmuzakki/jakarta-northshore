@@ -20,9 +20,10 @@ cause. A weather event lists the flights it makes late (at least 30 minutes, the
 after it is known, shortened when the next departure is close (never under 15 minutes). In *Handle* you choose **wait**, **swap
 equipment**, **bring in a spare** (aircraft out of service) or **cancel**, and see the effect first. Cancelling a late inbound cancels it
 and its next departure; for an aircraft out of service it cancels the next departure. A cancelled flight has no stand, runway or
-movement, and shows *Cancelled* on the flight and aircraft pages (saved as a `cancelflt` record). Any aircraft of the same type that is
-on the ground at Jakarta and ready in time can take over a departure; the two aircraft exchange their next flights, terminals follow the
-flight. If nobody decides before the deadline, the rule-based controller acts (swap if it saves 30+ minutes, spare for long outages,
+movement, and shows *Cancelled* on the flight and aircraft pages (saved as a `cancelflt` record). Swapping equipment concerns the *next* departure of the late or unserviceable aircraft, never the flight already under way: the
+screen is split into "this flight" (wait or cancel) and "its next departure" (swap or spare). Suggested aircraft are those that save
+delay, but the controller can pick *any* aircraft of the same type from a list and sees the exact effect first, including when it makes
+things worse. The two aircraft exchange their next flights; terminals follow the flight. If nobody decides before the deadline, the rule-based controller acts (swap if it saves 30+ minutes, spare for long outages,
 otherwise wait; it never cancels). Decisions depend only on the incident, never on the viewed date, so past days always play out the
 same way. Alerts show them as *Handled by the controller*; *Review* explains the choice and *Stand the controller down* reopens it
 (saved as a `veto` record). Deciding first wins. Set the controller to *Never* in the hub (or `?controller=manual`) to decide everything.
