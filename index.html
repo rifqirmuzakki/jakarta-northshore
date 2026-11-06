@@ -1043,6 +1043,22 @@ for(const k of ['IN','OUT'])for(const r of FLD[k])if(r[0]==='GA'&&(r[1]==='904'|
 .fm-edit .fields>*,.fm-new .fields>*,.fm-eff>*,.fm-tools>*{min-width:0}.fm-field input,.fm-field select{width:100%}.fm-field{min-width:0}
 #fm-panel{padding-bottom:env(safe-area-inset-bottom,0)}#fm-launch{z-index:2147483100}
 .fm-banner{position:fixed;top:0;left:0;right:0;z-index:2147483150;background:#184e72;color:#fff;padding:9px 14px;font:600 12px 'Geist',-apple-system,sans-serif;text-align:center}.fm-banner a{color:#fff;text-decoration:underline}.fm-banner.bad{background:#a32b2b}.fm-banner button{margin-left:8px;border:1px solid #fff;background:transparent;color:#fff;border-radius:7px;padding:4px 9px;font:inherit;cursor:pointer}
+.op-hd{display:flex;align-items:center;gap:10px;padding:13px 16px;background:#fff;border-bottom:1px solid #dbe3e9}.op-ht{flex:1;min-width:0}.op-ht h2{font-size:18px;margin:0}.op-ht p{margin:3px 0 0;font-size:11px;color:#637687}
+.op-back{border:1px solid #cbd7df;background:#fff;border-radius:999px;width:34px;height:34px;font-size:20px;line-height:1;color:#203a4b;cursor:pointer}.op-back[hidden]{display:none}
+#op-body{flex:1;min-height:0;overflow:auto;background:#f7f9fb}.op-pad{padding:14px 16px 24px}
+.op-lead{font-size:13px;line-height:1.5;color:#44596a;margin:0 0 12px}.op-h{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#6a7d8c;margin:18px 0 8px}
+.op-card{display:block;width:100%;text-align:left;background:#fff;border:1px solid #dbe3e9;border-radius:12px;padding:13px 14px;margin-bottom:9px;cursor:pointer;position:relative}.op-card b{display:block;font-size:14px;color:#1a2c3d}.op-card span{display:block;font-size:12px;color:#5c7183;margin-top:3px;line-height:1.4}
+.op-card.off{opacity:.5;cursor:default}.op-count{position:absolute;right:12px;top:12px;background:#184e72;color:#fff;border-radius:999px;font-style:normal;font-size:11px;padding:2px 8px}
+.op-step{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#184e72;margin:16px 0 8px}.op-step:first-child{margin-top:2px}
+.op-search{width:100%;padding:11px;border:1px solid #cbd7df;border-radius:9px;font-size:14px;margin-bottom:10px;background:#fff}.op-mini{padding:8px;border:1px solid #cbd7df;border-radius:8px;font-size:13px;width:auto;max-width:150px}
+.op-list{display:flex;flex-direction:column;gap:6px}.op-item{display:grid;grid-template-columns:70px 1fr;gap:2px 10px;text-align:left;background:#fff;border:1px solid #dbe3e9;border-radius:10px;padding:10px 12px;cursor:pointer}.op-item b{grid-row:1/3;font-size:13px;align-self:center}.op-item span{font-size:13px;color:#1a2c3d}.op-item small{font-size:11px;color:#6a7d8c}
+.op-sel{background:#fff;border:1px solid #cfe0ea;border-radius:10px;padding:11px 12px;font-size:13px;line-height:1.5;margin-bottom:12px}.op-sel small{color:#5c7183}.op-link{border:0;background:none;color:#1b5f78;font-size:12px;text-decoration:underline;cursor:pointer;float:right}
+.op-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;align-items:center}
+.op-panel{background:#fff;border:1px solid #dbe3e9;border-radius:10px;padding:11px 12px;font-size:13px;line-height:1.5;margin:8px 0}.op-row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid #eef2f5;font-size:12.5px}.op-row.tot{border-bottom:0;font-weight:700}.op-row .bad{color:#b45309}
+.op-choice{background:#fff;border:2px solid #dbe3e9;border-radius:11px;padding:11px 13px;margin:8px 0;cursor:pointer}.op-choice.on{border-color:#184e72;background:#eef6fb}.op-choice b{display:block;font-size:14px}.op-choice span{display:block;font-size:12px;color:#44596a;margin-top:3px;line-height:1.45}.op-choice em{display:block;font-style:normal;font-size:12px;font-weight:700;color:#1d6b4a;margin-top:4px}
+.op-when{background:#fff;border:1px solid #dbe3e9;border-radius:10px;padding:11px 12px;margin:12px 0;font-size:13px}.op-when .fm-check{margin-top:8px}
+.fm-banner.ok{background:#1d6b4a}.fm-banner.info{background:#184e72}.fm-banner button{margin-left:8px}
+#fm-panel #op-body .fm-tools{background:transparent;border:0;padding:0 0 10px}
 .fm-tabs{display:flex;gap:4px;padding:8px 12px 0;background:#fff;border-bottom:1px solid #dbe3e9;overflow-x:auto}
 .fm-tabs button{border:0;background:transparent;padding:10px 13px;font-size:13px;font-weight:600;color:#526b7b;border-bottom:3px solid transparent;white-space:nowrap}
 .fm-tabs button.on{color:#184e72;border-bottom-color:#184e72}
@@ -1113,8 +1129,23 @@ all().filter(active).sort((a,b)=>(dayNum(a.from)-dayNum(b.from))||String(a.creat
       if(i<0){warnings.push(c.id+': '+t.carrier+t.number+' ('+t.dir+') not found');continue}
       if(c.kind==='cancel')arr.splice(i,1);else applySet(arr[i],c.set||{})}
   }catch(e){warnings.push((c&&c.id)+': '+(e.message||e))}});
+/* ---- operational events (reactive disruptions): scope 'ops' ----
+   {id, v:1, scope:'ops', kind:'delay'|'swap', date:'YYYY-MM-DD', at:'HH:MM', cause, note, createdAt,
+    delay: flight:'GA 3', minutes:180            (extra delay of that flight instance on that JKT date)
+    swap : arrivals:['GA 3','GA 959']            (the two aircraft arriving on those flights exchange their next departures)} */
+const opsAll=()=>{const r=window.JN_CHANGES_REPO,rr=r&&Array.isArray(r.ops)?r.ops.map(o=>Object.assign({},o,{src:'repo'})):[];
+  return noChanges?[]:[...rr,...local.ops.map(o=>Object.assign({},o,{src:'local'}))]};
+const OPS_DELAY=new Map(),OPS_SWAP=new Map(),OPS_META=new Map();
+opsAll().forEach(o=>{const d=dayNum(o.date);if(d==null)return;
+  if(o.kind==='delay'&&o.flight&&+o.minutes>0){const k=d+'|'+o.flight;OPS_DELAY.set(k,(OPS_DELAY.get(k)||0)+ +o.minutes);OPS_META.set(k,o)}
+  else if(o.kind==='swap'&&Array.isArray(o.arrivals)&&o.arrivals.length===2){(OPS_SWAP.get(d)||OPS_SWAP.set(d,[]).get(d)).push(o)}});
+window.JN_OPS={
+  delayFor:(dayIdx,flight)=>OPS_DELAY.get(dayIdx+'|'+flight)||0,
+  causeFor:(dayIdx,flight)=>{const o=OPS_META.get(dayIdx+'|'+flight);return o?{cause:o.cause||'other',note:o.note||'',minutes:+o.minutes}:null},
+  swapsOn:dayIdx=>OPS_SWAP.get(dayIdx)||[],
+  list:opsAll,hasAny:()=>OPS_DELAY.size>0||OPS_SWAP.size>0};
 window.JN_CHG={
-  view,viewDs,previewTok,warnings,legacyActive,BASELINE,noChanges,
+  view,viewDs,previewTok,warnings,legacyActive,BASELINE,noChanges,addOp(o){local.ops.push(o);this.save()},removeOp(id){local.ops=local.ops.filter(o=>o.id!==id);this.save()},ops:opsAll,
   all,active,status,dayNum,jakToday,
   local:()=>local,
   save(){localStorage.setItem(storeKey,JSON.stringify(local))},
@@ -1125,23 +1156,26 @@ window.JN_CHG={
 })();
 
 </script>
-<script id="v184-schedule-changes-ui">
+<script id="v185-operations-ui">
 (function(){
 'use strict';
 const C=window.JN_CHG;
 const html=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const hm=n=>String(Math.floor(+n/60)%24).padStart(2,'0')+':'+String(+n%60).padStart(2,'0');
+const hm=n=>String(Math.floor(+n/60)%24).padStart(2,'0')+':'+String(Math.round(+n)%60).padStart(2,'0');
 const minutes=s=>{const m=/^(\d{1,2}):(\d\d)$/.exec(String(s).trim());return m&&+m[1]<24&&+m[2]<60?(+m[1]*60+ +m[2]):NaN};
+const durTxt=m=>{m=Math.round(m);const h=Math.floor(m/60),r=m%60;return (h?h+'h ':'')+(r||!h?String(r).padStart(h?2:1,'0')+'m':'')};
 const DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-const daysText=d=>{if(!d||String(d).length>=7&&new Set(String(d)).size===7)return 'Daily';return [...new Set(String(d).split(''))].filter(x=>/[1-7]/.test(x)).sort().map(x=>DOW[+x-1]).join(' · ')};
-const tomorrow=()=>{const n=C.dayNum(C.jakToday())+1;return new Date(n*86400000).toISOString().slice(0,10)};
-const uid=()=>'chg_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const daysText=d=>{if(!d||new Set(String(d)).size>=7)return 'Daily';return [...new Set(String(d).split(''))].filter(x=>/[1-7]/.test(x)).sort().map(x=>DOW[+x-1]).join(' · ')};
+const longDate=ds=>new Date(C.dayNum(ds)*86400000).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric',timeZone:'UTC'});
+const dayPlus=(ds,n)=>new Date((C.dayNum(ds)+n)*86400000).toISOString().slice(0,10);
+const tomorrow=()=>dayPlus(C.jakToday(),1);
+const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const TERMS=['T1','T2','T3','T4','CGO'];
-/* ---- metrics (also reported by the hidden preview copy of the app) ---- */
+const CAUSES=[['strike','Strike'],['weather','Weather'],['atc','Air traffic'],['technical','Technical'],['crew','Crew'],['other','Other']];
+const causeLabel=c=>(CAUSES.find(x=>x[0]===c)||[0,'Disruption'])[1];
+/* ---- metrics + hidden-copy preview (unchanged behaviour) ---- */
 function metrics(){const S=window.SIMCORE;if(!S||!S.FLEET)return null;const F=S.FLEET,by={};F.fleets.forEach(f=>by[f.key]=f.n);
-  return {total:F.fleets.reduce((a,x)=>a+x.n,0),by,loopFail:window.__TAIL_LOOP_FAIL||0,
-    notailGA:S.ENTS.filter(e=>e.f&&e.f.c==='GA'&&!e.tail).length,unassigned:(S.STAT||{}).unassigned||0,
-    flights:S.INF.length+S.OUTF.length,error:window.JN_TAIL_ERROR||null}}
+  return {total:F.fleets.reduce((a,x)=>a+x.n,0),by,loopFail:window.__TAIL_LOOP_FAIL||0,notailGA:S.ENTS.filter(e=>e.f&&e.f.c==='GA'&&!e.tail).length,unassigned:(S.STAT||{}).unassigned||0,flights:S.INF.length+S.OUTF.length,error:window.JN_TAIL_ERROR||null}}
 function watched(ids){const S=window.SIMCORE;return ids.map(id=>{const f=[...S.INF,...S.OUTF].find(x=>x.id===id);const t=S.flightTails?S.flightTails(id):[];return {id,runsToday:!!f,aircraft:t.length,sample:t.slice(0,3)}})}
 if(C.previewTok){
   const ids=(new URLSearchParams(location.search).get('watch')||'').split(',').filter(Boolean).map(x=>x.replace(/^([A-Z0-9]{2})(\d+)$/,'$1 $2'));
@@ -1149,215 +1183,268 @@ if(C.previewTok){
     if(S&&S.FLEET){clearInterval(iv);parent.postMessage({jnPreview:C.previewTok,metrics:metrics(),watched:watched(ids),warnings:C.warnings},'*')}
     else if(window.JN_TAIL_ERROR||Date.now()-t0>150000){clearInterval(iv);parent.postMessage({jnPreview:C.previewTok,error:window.JN_TAIL_ERROR||'Timed out building the preview'},'*')}},250);
   return}
-/* ---- reference data from the built-in schedule ---- */
+/* ---- reference data ---- */
 const base=C.BASELINE,allRows=()=>[...base.IN,...base.OUT];
 const carriers=()=>[...new Set(allRows().map(r=>r[0]))].sort();
 const typesFor=c=>[...new Set(allRows().filter(r=>r[0]===c).map(r=>r[6]))].sort();
 const cityList=()=>[...new Set([...Object.keys(AIR_CITY),...allRows().map(r=>r[2])])].filter(c=>c!=='Jakarta').sort();
-const inIndonesia=tz=>/^Asia\/(Jakarta|Makassar|Jayapura|Pontianak)$/.test(tz||'');
 const JKT=[-6.13,106.66];
 function estBlock(lat,lon){const r=Math.PI/180,dl=(lat-JKT[0])*r,dg=(lon-JKT[1])*r,x=Math.sin(dl/2)**2+Math.cos(JKT[0]*r)*Math.cos(lat*r)*Math.sin(dg/2)**2,km=12742*Math.asin(Math.sqrt(x));return Math.round((22+km/(km>4000?820:700)*60)/5)*5}
-function cityInfo(name){const a=AIR_CITY[name];if(a)return {lat:a[0],lon:a[1],known:true};const e=(window.JN_TZ_EXTRA||{})[name];return null}
+function suggestType(car,block){let best=null,bd=1e9;allRows().filter(r=>r[0]===car&&AIR_CITY[r[2]]).forEach(r=>{const a=AIR_CITY[r[2]],d=Math.abs(estBlock(a[0],a[1])-block);if(d<bd){bd=d;best=r[6]}});return best||typesFor(car)[0]}
 function homeTerm(c,z){const m={};allRows().filter(r=>r[0]===c&&r[5]===z).forEach(r=>m[r[4]]=(m[r[4]]||0)+1);const k=Object.keys(m).sort((a,b)=>m[b]-m[a])[0];return k||(z==='I'?'T2':'T1')}
-/* default aircraft: the carrier's type on the existing route with the most similar block time */
-function suggestType(car,block){let best=null,bd=1e9;
-  allRows().filter(r=>r[0]===car&&AIR_CITY[r[2]]).forEach(r=>{const a=AIR_CITY[r[2]],d=Math.abs(estBlock(a[0],a[1])-block);if(d<bd){bd=d;best=r[6]}});
-  return best||typesFor(car)[0]}
 const curRow=(d,carrier,num)=>FLD[d].find(r=>r[0]===carrier&&r[1]===num);
 const mateOf=(d,r)=>{const o=d==='OUT'?'IN':'OUT';return FLD[o].find(x=>x[0]===r[0]&&x[2]===r[2]&&x[7]===r[7]&&x!==r)};
-/* ---- UI ---- */
-let tab='flights',selected=null,query='',carrier='ALL',side='ALL',previewBox='',busy=false;
-const launch=document.createElement('button');launch.id='fm-launch';launch.textContent='Manage flights';launch.title='Schedule changes';
-const wrap=document.createElement('div');wrap.id='fm-wrap';wrap.setAttribute('role','dialog');wrap.setAttribute('aria-label','Flight Manager');
-wrap.innerHTML=`<div id="fm-panel"><div class="fm-hd"><div><h2>Flight Manager</h2><p id="fm-sub"></p></div><button class="fm-btn" id="fm-close">Close ✕</button></div>
-<div class="fm-tabs"><button data-tab="flights">Flights</button><button data-tab="new">+ New round trip</button><button data-tab="changes">Changes <span id="fm-count"></span></button></div>
-<div id="fm-pane"></div><div class="fm-note" id="fm-status"></div></div>`;
-function setStatus(m,bad){const e=wrap.querySelector('#fm-status');e.textContent=m;e.style.color=bad?'#aa2525':'#526b7b'}
+const flightsAll=()=>['OUT','IN'].flatMap(d=>FLD[d].map(r=>({d,r})));
+/* ---- shell ---- */
+let screen='home',st={},busy=false;
+const launch=document.createElement('button');launch.id='fm-launch';launch.textContent='Operations';launch.title='Operations: timetable changes and disruptions';
+const wrap=document.createElement('div');wrap.id='fm-wrap';wrap.setAttribute('role','dialog');wrap.setAttribute('aria-label','Operations');
+wrap.innerHTML=`<div id="fm-panel"><div class="op-hd"><button class="op-back" id="op-back" aria-label="Back" hidden>‹</button><div class="op-ht"><h2 id="op-title">Operations</h2><p id="op-sub"></p></div><button class="fm-btn" id="fm-close">Close ✕</button></div><div id="op-body"></div><div class="fm-note" id="fm-status"></div></div>`;
 const $=s=>wrap.querySelector(s);
-function open(){wrap.classList.add('open');draw()}
+const setStatus=(m,bad)=>{const e=$('#fm-status');e.textContent=m||'';e.style.color=bad?'#aa2525':'#526b7b';e.style.display=m?'':'none'};
+const go=(s,init)=>{screen=s;st=init||{};draw()};
+function open(){wrap.classList.add('open');if(!wrap.dataset.once){wrap.dataset.once='1';screen='home'}draw()}
 launch.onclick=open;
+const TITLES={home:'Operations',delay:'A flight is delayed',change:'Change a flight',add:'Add a new service',cancel:'Cancel a flight',mine:'My changes and events'};
 function draw(){
-  $('#fm-sub').textContent='Timetable for '+C.viewDs+(C.legacyActive?' · legacy full-timetable edit active':'');
-  const n=C.local().changes.length;$('#fm-count').textContent=n?'('+n+')':'';
-  wrap.querySelectorAll('.fm-tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
-  if(tab==='flights')drawFlights();else if(tab==='new')drawNew();else drawChanges();
-  setStatus(C.warnings.length?'Some saved changes could not be applied: '+C.warnings.slice(0,2).join(' · '):'Changes apply from their effective date. Earlier days are recomputed with the timetable in force on the day you view; persisted history comes later. If a change ever breaks the app, open the page with ?nochanges=1.',C.warnings.length>0);
+  $('#op-title').textContent=TITLES[screen]||'Operations';
+  $('#op-sub').textContent=screen==='home'?'Viewing '+longDate(C.viewDs):'';
+  $('#op-back').hidden=screen==='home';
+  setStatus('');
+  ({home:drawHome,delay:drawDelay,change:drawChange,add:drawAdd,cancel:drawCancel,mine:drawMine}[screen]||drawHome)();
 }
-/* -- flights tab -- */
-function items(){return ['OUT','IN'].flatMap(d=>FLD[d].map(r=>({d,r}))).filter(x=>(carrier==='ALL'||x.r[0]===carrier)&&(side==='ALL'||x.d===side)&&(!query||[x.r[0]+x.r[1],x.r[0]+' '+x.r[1],x.r[2],x.r[7],x.r[6]].some(t=>String(t).toLowerCase().includes(query)))).sort((a,b)=>a.r[3]-b.r[3])}
-function drawFlights(){
-  const carr=['ALL',...carriers()];
-  $('#fm-pane').innerHTML=`<div class="fm-tools"><input id="fm-search" placeholder="Search flight, destination, aircraft…" value="${html(query)}"><select id="fm-carrier">${carr.map(c=>`<option value="${html(c)}" ${c===carrier?'selected':''}>${c==='ALL'?'All airlines':html(c)}</option>`).join('')}</select><select id="fm-side"><option value="ALL">Both directions</option><option value="OUT" ${side==='OUT'?'selected':''}>JKT departures</option><option value="IN" ${side==='IN'?'selected':''}>JKT arrivals</option></select></div>
-<div class="fm-body"><div class="fm-list" id="fm-list"></div><div class="fm-edit" id="fm-edit"></div></div>`;
-  const list=items();
-  $('#fm-list').innerHTML=list.slice(0,500).map(x=>`<button class="fm-item ${selected&&selected.d===x.d&&selected.id===x.r[0]+x.r[1]?'sel':''}" data-d="${x.d}" data-id="${html(x.r[0]+x.r[1])}"><strong>${html(x.r[0]+x.r[1])}</strong><span>${html(x.d==='OUT'?'JKT → ':'→ JKT · ')}${html(x.r[2])}</span><small>${hm(x.r[3])}</small></button>`).join('')+(list.length>500?'<p class="fm-msg">Showing first 500 — refine the search.</p>':'');
-  $('#fm-list').querySelectorAll('button[data-d]').forEach(b=>b.onclick=()=>{selected={d:b.dataset.d,id:b.dataset.id};previewBox='';drawFlights()});
-  $('#fm-search').oninput=e=>{query=e.target.value.trim().toLowerCase();drawFlights();const s=$('#fm-search');s.focus();s.setSelectionRange(s.value.length,s.value.length)};
-  $('#fm-carrier').onchange=e=>{carrier=e.target.value;drawFlights()};$('#fm-side').onchange=e=>{side=e.target.value;drawFlights()};
-  drawEditor();
+const card=(go,title,desc,extra,off)=>`<button class="op-card${off?' off':''}" ${off?'disabled':`data-go="${go}"`}><b>${html(title)}</b><span>${html(desc)}</span>${extra||''}</button>`;
+function drawHome(){
+  const n=C.local().changes.length+C.local().ops.length,repo=((window.JN_CHANGES_REPO&&window.JN_CHANGES_REPO.changes)||[]).length;
+  $('#op-body').innerHTML=`<div class="op-pad"><p class="op-lead">Record something that is happening, or plan a change to the timetable. Everything is dated, so you can always see what changed and when.</p>
+<h4 class="op-h">Something happened</h4>
+${card('delay','A flight is delayed','An inbound flight is running late. See who is affected and recover, for example by swapping aircraft.')}
+${card('', 'An aircraft is out of service','Coming soon',null,true)}${card('','Weather or an airport issue','Coming soon',null,true)}
+<h4 class="op-h">Change the timetable</h4>
+${card('change','Change a flight','New time, aircraft, days or terminal, from a date you choose.')}
+${card('add','Add a new service','A new route or extra frequency, with its return flight.')}
+${card('cancel','Cancel a flight','Remove a flight, and its return, from a date.')}
+<h4 class="op-h">Your log</h4>
+${card('mine','My changes and events','See, undo, export or import what you have recorded.',n+repo?`<i class="op-count">${n+repo}</i>`:'')}</div>`;
+  $('#op-body').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
 }
-function chips(sel){return `<div class="fm-chips" id="fm-days">${DOW.map((n,i)=>`<button type="button" class="fm-chip ${sel.includes(String(i+1))?'on':''}" data-day="${i+1}">${n}</button>`).join('')}</div>`}
-function readDays(root){const d=[...root.querySelectorAll('#fm-days .fm-chip.on')].map(b=>b.dataset.day).sort().join('');return d}
-function bindChips(root){root.querySelectorAll('#fm-days .fm-chip').forEach(b=>b.onclick=()=>b.classList.toggle('on'))}
+const readyOps=()=>window.SIMCORE&&window.SIMCORE.ops&&window.SIMCORE.FLEET;
+function waitReady(fn){if(readyOps())return fn();$('#op-body').innerHTML='<div class="op-pad"><p class="op-lead">Loading the simulation…</p></div>';const iv=setInterval(()=>{if(readyOps()){clearInterval(iv);if(wrap.classList.contains('open'))fn()}},400)}
+/* ================= A FLIGHT IS DELAYED ================= */
+function drawDelay(){waitReady(()=>{
+  const inbound=window.SIMCORE.ops.inbound(),q=(st.q||'').toLowerCase();
+  const list=inbound.filter(x=>!q||(x.id+' '+x.city+' '+x.tail).toLowerCase().includes(q)).slice(0,40);
+  if(!st.sel){
+    $('#op-body').innerHTML=`<div class="op-pad"><div class="op-step">Step 1 of 3 · Which flight?</div><p class="op-lead">Inbound flights to Jakarta on ${html(longDate(C.viewDs))} that have a tracked aircraft.</p>
+<input class="op-search" id="op-q" placeholder="Search flight, city or aircraft, e.g. GA 3 or Amsterdam" value="${html(st.q||'')}" autocomplete="off">
+<div class="op-list">${list.map(x=>`<button class="op-item" data-id="${html(x.id)}"><b>${html(x.id)}</b><span>${html(x.city)} → Jakarta · due ${hm(x.t)}</span><small>${html(x.tail)}${x.next?' · then '+html(x.next.id)+' → '+html(x.next.city)+' '+hm(x.next.t):''}</small></button>`).join('')||'<p class="op-lead">No match.</p>'}</div></div>`;
+    $('#op-q').oninput=e=>{st.q=e.target.value;drawDelay();const i=$('#op-q');i.focus();i.setSelectionRange(i.value.length,i.value.length)};
+    $('#op-body').querySelectorAll('.op-item').forEach(b=>b.onclick=()=>{st.sel=inbound.find(x=>x.id===b.dataset.id);st.min=0;st.cause='strike';drawDelay()});return}
+  const f=st.sel,min=+st.min||0;
+  $('#op-body').innerHTML=`<div class="op-pad"><div class="op-step">Step 2 of 3 · How late, and why?</div>
+<div class="op-sel"><b>${html(f.id)}</b> from ${html(f.city)} · due ${hm(f.t)} · ${html(f.tail)}${f.next?`<br><small>Next on this aircraft: ${html(f.next.id)} → ${html(f.next.city)} at ${hm(f.next.t)}</small>`:''} <button class="op-link" id="op-change">Change flight</button></div>
+<div class="op-chips" id="op-mins">${[30,60,120,180,360].map(m=>`<button class="fm-chip ${min===m?'on':''}" data-m="${m}">+${durTxt(m)}</button>`).join('')}<input id="op-custom" class="op-mini" inputmode="numeric" placeholder="other (min)" value="${[30,60,120,180,360].includes(min)||!min?'':min}"></div>
+<div class="op-chips" id="op-cause">${CAUSES.map(c=>`<button class="fm-chip ${st.cause===c[0]?'on':''}" data-c="${c[0]}">${c[1]}</button>`).join('')}</div>
+<input class="op-search" id="op-note" placeholder="Note (optional), e.g. Schiphol baggage handlers strike" value="${html(st.note||'')}">
+<div id="op-cons"></div></div>`;
+  $('#op-change').onclick=()=>{st.sel=null;st.min=0;st.opt=null;drawDelay()};
+  $('#op-mins').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{st.min=+b.dataset.m;st.opt=null;drawDelay()});
+  $('#op-custom').onchange=e=>{const v=Math.max(0,Math.min(1200,Math.round(+e.target.value)||0));st.min=v;st.opt=null;drawDelay()};
+  $('#op-cause').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{st.cause=b.dataset.c;st.note=$('#op-note').value;drawDelay()});
+  $('#op-note').oninput=e=>{st.note=e.target.value};
+  if(min>0)drawConsequences(f,min)})}
+function drawConsequences(f,min){
+  const O=window.SIMCORE.ops,ko=O.knockOn(f.id,min),sw=O.swapOptions(f.id,min),box=$('#op-cons');
+  const li=l=>`<div class="op-row"><span>${html(l.id)} · ${html(l.city)} · ${l.kind==='a'?'arrives':'departs'} ${hm(l.sched)}</span><b class="bad">+${durTxt(l.delay)}</b></div>`;
+  let h=`<div class="op-step">Step 3 of 3 · What happens, and what do you do?</div><div class="op-panel"><b>If you wait</b>${ko.error?`<p class="op-lead">${html(ko.error)}</p>`:(ko.legs.length?ko.legs.map(li).join('')+`<div class="op-row tot"><span>Combined delay across these flights</span><b class="bad">${durTxt(ko.total)}</b></div>`:'<p class="op-lead">No knock-on: the rest of the day absorbs the delay.</p>')}</div>`;
+  const opts=(sw&&sw.supported)?sw.options:[];
+  h+=`<div class="op-choice ${!st.opt?'on':''}" data-opt="wait"><b>Wait</b><span>Accept the delays above.</span></div>`;
+  h+=opts.map((o,i)=>`<div class="op-choice ${st.opt==='s'+i?'on':''}" data-opt="s${i}"><b>Swap with ${html(o.tails[1])}</b><span>${o.takes.map(t=>html(t.flight)+' ('+html(t.city)+') flown by '+html(t.tail)+(t.delay>=5?' +'+durTxt(t.delay):' on time')).join(' · ')}</span><em>Saves ${durTxt(o.saved)} of delay</em></div>`).join('');
+  if(sw&&!sw.supported)h+=`<p class="op-lead">${html(sw.reason)}</p>`;
+  else if(!opts.length&&!ko.error)h+=`<p class="op-lead">No aircraft of this type is free to swap that would reduce the delay.</p>`;
+  h+=`<div class="buttons"><button class="fm-btn primary" id="op-save">Record disruption</button></div><p class="fm-msg" id="op-msg"></p>`;
+  box.innerHTML=h;
+  box.querySelectorAll('.op-choice').forEach(c=>c.onclick=()=>{st.opt=c.dataset.opt==='wait'?null:c.dataset.opt;box.querySelectorAll('.op-choice').forEach(x=>x.classList.toggle('on',x===c))});
+  $('#op-save').onclick=()=>{
+    const at=C.dayNum(C.viewDs)===C.dayNum(C.jakToday())?new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date()):'00:00';
+    const now=new Date().toISOString(),ev=[{id:uid('op_'),v:1,scope:'ops',kind:'delay',date:C.viewDs,at,flight:f.id,minutes:min,cause:st.cause||'other',note:(st.note||'').trim(),createdAt:now}];
+    if(st.opt&&st.opt[0]==='s'){const o=opts[+st.opt.slice(1)];if(o)ev.push({id:uid('op_'),v:1,scope:'ops',kind:'swap',date:C.viewDs,at,arrivals:o.arrivals,cause:st.cause||'other',note:'Recovery: '+o.tails.join(' ↔ '),createdAt:now})}
+    ev.forEach(e=>C.addOp(e));try{sessionStorage.setItem('jn-op-toast','Recorded: '+f.id+' +'+durTxt(min)+' ('+causeLabel(st.cause)+')'+(ev.length>1?' · aircraft swapped':''))}catch(x){}
+    $('#op-msg').textContent='Recorded. Reloading…';setTimeout(()=>location.reload(),300)}}
+/* ================= timetable flows ================= */
+function pickFlight(onPick,hint){
+  const q=(st.q||'').toLowerCase(),list=flightsAll().filter(x=>!q||[x.r[0]+x.r[1],x.r[0]+' '+x.r[1],x.r[2],x.r[6]].some(t=>String(t).toLowerCase().includes(q))).sort((a,b)=>a.r[3]-b.r[3]).slice(0,40);
+  $('#op-body').innerHTML=`<div class="op-pad"><div class="op-step">Step 1 · Find the flight</div><p class="op-lead">${html(hint)}</p><input class="op-search" id="op-q" placeholder="Search flight, city or aircraft, e.g. GA 728 or Cairns" value="${html(st.q||'')}" autocomplete="off">
+<div class="op-list">${list.map(x=>`<button class="op-item" data-d="${x.d}" data-id="${html(x.r[0]+x.r[1])}"><b>${html(x.r[0]+' '+x.r[1])}</b><span>${x.d==='OUT'?'Jakarta → ':''}${html(x.r[2])}${x.d==='IN'?' → Jakarta':''} · ${hm(x.r[3])}</span><small>${html(x.r[6])} · ${html(daysText(x.r[8]))}</small></button>`).join('')||'<p class="op-lead">No match.</p>'}</div></div>`;
+  $('#op-q').oninput=e=>{st.q=e.target.value;drawCurrent();const i=$('#op-q');i.focus();i.setSelectionRange(i.value.length,i.value.length)};
+  $('#op-body').querySelectorAll('.op-item').forEach(b=>b.onclick=()=>onPick({d:b.dataset.d,id:b.dataset.id}))}
+const drawCurrent=()=>draw();
+const chipsHtml=sel=>`<div class="fm-chips" id="fm-days">${DOW.map((n,i)=>`<button type="button" class="fm-chip ${String(sel).includes(String(i+1))?'on':''}" data-day="${i+1}">${n}</button>`).join('')}</div>`;
+const readDays=root=>[...root.querySelectorAll('#fm-days .fm-chip.on')].map(b=>b.dataset.day).sort().join('');
+const bindChips=root=>root.querySelectorAll('#fm-days .fm-chip').forEach(b=>b.onclick=()=>b.classList.toggle('on'));
 const fld=(label,key,value,extra='')=>`<div class="fm-field"><label>${html(label)}</label><input data-k="${key}" value="${html(value)}" ${extra}></div>`;
 const sel=(label,key,opts,value)=>`<div class="fm-field"><label>${html(label)}</label><select data-k="${key}">${opts.map(o=>`<option value="${html(o)}" ${o===value?'selected':''}>${html(o)}</option>`).join('')}</select></div>`;
-function effectiveRow(){return `<div class="fm-eff"><div class="fm-field"><label>Effective from</label><input type="date" data-k="from" value="${tomorrow()}"></div><div class="fm-field"><label>Until (optional)</label><input type="date" data-k="to" value=""></div></div>`}
-function drawEditor(){
-  const e=$('#fm-edit');if(!selected){e.innerHTML='<p class="fm-msg">Select a flight to amend, change its aircraft, or cancel it. Use “+ New round trip” to add a service.</p>';return}
-  const r=curRow(selected.d,selected.id.slice(0,2),selected.id.slice(2));if(!r){selected=null;e.innerHTML='<p class="fm-msg">That flight is not in the timetable for this date.</p>';return}
-  const mate=mateOf(selected.d,r),types=[...new Set([...typesFor(r[0]),r[6]])];
-  const pend=C.all().filter(c=>(c.targets||[]).some(t=>t.carrier===r[0]&&t.number===r[1]&&t.dir===selected.d)&&C.status(c)!=='ended');
-  e.innerHTML=`<h3>${html(r[0]+' '+r[1])} · ${selected.d==='OUT'?'JKT → ':''}${html(r[2])}${selected.d==='IN'?' → JKT':''}</h3>
-<p class="fm-msg">${html(r[6])} · ${hm(r[3])} WIB · ${html(daysText(r[8]))} · ${html(r[4])} · ${r[5]==='I'?'International':'Domestic'}${pend.length?'<br><b>'+pend.length+' dated change(s) already target this flight.</b>':''}</p>
-<div class="fields">${fld('Time (WIB, '+(selected.d==='OUT'?'departure':'arrival')+')','time',hm(r[3]),'placeholder="HH:MM"')}${sel('Terminal','terminal',TERMS,r[4])}
-${sel('Route type','zone',['D','I'],r[5])}${sel('Aircraft type','aircraft',types,r[6])}
-<div class="fm-field wide"><label>Operating days</label>${chips(r[8]||'1234567')}</div></div>
-${effectiveRow()}
-${mate?`<label class="fm-check"><input type="checkbox" id="fm-mate" checked> Apply aircraft, terminal, route type and days to ${html(mate[0]+mate[1])} (${selected.d==='OUT'?'return':'outbound'}) too</label>`:''}
-<div class="fm-field wide"><label>Note (optional)</label><input data-k="note" placeholder="e.g. winter schedule"></div>
-<div class="buttons"><button class="fm-btn" id="fm-prev">Preview impact</button><button class="fm-btn primary" id="fm-save">Save change</button><button class="fm-btn danger" id="fm-cancel">Cancel flight from date</button></div>
-<div id="fm-impact">${previewBox}</div><p class="fm-msg" id="fm-formmsg"></p>`;
-  bindChips(e);
-  const msg=(m,bad)=>{const x=$('#fm-formmsg');x.textContent=m;x.style.color=bad?'#b22':'#526b7b'};
+const whenBlock=()=>`<div class="op-when"><b>When does it apply?</b>
+<label class="fm-check"><input type="radio" name="op-w" value="tom" checked> From tomorrow (${html(longDate(tomorrow()))})</label>
+<label class="fm-check"><input type="radio" name="op-w" value="date"> From this date <input type="date" data-k="from" value="${tomorrow()}" class="op-mini"></label>
+<label class="fm-check"><input type="checkbox" id="op-until"> Only until <input type="date" data-k="to" class="op-mini"></label></div>`;
+const readWhen=root=>{const from=root.querySelector('[name="op-w"]:checked').value==='tom'?tomorrow():root.querySelector('[data-k="from"]').value;const to=root.querySelector('#op-until').checked?root.querySelector('[data-k="to"]').value||null:null;return {from,to}};
+function reviewBlock(){return `<div class="op-panel" id="op-review" hidden></div><div id="fm-impact">${st.prev||''}</div><div class="buttons"><button class="fm-btn" id="fm-prev">Check impact</button><button class="fm-btn primary" id="fm-save">Save</button></div><p class="fm-msg" id="fm-formmsg"></p>`}
+const msgTo=(m,bad)=>{const x=$('#fm-formmsg');if(x){x.textContent=m;x.style.color=bad?'#b22':'#526b7b'}};
+/* ---- change a flight ---- */
+function drawChange(){
+  if(!st.sel)return pickFlight(s=>{st.sel=s;st.prev='';drawChange()},'Choose the flight you want to change. You can change the time, aircraft, operating days or terminal.');
+  const r=curRow(st.sel.d,st.sel.id.slice(0,2),st.sel.id.slice(2));if(!r){st.sel=null;return drawChange()}
+  const mate=mateOf(st.sel.d,r),types=[...new Set([...typesFor(r[0]),r[6]])];
+  $('#op-body').innerHTML=`<div class="op-pad"><div class="op-step">Step 2 · What should change?</div>
+<div class="op-sel"><b>${html(r[0]+' '+r[1])}</b> · ${st.sel.d==='OUT'?'Jakarta → ':''}${html(r[2])}${st.sel.d==='IN'?' → Jakarta':''}<br><small>Now: ${hm(r[3])} WIB · ${html(r[6])} · ${html(daysText(r[8]))} · ${html(r[4])}</small> <button class="op-link" id="op-change">Change flight</button></div>
+<div class="fields" id="op-fields">${fld((st.sel.d==='OUT'?'Departure':'Arrival')+' time (WIB)','time',hm(r[3]),'placeholder="HH:MM"')}${sel('Aircraft','aircraft',types,r[6])}${sel('Terminal','terminal',TERMS,r[4])}${sel('Route type','zone',['D','I'],r[5])}
+<div class="fm-field wide"><label>Operating days</label>${chipsHtml(r[8]||'1234567')}</div></div>
+${mate?`<label class="fm-check"><input type="checkbox" id="fm-mate" checked> Also apply aircraft, terminal, route type and days to ${html(mate[0]+' '+mate[1])} (${st.sel.d==='OUT'?'return':'outbound'})</label>`:''}
+${whenBlock()}<input class="op-search" data-k="note" placeholder="Note (optional)">
+<div class="op-step">Step 3 · Review and save</div><div class="op-panel" id="op-sum"></div>${reviewBlock()}</div>`;
+  const e=$('#op-body');bindChips(e);$('#op-change').onclick=()=>{st.sel=null;drawChange()};
   const val=k=>e.querySelector('[data-k="'+k+'"]').value.trim();
-  const build=(kind)=>{
-    const from=val('from'),to=val('to')||null;if(!C.dayNum(from)){msg('Choose an effective-from date.',true);return null}if(to&&C.dayNum(to)<C.dayNum(from)){msg('“Until” is before “from”.',true);return null}
-    const targets=[{dir:selected.d,carrier:r[0],number:r[1]}];const withMate=mate&&e.querySelector('#fm-mate')&&e.querySelector('#fm-mate').checked;
-    const rec={id:uid(),v:1,scope:'timetable',kind,from,to,note:val('note'),createdAt:new Date().toISOString(),targets};
-    if(kind==='cancel'){if(withMate)rec.targets.push({dir:selected.d==='OUT'?'IN':'OUT',carrier:mate[0],number:mate[1]});return rec}
-    const t=minutes(val('time'));if(isNaN(t)){msg('Time must be HH:MM.',true);return null}
-    const set={},days=readDays(e);if(!days){msg('Choose at least one operating day.',true);return null}
+  const build=()=>{
+    const {from,to}=readWhen(e);if(!C.dayNum(from)){msgTo('Choose a start date.',true);return null}if(to&&C.dayNum(to)<C.dayNum(from)){msgTo('“Until” is before the start.',true);return null}
+    const t=minutes(val('time'));if(isNaN(t)){msgTo('Time must be HH:MM.',true);return null}
+    const days=readDays(e);if(!days){msgTo('Choose at least one operating day.',true);return null}
     const shared={};if(val('terminal')!==r[4])shared.terminal=val('terminal');if(val('zone')!==r[5])shared.zone=val('zone');if(val('aircraft')!==r[6])shared.aircraft=val('aircraft');
     const cur=(r[8]&&r[8]!=='1234567')?r[8]:'',nd=days==='1234567'?'':days;if(nd!==cur)shared.days=nd||null;
-    if(t!==r[3])set.time=t;Object.assign(set,shared);if(!Object.keys(set).length){msg('Nothing changed.',true);return null}
-    rec.set=set;
-    if(withMate&&Object.keys(shared).length){rec.targets.push({dir:selected.d==='OUT'?'IN':'OUT',carrier:mate[0],number:mate[1]});
-      /* the time of the mate is not touched: targets share one set, so time is only applied to the first target */
-      if(set.time!=null){const mateRec=Object.assign({},rec,{id:uid(),targets:[rec.targets[1]],set:Object.assign({},shared)});rec.targets=[rec.targets[0]];rec._extra=mateRec}}
-    return rec};
-  const finish=rec=>{const list=[rec];if(rec._extra){list.push(rec._extra);delete rec._extra}return list};
-  $('#fm-prev').onclick=()=>{const rec=build('amend');if(rec)runPreview(finish(rec),[r[0]+r[1],...(mate?[mate[0]+mate[1]]:[])],msg)};
-  $('#fm-save').onclick=()=>{const rec=build('amend');if(rec)commit(finish(rec),msg)};
-  $('#fm-cancel').onclick=()=>{if(!confirm('Cancel '+r[0]+r[1]+' from the chosen date?'))return;const rec=build('cancel');if(rec)commit(finish(rec),msg)};
+    const set=Object.assign({},shared);if(t!==r[3])set.time=t;if(!Object.keys(set).length){msgTo('Nothing is different yet.',true);return null}
+    const withMate=mate&&e.querySelector('#fm-mate').checked&&Object.keys(shared).length;
+    const mk=(targets,s)=>({id:uid('chg_'),v:1,scope:'timetable',kind:'amend',from,to,note:val('note'),createdAt:new Date().toISOString(),targets,set:s});
+    const me={dir:st.sel.d,carrier:r[0],number:r[1]},ma=withMate?{dir:st.sel.d==='OUT'?'IN':'OUT',carrier:mate[0],number:mate[1]}:null;
+    if(ma&&t===r[3])return [mk([me,ma],set)];
+    return ma?[mk([me],set),mk([ma],shared)]:[mk([me],set)]};
+  const sentence=()=>{const {from,to}=readWhen(e);const p=[];const t=minutes(val('time'));if(!isNaN(t)&&t!==r[3])p.push('depart'.replace('depart',st.sel.d==='OUT'?'depart':'arrive')+' at '+hm(t)+' (was '+hm(r[3])+')');if(val('aircraft')!==r[6])p.push('fly '+val('aircraft')+' (was '+r[6]+')');if(val('terminal')!==r[4])p.push('use terminal '+val('terminal'));const dd=readDays(e),cur=(r[8]&&r[8]!=='1234567')?r[8]:'1234567';if(dd&&dd!==cur)p.push('operate '+daysText(dd)+' (was '+daysText(cur)+')');
+    return p.length?`From <b>${html(longDate(from))}</b>${to?' until <b>'+html(longDate(to))+'</b>':''}, <b>${html(r[0]+' '+r[1])}</b> will ${html(p.join(', '))}.`:'Change something above to see a summary.'};
+  const upd=()=>{$('#op-sum').innerHTML=sentence()};e.querySelectorAll('input,select').forEach(x=>{x.addEventListener('input',upd);x.addEventListener('change',upd)});e.addEventListener('click',upd);upd();
+  $('#fm-prev').onclick=()=>{const recs=build();if(recs)runPreview(recs,[r[0]+r[1],...(mate?[mate[0]+mate[1]]:[])])};
+  $('#fm-save').onclick=()=>{const recs=build();if(recs)commit(recs)};
 }
-/* -- new round trip tab -- */
-function drawNew(){
+/* ---- cancel a flight ---- */
+function drawCancel(){
+  if(!st.sel)return pickFlight(s=>{st.sel=s;st.prev='';drawCancel()},'Choose the flight to cancel. Its return flight can be cancelled with it.');
+  const r=curRow(st.sel.d,st.sel.id.slice(0,2),st.sel.id.slice(2));if(!r){st.sel=null;return drawCancel()}
+  const mate=mateOf(st.sel.d,r);
+  $('#op-body').innerHTML=`<div class="op-pad"><div class="op-step">Step 2 · Confirm</div><div class="op-sel"><b>${html(r[0]+' '+r[1])}</b> · ${st.sel.d==='OUT'?'Jakarta → ':''}${html(r[2])}${st.sel.d==='IN'?' → Jakarta':''}<br><small>${hm(r[3])} WIB · ${html(r[6])} · ${html(daysText(r[8]))}</small> <button class="op-link" id="op-change">Change flight</button></div>
+${mate?`<label class="fm-check"><input type="checkbox" id="fm-mate" checked> Also cancel ${html(mate[0]+' '+mate[1])} (${st.sel.d==='OUT'?'return':'outbound'})</label>`:''}${whenBlock()}<input class="op-search" data-k="note" placeholder="Reason (optional)">
+<div class="op-panel" id="op-sum"></div><div id="fm-impact">${st.prev||''}</div><div class="buttons"><button class="fm-btn" id="fm-prev">Check impact</button><button class="fm-btn danger" id="fm-save">Cancel flight</button></div><p class="fm-msg" id="fm-formmsg"></p></div>`;
+  const e=$('#op-body');$('#op-change').onclick=()=>{st.sel=null;drawCancel()};
+  const build=()=>{const {from,to}=readWhen(e);if(!C.dayNum(from)){msgTo('Choose a start date.',true);return null}if(to&&C.dayNum(to)<C.dayNum(from)){msgTo('“Until” is before the start.',true);return null}
+    const targets=[{dir:st.sel.d,carrier:r[0],number:r[1]}];if(mate&&e.querySelector('#fm-mate').checked)targets.push({dir:st.sel.d==='OUT'?'IN':'OUT',carrier:mate[0],number:mate[1]});
+    return [{id:uid('chg_'),v:1,scope:'timetable',kind:'cancel',from,to,note:e.querySelector('[data-k="note"]').value.trim(),createdAt:new Date().toISOString(),targets}]};
+  const upd=()=>{const {from,to}=readWhen(e);const n=1+(mate&&e.querySelector('#fm-mate').checked?1:0);$('#op-sum').innerHTML=`From <b>${html(longDate(from))}</b>${to?' until <b>'+html(longDate(to))+'</b>':''}, <b>${html(r[0]+' '+r[1])}</b>${n>1?' and <b>'+html(mate[0]+' '+mate[1])+'</b> will not operate':' will not operate'}.`};
+  e.querySelectorAll('input,select').forEach(x=>{x.addEventListener('input',upd);x.addEventListener('change',upd)});e.addEventListener('click',upd);upd();
+  $('#fm-prev').onclick=()=>{const recs=build();if(recs)runPreview(recs,[r[0]+r[1]])};
+  $('#fm-save').onclick=()=>{const recs=build();if(recs&&confirm('Cancel '+r[0]+' '+r[1]+' from the chosen date?'))commit(recs)}}
+/* ---- add a new service ---- */
+function drawAdd(){
   const cs=carriers(),car=cs.includes('GA')?'GA':cs[0],zdef='I';
-  $('#fm-pane').innerHTML=`<div class="fm-edit fm-new"><h3>Add a service</h3>
+  $('#op-body').innerHTML=`<div class="op-pad fm-new"><div class="op-step">Where and when?</div>
 <div class="fields">${sel('Airline','carrier',cs,car)}
-<div class="fm-field"><label>Destination city</label><input data-k="city" list="fm-cities" placeholder="Type or pick a city"><datalist id="fm-cities">${cityList().map(c=>`<option value="${html(c)}">`).join('')}</datalist></div>
-<div id="fm-newap" class="fm-field wide" hidden><div class="fm-sub">New destination — airport details</div><div class="fields">${fld('IATA code','code','','maxlength="3" placeholder="e.g. CNS"')}${sel('Region (approach side)','region',['E','W','NE','NW','N','S'],'E')}${fld('Latitude','lat','','placeholder="-16.8858"')}${fld('Longitude','lon','','placeholder="145.7553"')}<div class="fm-field wide"><label>Time zone (IANA)</label><input data-k="tz" placeholder="Australia/Brisbane"></div></div></div>
-${fld('Outbound flight no.','num','','placeholder="e.g. 8123"')}${fld('Departs Jakarta (WIB)','time','06:00','placeholder="HH:MM"')}
-${sel('Aircraft type','aircraft',typesFor(car),typesFor(car)[0])}${sel('Terminal','terminal',TERMS,homeTerm(car,zdef))}${sel('Route type','zone',['D','I'],zdef)}
-<div class="fm-field wide"><label>Operating days</label>${chips('1234567')}</div></div>
-<label class="fm-check"><input type="checkbox" id="fm-ret" checked> Include return flight</label>
-<div class="fields" id="fm-retf">${fld('Return flight no.','rnum','','placeholder="auto"')}${fld('Arrives Jakarta (WIB)','rtime','','placeholder="auto"')}${fld('Turn at destination (min)','turn','50','inputmode="numeric"')}<div class="fm-field"><label>Block time (est.)</label><input data-k="block" value="" readonly></div></div>
-${effectiveRow()}
-<div class="fm-field wide"><label>Note (optional)</label><input data-k="note" placeholder="e.g. new route"></div>
-<div class="buttons"><button class="fm-btn" id="fm-prev">Preview impact</button><button class="fm-btn primary" id="fm-save">Save new service</button></div><div id="fm-impact">${previewBox}</div><p class="fm-msg" id="fm-formmsg"></p></div>`;
-  const e=$('#fm-pane .fm-new');bindChips(e);
-  const v=k=>e.querySelector('[data-k="'+k+'"]'),val=k=>v(k).value.trim();
-  const msg=(m,bad)=>{const x=$('#fm-formmsg');x.textContent=m;x.style.color=bad?'#b22':'#526b7b'};
+<div class="fm-field"><label>Destination</label><input data-k="city" list="fm-cities" placeholder="Type or pick a city" autocomplete="off"><datalist id="fm-cities">${cityList().map(c=>`<option value="${html(c)}">`).join('')}</datalist></div>
+<div id="fm-newap" class="fm-field wide" hidden><div class="fm-sub">New destination — we need a few airport details</div><div class="fields">${fld('IATA code','code','','maxlength="3" placeholder="e.g. HBA"')}${sel('Approach side','region',['E','W','NE','NW','N','S'],'E')}${fld('Latitude','lat','','placeholder="-42.8361"')}${fld('Longitude','lon','','placeholder="147.5103"')}<div class="fm-field wide"><label>Time zone (IANA name)</label><input data-k="tz" placeholder="Australia/Hobart"></div></div></div>
+${fld('Flight number (outbound)','num','','placeholder="e.g. 8123"')}${fld('Departs Jakarta (WIB)','time','06:00','placeholder="HH:MM"')}
+${sel('Aircraft','aircraft',typesFor(car),typesFor(car)[0])}${sel('Terminal','terminal',TERMS,homeTerm(car,zdef))}${sel('Route type','zone',['D','I'],zdef)}
+<div class="fm-field wide"><label>Operating days</label>${chipsHtml('1234567')}</div></div>
+<label class="fm-check"><input type="checkbox" id="fm-ret" checked> Include the return flight</label>
+<div class="fields" id="fm-retf">${fld('Return flight number','rnum','','placeholder="auto"')}${fld('Arrives Jakarta (WIB)','rtime','','placeholder="auto"')}${fld('Turn at destination (min)','turn','50','inputmode="numeric"')}<div class="fm-field"><label>Flight time (estimate)</label><input data-k="block" value="" readonly></div></div>
+${whenBlock()}<input class="op-search" data-k="note" placeholder="Note (optional)">
+<div class="op-step">Review and save</div><div class="op-panel" id="op-sum"></div>${reviewBlock()}</div>`;
+  const e=$('#op-body .fm-new'),v=k=>e.querySelector('[data-k="'+k+'"]'),val=k=>v(k).value.trim();bindChips(e);
   const geo=()=>{const c=val('city'),a=AIR_CITY[c];if(a)return {lat:a[0],lon:a[1]};const la=parseFloat(val('lat')),lo=parseFloat(val('lon'));return isFinite(la)&&isFinite(lo)?{lat:la,lon:lo}:null};
   const recalc=()=>{
     const known=!!AIR_CITY[val('city')];$('#fm-newap').hidden=known||!val('city');
-    const car=val('carrier');const ts=typesFor(car);let cur=val('aircraft');const g=geo(),out=minutes(val('time'));
-    if(!v('aircraft').dataset.touched||!ts.includes(cur)){cur=g?suggestType(car,estBlock(g.lat,g.lon)):ts[0]}
+    const car=val('carrier'),ts=typesFor(car);let cur=val('aircraft');const g=geo(),out=minutes(val('time'));
+    if(!v('aircraft').dataset.touched||!ts.includes(cur))cur=g?suggestType(car,estBlock(g.lat,g.lon)):ts[0];
     v('aircraft').innerHTML=ts.map(o=>`<option ${o===cur?'selected':''}>${html(o)}</option>`).join('');
-    if(known){const tz=(window.JN_TZ_EXTRA||{})[val('city')];}
-    if(g){const b=estBlock(g.lat,g.lon);v('block').value=Math.floor(b/60)+'h '+(b%60)+'m';
-      if(!isNaN(out)&&e.querySelector('#fm-ret').checked&&document.activeElement!==v('rtime')){const t=out+2*b+(+val('turn')||50);v('rtime').value=hm(t%1440);v('rtime').dataset.next=t>=1440?'1':''}}
+    if(g){const b=estBlock(g.lat,g.lon);v('block').value=durTxt(b);
+      if(!isNaN(out)&&e.querySelector('#fm-ret').checked&&document.activeElement!==v('rtime')){const t=out+2*b+(+val('turn')||50);v('rtime').value=hm(t%1440)}}
     if(val('num')&&document.activeElement!==v('rnum')&&!v('rnum').dataset.touched)v('rnum').value=/^\d+$/.test(val('num'))?String(+val('num')+1):'';
-    e.querySelector('#fm-retf').style.display=e.querySelector('#fm-ret').checked?'':'none'};
-  e.querySelectorAll('input,select').forEach(x=>{x.addEventListener('input',recalc);x.addEventListener('change',recalc)});
-  v('rnum').addEventListener('input',()=>{v('rnum').dataset.touched='1'});
-  v('aircraft').addEventListener('change',()=>{v('aircraft').dataset.touched='1';recalc()});
-  v('carrier').addEventListener('change',()=>{v('terminal').value=homeTerm(val('carrier'),val('zone'))});
-  v('zone').addEventListener('change',()=>{v('terminal').value=homeTerm(val('carrier'),val('zone'))});
-  v('city').addEventListener('change',()=>{const tz=(AIR_CITY[val('city')]&&((window.JN_TZ_EXTRA||{})[val('city')]));const known=!!AIR_CITY[val('city')];if(known){/* guess route type from base schedule */const r=allRows().find(x=>x[2]===val('city'));if(r){v('zone').value=r[5];v('terminal').value=r[4]}}recalc()});
-  recalc();
+    e.querySelector('#fm-retf').style.display=e.querySelector('#fm-ret').checked?'':'none';
+    const {from,to}=readWhen(e),days=readDays(e);$('#op-sum').innerHTML=val('city')&&val('num')?`From <b>${html(longDate(from))}</b>${to?' until <b>'+html(longDate(to))+'</b>':''}: <b>${html(car+' '+val('num'))}</b> Jakarta → ${html(val('city'))} at ${html(val('time'))}${e.querySelector('#fm-ret').checked&&val('rnum')?', returning as <b>'+html(car+' '+val('rnum'))+'</b> at '+html(val('rtime')):''} · ${html(daysText(days))} · ${html(val('aircraft'))}.`:'Fill in the destination and flight number to see a summary.'};
+  e.querySelectorAll('input,select').forEach(x=>{x.addEventListener('input',recalc);x.addEventListener('change',recalc)});e.addEventListener('click',recalc);
+  v('rnum').addEventListener('input',()=>{v('rnum').dataset.touched='1'});v('aircraft').addEventListener('change',()=>{v('aircraft').dataset.touched='1';recalc()});
+  const retype=()=>{v('terminal').value=homeTerm(val('carrier'),val('zone'))};v('carrier').addEventListener('change',retype);v('zone').addEventListener('change',retype);
+  v('city').addEventListener('change',()=>{if(AIR_CITY[val('city')]){const r=allRows().find(x=>x[2]===val('city'));if(r){v('zone').value=r[5];v('terminal').value=r[4]}}recalc()});recalc();
   const build=()=>{
-    const car=val('carrier'),city=val('city'),num=val('num'),from=val('from'),to=val('to')||null;
-    if(!city){msg('Enter a destination city.',true);return null}
-    if(!/^\d{1,4}$/.test(num)){msg('Flight number must be 1–4 digits.',true);return null}
-    const t=minutes(val('time'));if(isNaN(t)){msg('Departure time must be HH:MM.',true);return null}
-    const days=readDays(e);if(!days){msg('Choose at least one operating day.',true);return null}
-    if(!C.dayNum(from)){msg('Choose an effective-from date.',true);return null}if(to&&C.dayNum(to)<C.dayNum(from)){msg('“Until” is before “from”.',true);return null}
+    const car=val('carrier'),city=val('city'),num=val('num'),{from,to}=readWhen(e);
+    if(!city){msgTo('Enter a destination.',true);return null}if(!/^\d{1,4}$/.test(num)){msgTo('Flight number must be 1–4 digits.',true);return null}
+    const t=minutes(val('time'));if(isNaN(t)){msgTo('Departure time must be HH:MM.',true);return null}
+    const days=readDays(e);if(!days){msgTo('Choose at least one operating day.',true);return null}
+    if(!C.dayNum(from)){msgTo('Choose a start date.',true);return null}if(to&&C.dayNum(to)<C.dayNum(from)){msgTo('“Until” is before the start.',true);return null}
     const airports=[];
-    if(!AIR_CITY[city]){
-      const code=val('code').toUpperCase(),la=parseFloat(val('lat')),lo=parseFloat(val('lon')),tz=val('tz');
-      if(!/^[A-Z]{3}$/.test(code)||!isFinite(la)||!isFinite(lo)||Math.abs(la)>90||Math.abs(lo)>180){msg('New destination: enter a 3-letter IATA code, latitude and longitude.',true);return null}
-      try{new Intl.DateTimeFormat('en',{timeZone:tz})}catch(x){msg('New destination: that is not a valid IANA time zone (e.g. Australia/Brisbane).',true);return null}
+    if(!AIR_CITY[city]){const code=val('code').toUpperCase(),la=parseFloat(val('lat')),lo=parseFloat(val('lon')),tz=val('tz');
+      if(!/^[A-Z]{3}$/.test(code)||!isFinite(la)||!isFinite(lo)||Math.abs(la)>90||Math.abs(lo)>180){msgTo('New destination: enter a 3-letter IATA code, latitude and longitude.',true);return null}
+      try{new Intl.DateTimeFormat('en',{timeZone:tz})}catch(x){msgTo('That is not a valid time zone name (for example Australia/Hobart).',true);return null}
       airports.push({city,code,lat:la,lon:lo,region:val('region'),tz})}
-    {const g2=geo(),bl=g2?estBlock(g2.lat,g2.lon):0,ac=val('aircraft');if(/ATR|Q400|Dash/i.test(ac)&&bl>150&&!confirm('Block time is about '+Math.floor(bl/60)+'h '+(bl%60)+'m, which is long for a '+ac+'. Save anyway?'))return null}
+    {const g2=geo(),bl=g2?estBlock(g2.lat,g2.lon):0,ac=val('aircraft');if(/ATR|Q400|Dash/i.test(ac)&&bl>150&&!confirm('The flight time is about '+durTxt(bl)+', which is long for a '+ac+'. Save anyway?'))return null}
     const pidc=(airports[0]&&airports[0].code)||(typeof airportCodeForCity==='function'?airportCodeForCity(city):'')||city.slice(0,3).toUpperCase();
     const pid=car+'-CHG-'+pidc+'-'+num,dayf=days==='1234567'?undefined:days;
     const row=(n,time)=>{const r=[car,n,city,time,val('terminal'),val('zone'),val('aircraft'),pid];if(dayf)r.push(dayf);return r};
-    if(FLD.OUT.some(r=>r[0]===car&&r[1]===num)){msg(car+num+' already exists as a departure.',true);return null}
+    if(FLD.OUT.some(r=>r[0]===car&&r[1]===num)){msgTo(car+' '+num+' already exists as a departure.',true);return null}
     const rows={OUT:[row(num,t)],IN:[]};
     if(e.querySelector('#fm-ret').checked){const rn=val('rnum'),rt=minutes(val('rtime'));
-      if(!/^\d{1,4}$/.test(rn)||isNaN(rt)){msg('Return flight needs a number and an arrival time (HH:MM).',true);return null}
-      if(FLD.IN.some(r=>r[0]===car&&r[1]===rn)){msg(car+rn+' already exists as an arrival.',true);return null}
-      rows.IN.push(row(rn,rt))}
-    return {id:uid(),v:1,scope:'timetable',kind:'add',from,to,note:val('note'),createdAt:new Date().toISOString(),rows,airports}};
-  const recCar=r=>(r.rows.OUT[0]||r.rows.IN[0])[0],recNum=r=>(r.rows.OUT[0]||r.rows.IN[0])[1];
-  $('#fm-prev').onclick=()=>{const rec=build();if(rec)runPreview([rec],[recCar(rec)+recNum(rec),...(rec.rows.IN[0]?[rec.rows.IN[0][0]+rec.rows.IN[0][1]]:[])],msg)};
-  $('#fm-save').onclick=()=>{const rec=build();if(rec)commit([rec],msg)};
-}
-/* -- changes tab -- */
+      if(!/^\d{1,4}$/.test(rn)||isNaN(rt)){msgTo('The return flight needs a number and an arrival time.',true);return null}
+      if(FLD.IN.some(r=>r[0]===car&&r[1]===rn)){msgTo(car+' '+rn+' already exists as an arrival.',true);return null}rows.IN.push(row(rn,rt))}
+    return [{id:uid('chg_'),v:1,scope:'timetable',kind:'add',from,to,note:val('note'),createdAt:new Date().toISOString(),rows,airports}]};
+  $('#fm-prev').onclick=()=>{const recs=build();if(recs){const rr=recs[0].rows;runPreview(recs,[...rr.OUT.map(r=>r[0]+r[1]),...rr.IN.map(r=>r[0]+r[1])])}};
+  $('#fm-save').onclick=()=>{const recs=build();if(recs)commit(recs)}}
+/* ---- my changes and events ---- */
 function summary(c){
-  const tg=(c.targets||[]).map(t=>t.carrier+t.number).join(' + ');
-  if(c.kind==='add'){const o=(c.rows.OUT||[])[0],i=(c.rows.IN||[])[0],r=o||i;return 'Add '+[o&&o[0]+o[1],i&&i[0]+i[1]].filter(Boolean).join(' / ')+' · '+r[2]+' · '+hm(r[3])+' WIB · '+daysText(r[8])+' · '+r[6]}
+  const tg=(c.targets||[]).map(t=>t.carrier+' '+t.number).join(' + ');
+  if(c.scope==='ops'){if(c.kind==='delay')return c.flight+' delayed +'+durTxt(c.minutes)+' ('+causeLabel(c.cause)+')';if(c.kind==='swap')return 'Aircraft swapped: '+c.arrivals.join(' ↔ ');return c.kind}
+  if(c.kind==='add'){const o=(c.rows.OUT||[])[0],i=(c.rows.IN||[])[0],r=o||i;return 'Add '+[o&&o[0]+' '+o[1],i&&i[0]+' '+i[1]].filter(Boolean).join(' / ')+' · '+r[2]+' · '+hm(r[3])+' · '+daysText(r[8])+' · '+r[6]}
   if(c.kind==='cancel')return 'Cancel '+tg;
   const s=c.set||{},p=[];if(s.time!=null)p.push('time '+hm(s.time));if(s.aircraft)p.push(s.aircraft);if(s.terminal)p.push('terminal '+s.terminal);if(s.zone)p.push(s.zone==='I'?'international':'domestic');if('days' in s)p.push(daysText(s.days));
   return tg+': '+(p.join(', ')||'change')}
-function drawChanges(){
-  const list=C.all().sort((a,b)=>C.dayNum(b.from)-C.dayNum(a.from)||String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
-  $('#fm-pane').innerHTML=`<div class="fm-tools"><button class="fm-btn" id="fm-exp">Export for repo (schedule-changes.js)</button><button class="fm-btn" id="fm-imp">Import</button><input type="file" id="fm-file" accept=".js,.json,application/json" hidden><button class="fm-btn danger" id="fm-clr">Clear my local changes</button></div>
-<div class="fm-chlist">${list.length?list.map(c=>{const st=C.status(c);return `<div class="fm-ch"><div class="fm-chh"><b>${html(summary(c))}</b><span class="fm-badge ${st}">${st==='active'?'Active now':st==='future'?'Starts '+html(c.from):'Ended'}</span></div><div class="fm-chm">${html(c.from)} → ${html(c.to||'open-ended')} · ${c.src==='repo'?'in repo file':'saved in this browser'}${c.note?' · '+html(c.note):''}${c.src==='local'?` <button class="fm-link" data-del="${html(c.id)}">Delete</button>`:''}${C.dayNum(c.from)>C.view?` <a class="fm-link" href="?date=${html(c.from)}">View on that date</a>`:''}</div></div>`}).join(''):'<p class="fm-msg">No changes yet. Amend a flight, cancel one, or add a round trip.</p>'}</div>
-<p class="fm-msg">The same log will later carry operational events (delays, strikes, aircraft swaps) and be saved as history.</p>`;
-  $('#fm-pane').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(confirm('Delete this change?')){C.remove(b.dataset.del);location.reload()}});
-  $('#fm-clr').onclick=()=>{if(confirm('Remove all changes saved in this browser? Changes in the repo file stay.')){C.clear();location.reload()}};
-  $('#fm-exp').onclick=()=>{const repo=(window.JN_CHANGES_REPO&&window.JN_CHANGES_REPO.changes)||[];const merged=[...repo,...C.local().changes];
-    const txt='/* Schedule changes committed to the repo (loaded before the simulator). */\nwindow.JN_CHANGES_REPO='+JSON.stringify({version:1,changes:merged},null,1)+';\n';
-    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/javascript'}));a.download='schedule-changes.js';a.click();setStatus('Exported '+merged.length+' change(s). Commit the file to the repo root to share them across devices, then clear your local changes.')};
+function drawMine(){
+  const ch=C.all().map(c=>Object.assign({_k:'chg'},c)),ops=C.ops().map(o=>Object.assign({_k:'op'},o));
+  const list=[...ch,...ops].sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+  $('#op-body').innerHTML=`<div class="op-pad"><div class="fm-tools"><button class="fm-btn" id="fm-exp">Export for repo</button><button class="fm-btn" id="fm-imp">Import</button><input type="file" id="fm-file" accept=".js,.json,application/json" hidden><button class="fm-btn danger" id="fm-clr">Clear mine</button></div>
+<div class="fm-chlist">${list.length?list.map(c=>{const isOp=c._k==='op',stt=isOp?(C.dayNum(c.date)===C.view?'active':(C.dayNum(c.date)>C.view?'future':'ended')):C.status(c);const when=isOp?c.date+(c.at?' '+c.at:''):c.from+' → '+(c.to||'open-ended');
+    return `<div class="fm-ch"><div class="fm-chh"><b>${html(summary(c))}</b><span class="fm-badge ${stt}">${isOp?(stt==='active'?'On this day':stt==='future'?'Later':'Past'):(stt==='active'?'Active now':stt==='future'?'Starts '+html(c.from):'Ended')}</span></div><div class="fm-chm">${isOp?'Disruption':'Timetable'} · ${html(when)} · ${c.src==='repo'?'in repo file':'saved in this browser'}${c.note?' · '+html(c.note):''}${c.src==='local'?` <button class="fm-link" data-del="${html(c.id)}" data-k="${c._k}">Undo</button>`:''}${(isOp?C.dayNum(c.date)!==C.view:C.dayNum(c.from)>C.view)?` <a class="fm-link" href="?date=${html(isOp?c.date:c.from)}">View that date</a>`:''}</div></div>`}).join(''):'<p class="op-lead">Nothing recorded yet.</p>'}</div>
+<p class="fm-msg">Tip: if a change ever breaks the app, open the page with ?nochanges=1.</p></div>`;
+  $('#op-body').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(confirm('Undo this?')){b.dataset.k==='op'?C.removeOp(b.dataset.del):C.remove(b.dataset.del);location.reload()}});
+  $('#fm-clr').onclick=()=>{if(confirm('Remove everything saved in this browser? Changes in the repo file stay.')){C.clear();location.reload()}};
+  $('#fm-exp').onclick=()=>{const R=window.JN_CHANGES_REPO||{};const txt='/* Schedule changes and operational events committed to the repo (loaded before the simulator). */\nwindow.JN_CHANGES_REPO='+JSON.stringify({version:1,changes:[...(R.changes||[]),...C.local().changes],ops:[...(R.ops||[]),...C.local().ops]},null,1)+';\n';
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/javascript'}));a.download='schedule-changes.js';a.click();setStatus('Exported. Commit the file to the repo root to share it across devices, then use “Clear mine”.')};
   $('#fm-imp').onclick=()=>$('#fm-file').click();
-  $('#fm-file').onchange=async ev=>{try{const f=ev.target.files[0];if(!f)return;let t=await f.text();const i=t.indexOf('{'),j=t.lastIndexOf('}');const o=JSON.parse(t.slice(i,j+1));
-    if(!o||!Array.isArray(o.changes))throw Error('not a change log');const have=new Set(C.all().map(c=>c.id));let n=0;o.changes.forEach(c=>{if(c&&c.kind&&!have.has(c.id)){C.add(Object.assign({},c,{src:undefined}));n++}});setStatus('Imported '+n+' change(s).');if(n)location.reload()}catch(x){setStatus('Import failed: this is not a valid schedule-changes file ('+x.message+').',true)}};
-}
-/* -- save / preview -- */
-function commit(recs,msg){
-  recs.forEach(r=>C.add(r));
-  const first=recs[0];msg('Saved. Reloading…');
-  const here=C.dayNum(first.from)>C.view;
-  setTimeout(()=>{if(here){const u=new URL(location.href);u.searchParams.set('date',first.from);location.href=u.toString()}else location.reload()},350)}
-function runPreview(recs,watch,msg){
-  if(busy)return;busy=true;const tok=Math.random().toString(36).slice(2,9);
-  const base=metrics();const store={version:1,changes:[...C.local().changes,...recs],ops:[]};
-  try{localStorage.setItem('jn-changes-preview-'+tok,JSON.stringify(store))}catch(x){msg('Could not start the preview: '+x.message,true);busy=false;return}
-  const box=$('#fm-impact');box.innerHTML='<div class="fm-prev-wait">Calculating impact with the full simulation… (about 5 s)</div>';
+  $('#fm-file').onchange=async ev=>{try{const f=ev.target.files[0];if(!f)return;const t=await f.text();const o=JSON.parse(t.slice(t.indexOf('{'),t.lastIndexOf('}')+1));if(!o||(!Array.isArray(o.changes)&&!Array.isArray(o.ops)))throw Error('no changes or events');
+    const have=new Set([...C.all(),...C.ops()].map(c=>c.id));let n=0;(o.changes||[]).forEach(c=>{if(c&&c.kind&&!have.has(c.id)){C.add(Object.assign({},c,{src:undefined}));n++}});(o.ops||[]).forEach(c=>{if(c&&c.kind&&!have.has(c.id)){C.addOp(Object.assign({},c,{src:undefined}));n++}});setStatus('Imported '+n+' item(s).');if(n)location.reload()}catch(x){setStatus('Import failed: this is not a valid schedule-changes file ('+x.message+').',true)}}}
+/* ---- save / preview ---- */
+function commit(recs){recs.forEach(r=>C.add(r));msgTo('Saved. Reloading…');const first=recs[0];
+  setTimeout(()=>{if(C.dayNum(first.from)>C.view){const u=new URL(location.href);u.searchParams.set('date',first.from);location.href=u.toString()}else location.reload()},350)}
+function runPreview(recs,watch){
+  if(busy)return;busy=true;const tok=Math.random().toString(36).slice(2,9),b0=metrics();
+  try{localStorage.setItem('jn-changes-preview-'+tok,JSON.stringify({version:1,changes:[...C.local().changes,...recs],ops:C.local().ops}))}catch(x){msgTo('Could not start the check: '+x.message,true);busy=false;return}
+  const box=$('#fm-impact');box.innerHTML='<div class="fm-prev-wait">Checking the impact with the full simulation… (about 5 seconds)</div>';
   const f=document.createElement('iframe');f.setAttribute('aria-hidden','true');f.style.cssText='position:fixed;left:-3000px;top:0;width:1100px;height:800px;border:0;opacity:0;pointer-events:none';
   const u=new URL(location.href);u.searchParams.set('preview',tok);u.searchParams.set('watch',watch.join(','));u.hash='';f.src=u.toString();
   const done=()=>{busy=false;window.removeEventListener('message',on);clearTimeout(to);try{localStorage.removeItem('jn-changes-preview-'+tok)}catch(x){}f.remove()};
-  const on=ev=>{if(!ev.data||ev.data.jnPreview!==tok)return;done();
-    if(ev.data.error){box.innerHTML='<div class="fm-prev bad"><b>This change breaks the simulation:</b> '+html(ev.data.error)+'</div>';previewBox=box.innerHTML;return}
-    previewBox=impactHtml(base,ev.data);box.innerHTML=previewBox};
-  const to=setTimeout(()=>{done();box.innerHTML='<div class="fm-prev bad">Preview timed out.</div>'},160000);
-  window.addEventListener('message',on);document.body.appendChild(f)}
+  const on=ev=>{if(!ev.data||ev.data.jnPreview!==tok)return;done();if(ev.data.error){st.prev='<div class="fm-prev bad"><b>This change breaks the simulation:</b> '+html(ev.data.error)+'</div>';box.innerHTML=st.prev;return}st.prev=impactHtml(b0,ev.data);box.innerHTML=st.prev};
+  const to=setTimeout(()=>{done();box.innerHTML='<div class="fm-prev bad">The check timed out.</div>'},160000);window.addEventListener('message',on);document.body.appendChild(f)}
 function impactHtml(a,r){
   const m=r.metrics;if(!m)return '<div class="fm-prev bad">No result.</div>';
   const d=(x,y)=>x===y?String(y):x+' → '+y+' ('+(y-x>0?'+':'')+(y-x)+')';
-  const rows=[['Aircraft in fleet',d(a.total,m.total),m.total>a.total],['Flights in timetable',d(a.flights,m.flights),false],['Flights without an aircraft (GA)',d(a.notailGA,m.notailGA),m.notailGA>a.notailGA],['Weekly round trips with no idle window',d(a.loopFail,m.loopFail),m.loopFail>a.loopFail],['Unassigned stands',d(a.unassigned,m.unassigned),m.unassigned>a.unassigned]];
+  const rows=[['Aircraft in the fleet',d(a.total,m.total),m.total>a.total],['Flights in the timetable',d(a.flights,m.flights),false],['Flights without an aircraft',d(a.notailGA,m.notailGA),m.notailGA>a.notailGA],['Weekly round trips with no free window',d(a.loopFail,m.loopFail),m.loopFail>a.loopFail],['Stand problems',d(a.unassigned,m.unassigned),m.unassigned>a.unassigned]];
   const per=Object.keys(Object.assign({},a.by,m.by)).filter(k=>(a.by[k]||0)!==(m.by[k]||0)).map(k=>'<div class="fm-prow"><span>'+html(k.replace('|',' · '))+'</span><b>'+d(a.by[k]||0,m.by[k]||0)+'</b></div>').join('');
-  const w=(r.watched||[]).map(x=>'<div class="fm-prow"><span>'+html(x.id)+'</span><b>'+(x.runsToday?x.aircraft+' aircraft in last 15 days'+(x.sample.length?' · '+html(x.sample.join(', ')):''):'not operating on '+html(C.viewDs))+'</b></div>').join('');
+  const w=(r.watched||[]).map(x=>'<div class="fm-prow"><span>'+html(x.id)+'</span><b>'+(x.runsToday?x.aircraft+' aircraft in the last 15 days':'not operating on '+html(longDate(C.viewDs)))+'</b></div>').join('');
   const bad=m.error||m.notailGA>a.notailGA;
-  return '<div class="fm-prev '+(bad?'bad':'')+'"><b>Impact on '+html(C.viewDs)+' (full simulation)</b>'+rows.map(x=>'<div class="fm-prow'+(x[2]?' warn':'')+'"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+(per?'<div class="fm-psub">Fleet changes</div>'+per:'')+(w?'<div class="fm-psub">Affected flights</div>'+w:'')+(m.error?'<div class="fm-prow warn"><span>Error</span><b>'+html(m.error)+'</b></div>':'')+'<div class="fm-psub">Preview uses the date shown above; a change that starts later may not affect it.</div></div>'}
-wrap.addEventListener('click',e=>{if(e.target===wrap)wrap.classList.remove('open');const t=e.target.closest&&e.target.closest('.fm-tabs button');if(t){tab=t.dataset.tab;previewBox='';draw()}});
-function mount(){document.body.append(launch,wrap);$('#fm-close').onclick=()=>wrap.classList.remove('open');
-  if(C.noChanges){const b=document.createElement('div');b.className='fm-banner';b.innerHTML='Schedule changes are switched off for this view. <a href="'+location.pathname+location.search.replace(/[?&]nochanges=1/,'').replace(/^&/,'?')+'">Turn them back on</a>';document.body.append(b)}
-  /* safety net: if saved changes break the simulation, offer a one-tap way out */
+  return '<div class="fm-prev '+(bad?'bad':'')+'"><b>Impact on '+html(longDate(C.viewDs))+'</b>'+rows.map(x=>'<div class="fm-prow'+(x[2]?' warn':'')+'"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+(per?'<div class="fm-psub">Fleet changes</div>'+per:'')+(w?'<div class="fm-psub">Affected flights</div>'+w:'')+(m.error?'<div class="fm-prow warn"><span>Error</span><b>'+html(m.error)+'</b></div>':'')+'<div class="fm-psub">The check uses the date you are viewing; a change that starts later may not show here.</div></div>'}
+/* ---- shell wiring, banners ---- */
+wrap.addEventListener('click',e=>{if(e.target===wrap)wrap.classList.remove('open')});
+function mount(){document.body.append(launch,wrap);$('#fm-close').onclick=()=>wrap.classList.remove('open');$('#op-back').onclick=()=>go('home');
+  const banner=(cls,h)=>{const b=document.createElement('div');b.className='fm-banner '+cls;b.innerHTML=h;document.body.append(b);return b};
+  if(C.noChanges)banner('','Changes and events are switched off for this view. <a href="'+location.pathname+location.search.replace(/[?&]nochanges=1/,'').replace(/^&/,'?')+'">Turn them back on</a>');
+  let toast=null;try{toast=sessionStorage.getItem('jn-op-toast');sessionStorage.removeItem('jn-op-toast')}catch(x){}
+  if(toast){const b=banner('ok',html(toast)+' <button id="fm-ok">OK</button>');b.querySelector('#fm-ok').onclick=()=>b.remove();setTimeout(()=>b.remove(),9000)}
+  const act=window.JN_OPS&&JN_OPS.list().filter(o=>C.dayNum(o.date)===C.view).length;
+  if(act&&!toast&&!C.noChanges){const b=banner('info',act+' disruption event'+(act>1?'s':'')+' on this day. <a href="#" id="fm-see">See</a>');b.querySelector('#fm-see').onclick=ev=>{ev.preventDefault();b.remove();screen='mine';open()}}
   const t0=Date.now(),iv=setInterval(()=>{const bad=window.JN_TAIL_ERROR||window.JN_CHG_ERROR;
-    if(bad&&C.local().changes.length&&!document.querySelector('.fm-banner')){clearInterval(iv);const b=document.createElement('div');b.className='fm-banner bad';b.innerHTML='Your saved schedule changes broke the simulation ('+html(String(bad).slice(0,90))+'). <button id="fm-off">Disable my changes</button>';document.body.append(b);b.querySelector('#fm-off').onclick=()=>{C.clear();location.reload()}}
+    if(bad&&(C.local().changes.length||C.local().ops.length)&&!document.querySelector('.fm-banner.bad')){clearInterval(iv);const b=banner('bad','Your saved changes broke the simulation ('+html(String(bad).slice(0,90))+'). <button id="fm-off">Disable my changes</button>');b.querySelector('#fm-off').onclick=()=>{C.clear();location.reload()}}
     else if(window.SIMCORE&&window.SIMCORE.FLEET||Date.now()-t0>120000)clearInterval(iv)},700)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();
@@ -2067,10 +2154,10 @@ function assign(evs){
   const prio=e=>{const f=e.a||e.d;return f.c==='GA'?0:1};
   const win=e=>{
     const w=(e.a||e.d).w;
-    if(e.k==='r')return[[e.a.t-3,e.d.t+5]];
-    if(e.k==='a')return[[e.a.t-3,e.a.t+(w?70:42)]];
-    if(e.k==='d')return[[Math.max(0,e.d.t-(w?80:58)),e.d.t+5]];
-    if(e.k==='ovA')return[[e.a.t-3,1445],[0,e.od.t+5]];
+    if(e.k==='r')return[[ET(e.a)-3,ET(e.d)+5]];
+    if(e.k==='a')return[[ET(e.a)-3,ET(e.a)+(w?70:42)]];
+    if(e.k==='d')return[[Math.max(0,ET(e.d)-(w?80:58)),ET(e.d)+5]];
+    if(e.k==='ovA')return[[ET(e.a)-3,1445],[0,e.od.t+5]];
     return null;
   };
   const GDIST=window.__GD||(window.__GD=new Map());
@@ -2078,9 +2165,9 @@ function assign(evs){
   /* v72 tow: long stays use the gate only for deplaning and for boarding, and sit on a remote stand in between. */
   const towTry=(e,f)=>{
     const intlW=!!f.w&&(f.term==='T2'||f.term==='T3');
-    if(!(e.k==='ovA'||(e.k==='r'&&e.d.t-e.a.t>=(intlW?225:240))))return null;
+    if(!(e.k==='ovA'||(e.k==='r'&&ET(e.d)-ET(e.a)>=(intlW?225:240))))return null;
     const w=f.w,dwA=w?75:45,pre=w?90:60,tw=15;
-    const a=e.a.t,dAbs=e.k==='ovA'?e.od.t+1440:e.d.t,T1=a+dwA,T2=dAbs-pre-tw;
+    const a=ET(e.a),dAbs=e.k==='ovA'?e.od.t+1440:ET(e.d),T1=a+dwA,T2=dAbs-pre-tw;
     if(T2-(T1+tw)<(intlW?30:60))return null;
     if(e.k==='ovA'&&T2<1450)return null;
     const gIv=wrapIv(a-3,T1+6).concat(wrapIv(T2+6,dAbs+5)),rIv=wrapIv(T1+6,T2+6);
@@ -2290,11 +2377,11 @@ function doTow(e,tr){
 }
 function jobA(e){
   const st=e.stand,L=e.Lm,wide=e.w,k=e.k;
-  const dir00=flowAt(e.a.t*60);
+  const dir00=flowAt(ET(e.a)*60);
   let best=null;
   for(let ri=0;ri<RWY.length;ri++){
     if(!runwayAllowed(ri,true))continue;
-    const c0=e.a.t*60-pdOf(RWY[ri],e,dir00,wide)-38;
+    const c0=ET(e.a)*60-pdOf(RWY[ri],e,dir00,wide)-38;
     const res=tryA(ri,e,c0);if(!res)continue;
     res.score=res.endT+(ri===st.pref?0:150)+runwayPenalty(ri,true);
     if(!best||res.score<best.score)best=res;
@@ -2382,7 +2469,7 @@ function turnModel(e){
 }
 function jobD(e){
   const f=e.d,st=e.stand,k=e.k;
-  let sched=f.t*60;
+  let sched=ET(f)*60;
   if(e.onblock!=null&&e.a){e.tat=turnModel(e);sched=Math.max(sched,e.tat.ready)}
   else if(e.onblock!=null)sched=Math.max(sched,e.onblock+(e.w?75:(f.c==='GA'?55:28))*60);
   // Cross-midnight departure uses the previous day's actual arrival at this stand.
@@ -2854,7 +2941,8 @@ function tPlan(){
     if(u.t==='ov')(ovByFleet.get(u.fkey)||ovByFleet.set(u.fkey,[]).get(u.fkey)).push(u)});
   groups.forEach(g=>{for(let x=0;x<g.length;x++)for(let y=x+1;y<g.length;y++){const u=g[x],w=g[y];
     if(rollCrossOK(u.a,w.d,u.t)&&rollCrossOK(w.a,u.d,u.t)){u.cand.push(w.i);w.cand.push(u.i)}}});
-  return T_PLAN={planV,F,K2C,units,ovByFleet}}
+  const unitByArr=new Map();units.forEach(u=>unitByArr.set(u.a.id,u));
+  return T_PLAN={planV,F,K2C,units,ovByFleet,unitByArr}}
 const rollSlot=(m,d)=>m.base+(((d-m.w)%m.k)+m.k)%m.k;
 function tRoll(idx){
   if(T_ROLL&&T_ROLL.idx===idx)return T_ROLL;
@@ -2867,6 +2955,13 @@ function tRoll(idx){
   const runs=(u,d)=>{const w=tDow(d);return flRuns(u.a,w)&&flRuns(u.d,w)};
   for(let d=start;d<=last;d++){
     const evs=[],used=new Set();
+    /* operational swaps (recovery decisions) come first and reserve their turns for the day */
+    for(const o of (window.JN_OPS?JN_OPS.swapsOn(d):[])){
+      const u=P.unitByArr.get(o.arrivals[0]),w=P.unitByArr.get(o.arrivals[1]);
+      if(!u||!w||u.fkey!==w.fkey||u.t!==w.t||used.has(u.i)||used.has(w.i))continue;
+      const A=rollSlot(K2C.get(u.v.k116),d),B=rollSlot(K2C.get(w.v.k116),d);if(A===B)continue;
+      used.add(u.i);used.add(w.i);
+      evs.push({k:'swap',key:u.fkey,sA:A,sB:B,tau:Math.min(1439,Math.max(u.a.t,w.a.t)+1),u:u.i,w:w.i,ops:true})}
     for(const u of units){
       if(!u.cand.length||used.has(u.i))continue;
       if(imix(d,u.i,1)%1000>=ROLL_SWAP_P*1000)continue;
@@ -2946,7 +3041,8 @@ function tRollPlace(d,V,F,dayInfo,P){
   out.forEach(v=>{let l=perTail.get(v._t);if(!l)perTail.set(v._t,l=[]);l.push(v)});
   perTail.forEach((l,t)=>{l.sort((p,q)=>p.S-q.S||p.E-q.E);l.forEach(v=>{tPlace(t,v);delete v._t})});
   return out}
-function tailsAssign(){
+let T_LASTV=null,T_COMPUTED=-1;
+function tailsCompute(){
   const {idx,ds}=tDayIndex();
   const P=tPlan(),planV=P.planV,F=P.F,R=tRoll(idx);
   F.forEach(fl=>{fl.tails.length=fl.baseTails;fl.spares=fl.baseTails-fl.min;
@@ -2969,6 +3065,9 @@ function tailsAssign(){
   F.forEach(fl=>fl.tails.forEach((t,i)=>{t.model=v111FleetModel(fl.c,fl.ac,i,fl.tails.length)}));
   const fleets=[];F.forEach(fl=>fleets.push({key:fl.key,c:fl.c,ac:fl.ac,min:fl.min,n:fl.tails.length,used:fl.tails.filter(t=>t.seq.length).length}));
   FLEET={date:ds,day:idx,fleets,tight:res.tight,carried:res.carried,returnSwaps:0,aog:{aog:0,moved:0,kept:0},visits:V.length,F};
+  T_LASTV=V;T_COMPUTED=idx}
+function tailsMap(){
+  const V=T_LASTV;if(!V)return;
   // Hand registrations to today's live entities through the flights they carry.
   const vA=new Map(),vD=new Map();
   V.forEach(v=>{if(v.a&&v.kind!=='pre')vA.set(v.a.id,v);if(v.d&&v.kind!=='ovn')vD.set(v.d.id,v)});
@@ -2978,6 +3077,80 @@ function tailsAssign(){
     if(!v||!v.tail)return;
     e.tail=v.tail.reg;e.tailObj=v.tail;e.tailVisit=v;
     if(v.planned){e.tailPlanned=v.planned;e.tailWhy=v.swap}})}
+function tailsAssign(){tailsCompute();tailsMap()}
+/* v185: operational delays. An injected delay on a flight instance spreads along that aircraft's legs: its next departure
+   cannot leave before the (late) arrival plus the minimum turn, and a late outbound makes the return arrive late if the
+   outstation turn runs out of slack. Result: flight.dly = minutes late at Jakarta, used by the ground simulation. */
+function tailLegs(t,days){
+  const out=[];
+  for(const d of days){const seq=t.hist&&t.hist.get(d);if(!seq)continue;
+    for(const v of seq){
+      if(v.a&&v.kind!=='pre')out.push({f:v.a,day:d,k:'a',t:d*1440+v.a.t,blk:tBlk(v.a.city,null)});
+      if(v.d&&v.kind!=='ovn')out.push({f:v.d,day:d,k:'d',t:d*1440+v.d.t,blk:tBlk(null,v.d.city)})}}
+  return out.sort((p,q)=>p.t-q.t)}
+const opsTurn=f=>f.w?75:(f.c==='GA'?55:40);
+function opsChain(legs,inj){
+  let prev=null;
+  for(const l of legs){
+    const x=inj?inj(l):JN_OPS.delayFor(l.day,l.f.id);
+    if(l.k==='d'){let dep=l.t+x;if(prev&&prev.k==='a')dep=Math.max(dep,prev.arrEff+opsTurn(prev.f));l.eff=dep;l.dly=dep-l.t;prev=l}
+    else{let od=l.t-l.blk+x;if(prev&&prev.k==='d')od=Math.max(od,prev.eff+prev.blk+opsTurn(l.f));l.arrEff=od+l.blk;l.dly=l.arrEff-l.t;prev=l}}
+  return legs}
+const ET=f=>Math.min(1435,f.t+(f.dly||0));
+function opsDelays(idx){
+  INF.forEach(f=>{f.dly=0});OUTF.forEach(f=>{f.dly=0});
+  if(!window.JN_OPS||!JN_OPS.hasAny())return;
+  const P=tPlan(),days=[idx-1,idx];
+  P.F.forEach(fl=>fl.tails.forEach(t=>{opsChain(tailLegs(t,days)).forEach(l=>{if(l.day===idx&&l.dly>0)l.f.dly=Math.max(l.f.dly||0,l.dly)})}));
+  /* flights without tracked aircraft: the injected delay itself, then knock-on through glued turns at Jakarta */
+  const byId=new Map();INF.concat(OUTF).forEach(f=>byId.set(f.id,f));
+  JN_OPS.list().forEach(o=>{if(o.kind==='delay'&&dayNumOf(o.date)===idx){const f=byId.get(o.flight);if(f&&!f.dly)f.dly=Math.max(f.dly||0,+o.minutes)}});
+  (FULL||[]).forEach(e=>{if(e.k==='r'){const need=e.a.t+(e.a.dly||0)+opsTurn(e.a)-e.d.t;if(need>(e.d.dly||0))e.d.dly=need}})}
+const dayNumOf=ds=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(ds||'');return m?Math.round(Date.UTC(+m[1],+m[2]-1,+m[3])/86400000):null};
+/* ---- API for the Operations UI: inbound list, knock-on and swap options (viewed date only) ---- */
+function opsInbound(){
+  const idx=T_COMPUTED,V=T_LASTV||[],out=[];
+  V.forEach(v=>{if(v.a&&v.kind!=='pre'&&v.tail&&TAIL_CARR.has(v.a.c)){
+    out.push({id:v.a.id,city:v.a.city,t:v.a.t,c:v.a.c,tail:v.tail.reg,next:(v.kind==='r'&&v.d)?{id:v.d.id,city:v.d.city,t:v.d.t}:null,unit:v.kind==='r'})}});
+  return out.sort((p,q)=>p.t-q.t)}
+function opsLegsAfter(t,day){return tailLegs(t,[day-1,day])}
+function opsMeasure(legs,day){let total=0,n=0;legs.forEach(l=>{if(l.day===day&&l.dly>=5){total+=l.dly;n++}});return {total,n}}
+function opsTailOf(flightId){const V=T_LASTV||[];const v=V.find(x=>x.a&&x.a.id===flightId&&x.kind!=='pre')||V.find(x=>x.d&&x.d.id===flightId&&x.kind!=='ovn');return v&&v.tail||null}
+function opsLegList(legs,day,reg){return legs.filter(l=>l.day===day&&l.dly>=5).map(l=>({id:l.f.id,kind:l.k,city:l.f.city,sched:l.f.t,delay:Math.round(l.dly),tail:reg}))}
+function opsKnockOn(flightId,minutes){
+  const day=T_COMPUTED,t=opsTailOf(flightId);if(!t)return {error:'No tracked aircraft for '+flightId+' on this date (foreign airlines are not tracked).'};
+  const legs=opsChain(opsLegsAfter(t,day),l=>JN_OPS.delayFor(l.day,l.f.id)+(l.day===day&&l.f.id===flightId?+minutes:0));
+  return {tail:t.reg,legs:opsLegList(legs,day,t.reg),...opsMeasure(legs,day)}}
+function opsSwapOptions(flightId,minutes){
+  const day=T_COMPUTED,P=tPlan(),u1=P.unitByArr.get(flightId),t1=opsTailOf(flightId);
+  if(!t1||!u1||u1.t!=='r')return {supported:false,reason:'Aircraft swap is offered for inbound flights that turn straight into a departure at Jakarta.'};
+  const inj1=l=>JN_OPS.delayFor(l.day,l.f.id)+(l.day===day&&l.f.id===flightId?+minutes:0);
+  const L1=opsLegsAfter(t1,day),i1=L1.findIndex(l=>l.f===u1.a),j1=L1.findIndex(l=>l.f===u1.d);
+  if(i1<0||j1<0||j1!==i1+1)return {supported:false,reason:'This arrival does not turn directly into a departure on the same aircraft.'};
+  const wait=opsChain(L1.map(l=>({...l})),inj1);const waitM=opsMeasure(wait,day);
+  const dow=tDow(day),runs=f=>flRuns(f,dow),opts=[],seen=new Set();
+  const V=T_LASTV||[];
+  P.units.forEach(u2=>{
+    if(u2===u1||u2.t!=='r'||u2.fkey!==u1.fkey||!runs(u2.a)||!runs(u2.d)||seen.has(u2.i))return;
+    const a1=u1.a,d1=u1.d,a2=u2.a,d2=u2.d;
+    if(d2.c!==a1.c||!v111SameType(d2,a1)||!v111SameType(d1,a2))return;
+    const term=(a,d)=>d.term===a.term||verifiedSwingPair(a,d)||/-SW-/.test(a.pid||'');
+    if(!term(a1,d2)||!term(a2,d1)||a1.zone!==d2.zone||a2.zone!==d1.zone)return;
+    if(!(d1.t>a2.t+rollMinT(a2)-1)||!(d2.t>a1.t)||d2.t-a1.t>600)return;          // B must be ready for D1; D2 must be after A's scheduled arrival
+    const t2=opsTailOf(a2.id);if(!t2||t2===t1)return;
+    const L2=opsLegsAfter(t2,day),i2=L2.findIndex(l=>l.f===a2),j2=L2.findIndex(l=>l.f===d2);
+    if(i2<0||j2!==i2+1)return;
+    const N1=[...L1.slice(0,i1+1),...L2.slice(j2)].map(l=>({...l})),N2=[...L2.slice(0,i2+1),...L1.slice(j1)].map(l=>({...l}));
+    const c1=opsChain(N1,inj1),c2=opsChain(N2,inj1);
+    const base2=opsMeasure(opsChain(L2.map(l=>({...l})),inj1),day),m1=opsMeasure(c1,day),m2=opsMeasure(c2,day);
+    const total=m1.total+m2.total,saved=waitM.total+base2.total-total;
+    if(saved<=0)return;
+    seen.add(u2.i);
+    const tk=(c,reg)=>c.filter(l=>l.k==='d'&&l.day===day&&(l.f===d1||l.f===d2)).map(l=>({flight:l.f.id,city:l.f.city,sched:l.f.t,delay:Math.round(l.dly),tail:reg}));
+    opts.push({arrivals:[a1.id,a2.id],tails:[t1.reg,t2.reg],other:{arrival:a2.id,next:d2.id,city:d2.city,sched:d2.t},saved:Math.round(saved),total:Math.round(total),
+      takes:[...tk(c2,t2.reg),...tk(c1,t1.reg)],affected:m1.n+m2.n})});
+  opts.sort((p,q)=>q.saved-p.saved||p.affected-q.affected);
+  return {supported:true,tail:t1.reg,next:{id:u1.d.id,city:u1.d.city,sched:u1.d.t},wait:{total:Math.round(waitM.total),n:waitM.n,legs:opsLegList(wait,day,t1.reg)},options:opts.slice(0,5)}}
 function tailHistory(reg){
   const F=FLEET&&FLEET.F;if(!F)return null;
   let tail=null;F.forEach(fl=>fl.tails.forEach(t=>{if(t.reg===reg)tail=t}));if(!tail)return null;
@@ -3054,6 +3227,7 @@ function bake(pct){
         else{const x=FULL.find(z=>z.k==='ovA'&&z.a===u.a),y=FULL.find(z=>z.k==='ovA'&&z.a===w.a);if(x&&y){const t=x.od;x.od=y.od;y.od=t}}})
     }catch(err){console.error('rolling pairing:',err)}
   }
+  try{const di=tDayIndex().idx;if(T_COMPUTED!==di)tailsCompute();opsDelays(di)}catch(err){console.error('Aircraft rotation / delays:',err);window.JN_TAIL_ERROR=String(err&&err.message||err)}
   const keepF=f=>hash(f.id+'x')%100<pct;
   const evs=[];
   FULL.forEach(e=>{
@@ -3070,11 +3244,11 @@ function bake(pct){
     else if(e.k==='a'){ent.id=e.a.id}
     else if(e.k==='ovA'){ent.ovn=true;ent.id=e.a.id;ent.overnightOut=e.od}
     else if(e.k==='ovD'){ent.appear=null;ent.id=e.d.id;ent.pre=true;ent.overnightIn=FULL.find(z=>z.k==='ovA'&&z.od===e.d)?.a||null;ent.overnightSource=null}
-    else{ent.appear=Math.max(0,e.d.t*60-(f.w?80:58)*60);ent.id=e.d.id}
+    else{ent.appear=Math.max(0,ET(e.d)*60-(f.w?80:58)*60);ent.id=e.d.id}
     ENTS.push(ent);
     STAT.flights+=(ent.a?1:0)+(ent.d?1:0);
-    if(ent.a)JOBS.push({t:'A',ent,key:ent.a.t*60-480});
-    if(ent.d)JOBS.push({t:'D',ent,key:ent.d.t*60});
+    if(ent.a)JOBS.push({t:'A',ent,key:ET(ent.a)*60-480});
+    if(ent.d)JOBS.push({t:'D',ent,key:ET(ent.d)*60});
   });
   const bySt=new Map();
   const addP=(st,s,end,ent,isA)=>{if(!bySt.has(st))bySt.set(st,[]);bySt.get(st).push({s,end,ent,isA})};
@@ -3082,18 +3256,18 @@ function bake(pct){
     if(e.towStand){
       const dwA=e.w?75:45,pre=e.w?90:60;
       if(e.a){
-        const a=e.a.t,t2=(e.d?e.d.t:e.overnightOut.t+1440)-pre-15;
+        const a=ET(e.a),t2=(e.d?ET(e.d):e.overnightOut.t+1440)-pre-15;
         addP(e.stand,a,(a+dwA+12)*60,e,true);
         addP(e.towStand,a+dwA,Math.min(t2,1440)*60,e,false);
       } else {
-        const d=e.d.t,t2=d-pre-15,srcA=e.overnightIn?e.overnightIn.t:0;
+        const d=ET(e.d),t2=d-pre-15,srcA=e.overnightIn?e.overnightIn.t:0;
         if(e.towD)addP(e.stand,-2,Math.max(0,(srcA+dwA+12)-1440)*60,e,false);
         addP(e.towStand,-1,t2*60,e,false);
         addP(e.stand,t2,d*60,e,false);
       }
     } else {
-      const sp=e.a?e.a.t:(e.pre?-1:Math.max(0,e.d.t-60));
-      addP(e.stand,sp,e.d?e.d.t*60:(e.a?e.a.t*60:0),e,!!e.a);
+      const sp=e.a?ET(e.a):(e.pre?-1:Math.max(0,ET(e.d)-60));
+      addP(e.stand,sp,e.d?ET(e.d)*60:(e.a?ET(e.a)*60:0),e,!!e.a);
     }
   });
   bySt.forEach(arr=>{
@@ -3101,6 +3275,7 @@ function bake(pct){
     for(let i=1;i<arr.length;i++){if(arr[i].isA)arr[i].ent.predKey=arr[i-1].end+1}
   });
   JOBS.forEach(j=>{if(j.t==='A'&&j.ent.predKey!=null)j.key=Math.max(j.key,j.ent.predKey)});
+  {const aKey=new Map();JOBS.forEach(j=>{if(j.t==='A')aKey.set(j.ent,j.key)});JOBS.forEach(j=>{if(j.t==='D'&&j.ent.a&&aKey.has(j.ent)&&j.key<=aKey.get(j.ent))j.key=aKey.get(j.ent)+1})}
   STANDS.forEach(s=>{s.freeAt=0});
   // Overnight arrivals must be physically routed before the related morning departures.
   // Their computed on-block time is then projected back one 24h cycle.
@@ -3132,7 +3307,7 @@ function bake(pct){
     else{if(e.a&&!e.k.t.length)return;if(e.pre&&e.overnightMissing)return;jobD(e)}
   });
   ENTS=ENTS.filter(e=>e.k.t.length>1);
-  try{tailsAssign()}catch(err){console.error('Aircraft registration / rotation assignment:',err);window.JN_TAIL_ERROR=String(err&&err.message||err)}
+  try{tailsMap()}catch(err){console.error('Aircraft registration / rotation assignment:',err);window.JN_TAIL_ERROR=String(err&&err.message||err)}
   ENTS.forEach(e=>{e.t0=e.k.t[0];e.t1=e.tEnd!=null?e.tEnd:e.k.t[e.k.t.length-1]});
   ENTS.sort((p,q)=>p.t0-q.t0);
   STAT.ms=performance.now()-tt;
@@ -3146,7 +3321,7 @@ function pose(e,t){
   const f=(t-k.t[lo])/(k.t[hi]-k.t[lo]);
   return{x:k.x[lo]+(k.x[hi]-k.x[lo])*f,y:k.y[lo]+(k.y[hi]-k.y[lo])*f,h:k.h[lo]+(k.h[hi]-k.h[lo])*f,z:k.z[lo]+(k.z[hi]-k.z[lo])*f};
 }
-window.SIMCORE={flightTails:id=>[...(FLIGHT_TAILS.get(id)||[])],RX0,RX1,bake,pose,get SCHEDULE_AUDIT(){return v79ScheduleAudit()},setRunwayMode,get runwayMode(){return runwayMode},get ENTS(){return ENTS},get overnightIntegrity(){return ENTS.filter(e=>e.pre).map(e=>({flight:e.id,stand:e.stand?.id||e.stand?.name,source:e.overnightIn?.id,onblock:e.overnightOnblock,appear:e.appear,push:e.pushT,missing:!!e.overnightMissing}))},get STAT(){return STAT},tailInfo,get FLEET(){return FLEET},tailHistory,get TOW(){return ENTS.filter(e=>e.tow&&e.tow.length)},MPP,KD,rdrIcon,rdrDim,flowAt,NX,NY,STANDS,INF,OUTF,RY,RX0,RX1,RWS:RWY};
+window.SIMCORE={ops:{inbound:opsInbound,knockOn:opsKnockOn,swapOptions:opsSwapOptions},flightTails:id=>[...(FLIGHT_TAILS.get(id)||[])],RX0,RX1,bake,pose,get SCHEDULE_AUDIT(){return v79ScheduleAudit()},setRunwayMode,get runwayMode(){return runwayMode},get ENTS(){return ENTS},get overnightIntegrity(){return ENTS.filter(e=>e.pre).map(e=>({flight:e.id,stand:e.stand?.id||e.stand?.name,source:e.overnightIn?.id,onblock:e.overnightOnblock,appear:e.appear,push:e.pushT,missing:!!e.overnightMissing}))},get STAT(){return STAT},tailInfo,get FLEET(){return FLEET},tailHistory,get TOW(){return ENTS.filter(e=>e.tow&&e.tow.length)},MPP,KD,rdrIcon,rdrDim,flowAt,NX,NY,STANDS,INF,OUTF,RY,RX0,RX1,RWS:RWY};
 })();
 </script><script>(function(){
 'use strict';
@@ -5435,6 +5610,8 @@ function tzLabel(city,absMin){
   if(!f){f=new Intl.DateTimeFormat('en-GB',{timeZone:z,timeZoneName:'shortOffset'});TZ_OFF.set(z,f)}
   const n=(f.formatToParts(new Date(((absMin==null?0:absMin)-420)*60000)).find(x=>x.type==='timeZoneName')||{}).value||'GMT+7';
   return n.replace('GMT','UTC')}
+const CAUSE_LBL={strike:'Strike',weather:'Weather',atc:'Air traffic',technical:'Technical',crew:'Crew',other:'Disruption'};
+function disPill(l,r){const c=window.JN_OPS&&r.inj>0?JN_OPS.causeFor(l.d,l.flight):null;return r.inj>0?'<span class="v100-status late">+'+Math.floor(r.inj/60)+'h'+String(r.inj%60).padStart(2,'0')+' · '+(CAUSE_LBL[c&&c.cause]||'Disruption')+'</span>':''}
 const lhm=(absMin,city)=>{const t=localAt(absMin,city);return hm(t.min)};
 /* local clock + day marker (+1d/-1d) relative to refDay (the scheduled departure's local date) */
 function ltime(absMin,city,refDay){
@@ -5454,7 +5631,8 @@ function legRow(l,now,today,prior){
     ?today*1440+e.takeoff/60:null;
   // Already occurred actual simulator events take precedence over history estimates.
   // For historical legs, carry forward only delays supported by the previous leg.
-  let predictedDeparture=Math.max(l.std+Math.max(-3,plannedDelay),priorReady);
+  const inj=(window.JN_OPS&&l.d!=null)?JN_OPS.delayFor(l.d,l.flight):0;
+  let predictedDeparture=Math.max(l.std+Math.max(-3,plannedDelay)+inj,priorReady);
   // v117: the live simulator is authoritative for today's legs, past OR future.
   // History must never show a departure/landing the simulator has not reached yet.
   if(observedDeparture!=null){predictedDeparture=observedDeparture;}
@@ -5484,7 +5662,7 @@ function legRow(l,now,today,prior){
   else if(l.d===today&&l.kind==='d'&&e&&Number.isFinite(e.pushT)&&nowAbs>=today*1440+e.pushT/60){st='Off-block · taxiing for departure';tone='live'}
   else if(nowAbs>l.std+5){st='Delayed · awaiting departure';tone='late'}
   else{st='Scheduled';tone='scheduled'}
-  return{l,atd,ata,etd:predictedDeparture,eta:predictedArrival,atdActual:!!atdActual,ataActual:!!ataActual,st,tone,today:l.d===today,nextState:outState};
+  return{l,inj,atd,ata,etd:predictedDeparture,eta:predictedArrival,atdActual:!!atdActual,ataActual:!!ataActual,st,tone,today:l.d===today,nextState:outState};
 }
 const absDay=m=>Math.floor(m/1440);
 const shortDateForMin=m=>dshort(absDay(m));
@@ -5601,7 +5779,7 @@ function render(H){
         '</div>';
       };
       return '<section class="v81-leg v100-leg">'+
-        '<div class="v81-leghead"><span class="v81-dot '+statusClass+'"></span><span class="v81-date">'+esc(dateLabel)+'</span><a class="v81-flight v181-fl" href="#/flight/'+esc(String(l.flight).replace(' ',''))+'">'+esc(l.flight)+'</a>'+pill+pairNote+'</div>'+
+        '<div class="v81-leghead"><span class="v81-dot '+statusClass+'"></span><span class="v81-date">'+esc(dateLabel)+'</span><a class="v81-flight v181-fl" href="#/flight/'+esc(String(l.flight).replace(' ',''))+'">'+esc(l.flight)+'</a>'+pill+disPill(l,r)+pairNote+'</div>'+
         '<div class="v100-legbody">'+
           '<div class="v81-route">'+
             '<div class="v81-line"><i>↗</i><b>'+esc(fromLabel)+'</b><span class="v81-code">'+esc(fromCode)+'</span><span class="v182-off">'+esc(tzLabel(l.from,l.std!=null?l.std:l.v105Date))+'</span></div>'+
@@ -5681,7 +5859,7 @@ function flightLegHtml(o){
   const durTxt=actual!=null?fmtDur(actual):(r.atd!=null?'En route':'—');
   const cell=(lab,val,cls)=>'<div class="v181-c'+(cls?' '+cls:'')+'"><small>'+lab+'</small><b>'+val+'</b></div>';
   return '<section class="v81-leg v100-leg v181-leg">'+
-    '<div class="v81-leghead"><span class="v81-dot '+statusClass+'"></span><span class="v81-date">'+esc(dayLabel)+'</span>'+pill+
+    '<div class="v81-leghead"><span class="v81-dot '+statusClass+'"></span><span class="v81-date">'+esc(dayLabel)+'</span>'+pill+disPill(l,r)+
       (o.reg?'<a class="v181-reg v73-regl" href="#/aircraft/'+esc(o.reg)+'">'+esc(o.reg)+' · '+esc(typeCodeOf(o.ac))+' ›</a>':'<span class="v181-reg v181-untracked">'+esc(typeCodeOf(o.ac))+' · registration not tracked</span>')+'</div>'+
     '<div class="v81-route"><div class="v81-line"><i>↗</i><b>'+esc(fromLabel)+'</b><span class="v81-code">'+esc(fromCode)+'</span><span class="v182-off">'+esc(tzLabel(l.from,l.std))+'</span></div>'+
       '<div class="v81-line"><i>↘</i><b>'+esc(toLabel)+'</b><span class="v81-code">'+esc(toCode)+'</span><span class="v182-off">'+esc(tzLabel(l.to,l.sta))+'</span></div></div>'+
