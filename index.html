@@ -2558,29 +2558,56 @@ function tVisitsFor(inf,outf){
     if(e.k==='ovD'){const A=ev.find(z=>z.k==='ovA'&&z.od===e.d);return{d:e.d,pre:true,overnightIn:A?A.a:null}}
     return{d:e.d}});
   return tBuildVisits(ents)}
-const T_GHOST=new Map();
-function tGhostBase(dow){
-  let V=T_GHOST.get(dow);if(V)return V;
-  V=tVisitsFor(INF_ALL.filter(f=>flRuns(f,dow)),OUTF_ALL.filter(f=>flRuns(f,dow)));
-  T_GHOST.set(dow,V);return V}
-let T_GHOST_ALL=null;
-function tGhostAll(){return T_GHOST_ALL||(T_GHOST_ALL=tVisitsFor(INF_ALL,OUTF_ALL))}
+/* v179: weekly services are flown by aircraft from the existing pool. Flights that operate on certain weekdays and form
+   a same-day round trip (same carrier, city and rotation pid, outbound before inbound) are NOT part of the daily
+   rotation plan; each operating day they are slotted into a real idle gap of a compatible aircraft that is at Jakarta
+   (location + minimum turn checked by tFits). So they add no aircraft of their own while an idle window exists. */
+const T_LOOPS=(()=>{
+  const outs=OUTF_ALL.filter(f=>f.days),ins=INF_ALL.filter(f=>f.days),used=new Set(),L=[];
+  for(const o of outs){const i=ins.find(x=>!used.has(x)&&x.pid&&x.pid===o.pid&&x.c===o.c&&x.city===o.city&&x.days===o.days&&x.t>o.t);
+    if(i){used.add(i);L.push({out:o,in:i})}}
+  return L})();
+const T_LOOPED=new Set();T_LOOPS.forEach(l=>{T_LOOPED.add(l.out);T_LOOPED.add(l.in)});
+window.__TAIL_LOOP_FAIL=0;
+let T_CORE=null;
+function tCoreVisits(){return T_CORE||(T_CORE=tVisitsFor(INF_ALL.filter(f=>!T_LOOPED.has(f)),OUTF_ALL.filter(f=>!T_LOOPED.has(f))))}
+/* Weekly flights that could not be turned into a loop stay in the plan as daily; trim them out on days they do not run. */
+function tVisitOnDay(v,d){
+  const dow=tDow(d),ok=f=>!f||flRuns(f,dow);
+  if(v.kind==='ovn')return ok(v.a)?v:null;
+  if(v.kind==='pre')return ok(v.d)?v:null;
+  const a=ok(v.a),dd=ok(v.d);
+  if(a&&dd)return v;
+  if(!a&&!dd)return null;
+  if(v.kind==='r')return a?Object.assign({},v,{kind:'a',d:null,S:v.a.t-tBlk(v.a.city,null),E:v.a.t,orig:v.a.city,dest:'Jakarta'})
+                         :Object.assign({},v,{kind:'d',a:null,S:v.d.t,E:v.d.t+tBlk(null,v.d.city),orig:'Jakarta',dest:v.d.city});
+  return null}
+function tPlaceLoops(d,V,F){
+  const dow=tDow(d),today=T_LOOPS.filter(l=>flRuns(l.out,dow)).sort((a,b)=>a.out.t-b.out.t||(a.out.id<b.out.id?-1:1));
+  if(!today.length)return;
+  F.forEach(fl=>fl.tails.forEach(t=>t.seq.sort((a,b)=>a.S-b.S)));
+  today.forEach((l,n)=>{
+    const o=l.out,ac=v111Family(o.c,o.ac)?'Airbus A320 family':o.ac,fl=F.get(o.c+'|'+ac);
+    const v={kind:'wk',a:l.in,d:o,S:o.t,E:l.in.t,orig:'Jakarta',dest:'Jakarta',c:o.c,ac,id:o.id+'|'+l.in.id+'|wk',k116:-1000-n,e:null,tail:null,planned:null,swap:null,aogKept:false,eA:null,eD:null};
+    let best=null,bs=1e18;
+    if(fl)for(const t of fl.tails){
+      const pos=tFits(t,v);if(pos<0)continue;
+      const p=t.seq[pos-1],nx=t.seq[pos],turn=o.c==='GA'?55:40;
+      /* best fit: leave the least slack around the inserted round trip so big free windows stay free elsewhere */
+      const sc=(p?v.S-(p.E+turn):720)+(nx?nx.S-(v.E+turn):720)+hash(d+'|'+o.id+'|'+t.reg)%7;
+      if(sc<bs){bs=sc;best=t}}
+    if(best){best.seq.splice(tFits(best,v),0,v);best.rdy=Math.max(best.rdy,-1e9);v.tail=best;V.push(v)}
+    else{window.__TAIL_LOOP_FAIL++;}})}
 function tailsAssign(){
   const {idx,ds}=tDayIndex();
-  const planV=tGhostAll();
+  const planV=tCoreVisits();
   const F=tSizeFleets(planV);
-  const idK=new Map(),byFlight=new Map();
-  planV.forEach(v=>{idK.set(v.id,v.k116);for(const f of [v.d,v.a])if(f){(byFlight.get(f.id)||byFlight.set(f.id,[]).get(f.id)).push(v.k116)}});
   let carry=null,res=null,aog=null,V=null;
   for(let d=idx-TAIL_WARM;d<=idx;d++){
-    V=tGhostBase(tDow(d)).map(v=>Object.assign({},v,{tail:null,planned:null,swap:null,aogKept:false,eA:null,eD:null}));
-    /* A weekday's pairing can differ from the canonical plan: exact visit id first, else reuse the slot of a canonical
-       visit that shares a flight, never giving two visits the same slot on one day. */
-    const used=new Set();V.forEach(v=>{if(idK.has(v.id)){v.k116=idK.get(v.id);used.add(v.k116)}});
-    V.forEach((v,i)=>{if(idK.has(v.id))return;
-      const cand=[...(v.d?byFlight.get(v.d.id)||[]:[]),...(v.a?byFlight.get(v.a.id)||[]:[])].find(k=>!used.has(k));
-      if(cand!=null){v.k116=cand;used.add(cand)}else v.k116=-1-i});
-    res=tAssignDay(d,V,F,carry);res.returnSwaps=0;aog=(d===idx-TAIL_WARM)?{aog:0,moved:0,kept:0}:tAog(d,F);
+    V=planV.map(v=>tVisitOnDay(v,d)).filter(Boolean).map(v=>Object.assign({},v,{tail:null,planned:null,swap:null,aogKept:false,eA:null,eD:null}));
+    res=tAssignDay(d,V,F,carry);res.returnSwaps=0;
+    tPlaceLoops(d,V,F);
+    aog=(d===idx-TAIL_WARM)?{aog:0,moved:0,kept:0}:tAog(d,F);
     F.forEach(fl=>fl.tails.forEach(t=>{if(t.aog&&!t.seq.length)(t.aogDays=t.aogDays||new Set()).add(d);if(t.seq.length)(t.hist=t.hist||new Map()).set(d,t.seq.slice().sort((p,q)=>p.S-q.S))}));
     carry=new Map();V.forEach(v=>{if(v.kind==='ovn'&&v.night&&v.tail)carry.set(v.night,v.tail.reg)})}
   F.forEach(fl=>fl.tails.forEach((t,i)=>{t.model=v111FleetModel(fl.c,fl.ac,i,fl.tails.length)}));
