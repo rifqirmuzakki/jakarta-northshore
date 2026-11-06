@@ -11,6 +11,11 @@ what is open, with a *Handle* button that opens the recovery screen pre-filled (
 *decisions* are saved (linked to the incident); the incidents themselves are regenerated identically from the date, so history is stable.
 `?incidents=off|calm|realistic|chaos` overrides the saved level.
 
+**The inbox** has three tabs: *Needs you* (flights whose lateness knocks on to something, with the cost of waiting on the row and a deadline),
+*No knock-on* (late arrivals nothing else depends on) and *Handled*. Weather and closure events are collapsed under "What is happening". A
+decision shows a sticky bar with the chosen action and its effect; cancelling asks for confirmation. Saving reloads the simulation, reopens
+the hub and shows the result ("GA 656: +30m -> on time") before and after.
+
 **Triggers and impacts.** Weather, technical faults, crew, airport closures, strikes and air traffic restrictions are *triggers*: they
 are context ("What is happening"), not something to resolve. What you act on are the *impacts*: a late inbound flight, a late
 outbound flight, an aircraft that cannot operate its next departure. The inbox ("Flights affected") lists those, each tagged with its

@@ -1064,6 +1064,10 @@ body.jn-detail #fm-launch{display:block;top:calc(10px + env(safe-area-inset-top,
 .fm-banner.warn{background:#9a5b00}.fm-banner.ok{background:#1d6b4a}.fm-banner.info{background:#184e72}.fm-banner button{margin-left:8px}
 #fm-panel #op-body .fm-tools{background:transparent;border:0;padding:0 0 10px}
 .op-alert{display:grid;grid-template-columns:10px 1fr auto;gap:10px;align-items:start;background:#fff;border:1px solid #dbe3e9;border-radius:11px;padding:11px 12px;margin-bottom:8px}.op-alert i{width:10px;height:10px;border-radius:50%;margin-top:5px}.op-alert b{display:block;font-size:13.5px}.op-alert span{display:block;font-size:12px;color:#44596a;margin-top:2px;line-height:1.4}.op-alert small{display:block;font-size:11px;color:#6a7d8c;margin-top:3px}.op-alert.done{opacity:.72}
+.op-tabs{display:flex;gap:6px;margin:6px 0 10px}.op-tabs button{flex:1;border:1px solid #d3dde4;background:#fff;color:#37556b;border-radius:10px;padding:9px 6px;font:600 12.5px inherit;cursor:pointer}.op-tabs button.on{background:#18394d;color:#fff;border-color:#18394d}.op-tabs i{font-style:normal;font-size:10.5px;background:#8798a5;color:#fff;border-radius:8px;padding:0 6px;margin-left:3px}.op-tabs [data-tab="needs"] i{background:#c0392b}.op-tabs button.on i{background:#fff;color:#18394d}
+.op-trigs{margin-top:16px}.op-trigs summary{cursor:pointer;font-size:12.5px;color:#37556b;padding:9px 0}.op-alert small b.bad{color:#b03030;display:inline}
+.op-sticky{position:sticky;bottom:0;margin:14px -16px 0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.96);border-top:1px solid #dbe3e9;display:flex;gap:10px;align-items:center;justify-content:space-between;z-index:3}.op-sum{font-size:12.5px;color:#37556b;min-width:0}.fm-btn.danger{background:#a83232;color:#fff;border-color:#a83232}.op-choice.cxc.on{border-color:#a83232;background:#fdf1f1}
+.op-q .fm-chip{padding:5px 11px;font-size:12px}.op-q [data-a="cx"]{margin-left:auto;color:#a83232;border-color:#e3b9b9}.op-q{padding:8px 11px}
 .op-trig{display:grid;grid-template-columns:10px 1fr;gap:10px;background:#f4f7f9;border:1px solid #e2e9ee;border-radius:11px;padding:9px 12px;margin-bottom:8px}.op-trig i{width:10px;height:10px;border-radius:50%;margin-top:5px}.op-trig b{display:block;font-size:13px}.op-trig span{display:block;font-size:12px;color:#44596a;margin-top:2px}.op-trig small{display:block;font-size:11px;color:#6a7d8c;margin-top:2px}.op-tag{font-style:normal;font-size:10.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;background:#e8eef3;color:#37556b;border-radius:5px;padding:1px 6px;margin-right:4px}
 .op-pick{margin:10px 0 6px}.op-pick label{display:block;font-size:12px;color:#44596a;margin-bottom:4px}.op-pick select{width:100%;padding:9px 10px;border:1px solid #cfd9e0;border-radius:9px;font-size:13px;background:#fff}
 .op-hours{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.op-hours .fm-chip{white-space:nowrap}.op-dot{font-style:normal;background:#b03030;color:#fff;border-radius:8px;padding:0 5px;font-size:10px;margin-left:3px}
@@ -1252,7 +1256,7 @@ function open(){wrap.classList.add('open');if(!wrap.dataset.once){wrap.dataset.o
 launch.onclick=open;
 const TITLES={home:'Operations',queue:'Jakarta queue and sequence',impact:'A flight is affected',incident:'Incident',weather:'Weather or an airport issue',aog:'An aircraft is out of service',delay:'A flight is delayed',change:'Change a flight',add:'Add a new service',cancel:'Cancel a flight',mine:'My changes and events'};
 function draw(){
-  $('#op-title').textContent=TITLES[screen]||'Operations';
+  $('#op-title').textContent=((screen==='delay'||screen==='aog')&&st.inc)?'A flight is affected':(TITLES[screen]||'Operations');
   $('#op-sub').textContent=screen==='home'?'Viewing '+longDate(C.viewDs):'';
   $('#op-back').hidden=screen==='home';
   setStatus('');
@@ -1275,6 +1279,27 @@ function relevantIncidents(){
   if(!window.SIMCORE||!window.SIMCORE.incidents)return [];
   const vd=C.dayNum(C.viewDs);
   return SIMCORE.incidents.list().filter(e=>e.isImpact&&e.known&&e.applied&&C.dayNum(e.date)===vd).sort((a,b)=>(a.handled-b.handled)||(a.handled?b.atMin-a.atMin:((a.deadline==null?1e9:a.deadline)-(b.deadline==null?1e9:b.deadline))))}
+/* what a late flight does to the rest of the day, so the inbox can say what is at stake and hide what is not */
+function impactInfo(e){
+  try{const S=window.SIMCORE;if(!S||!S.ops||!S.FLEET)return null;const O=S.ops;
+    if(e.kind==='aog'){const it=O.inbound().find(x=>x.id===e.arrival&&x.unit);if(!it)return {needs:false,down:0,n:0,why:'It is not turning at Jakarta, so its flights just run late'};
+      const a=O.aogOptions(e.arrival,e.fromMin,e.untilMin);if(!a||!a.supported||a.noEffect||!(a.wait.total>0))return {needs:false,down:0,n:0,why:'The repair finishes before its next departure, so nothing is late'};
+      return {needs:true,down:a.wait.total,n:(a.wait.legs||[]).length,next:a.next}}
+    if(e.kind==='wimp'&&e.dir==='out')return {needs:e.minutes>=90,down:e.minutes,n:1,out:true,why:'It leaves when the airport is back to normal'};
+    const it=O.inbound().find(x=>x.id===e.flight&&x.unit);
+    if(!it)return {needs:false,down:0,n:0,why:'Nothing else depends on it today (it stays on the ground or is not tracked)'};
+    const ko=O.knockOn(e.flight,0),d=(ko.legs||[]).filter(l=>l.kind==='d'),tot=d.reduce((a,l)=>a+l.delay,0);
+    return tot>=15?{needs:true,down:tot,n:d.length,next:it.next}:{needs:false,down:0,n:0,why:'Absorbed by the turnaround, nothing else is late'}
+  }catch(x){return null}}
+let homeTab='needs';
+/* before a decision is saved the page reloads (the simulation is rebuilt); remember what the affected flights looked like, and show the outcome afterwards */
+const delayNow=id=>{const S=window.SIMCORE;if(!S||!S.INF)return 0;const f=S.INF.concat(S.OUTF).find(x=>x.id===id);return f?Math.round(f.dly||0):0};
+function stashPending(ids,extra){try{const items=[...new Set(ids.filter(Boolean))].map(id=>({id,k:'f',before:delayNow(id)})).concat(extra||[]);sessionStorage.setItem('jn-op-pending',JSON.stringify({items}));sessionStorage.setItem('jn-open-alerts','1')}catch(x){}}
+function resultLines(pend){const S=window.SIMCORE,fmt=n=>n>=5?'+'+durTxt(n):'on time';
+  return pend.items.map(it=>{
+    if(it.k==='f'){const f=S.INF.concat(S.OUTF).find(x=>x.id===it.id);if(!f)return null;if(f.cx)return html(it.id)+': cancelled';const a=Math.round(f.dly||0);return html(it.id)+': '+fmt(it.before)+' → <b>'+fmt(a)+'</b>'}
+    const Q=queueData(),x=(it.k==='qa'?Q.arr:Q.dep).find(y=>y.id===it.id);if(!x)return html(it.id)+': cancelled';return html(it.id)+' '+(it.k==='qa'?'landing hold':'departure hold')+': '+fmt(it.before)+' → <b>'+fmt(Math.round(x.delay))+'</b>'}).filter(Boolean)}
+
 function relevantTriggers(){
   if(!window.SIMCORE||!window.SIMCORE.incidents)return [];
   const vd=C.dayNum(C.viewDs),L=SIMCORE.incidents.list();
@@ -1283,9 +1308,23 @@ const CAUSE_TAG={weather:'Weather',technical:'Technical',crew:'Crew',atc:'Air tr
 function drawHome(){
   const n=C.local().changes.length+C.local().ops.length,repo=((window.JN_CHANGES_REPO&&window.JN_CHANGES_REPO.changes)||[]).length;
   const inc=relevantIncidents(),open=inc.filter(e=>!e.handled).length,lvl=window.JN_OPS?JN_OPS.level:'realistic',ctl=window.JN_OPS?JN_OPS.controller:'auto';
-  const trg=relevantTriggers(),strip=trg.length?`<h4 class="op-h" style="margin-top:2px">What is happening</h4>`+trg.map(e=>{const v=incView(e);return `<div class="op-trig"><i style="background:${SEV_DOT[v.sev]}"></i><div><b>${html(v.title)}</b><span>${html(v.detail)}</span><small>${e.mode==='rwy'?'Open Jakarta queue to see who waits and move flights up':(e.n?e.n+' flight'+(e.n===1?'':'s')+' below can be affected':'Flights follow the weather, nothing to decide')}</small></div></div>`}).join(''):'';
-  const alerts=inc.length?inc.map(e=>{const v=incView(e);return `<div class="op-alert ${e.handled?'done':''}"><i style="background:${SEV_DOT[v.sev]}"></i><div><b>${html(v.title)}</b><span><em class="op-tag">${html(CAUSE_TAG[e.cause]||'Other')}</em> ${html(v.detail)}</span><small>${e.handled?(e.decision&&e.decision.by==='auto'?'Handled by the controller':'Handled')+(e.decision&&e.decision.note?' · '+html(e.decision.note.replace(/^(Recovery|Controller): /,'')):''):'Open · known since '+hm(((e.atMin%1440)+1440)%1440)+' WIB'+(e.deadline!=null?' · decide by '+hm(((e.deadline%1440)+1440)%1440)+' or the controller acts':'')}</small></div><button class="fm-btn ${e.handled?'':'primary'}" data-inc="${html(e.id)}">${e.handled?(e.decision&&e.decision.by==='auto'?'Review':'View'):'Handle'}</button></div>`}).join(''):`<p class="op-lead">${lvl==='off'?'Generated incidents are switched off.':'No flight is affected right now. Disruptions appear here as they happen.'}</p>`;
-  $('#op-body').innerHTML=`<div class="op-pad">${strip}<h4 class="op-h" style="margin-top:${strip?'14px':'2px'}">Flights affected${open?` <i class="op-count" style="position:static">${open}</i>`:''}</h4>${alerts}
+  const trg=relevantTriggers();
+  const strip=trg.length?`<details class="op-trigs"><summary><b>What is happening</b> · ${trg.length} event${trg.length===1?'':'s'}${trg.some(e=>e.mode==='rwy')?' · a runway is closed':''}</summary>`+trg.map(e=>{const v=incView(e);return `<div class="op-trig"><i style="background:${SEV_DOT[v.sev]}"></i><div><b>${html(v.title)}</b><span>${html(v.detail)}</span><small>${e.mode==='rwy'?'Open Jakarta queue to see who waits and move flights up':(e.n?e.n+' flight'+(e.n===1?'':'s')+' below can be affected':'Flights follow the weather, nothing to decide')}</small></div></div>`}).join('')+`</details>`:'';
+  const imp=inc.map(e=>({e,info:e.handled?null:impactInfo(e)}));
+  const bucket=x=>x.e.handled?'done':((x.info&&x.info.needs===false)?'fyi':'needs');
+  const cnt={needs:0,fyi:0,done:0};imp.forEach(x=>cnt[bucket(x)]++);
+  if(homeTab==='needs'&&!cnt.needs&&(cnt.fyi||cnt.done))homeTab=cnt.fyi?'fyi':'done';
+  const row=x=>{const e=x.e,v=incView(e),inf=x.info,dl=e.deadline!=null?hm(((e.deadline%1440)+1440)%1440):null;
+    let line;
+    if(e.handled)line=(e.decision&&e.decision.by==='auto'?'Handled by the controller':'Handled')+(e.decision&&e.decision.note?' · '+html(e.decision.note.replace(/^(Recovery|Controller): /,'')):'');
+    else if(inf&&inf.needs)line=`<b class="bad">If you wait: +${durTxt(inf.down)}${inf.n>1?' across '+inf.n+' flights':''}</b>${inf.next?' · '+html(inf.next.id)+' to '+html(String(inf.next.city).split(' / ')[0])+' at risk':''}${dl?' · decide by '+dl:''}`;
+    else if(inf)line=html(inf.why||'Nothing else is affected');
+    else line='Open · known since '+hm(((e.atMin%1440)+1440)%1440)+' WIB'+(dl?' · decide by '+dl+' or the controller acts':'');
+    return `<div class="op-alert ${e.handled?'done':''}"><i style="background:${SEV_DOT[v.sev]}"></i><div><b>${html(v.title)}</b><span><em class="op-tag">${html(CAUSE_TAG[e.cause]||'Other')}</em> ${html(v.detail)}</span><small>${line}</small></div><button class="fm-btn ${e.handled||(inf&&inf.needs===false)?'':'primary'}" data-inc="${html(e.id)}">${e.handled?(e.decision&&e.decision.by==='auto'?'Review':'View'):'Handle'}</button></div>`};
+  const tabs=`<div class="op-tabs" role="tablist">${[['needs','Needs you'],['fyi','No knock-on'],['done','Handled']].map(t=>`<button role="tab" aria-selected="${homeTab===t[0]}" class="${homeTab===t[0]?'on':''}" data-tab="${t[0]}">${t[1]}${cnt[t[0]]?` <i>${cnt[t[0]]}</i>`:''}</button>`).join('')}</div>`;
+  const shown=imp.filter(x=>bucket(x)===homeTab).sort((p,q)=>homeTab==='done'?q.e.atMin-p.e.atMin:((p.e.deadline==null?1e9:p.e.deadline)-(q.e.deadline==null?1e9:q.e.deadline)));
+  const alerts=tabs+(shown.length?shown.map(row).join(''):`<p class="op-lead">${homeTab==='needs'?(lvl==='off'?'Generated incidents are switched off.':'Nothing needs you right now. Disruptions appear here as they happen.'):(homeTab==='fyi'?'No late flights without a knock-on.':'Nothing handled yet.')}</p>`);
+  $('#op-body').innerHTML=`<div class="op-pad"><h4 class="op-h" style="margin-top:2px">Flights affected${cnt.needs?` <i class="op-count" style="position:static">${cnt.needs}</i>`:''}</h4>${alerts}${strip}
 <h4 class="op-h">Jakarta</h4>
 ${card('queue','Jakarta queue and sequence','Who is waiting to land and take off, and who goes first.')}
 <h4 class="op-h">Change the timetable</h4>
@@ -1300,6 +1339,7 @@ ${card('mine','My changes and events','See, undo, export or import what you have
 <div class="op-chips" id="op-lvl">${[['off','Off'],['calm','Calm'],['realistic','Realistic'],['chaos','Chaos']].map(l=>`<button class="fm-chip ${lvl===l[0]?'on':''}" data-l="${l[0]}">${l[1]}</button>`).join('')}</div>
 <details class="op-adv"><summary>Create a scenario yourself (advanced)</summary>
 ${card('delay','A flight is delayed','Make an inbound flight late and see the knock-on.')}${card('aog','An aircraft is out of service','Take an aircraft on the ground out of service.')}${card('weather','Weather or an airport issue','Close or slow an airport.')}</details></div>`;
+  $('#op-body').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{homeTab=b.dataset.tab;drawHome()});
   $('#op-body').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
   $('#op-body').querySelectorAll('[data-inc]').forEach(b=>b.onclick=()=>handleIncident(inc.find(x=>x.id===b.dataset.inc)));
   $('#op-ctl').querySelectorAll('[data-ct]').forEach(b=>b.onclick=()=>{JN_OPS.setController(b.dataset.ct);const u=new URL(location.href);if(u.searchParams.has('controller'))u.searchParams.set('controller',b.dataset.ct);location.href=u.toString()});
@@ -1348,14 +1388,15 @@ ${clo.length?clo.map(o=>`<div class="op-panel"><b>${o.mode==='rwy'?html(RWYN[o.r
 <h4 class="op-h">Landing queue · ${String(st.hour).padStart(2,'0')}:00</h4>${A.map(x=>row(x,'a')).join('')||'<p class="op-lead">Nobody is held to land in this hour.</p>'}
 <h4 class="op-h">Take-off queue · ${String(st.hour).padStart(2,'0')}:00</h4>${D.map(x=>row(x,'d')).join('')||'<p class="op-lead">Nobody is held to take off in this hour.</p>'}
 ${mine.length?`<h4 class="op-h">Your sequence decisions</h4>${mine.map(o=>`<div class="op-row"><span>Moved up: ${html((o.flights||[]).join(', '))}</span><button class="op-link" data-undo="${html(o.id)}">Undo</button></div>`).join('')}`:''}
-<div class="buttons"><button class="fm-btn primary" id="op-qsave" ${Object.keys(sel).length?'':'disabled'}>Apply ${Object.keys(sel).length?'('+Object.keys(sel).length+')':''}</button></div><p class="fm-msg" id="op-msg"></p></div>`;
+<div class="op-sticky"><span class="op-sum">${Object.keys(sel).length?Object.keys(sel).length+' selected':'Choose flights above'}</span><button class="fm-btn primary" id="op-qsave" ${Object.keys(sel).length?'':'disabled'}>Apply</button></div><p class="fm-msg" id="op-msg"></p></div>`;
   $('#op-body').querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{const m=b.dataset.rm;(C.ops()||[]).filter(o=>o.kind==='rwmode'&&C.dayNum(o.date)===vd).forEach(o=>C.removeOp(o.id));
     C.addOp({id:uid('op_'),v:1,scope:'ops',kind:'rwmode',mode:m,date:C.viewDs,at:'',note:'Runway configuration for the day: '+m,createdAt:new Date().toISOString()});
     try{sessionStorage.setItem('jn-open-queue','1');sessionStorage.setItem('jn-op-toast','Runway configuration set to '+m)}catch(x){}location.reload()});
   $('#op-body').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{st.hour=+b.dataset.h;drawQueue()});
   $('#op-body').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{const id=b.dataset.q,a=b.dataset.a;if(sel[id]===a)delete sel[id];else sel[id]=a;drawQueue()});
   $('#op-body').querySelectorAll('[data-undo]').forEach(b=>b.onclick=()=>{C.removeOp(b.dataset.undo);try{sessionStorage.setItem('jn-open-queue','1')}catch(x){}location.reload()});
-  const sv=$('#op-qsave');if(sv)sv.onclick=()=>{const now=new Date().toISOString(),up=Object.keys(sel).filter(k=>sel[k]==='prio'),dn=Object.keys(sel).filter(k=>sel[k]==='cx'),mk=x=>Object.assign({id:uid('op_'),v:1,scope:'ops',date:C.viewDs,at:'',cause:'other',createdAt:now},x);
+  const sv=$('#op-qsave');if(sv)sv.onclick=()=>{if(Object.keys(sel).some(k=>sel[k]==='cx')&&!confirm('Cancel '+Object.keys(sel).filter(k=>sel[k]==='cx').join(', ')+'? Passengers are rebooked.'))return;const now=new Date().toISOString(),up=Object.keys(sel).filter(k=>sel[k]==='prio'),dn=Object.keys(sel).filter(k=>sel[k]==='cx'),mk=x=>Object.assign({id:uid('op_'),v:1,scope:'ops',date:C.viewDs,at:'',cause:'other',createdAt:now},x);
+    {const Q2=queueData();try{sessionStorage.setItem('jn-op-pending',JSON.stringify({items:Object.keys(sel).map(id=>{const a=Q2.arr.find(y=>y.id===id),d=Q2.dep.find(y=>y.id===id);return a?{id,k:'qa',before:Math.round(a.delay)}:(d?{id,k:'qd',before:Math.round(d.delay)}:null)}).filter(Boolean)}))}catch(x){}}
     if(up.length)C.addOp(mk({kind:'prio',flights:up,note:'Expedited in the queue: '+up.join(', ')}));
     Object.keys(sel).filter(k=>sel[k]==='h15'||sel[k]==='h30').forEach(k=>C.addOp(mk({kind:'delay',flight:k,minutes:sel[k]==='h15'?15:30,cause:'other',note:'Held at the gate by the controller to ease the queue'})));
     if(dn.length)C.addOp(mk({kind:'cancelflt',flights:dn,note:'Cancelled from the queue: '+dn.join(', ')}));
@@ -1368,13 +1409,13 @@ function drawImpact(){waitReady(()=>{
   $('#op-body').innerHTML=`<div class="op-pad"><div class="op-sel"><b>${html(v.title)}</b><br><small>${html(CAUSE_TAG[e.cause]||'')} · ${html(v.detail)}</small></div>
 <div class="op-step">What do you do?</div>
 <div class="op-choice ${st.opt!=='cx'?'on':''}" data-opt="wait"><b>Wait</b><span>${waitTxt}</span></div>
-<div class="op-choice ${st.opt==='cx'?'on':''}" data-opt="cx"><b>Cancel ${html(fl)}</b><span>The flight does not operate and passengers are rebooked.</span><em>1 flight cancelled</em></div>
-<div class="buttons"><button class="fm-btn primary" id="op-save">Record decision</button></div></div>`;
+<div class="op-choice cxc ${st.opt==='cx'?'on':''}" data-opt="cx"><b>Cancel ${html(fl)}</b><span>The flight does not operate and passengers are rebooked.</span><em>1 flight cancelled</em></div>
+<div class="op-sticky"><span class="op-sum">${st.opt==='cx'?'Cancel '+html(fl):'Wait'}</span><button class="fm-btn ${st.opt==='cx'?'danger':'primary'}" id="op-save">Record decision</button></div></div>`;
   $('#op-body').querySelectorAll('.op-choice').forEach(c=>c.onclick=()=>{st.opt=c.dataset.opt==='cx'?'cx':null;drawImpact()});
-  $('#op-save').onclick=()=>{const now=new Date().toISOString();let ev;
+  $('#op-save').onclick=()=>{if(st.opt==='cx'&&!confirm('Cancel '+fl+'? Passengers are rebooked. You can undo it later from My changes and events.'))return;const now=new Date().toISOString();let ev;
     if(st.opt==='cx')ev=[{id:uid('op_'),v:1,scope:'ops',kind:'cancelflt',date:e.date,at:'',flights:[fl],cause:e.cause||'other',note:'Cancelled '+fl,resolves:e.id,createdAt:now}];
     else ev=[ackDecision(e,'Waited, the delay plays out')];
-    ev.forEach(x=>C.addOp(x));try{sessionStorage.setItem('jn-op-toast','Decision recorded: '+(st.opt==='cx'?fl+' cancelled':fl+' waits'))}catch(x){}location.reload()}})}
+    stashPending([fl]);ev.forEach(x=>C.addOp(x));try{sessionStorage.setItem('jn-op-toast','Decision recorded: '+(st.opt==='cx'?fl+' cancelled':fl+' waits'))}catch(x){}location.reload()}})}
 function drawIncident(){waitReady(()=>{
   const e=st.inc,v=incView(e);
   let body='';
@@ -1404,7 +1445,7 @@ function drawDelay(){waitReady(()=>{
 <div class="op-chips" id="op-cause">${CAUSES.map(c=>`<button class="fm-chip ${st.cause===c[0]?'on':''}" data-c="${c[0]}">${c[1]}</button>`).join('')}</div>
 <input class="op-search" id="op-note" placeholder="Note (optional), e.g. Schiphol baggage handlers strike" value="${html(st.note||'')}">
 <div id="op-cons"></div></div>`;
-  if(st.inc){['#op-mins','#op-cause','#op-note'].forEach(q=>{const n=$(q);if(n)n.style.display='none'});const sp=$('#op-body .op-step');if(sp)sp.textContent='Step 2 of 3 · Why it is late';const v=incView(st.inc);$('#op-body .op-sel').insertAdjacentHTML('afterend',`<div class="op-panel"><b>${html(v.title)}</b><span class="op-lead" style="display:block;margin:4px 0 0">${html(CAUSE_TAG[st.inc.cause]||'')} · ${html(v.detail)}</span></div>`)}
+  if(st.inc){['#op-mins','#op-cause','#op-note'].forEach(q=>{const n=$(q);if(n)n.style.display='none'});const sp=$('#op-body .op-step');if(sp)sp.textContent='Why it is late';const v=incView(st.inc);$('#op-body .op-sel').insertAdjacentHTML('afterend',`<div class="op-panel"><b>${html(v.title)}</b><span class="op-lead" style="display:block;margin:4px 0 0">${html(CAUSE_TAG[st.inc.cause]||'')} · ${html(v.detail)}</span></div>`)}
   $('#op-change').onclick=()=>{st.sel=null;st.min=0;st.opt=null;drawDelay()};
   $('#op-mins').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{st.min=+b.dataset.m;st.opt=null;drawDelay()});
   $('#op-custom').onchange=e=>{const v=Math.max(0,Math.min(1200,Math.round(+e.target.value)||0));st.min=v;st.opt=null;drawDelay()};
@@ -1423,26 +1464,30 @@ function bindPicker(box,all,redraw){const pk=box.querySelector('#op-pick');if(pk
 function drawConsequences(f,min){
   const O=window.SIMCORE.ops,ko=O.knockOn(f.id,min),sw=O.swapOptions(f.id,min),box=$('#op-cons');
   const li=l=>`<div class="op-row"><span>${html(l.id)} · ${html(l.city)} · ${l.kind==='a'?'arrives':'departs'} ${hm(l.sched)}</span><b class="bad">+${durTxt(l.delay)}</b></div>`;
-  let h=`<div class="op-step">Step 3 of 3 · What happens, and what do you do?</div><div class="op-panel"><b>If you wait</b>${ko.error?`<p class="op-lead">${html(ko.error)}</p>`:(ko.legs.length?ko.legs.map(li).join('')+`<div class="op-row tot"><span>Combined delay across these flights</span><b class="bad">${durTxt(ko.total)}</b></div>`:'<p class="op-lead">No knock-on: the rest of the day absorbs the delay.</p>')}</div>`;
+  let h=`<div class="op-step">${st.inc?'What happens, and what do you do?':'Step 3 of 3 · What happens, and what do you do?'}</div><div class="op-panel"><b>If you wait</b>${ko.error?`<p class="op-lead">${html(ko.error)}</p>`:(ko.legs.length?ko.legs.map(li).join('')+`<div class="op-row tot"><span>Combined delay across these flights</span><b class="bad">${durTxt(ko.total)}</b></div>`:'<p class="op-lead">No knock-on: the rest of the day absorbs the delay.</p>')}</div>`;
   const opts=(sw&&sw.supported)?sw.options:[],allOpts=(sw&&sw.supported)?sw.all:[];
   h+=`<div class="op-step">This flight · ${html(f.id)}, already under way</div>`;
   h+=`<div class="op-choice ${!st.opt?'on':''}" data-opt="wait"><b>Wait</b><span>It lands late, and the next departure waits for it unless you change it below.</span></div>`;
-  if(f.next)h+=`<div class="op-choice ${st.opt==='cx'?'on':''}" data-opt="cx"><b>Cancel ${html(f.id)} and ${html(f.next.id)}</b><span>The aircraft does not fly ${html(f.id)} (${html(f.city)}) or its next departure ${html(f.next.id)} (${html(f.next.city)}). Passengers are rebooked.</span><em>2 flights cancelled, the delays above go away</em></div>`;
+  if(f.next)h+=`<div class="op-choice cxc ${st.opt==='cx'?'on':''}" data-opt="cx"><b>Cancel ${html(f.id)} and ${html(f.next.id)}</b><span>The aircraft does not fly ${html(f.id)} (${html(f.city)}) or its next departure ${html(f.next.id)} (${html(f.next.city)}). Passengers are rebooked.</span><em>2 flights cancelled, the delays above go away</em></div>`;
   if(f.next&&sw&&sw.supported){h+=`<div class="op-step">Its next departure · ${html(f.next.id)} to ${html(f.next.city)} at ${hm(f.next.t)}</div>`;
-    h+=opts.map((o,i)=>swapCard(o,'s'+i,f.next,st.opt==='s'+i)).join('');
+    h+=opts.slice(0,2).map((o,i)=>swapCard(o,'s'+i,f.next,st.opt==='s'+i)).join('');
+    if(opts.length>2)h+=`<p class="op-lead">${opts.length-2} more aircraft would also work: choose from the list below.</p>`;
     if(!opts.length)h+=`<p class="op-lead">No aircraft of this type is free and ready in time to put on ${html(f.next.id)}.</p>`;
     h+=pickerHtml(allOpts,f.next)}
   if(sw&&!sw.supported)h+=`<p class="op-lead">${html(sw.reason)}</p>`;
-  h+=`<div class="buttons"><button class="fm-btn primary" id="op-save">Record disruption</button></div><p class="fm-msg" id="op-msg"></p>`;
+  const sumTxt=(()=>{if(!st.opt)return 'Wait';if(st.opt==='cx')return 'Cancel '+f.id+(f.next?' and '+f.next.id:'');const oo=(st.opt[0]==='s'?opts:allOpts)[+st.opt.slice(1)];return oo&&f.next?'Put '+oo.tails[1]+' on '+f.next.id+' · '+swapGain(oo).toLowerCase():'Wait'})();
+  h+=`<div class="op-sticky"><span class="op-sum">${html(sumTxt)}</span><button class="fm-btn ${st.opt==='cx'?'danger':'primary'}" id="op-save">${st.inc?'Record decision':'Record'}</button></div><p class="fm-msg" id="op-msg"></p>`;
   box.innerHTML=h;
   box.querySelectorAll('.op-choice').forEach(c=>c.onclick=()=>{st.opt=c.dataset.opt==='wait'?null:c.dataset.opt;drawConsequences(f,min)});
   bindPicker(box,allOpts,()=>drawConsequences(f,min));
   $('#op-save').onclick=()=>{
+    if(st.opt==='cx'&&!confirm('Cancel '+f.id+(f.next?' and '+f.next.id:'')+'? Passengers are rebooked. You can undo it later from My changes and events.'))return;
     const at=C.dayNum(C.viewDs)===C.dayNum(C.jakToday())?new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date()):'00:00';
     const now=new Date().toISOString();let ev=[{id:uid('op_'),v:1,scope:'ops',kind:'delay',date:C.viewDs,at,flight:f.id,minutes:min,cause:st.cause||'other',note:(st.note||'').trim(),createdAt:now}];
     if(st.opt==='cx'&&f.next)ev=[{id:uid('op_'),v:1,scope:'ops',kind:'cancelflt',date:C.viewDs,at,flights:[f.id,f.next.id],cause:st.cause||'other',note:'Cancelled '+f.id+' and '+f.next.id,createdAt:now}];
     if(st.opt&&(st.opt[0]==='s'||st.opt[0]==='p')){const o=(st.opt[0]==='s'?opts:allOpts)[+st.opt.slice(1)];if(o)ev.push({id:uid('op_'),v:1,scope:'ops',kind:'swap',date:C.viewDs,at,arrivals:o.arrivals,cause:st.cause||'other',note:'Recovery: '+o.tails.join(' ↔ '),createdAt:now})}
     if(st.inc){ev=ev.filter(x=>x.kind!=='delay');ev.forEach(x=>x.resolves=st.inc.id);if(!ev.length)ev.push(ackDecision(st.inc,'Waited, the delay plays out'))}
+    stashPending([f.id,f.next&&f.next.id,...((st.opt&&(st.opt[0]==='s'||st.opt[0]==='p'))?[((st.opt[0]==='s'?opts:allOpts)[+st.opt.slice(1)]||{other:{}}).other.next]:[])]);
     ev.forEach(e=>C.addOp(e));try{sessionStorage.setItem('jn-op-toast',(st.inc?'Decision recorded: ':'Recorded: ')+(min?f.id+' +'+durTxt(min)+' ('+causeLabel(st.cause)+')':f.id)+(ev.some(x=>x.kind==='swap')?' · aircraft swapped':'')+(ev.some(x=>x.kind==='cancelflt')?' · '+f.id+' and '+f.next.id+' cancelled':''))}catch(x){}
     $('#op-msg').textContent='Recorded. Reloading…';setTimeout(()=>location.reload(),300)}}
 /* ================= AN AIRCRAFT IS OUT OF SERVICE ================= */
@@ -1457,7 +1502,7 @@ function drawAog(){waitReady(()=>{
     $('#op-q').oninput=e=>{st.q=e.target.value;drawAog();const i=$('#op-q');i.focus();i.setSelectionRange(i.value.length,i.value.length)};
     $('#op-body').querySelectorAll('.op-item').forEach(b=>b.onclick=()=>{const x=all.find(y=>y.id===b.dataset.id);st.sel=x;st.from=hm(x.t+15);st.rep=120;st.cause='technical';st.opt=null;drawAog()});return}
   const f=st.sel,fromMin=hmIn(st.from),rep=+st.rep||0,untilMin=isNaN(fromMin)?NaN:fromMin+rep;
-  $('#op-body').innerHTML=`<div class="op-pad"><div class="op-step">Step 2 of 3 · What is wrong, and for how long?</div>
+  $('#op-body').innerHTML=`<div class="op-pad"><div class="op-step">${st.inc?'What is wrong, and for how long?':'Step 2 of 3 · What is wrong, and for how long?'}</div>
 <div class="op-sel"><b>${html(f.tail)}</b> · arrives as ${html(f.id)} (${html(f.city)}) ${hm(f.t)}<br><small>Next: ${html(f.next.id)} → ${html(f.next.city)} at ${hm(f.next.t)}</small> <button class="op-link" id="op-change">Change aircraft</button></div>
 <div class="fm-field"><label>Unserviceable from (WIB)</label><input data-k="from" id="op-from" class="op-mini" value="${html(st.from)}" placeholder="HH:MM"></div>
 <div class="op-chips" id="op-rep" style="margin-top:10px"><span class="op-lead" style="margin:0 6px 0 0">Out of service for</span>${[60,120,240,480,1440].map(m=>`<button class="fm-chip ${rep===m?'on':''}" data-m="${m}">${m===1440?'1 day':durTxt(m)}</button>`).join('')}</div>
@@ -1472,23 +1517,25 @@ function drawAog(){waitReady(()=>{
 function drawAogCons(f,fromMin,untilMin){
   const o=window.SIMCORE.ops.aogOptions(f.id,fromMin,untilMin),box=$('#op-cons');
   if(!o.supported){box.innerHTML=`<p class="op-lead">${html(o.reason)}</p>`;return}
-  if(!o.noEffect&&!(o.wait.total>0)){box.innerHTML=`<div class="op-step">Step 3 of 3 · What happens</div><div class="op-panel">The repair finishes before ${html(o.next.id)} needs the aircraft, so no flight is delayed.</div><div class="buttons"><button class="fm-btn primary" id="op-save">${st.inc?'Acknowledge':'Record'}</button></div><p class="fm-msg" id="op-msg"></p>`;$('#op-save').onclick=()=>saveAog(f,fromMin,untilMin,null);return}
-  if(o.noEffect){box.innerHTML=`<div class="op-step">Step 3 of 3 · What happens</div><div class="op-panel">${html(o.reason)}</div><div class="buttons"><button class="fm-btn primary" id="op-save">Record anyway</button></div><p class="fm-msg" id="op-msg"></p>`;
+  if(!o.noEffect&&!(o.wait.total>0)){box.innerHTML=`<div class="op-step">${st.inc?'What happens':'Step 3 of 3 · What happens'}</div><div class="op-panel">The repair finishes before ${html(o.next.id)} needs the aircraft, so no flight is delayed.</div><div class="buttons"><button class="fm-btn primary" id="op-save">${st.inc?'Acknowledge':'Record'}</button></div><p class="fm-msg" id="op-msg"></p>`;$('#op-save').onclick=()=>saveAog(f,fromMin,untilMin,null);return}
+  if(o.noEffect){box.innerHTML=`<div class="op-step">${st.inc?'What happens':'Step 3 of 3 · What happens'}</div><div class="op-panel">${html(o.reason)}</div><div class="buttons"><button class="fm-btn primary" id="op-save">Record anyway</button></div><p class="fm-msg" id="op-msg"></p>`;
     $('#op-save').onclick=()=>saveAog(f,fromMin,untilMin,null);return}
   const li=l=>`<div class="op-row"><span>${html(l.id)} · ${html(l.city)} · departs ${hm(l.sched)}</span><b class="bad">+${durTxt(l.delay)}</b></div>`;
-  let h=`<div class="op-step">Step 3 of 3 · What happens, and what do you do?</div><div class="op-panel"><b>If you wait for the repair</b>${o.wait.legs.length?o.wait.legs.map(li).join('')+`<div class="op-row tot"><span>Combined delay across these flights</span><b class="bad">${durTxt(o.wait.total)}</b></div>`:'<p class="op-lead">No flight is delayed.</p>'}</div>`;
+  let h=`<div class="op-step">${st.inc?'What happens, and what do you do?':'Step 3 of 3 · What happens, and what do you do?'}</div><div class="op-panel"><b>If you wait for the repair</b>${o.wait.legs.length?o.wait.legs.map(li).join('')+`<div class="op-row tot"><span>Combined delay across these flights</span><b class="bad">${durTxt(o.wait.total)}</b></div>`:'<p class="op-lead">No flight is delayed.</p>'}</div>`;
   h+=`<div class="op-step">${html(f.tail)}, out of service</div><div class="op-choice ${!st.opt?'on':''}" data-opt="wait"><b>Wait for the repair</b><span>${html(f.tail)} stays and flies ${html(f.next.id)} when it is back in service.</span></div>`;
-  h+=`<div class="op-choice ${st.opt==='cx'?'on':''}" data-opt="cx"><b>Cancel ${html(f.next.id)}</b><span>${html(f.next.id)} (${html(f.next.city)}) does not operate. Passengers are rebooked; ${html(f.tail)} stays out of service.</span><em>1 flight cancelled</em></div>`;
+  h+=`<div class="op-choice cxc ${st.opt==='cx'?'on':''}" data-opt="cx"><b>Cancel ${html(f.next.id)}</b><span>${html(f.next.id)} (${html(f.next.city)}) does not operate. Passengers are rebooked; ${html(f.tail)} stays out of service.</span><em>1 flight cancelled</em></div>`;
   h+=`<div class="op-step">Its next departure · ${html(f.next.id)} to ${html(f.next.city)} at ${hm(f.next.t)}</div>`;
   if(o.spare)h+=`<div class="op-choice ${st.opt==='spare'?'on':''}" data-opt="spare"><b>Bring in spare ${html(o.spare.reg)}</b><span>${html(o.spare.reg)} takes ${html(f.next.id)} (${html(f.next.city)}) and the rest of ${html(f.tail)}'s day on time. ${html(f.tail)} stays out of service for about ${o.outDays} day${o.outDays>1?'s':''}.</span><em>Saves ${durTxt(o.wait.total)} of delay</em></div>`;
-  h+=o.swaps.map((x,i)=>swapCard(x,'s'+i,f.next,st.opt==='s'+i)).join('');
+  h+=o.swaps.slice(0,2).map((x,i)=>swapCard(x,'s'+i,f.next,st.opt==='s'+i)).join('');
+  if(o.swaps.length>2)h+=`<p class="op-lead">${o.swaps.length-2} more aircraft would also work: choose from the list below.</p>`;
   if(!o.spare&&!o.swaps.length)h+=`<p class="op-lead">No spare, and no aircraft free and ready in time, would reduce the delay.</p>`;
   h+=pickerHtml(o.allSwaps||[],f.next);
-  h+=`<div class="buttons"><button class="fm-btn primary" id="op-save">Record</button></div><p class="fm-msg" id="op-msg"></p>`;
+  const sumA=(()=>{if(!st.opt)return 'Wait for the repair';if(st.opt==='cx')return 'Cancel '+f.next.id;if(st.opt==='spare')return 'Bring in spare '+(o.spare&&o.spare.reg);const xx=(st.opt[0]==='s'?o.swaps:o.allSwaps)[+st.opt.slice(1)];return xx?'Put '+xx.tails[1]+' on '+f.next.id+' · '+swapGain(xx).toLowerCase():'Wait for the repair'})();
+  h+=`<div class="op-sticky"><span class="op-sum">${html(sumA)}</span><button class="fm-btn ${st.opt==='cx'?'danger':'primary'}" id="op-save">${st.inc?'Record decision':'Record'}</button></div><p class="fm-msg" id="op-msg"></p>`;
   box.innerHTML=h;
   box.querySelectorAll('.op-choice').forEach(c=>c.onclick=()=>{st.opt=c.dataset.opt==='wait'?null:c.dataset.opt;drawAogCons(f,fromMin,untilMin)});
   bindPicker(box,o.allSwaps||[],()=>drawAogCons(f,fromMin,untilMin));
-  $('#op-save').onclick=()=>saveAog(f,fromMin,untilMin,o)}
+  $('#op-save').onclick=()=>{if(st.opt==='cx'&&!confirm('Cancel '+f.next.id+'? Passengers are rebooked. You can undo it later from My changes and events.'))return;saveAog(f,fromMin,untilMin,o)}}
 function saveAog(f,fromMin,untilMin,o){
   const at=C.dayNum(C.viewDs)===C.dayNum(C.jakToday())?new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date()):'00:00';
   const now=new Date().toISOString(),mk=x=>Object.assign({id:uid('op_'),v:1,scope:'ops',date:C.viewDs,at,cause:st.cause||'technical',createdAt:now},x);
@@ -1497,6 +1544,7 @@ function saveAog(f,fromMin,untilMin,o){
   else if(o&&st.opt==='spare')ev.push(mk({kind:'spare',arrival:f.id,untilMin,note:'Recovery: spare '+(o.spare&&o.spare.reg)+' replaces '+f.tail}));
   else if(o&&st.opt&&(st.opt[0]==='s'||st.opt[0]==='p')){const x=(st.opt[0]==='s'?o.swaps:o.allSwaps)[+st.opt.slice(1)];if(x)ev.push(mk({kind:'swap',arrivals:x.arrivals,note:'Recovery: '+x.tails.join(' ↔ ')}))}
   if(st.inc){ev=ev.filter(x=>x.kind!=='aog');ev.forEach(x=>x.resolves=st.inc.id);if(!ev.length)ev.push(ackDecision(st.inc,'Waited for the repair'))}
+  stashPending([f.next.id,...((st.opt&&(st.opt[0]==='s'||st.opt[0]==='p'))?[((st.opt[0]==='s'?o.swaps:o.allSwaps)[+st.opt.slice(1)]||{other:{}}).other.next]:[])]);
   ev.forEach(e=>C.addOp(e));try{sessionStorage.setItem('jn-op-toast',(st.inc?'Decision recorded: ':'Recorded: ')+f.tail+' out of service until '+hm(untilMin)+(st.opt?(st.opt==='spare'?' · spare brought in':(st.opt==='cx'?' · '+f.next.id+' cancelled':' · aircraft swapped')):''))}catch(x){}
   const m=$('#op-msg');if(m)m.textContent='Recorded. Reloading…';setTimeout(()=>location.reload(),300)}
 /* ================= WEATHER OR AN AIRPORT ISSUE ================= */
@@ -1708,12 +1756,14 @@ function mount(){document.body.append(launch,wrap);$('#fm-close').onclick=()=>wr
   const banner=(cls,h)=>{const b=document.createElement('div');b.className='fm-banner '+cls;b.innerHTML=h;document.body.append(b);return b};
   if(C.noChanges)banner('','Changes and events are switched off for this view. <a href="'+location.pathname+location.search.replace(/[?&]nochanges=1/,'').replace(/^&/,'?')+'">Turn them back on</a>');
   let toast=null;try{toast=sessionStorage.getItem('jn-op-toast');sessionStorage.removeItem('jn-op-toast')}catch(x){}
-  if(toast){const b=banner('ok',html(toast)+' <button id="fm-ok">OK</button>');b.querySelector('#fm-ok').onclick=()=>b.remove();setTimeout(()=>b.remove(),9000)}
+  let pend=null;try{pend=JSON.parse(sessionStorage.getItem('jn-op-pending')||'null');sessionStorage.removeItem('jn-op-pending')}catch(x){}
+  if(toast||pend){const b=banner('ok',html(toast||'Decision recorded')+'<div class="fm-res" hidden></div> <button id="fm-ok">OK</button>');b.querySelector('#fm-ok').onclick=()=>b.remove();
+    if(pend&&pend.items&&pend.items.length){const iv=setInterval(()=>{if(window.SIMCORE&&SIMCORE.FLEET){clearInterval(iv);try{const L=resultLines(pend);if(L.length){const r=b.querySelector('.fm-res');r.innerHTML='Result: '+L.join(' · ');r.hidden=false}}catch(e){}setTimeout(()=>b.remove(),20000)}},400)}else setTimeout(()=>b.remove(),9000)}
   let seenNew=new Set(),lastN=0;const label=n=>{lastN=n;launch.textContent=n>0?'Operations · '+n:'Operations';const nb=document.getElementById('ops-nav-btn'),bd=nb&&nb.querySelector('.ops-badge');if(bd){bd.textContent=n>0?String(n):'';bd.hidden=!(n>0)}};
   window.__jnOpsLabel=()=>label(lastN);
   {const dt=()=>document.body.classList.toggle('jn-detail',/^#\/(aircraft|flight)\//.test(location.hash));addEventListener('hashchange',dt);dt()}
   const refresh=()=>{if(!window.SIMCORE||!window.SIMCORE.incidents)return;
-    const rel=relevantIncidents();label(rel.filter(e=>!e.handled).length);
+    const rel=relevantIncidents();label(rel.filter(e=>{if(e.handled)return false;const i=impactInfo(e);return !(i&&i.needs===false)}).length);
     if(wrap.classList.contains('open')&&screen==='home')draw();
     /* reactive: an incident that becomes known after the page was baked is announced; applying it reloads the page */
     if(C.dayNum(C.viewDs)===C.dayNum(C.jakToday())&&!C.noChanges){
