@@ -4535,9 +4535,16 @@ function renderCard(){
  if(wasExpanded){$('cFol').onclick=()=>{follow=!follow;renderCard()};$('card').querySelector('.v7-grab').onclick=()=>{flightExpanded=false;renderCard()};$('card').querySelectorAll('[data-v57-tab]').forEach(btn=>btn.onclick=()=>{const tab=btn.dataset.v57Tab;$('card').querySelectorAll('[data-v57-tab]').forEach(b=>{const yes=b.dataset.v57Tab===tab;b.classList.toggle('active',yes);b.setAttribute('aria-selected',String(yes));});$('card').querySelectorAll('[data-v57-panel]').forEach(p=>p.classList.toggle('active',p.dataset.v57Panel===tab));});const internalClose=$('cX');if(internalClose)internalClose.onclick=()=>setSel(null);} 
  else {$('card').querySelector('.v7-strip').onclick=()=>{flightExpanded=true;renderCard()};$('card').querySelector('.v7-strip').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();flightExpanded=true;renderCard()}};}
 }
-let cardTouchY=null;
-$('card').addEventListener('touchstart',e=>{cardTouchY=e.touches[0].clientY},{passive:true});
-$('card').addEventListener('touchend',e=>{if(cardTouchY===null)return;let dy=e.changedTouches[0].clientY-cardTouchY;cardTouchY=null;if(dy<-28&&!flightExpanded){flightExpanded=true;renderCard()}else if(dy>35&&flightExpanded){flightExpanded=false;renderCard()}},{passive:true});
+/* The card is expanded or collapsed by a deliberate vertical drag on its handle or header, never by scrolling its content:
+   the drag must start on the handle/header (or the collapsed strip), be mostly vertical and long enough, and the content must not have scrolled. */
+let cardTouch=null;
+$('card').addEventListener('touchstart',e=>{const t=e.touches[0];cardTouch=e.touches.length===1?{x:t.clientX,y:t.clientY,sc:$('card').scrollTop,head:!!e.target.closest('.v7-grab,.v7-strip,.jc-top,.jc-route,.live-flight-head,.ch'),moved:false}:null},{passive:true});
+$('card').addEventListener('touchmove',e=>{if(cardTouch&&Math.abs(e.touches[0].clientY-cardTouch.y)>6)cardTouch.moved=true;if(cardTouch&&$('card').scrollTop!==cardTouch.sc)cardTouch=null},{passive:true});
+$('card').addEventListener('touchend',e=>{const g=cardTouch;cardTouch=null;if(!g||!g.moved)return;
+  const t=e.changedTouches[0],dy=t.clientY-g.y,dx=t.clientX-g.x,vertical=Math.abs(dy)>Math.abs(dx)*1.6;
+  if(!vertical||$('card').scrollTop!==g.sc)return;
+  if(!flightExpanded&&dy<-48){flightExpanded=true;renderCard()}
+  else if(flightExpanded&&dy>90&&g.head&&g.sc===0){flightExpanded=false;renderCard()}},{passive:true});
 function updateSel(now){
   if(!sel)return;
   /* v49: Do not rebuild card on live animation frames; gesture/close must remain responsive. */
@@ -4805,7 +4812,7 @@ window.SIMDBG={get T(){return T},set T(v){T=v},get els(){return els},get pool(){
 .map-canvas .apron{stroke:#bfc3bb;stroke-width:2}
 .map-canvas .term{stroke:#9e9685;stroke-width:3}
 #card{top:auto!important;left:12px!important;right:12px!important;bottom:calc(10px + env(safe-area-inset-bottom,0px))!important;width:auto!important;max-width:460px!important;margin:auto!important;padding:0!important;overflow:hidden!important;max-height:min(76dvh,610px)!important;background:#141c24f5!important;color:#f4f7fb!important;border:1px solid #53616c!important;border-radius:16px!important;box-shadow:0 14px 34px #0007!important;touch-action:pan-y}
-#card .v7-grab{width:36px;height:4px;background:#738492;border-radius:9px;margin:7px auto 3px;cursor:pointer}
+#card .v7-grab{width:36px;height:4px;background:#738492;border-radius:9px;margin:7px auto 3px;cursor:pointer}#card .v7-grab{position:relative}#card .v7-grab::after{content:'';position:absolute;left:-50px;right:-50px;top:-12px;bottom:-14px}
 #card .v7-strip{display:flex;align-items:center;gap:9px;padding:6px 12px 11px;min-height:47px;cursor:pointer;color:#f4f7fb!important}
 #card .v7-strip .airline-logo{flex:0 0 auto}
 #card .v7-strip b{font-size:14px;color:#fff!important;white-space:nowrap}
