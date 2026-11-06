@@ -2445,7 +2445,7 @@ function tSizeFleets(V,extra){
   F.forEach(fl=>{
     const P=v116Plan(V.filter(v=>v.c+'|'+v.ac===fl.key));
     fl.plan=P.cycles;fl.ferry=P.ferry;fl.ferryList=P.ferryList;let N=0;P.cycles.forEach(c=>{c.base=N;N+=c.k});
-    fl.min=N;fl.tails=[];const X=(extra&&extra.get(fl.key))||0;fl.spares=X;
+    fl.min=N;fl.tails=[];const X=typeof extra==='function'?extra(N):((extra&&extra.get(fl.key))||0);fl.spares=X;
     const c=fl.c,pfx=TAIL_PFX[c]||'ZZ';const n0=cnt[c]||0;
     for(let i=0;i<N+X;i++){
       const g=n0+i,L1=pfx[0],L2=String.fromCharCode(pfx.charCodeAt(1)+Math.floor(g/26)),L3=String.fromCharCode(65+g%26);
@@ -2553,8 +2553,8 @@ let FLIGHT_TAILS=new Map();
      empty on days it does not operate, and the aircraft stays in the pool.
    - Live entities pick up their registration afterwards via the flight they carry. */
 const tDow=d=>((d+3)%7+7)%7+1;
-function tVisitsFor(inf,outf){
-  const ev=pairUp(inf,outf);
+function tVisitsFor(inf,outf,cap){
+  const ev=pairUp(inf,outf);if(cap)cap.ev=ev;
   const ents=ev.map(e=>{
     if(e.k==='r')return{a:e.a,d:e.d};
     if(e.k==='a')return{a:e.a};
@@ -2573,8 +2573,8 @@ const T_LOOPS=(()=>{
   return L})();
 const T_LOOPED=new Set();T_LOOPS.forEach(l=>{T_LOOPED.add(l.out);T_LOOPED.add(l.in)});
 window.__TAIL_LOOP_FAIL=0;
-let T_CORE=null;
-function tCoreVisits(){return T_CORE||(T_CORE=tVisitsFor(INF_ALL.filter(f=>!T_LOOPED.has(f)),OUTF_ALL.filter(f=>!T_LOOPED.has(f))))}
+let T_CORE=null,T_CORE_EV=null;
+function tCoreVisits(){if(!T_CORE){const cap={};T_CORE=tVisitsFor(INF_ALL.filter(f=>!T_LOOPED.has(f)),OUTF_ALL.filter(f=>!T_LOOPED.has(f)),cap);T_CORE_EV=cap.ev}return T_CORE}
 /* Weekly flights that could not be turned into a loop stay in the plan as daily; trim them out on days they do not run. */
 function tVisitOnDay(v,d){
   const dow=tDow(d),ok=f=>!f||flRuns(f,dow);
@@ -2586,6 +2586,82 @@ function tVisitOnDay(v,d){
   if(v.kind==='r')return a?Object.assign({},v,{kind:'a',d:null,S:v.a.t-tBlk(v.a.city,null),E:v.a.t,orig:v.a.city,dest:'Jakarta'})
                          :Object.assign({},v,{kind:'d',a:null,S:v.d.t,E:v.d.t+tBlk(null,v.d.city),orig:'Jakarta',dest:v.d.city});
   return null}
+/* v183: rolling rotations.
+   The cyclic plan above gives the baseline "lines" (slots). Real operations are not that regular, so on top of it every
+   calendar day, deterministically from the date, (a) aircraft swap lines at Jakarta between turns that are valid for both
+   (same airline/type/terminal/zone, legal turn time) and (b) a few aircraft go into maintenance for 1-3 days and a spare takes
+   over their line. State (which physical aircraft holds which line) is replayed from a fixed epoch, so history is identical
+   whichever date is opened. The ground simulation pairs arrivals with departures exactly as the swaps dictate. */
+const ROLL_EPOCH=Math.round(Date.UTC(2026,0,1)/86400000);
+const ROLL_HIDDEN=5,ROLL_SWAP_P=0.30,ROLL_MX_PER_SLOT=1/70;
+const imix=(a,b,c)=>{let x=Math.imul(a|0,0x9E3779B1)^Math.imul(b|0,0x85EBCA6B)^Math.imul(c|0,0xC2B2AE35);x^=x>>>15;x=Math.imul(x,0x2C1B3C6D);x^=x>>>12;x=Math.imul(x,0x297A2D39);x^=x>>>15;return x>>>0};
+let T_PLAN=null,T_ROLL=null;
+const rollMinT=a=>a.w?75:(a.c==='GA'?55:40);
+function rollCrossOK(a,d,type){
+  if(d.c!==a.c||!v111SameType(d,a))return false;
+  if(!(d.term===a.term||verifiedSwingPair(a,d)||/-SW-/.test(a.pid||'')))return false;
+  if(a.zone!==d.zone)return false;
+  if(type==='r'){const g=d.t-a.t;return g>=rollMinT(a)&&g<=300}
+  const g=d.t+1440-a.t;return d.t<a.t&&g>=rollMinT(a)&&g<=900}
+function tPlan(){
+  if(T_PLAN)return T_PLAN;
+  const planV=tCoreVisits();
+  const F=tSizeFleets(planV,N=>N>=8?Math.max(1,Math.round(N*0.04)):(N>=3?1:0));
+  F.forEach(fl=>{fl.baseTails=fl.tails.length});
+  const K2C=new Map();
+  F.forEach(fl=>fl.plan.forEach(c=>c.ids.forEach((k,i)=>K2C.set(k,{base:c.base,k:c.k,w:c.w[i]}))));
+  const vArr=new Map(),vDep=new Map();
+  planV.forEach(v=>{if(v.a&&v.kind!=='pre')vArr.set(v.a.id,v);if(v.d&&v.kind!=='ovn')vDep.set(v.d.id,v)});
+  const units=[];
+  (T_CORE_EV||[]).forEach(e=>{
+    if(e.k==='r'){const v=vArr.get(e.a.id);if(v&&v.kind==='r'&&v.d===e.d&&K2C.has(v.k116))units.push({t:'r',a:e.a,d:e.d,v,cand:[]})}
+    else if(e.k==='ovA'&&e.od){const v=vArr.get(e.a.id),pv=vDep.get(e.od.id);if(v&&v.kind==='ovn'&&pv&&pv.kind==='pre'&&K2C.has(v.k116))units.push({t:'ov',a:e.a,d:e.od,v,pv,cand:[]})}});
+  const groups=new Map(),ovByFleet=new Map();
+  units.forEach((u,i)=>{u.i=i;u.fkey=u.v.c+'|'+u.v.ac;const g=u.fkey+'|'+u.t;(groups.get(g)||groups.set(g,[]).get(g)).push(u);
+    if(u.t==='ov')(ovByFleet.get(u.fkey)||ovByFleet.set(u.fkey,[]).get(u.fkey)).push(u)});
+  groups.forEach(g=>{for(let x=0;x<g.length;x++)for(let y=x+1;y<g.length;y++){const u=g[x],w=g[y];
+    if(rollCrossOK(u.a,w.d,u.t)&&rollCrossOK(w.a,u.d,u.t)){u.cand.push(w.i);w.cand.push(u.i)}}});
+  return T_PLAN={planV,F,K2C,units,ovByFleet}}
+const rollSlot=(m,d)=>m.base+(((d-m.w)%m.k)+m.k)%m.k;
+function tRoll(idx){
+  if(T_ROLL&&T_ROLL.idx===idx)return T_ROLL;
+  const P=tPlan(),F=P.F,K2C=P.K2C,units=P.units;
+  const first=idx-TAIL_WARM-ROLL_HIDDEN,start=Math.min(ROLL_EPOCH,first),last=idx+1;
+  const hold=new Map(),idle=new Map();
+  F.forEach(fl=>{const N=fl.min,hs=new Int16Array(N);for(let s=0;s<N;s++)hs[s]=s;hold.set(fl.key,hs);
+    const id=[];for(let t=N;t<fl.baseTails;t++)id.push({t,rel:start});idle.set(fl.key,id)});
+  const days=new Map(),mxDays=new Map();
+  const runs=(u,d)=>{const w=tDow(d);return flRuns(u.a,w)&&flRuns(u.d,w)};
+  for(let d=start;d<=last;d++){
+    const evs=[],used=new Set();
+    for(const u of units){
+      if(!u.cand.length||used.has(u.i))continue;
+      if(imix(d,u.i,1)%1000>=ROLL_SWAP_P*1000)continue;
+      const j=u.cand[imix(d,u.i,2)%u.cand.length];if(used.has(j))continue;
+      const w=units[j];if(!runs(u,d)||!runs(w,d))continue;
+      const A=rollSlot(K2C.get(u.v.k116),d),B=rollSlot(K2C.get(w.v.k116),d);if(A===B)continue;
+      used.add(u.i);used.add(j);
+      evs.push({k:'swap',key:u.fkey,sA:A,sB:B,tau:Math.min(1439,Math.max(u.a.t,w.a.t)+1),u:u.i,w:j})}
+    F.forEach(fl=>{
+      const ovs=P.ovByFleet.get(fl.key);if(!ovs||!ovs.length||fl.baseTails<=fl.min)return;
+      const lam=fl.min*ROLL_MX_PER_SLOT;let n=Math.floor(lam);if((imix(d,fl.min,3)%1000)/1000<lam-n)n++;
+      for(let m=0;m<n;m++){const u=ovs[imix(d,m+1,4+fl.min)%ovs.length];if(used.has(u.i)||!runs(u,d))continue;
+        used.add(u.i);evs.push({k:'mx',key:fl.key,sA:rollSlot(K2C.get(u.v.k116),d),tau:Math.min(1439,u.a.t+1),u:u.i,dur:1+imix(d,m+1,9)%3})}});
+    evs.sort((x,y)=>x.tau-y.tau||x.u-y.u);
+    const rec=d>=first,hold0=rec?new Map():null;
+    if(rec)hold.forEach((hs,k)=>hold0.set(k,hs.slice()));
+    for(const e of evs){
+      const hs=hold.get(e.key);
+      if(e.k==='swap'){const x=hs[e.sA];hs[e.sA]=hs[e.sB];hs[e.sB]=x}
+      else{const id=idle.get(e.key),pick=id.findIndex(z=>z.rel<=d);if(pick<0){e.skip=true;continue}
+        const y=id.splice(pick,1)[0].t,x=hs[e.sA];hs[e.sA]=y;e.in=y;e.rel=d+1+e.dur;id.push({t:x,rel:e.rel});e.out=x;
+        if(rec||e.rel>first){let km=mxDays.get(e.key);if(!km)mxDays.set(e.key,km=new Map());let ds=km.get(x);if(!ds)km.set(x,ds=new Set());for(let q=d+1;q<e.rel;q++)ds.add(q)}}}
+    if(rec)days.set(d,{hold0,evs:evs.filter(e=>!e.skip)})}
+  return T_ROLL={idx,days,mxDays,first}}
+/* apply a day's recorded events to a holder array */
+function rollApply(e,hs,idleOut){
+  if(e.k==='swap'){const x=hs[e.sA];hs[e.sA]=hs[e.sB];hs[e.sB]=x}
+  else{/* maintenance: the spare that took over is recorded implicitly by replaying order */hs[e.sA]=e.in}}
 function tPlaceLoops(d,V,F){
   const dow=tDow(d),today=T_LOOPS.filter(l=>flRuns(l.out,dow)).sort((a,b)=>a.out.t-b.out.t||(a.out.id<b.out.id?-1:1));
   if(!today.length)return;
@@ -2594,16 +2670,13 @@ function tPlaceLoops(d,V,F){
     const o=l.out,ac=v111Family(o.c,o.ac)?'Airbus A320 family':o.ac,fl=F.get(o.c+'|'+ac);
     const v={kind:'wk',a:l.in,d:o,S:o.t,E:l.in.t,orig:'Jakarta',dest:'Jakarta',c:o.c,ac,id:o.id+'|'+l.in.id+'|wk',k116:-1000-n,e:null,tail:null,planned:null,swap:null,aogKept:false,eA:null,eD:null};
     let best=null,bs=1e18;
-    /* regular aircraft first (best fit: least slack around the round trip, so big free windows stay free elsewhere);
-       a spare is used only when no regular aircraft has a gap */
-    if(fl)for(const spare of [false,true]){
-      for(const t of fl.tails){
-        if(!!t.spare!==spare)continue;
-        const pos=tFits(t,v);if(pos<0)continue;
-        const p=t.seq[pos-1],nx=t.seq[pos],turn=o.c==='GA'?55:40;
-        const sc=(p?v.S-(p.E+turn):720)+(nx?nx.S-(v.E+turn):720)+hash(d+'|'+o.id+'|'+t.reg)%7;
-        if(sc<bs){bs=sc;best=t}}
-      if(best)break}
+    /* best fit: least slack around the round trip, so big free windows stay free elsewhere; aircraft in maintenance excluded */
+    if(fl)for(const t of fl.tails){
+      if(t.mxDay)continue;
+      const pos=tFits(t,v);if(pos<0)continue;
+      const p=t.seq[pos-1],nx=t.seq[pos],turn=o.c==='GA'?55:40;
+      const sc=(p?v.S-(p.E+turn):720)+(nx?nx.S-(v.E+turn):720)+hash(d+'|'+o.id+'|'+t.reg)%7;
+      if(sc<bs){bs=sc;best=t}}
     if(!best&&fl&&o.c==='GA'){
       /* on-demand spare (GA registrations only): the next free registration of this type */
       const i=fl.tails.length;
@@ -2612,25 +2685,57 @@ function tPlaceLoops(d,V,F){
     if(best&&best.spare)window.__TAIL_SPARE_USED=(window.__TAIL_SPARE_USED||0)+1;
     if(best){best.seq.splice(tFits(best,v),0,v);best.rdy=Math.max(best.rdy,-1e9);v.tail=best;V.push(v)}
     else{window.__TAIL_LOOP_FAIL++;}})}
+/* place one day's core visits on physical aircraft: each leg goes to whoever holds its line at that moment, so a swap at
+   Jakarta splits a turn between two aircraft (arrival part / departure part) */
+function tRollPlace(d,V,F,dayInfo,P){
+  const byFleet=new Map(),out=[];
+  V.forEach(v=>{const key=v.c+'|'+v.ac;(byFleet.get(key)||byFleet.set(key,[]).get(key)).push(v)});
+  byFleet.forEach((vs,key)=>{
+    const fl=F.get(key);if(!fl)return;
+    const hs=dayInfo.hold0.get(key).slice(),evs=dayInfo.evs.filter(e=>e.key===key);
+    const q=[];
+    vs.forEach(v=>{const m=P.K2C.get(v.k116);const s=rollSlot(m,d);
+      if(v.kind==='r'){q.push({v,p:'a',t:v.a.t,s});q.push({v,p:'d',t:v.d.t,s})}
+      else if(v.a&&v.kind!=='pre')q.push({v,p:'a',t:v.a.t,s});
+      else q.push({v,p:'d',t:v.d.t,s})});
+    q.sort((x,y)=>x.t-y.t);
+    let ei=0;
+    q.forEach(x=>{while(ei<evs.length&&evs[ei].tau<=x.t){rollApply(evs[ei],hs);ei++}x.tail=fl.tails[hs[x.s]]});
+    const byV=new Map();q.forEach(x=>{let r=byV.get(x.v);if(!r)byV.set(x.v,r={});r[x.p]=x.tail});
+    byV.forEach((r,v)=>{
+      if(v.kind==='r'&&r.a!==r.d){
+        const blkA=tBlk(v.a.city,null),blkD=tBlk(null,v.d.city);
+        out.push(Object.assign({},v,{kind:'a',d:null,S:v.a.t-blkA,E:v.a.t,orig:v.a.city,dest:'Jakarta',id:v.a.id+'||a',_t:r.a}));
+        out.push(Object.assign({},v,{kind:'d',a:null,S:v.d.t,E:v.d.t+blkD,orig:'Jakarta',dest:v.d.city,id:'|'+v.d.id+'|d',_t:r.d}))}
+      else{v._t=r.a||r.d;out.push(v)}});
+  });
+  const perTail=new Map();
+  out.forEach(v=>{let l=perTail.get(v._t);if(!l)perTail.set(v._t,l=[]);l.push(v)});
+  perTail.forEach((l,t)=>{l.sort((p,q)=>p.S-q.S||p.E-q.E);l.forEach(v=>{tPlace(t,v);delete v._t})});
+  return out}
 function tailsAssign(){
   const {idx,ds}=tDayIndex();
-  const planV=tCoreVisits();
-  /* No standing spare pool: weekly round trips use idle windows of regular aircraft. Only if no regular aircraft has a
-     long enough window is a spare created on demand (tPlaceLoops), so spares exist only when genuinely needed. */
-  const F=tSizeFleets(planV);
-  let carry=null,res=null,aog=null,V=null;
+  const P=tPlan(),planV=P.planV,F=P.F,R=tRoll(idx);
+  F.forEach(fl=>{fl.tails.length=fl.baseTails;fl.spares=fl.baseTails-fl.min;
+    fl.tails.forEach(t=>{t.seq=[];t.hist=new Map();t.rdy=-1e9;t.loc=null;t.aogDays=null;t.aog=false;t.mxDay=false;t.dayStartRdy=undefined;t.dayStartLoc=undefined;t.spare=false})});
+  let res={tight:0,carried:0,returnSwaps:0},V=null;
   FLIGHT_TAILS=new Map();
-  for(let d=idx-TAIL_WARM;d<=idx;d++){
+  for(let d=idx-TAIL_WARM-ROLL_HIDDEN;d<=idx;d++){
+    const day=R.days.get(d);
     V=planV.map(v=>tVisitOnDay(v,d)).filter(Boolean).map(v=>Object.assign({},v,{tail:null,planned:null,swap:null,aogKept:false,eA:null,eD:null}));
-    res=tAssignDay(d,V,F,carry);res.returnSwaps=0;
+    F.forEach(fl=>fl.tails.forEach(t=>{if(t.rdy>-1e8)t.rdy-=1440;t.seq=[];t.dayStartRdy=t.rdy;t.dayStartLoc=t.loc;t.mxDay=false}));
+    R.mxDays.forEach((km,key)=>{const fl=F.get(key);if(fl)km.forEach((ds2,ti)=>{if(ds2.has(d)){const t=fl.tails[ti];t.mxDay=true;if(d>=idx-TAIL_WARM)(t.aogDays=t.aogDays||new Set()).add(d)}})});
+    V=tRollPlace(d,V,F,day,P);
     tPlaceLoops(d,V,F);
-    aog=(d===idx-TAIL_WARM)?{aog:0,moved:0,kept:0}:tAog(d,F);
-    F.forEach(fl=>fl.tails.forEach(t=>{if(t.aog&&!t.seq.length)(t.aogDays=t.aogDays||new Set()).add(d);if(t.seq.length)(t.hist=t.hist||new Map()).set(d,t.seq.slice().sort((p,q)=>p.S-q.S));
-      for(const v of t.seq){const add=f=>{if(f){let m=FLIGHT_TAILS.get(f.id);if(!m)FLIGHT_TAILS.set(f.id,m=new Set());m.add(t.reg)}};if(v.kind!=='pre')add(v.a);if(v.kind!=='ovn')add(v.d)}}));
-    carry=new Map();V.forEach(v=>{if(v.kind==='ovn'&&v.night&&v.tail)carry.set(v.night,v.tail.reg)})}
+    F.forEach(fl=>fl.tails.forEach(t=>{
+      t.seq.sort((p,q)=>p.S-q.S);const last=t.seq[t.seq.length-1];t.rdy=last?last.E:t.dayStartRdy;t.loc=last?last.dest:t.dayStartLoc;
+      if(d>=idx-TAIL_WARM&&t.seq.length){t.hist.set(d,t.seq.slice());
+        for(const v of t.seq){const add=f=>{if(f){let m=FLIGHT_TAILS.get(f.id);if(!m)FLIGHT_TAILS.set(f.id,m=new Set());m.add(t.reg)}};if(v.kind!=='pre')add(v.a);if(v.kind!=='ovn')add(v.d)}}}))}
+  const carry=new Map();V.forEach(v=>{if(v.kind==='ovn'&&v.night&&v.tail)carry.set(v.night,v.tail.reg)});
+  V.forEach(v=>{if(v.kind==='pre'&&v.tail&&carry.get(v.carry)===v.tail.reg)res.carried++});
   F.forEach(fl=>fl.tails.forEach((t,i)=>{t.model=v111FleetModel(fl.c,fl.ac,i,fl.tails.length)}));
   const fleets=[];F.forEach(fl=>fleets.push({key:fl.key,c:fl.c,ac:fl.ac,min:fl.min,n:fl.tails.length,used:fl.tails.filter(t=>t.seq.length).length}));
-  FLEET={date:ds,day:idx,fleets,tight:res.tight,carried:res.carried,returnSwaps:res.returnSwaps,aog:aog,visits:V.length,F};
+  FLEET={date:ds,day:idx,fleets,tight:res.tight,carried:res.carried,returnSwaps:0,aog:{aog:0,moved:0,kept:0},visits:V.length,F};
   // Hand registrations to today's live entities through the flights they carry.
   const vA=new Map(),vD=new Map();
   V.forEach(v=>{if(v.a&&v.kind!=='pre')vA.set(v.a.id,v);if(v.d&&v.kind!=='ovn')vD.set(v.d.id,v)});
@@ -2709,6 +2814,12 @@ function bake(pct){
     FULL=pairUp(INF.filter(f=>!T_LOOPED.has(f)),OUTF.filter(f=>!T_LOOPED.has(f)));
     INF.forEach(f=>{if(T_LOOPED.has(f))FULL.push({a:f,k:'a'})});
     OUTF.forEach(f=>{if(T_LOOPED.has(f))FULL.push({d:f,k:'d'})});
+    /* v183: apply today's aircraft swaps so ground entities pair arrivals/departures exactly like the aircraft rotations */
+    try{const di=tDayIndex().idx,R=tRoll(di),day=R.days.get(di),U=tPlan().units;
+      (day?day.evs:[]).forEach(e=>{if(e.k!=='swap')return;const u=U[e.u],w=U[e.w];
+        if(u.t==='r'){const x=FULL.find(z=>z.k==='r'&&z.a===u.a&&z.d===u.d),y=FULL.find(z=>z.k==='r'&&z.a===w.a&&z.d===w.d);if(x&&y){x.d=w.d;y.d=u.d}}
+        else{const x=FULL.find(z=>z.k==='ovA'&&z.a===u.a),y=FULL.find(z=>z.k==='ovA'&&z.a===w.a);if(x&&y){const t=x.od;x.od=y.od;y.od=t}}})
+    }catch(err){console.error('rolling pairing:',err)}
   }
   const keepF=f=>hash(f.id+'x')%100<pct;
   const evs=[];
