@@ -1079,11 +1079,15 @@ body.jn-detail #fm-launch{display:block;top:calc(10px + env(safe-area-inset-top,
 .fm-banner.warn{background:#9a5b00}.fm-banner.ok{background:#1d6b4a}.fm-banner.info{background:#184e72}.fm-banner button{margin-left:8px}
 #fm-panel #op-body .fm-tools{background:transparent;border:0;padding:0 0 10px}
 .op-alert{display:grid;grid-template-columns:10px 1fr auto;gap:10px;align-items:start;background:#fff;border:1px solid #dbe3e9;border-radius:11px;padding:11px 12px;margin-bottom:8px}.op-alert i{width:10px;height:10px;border-radius:50%;margin-top:5px}.op-alert b{display:block;font-size:13.5px}.op-alert span{display:block;font-size:12px;color:#44596a;margin-top:2px;line-height:1.4}.op-alert small{display:block;font-size:11px;color:#526678;margin-top:3px}.op-alert.done{opacity:.72}
+.op-group{margin:0 0 10px;border:1px solid #cfdde8;border-radius:12px;background:#f2f6f9;padding:0 8px 8px}.op-group>summary{cursor:pointer;font-size:12.5px;color:#1c4a63;padding:11px 4px}.op-group .op-alert{margin-bottom:6px}.op-group .op-alert>div>span{display:none}.op-gbar{display:flex;justify-content:flex-end;padding:2px 2px 0}
 .op-tabs{display:flex;gap:6px;margin:6px 0 10px}.op-tabs button{flex:1;border:1px solid #d3dde4;background:#fff;color:#37556b;border-radius:10px;padding:9px 6px;font:600 12.5px inherit;cursor:pointer}.op-tabs button.on{background:#18394d;color:#fff;border-color:#18394d}.op-tabs i{font-style:normal;font-size:10.5px;background:#8798a5;color:#fff;border-radius:8px;padding:0 6px;margin-left:3px}.op-tabs [data-tab="needs"] i{background:#c0392b}.op-tabs button.on i{background:#fff;color:#18394d}
 .op-trigs{margin-top:16px}.op-trigs summary{cursor:pointer;font-size:12.5px;color:#37556b;padding:9px 0}.op-alert small b.bad{color:#b03030;display:inline}
 .op-sticky{position:sticky;bottom:0;margin:14px -16px 0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.96);border-top:1px solid #dbe3e9;display:flex;gap:10px;align-items:center;justify-content:space-between;z-index:3}.op-sum{font-size:12.5px;color:#37556b;min-width:0}.fm-btn.danger{background:#a83232;color:#fff;border-color:#a83232}.op-choice.cxc.on{border-color:#a83232;background:#fdf1f1}
 .op-q .fm-chip{padding:5px 11px;font-size:12px}.op-q [data-a="cx"]{margin-left:auto;color:#a83232;border-color:#e3b9b9}.op-q{padding:8px 11px}
 #fm-panel:focus{outline:none}#v9-scale{min-height:38px!important;display:inline-flex!important;align-items:center}#fm-wrap .fm-btn,#fm-wrap .fm-chip,.op-tabs button{min-height:44px}.rm-buttons button,#rmCompare{min-height:44px!important}.v9-zoom button{min-width:44px!important;min-height:44px!important}
+.op-table{border:1px solid #dbe3e9;border-radius:12px;background:#fff;overflow:hidden}.op-th,.op-opt{display:grid;grid-template-columns:minmax(0,1fr) 92px 74px;gap:8px;align-items:center;padding:0 12px}.op-th{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#526678;background:#f1f5f8;min-height:30px}.op-tg{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#1c4a63;background:#eaf2f7;padding:7px 12px;border-top:1px solid #dbe3e9}
+.op-opt{width:100%;min-height:48px;border:0;border-top:1px solid #e6edf2;background:#fff;text-align:left;font:inherit;cursor:pointer}.op-opt .n{font-weight:600;font-size:13px;color:#1a2c3d}.op-opt .e,.op-opt .l{font-size:12px;color:#44596a;text-align:right}.op-opt .good{color:#1b6b3f}.op-opt .bad,.op-detail .bad{color:#b03030}.op-opt.on{background:#eaf3fb;box-shadow:inset 3px 0 0 #18394d}.op-opt.cxc.on{background:#fdf1f1;box-shadow:inset 3px 0 0 #a83232}.op-opt:focus-visible{outline:2px solid #18394d;outline-offset:-2px}
+.op-detail{margin:10px 0 4px;padding:11px 13px;border:1px solid #cfdde8;border-radius:10px;background:#f6fafd}.op-detail.cxc{border-color:#e3b9b9;background:#fdf6f6}.op-detail b{font-size:13.5px}.op-detail p{margin:4px 0 0;font-size:12.5px;line-height:1.5;color:#37556b}
 .op-trig{display:grid;grid-template-columns:10px 1fr;gap:10px;background:#f4f7f9;border:1px solid #e2e9ee;border-radius:11px;padding:9px 12px;margin-bottom:8px}.op-trig i{width:10px;height:10px;border-radius:50%;margin-top:5px}.op-trig b{display:block;font-size:13px}.op-trig span{display:block;font-size:12px;color:#44596a;margin-top:2px}.op-trig small{display:block;font-size:11px;color:#526678;margin-top:2px}.op-tag{font-style:normal;font-size:10.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;background:#e8eef3;color:#37556b;border-radius:5px;padding:1px 6px;margin-right:4px}
 .op-pick{margin:10px 0 6px}.op-pick label{display:block;font-size:12px;color:#44596a;margin-bottom:4px}.op-pick select{width:100%;padding:9px 10px;border:1px solid #cfd9e0;border-radius:9px;font-size:13px;background:#fff}
 .op-chart{display:flex;align-items:flex-end;gap:2px;height:88px;padding:6px 2px 0;background:#fff;border:1px solid #dbe3e9;border-radius:10px}.op-bar{flex:1;height:100%;display:flex;align-items:flex-end;cursor:pointer;border-radius:4px;position:relative}.op-bar i{display:block;width:100%;border-radius:3px 3px 0 0;background:#9db6c6}.op-bar i.a{background:#d9a33a}.op-bar i.r{background:#c0392b}.op-bar.on{background:#e8f0f6;box-shadow:inset 0 -3px 0 #18394d}.op-bar.cl{background:repeating-linear-gradient(135deg,#f6d9d6,#f6d9d6 3px,#fff 3px,#fff 7px)}.op-bar.cl.on{background:repeating-linear-gradient(135deg,#f0c4bf,#f0c4bf 3px,#fff 3px,#fff 7px)}.op-chart-ax{display:flex;justify-content:space-between;font-size:10px;color:#526678;padding:2px 6px 0}
@@ -1341,7 +1345,15 @@ function drawHome(){
     return `<div class="op-alert ${e.handled?'done':''}"><i style="background:${SEV_DOT[v.sev]}"></i><div><b>${html(v.title)}</b><span><em class="op-tag">${html(CAUSE_TAG[e.cause]||'Other')}</em> ${html(v.detail)}</span><small>${line}</small></div><button class="fm-btn ${e.handled||(inf&&inf.needs===false)?'':'primary'}" data-inc="${html(e.id)}">${e.handled?(e.decision&&e.decision.by==='auto'?'Review':'View'):'Handle'}</button></div>`};
   const tabs=`<div class="op-tabs" role="tablist">${[['needs','Needs you'],['fyi','No knock-on'],['done','Handled']].map(t=>`<button role="tab" aria-selected="${homeTab===t[0]}" class="${homeTab===t[0]?'on':''}" data-tab="${t[0]}">${t[1]}${cnt[t[0]]?` <i>${cnt[t[0]]}</i>`:''}</button>`).join('')}</div>`;
   const shown=imp.filter(x=>bucket(x)===homeTab).sort((p,q)=>homeTab==='done'?q.e.atMin-p.e.atMin:((p.e.deadline==null?1e9:p.e.deadline)-(q.e.deadline==null?1e9:q.e.deadline)));
-  const alerts=tabs+(shown.length?shown.map(row).join(''):`<p class="op-lead">${homeTab==='needs'?(lvl==='off'?'Generated incidents are switched off.':'Nothing needs you right now. Disruptions appear here as they happen.'):(homeTab==='fyi'?'No late flights without a knock-on.':'Nothing handled yet.')}</p>`);
+  /* items caused by the same event are grouped: a storm that delays seven flights is one decision to review, not seven */
+  const gsize=new Map();shown.forEach(x=>{if(x.e.trigger)gsize.set(x.e.trigger,(gsize.get(x.e.trigger)||0)+1)});
+  const printed=new Set();
+  const list=shown.map(x=>{const t=x.e.trigger;
+    if(!t||(gsize.get(t)||0)<2)return row(x);
+    if(printed.has(t))return '';printed.add(t);
+    const mem=shown.filter(y=>y.e.trigger===t),cost=mem.reduce((a,y)=>a+((y.info&&y.info.needs)?y.info.down:0),0),v0=mem[0].e;
+    return `<details class="op-group" open><summary><b>${html(v0.tnote||'Disruption')}${v0.airport?' · '+html(v0.airport):''}</b> · ${mem.length} flights${cost?' · waiting costs +'+durTxt(cost):''}</summary>${homeTab==='done'?'':`<div class="op-gbar"><button class="fm-btn" data-gwait="${html(t)}">${homeTab==='needs'?'Wait for all '+mem.length:'Acknowledge all '+mem.length}</button></div>`}${mem.map(row).join('')}</details>`}).join('');
+  const alerts=tabs+(shown.length?list:`<p class="op-lead">${homeTab==='needs'?(lvl==='off'?'Generated incidents are switched off.':'Nothing needs you right now. Disruptions appear here as they happen.'):(homeTab==='fyi'?'No late flights without a knock-on.':'Nothing handled yet.')}</p>`);
   $('#op-body').innerHTML=`<div class="op-pad"><h3 class="op-h" style="margin-top:2px">Flights affected${cnt.needs?` <i class="op-count" style="position:static">${cnt.needs}</i>`:''}</h3>${alerts}${strip}
 <h3 class="op-h">Jakarta</h3>
 ${card('queue','Jakarta queue and sequence','Who is waiting to land and take off, and who goes first.')}
@@ -1358,6 +1370,9 @@ ${card('mine','My changes and events','See, undo, export or import what you have
 <details class="op-adv"><summary>Create a scenario yourself (advanced)</summary>
 ${card('delay','A flight is delayed','Make an inbound flight late and see the knock-on.')}${card('aog','An aircraft is out of service','Take an aircraft on the ground out of service.')}${card('weather','Weather or an airport issue','Close or slow an airport.')}</details></div>`;
   $('#op-body').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{homeTab=b.dataset.tab;drawHome()});
+  $('#op-body').querySelectorAll('[data-gwait]').forEach(b=>b.onclick=()=>{const t=b.dataset.gwait,mem=imp.filter(y=>y.e.trigger===t&&bucket(y)===homeTab);
+    stashPending(mem.map(y=>y.e.flight).filter(Boolean));mem.forEach(y=>C.addOp(ackDecision(y.e,'Waited, the delay plays out')));
+    try{sessionStorage.setItem('jn-op-toast','Decision recorded: waiting for '+mem.length+' flights')}catch(x){}location.reload()});
   $('#op-body').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
   $('#op-body').querySelectorAll('[data-inc]').forEach(b=>b.onclick=()=>handleIncident(inc.find(x=>x.id===b.dataset.inc)));
   $('#op-ctl').querySelectorAll('[data-ct]').forEach(b=>b.onclick=()=>{JN_OPS.setController(b.dataset.ct);const u=new URL(location.href);if(u.searchParams.has('controller'))u.searchParams.set('controller',b.dataset.ct);location.href=u.toString()});
@@ -1479,29 +1494,40 @@ function drawDelay(){waitReady(()=>{
 const swapTakes=o=>o.takes.map(t=>html(t.flight)+' ('+html(t.city)+') flown by '+html(t.tail)+(t.delay>=5?' +'+durTxt(t.delay):' on time')).join(' · ');
 const swapGain=o=>o.saved>0?'Saves '+durTxt(o.saved)+' of delay':(o.saved<0?'Adds '+durTxt(-o.saved)+' of delay':'No change in delay');
 const swapCard=(o,key,d1,on)=>`<div class="op-choice ${on?'on':''}" data-opt="${key}"><b>Put ${html(o.tails[1])} on ${html(d1.id)} (${html(d1.city)})</b><span>${html(o.tails[0])} takes ${html(o.other.next)} (${html(o.other.city)}, ${hm(o.other.sched)}) instead · ${swapTakes(o)}${o.ready?'':' · '+html(o.tails[1])+' is not ready in time'}</span><em class="${o.saved<0?'bad':''}">${swapGain(o)}</em></div>`;
+/* options are compared side by side in a table; the selected row's details are shown under it */
+const fx=n=>n>0?'<b class="good">−'+durTxt(n)+'</b>':(n<0?'<b class="bad">+'+durTxt(-n)+'</b>':'<span>no change</span>');
+function optTable(rows,selKey){
+  const sel=rows.find(r=>r.key===selKey)||rows.find(r=>r.key==='wait');
+  const body=rows.map(r=>r.g?`<div class="op-tg">${r.g}</div>`:`<button type="button" role="radio" aria-checked="${r.key===sel.key}" class="op-opt ${r.key===sel.key?'on':''} ${r.danger?'cxc':''}" data-opt="${r.key}"><span class="n">${r.name}</span><span class="e">${r.effect}</span><span class="l">${r.late}</span></button>`).join('');
+  return `<div class="op-table" role="radiogroup" aria-label="Options"><div class="op-th"><span>Option</span><span>Delay change</span><span>Late after</span></div>${body}</div>
+<div class="op-detail ${sel.danger?'cxc':''}"><b>${sel.title||sel.name}</b><p>${sel.detail}</p></div>`}
+const optRow=(key,name,effect,late,detail,extra)=>Object.assign({key,name,effect,late,detail},extra||{});
+const swapRow=(o,key,d1)=>optRow(key,'Put '+html(o.tails[1])+' on '+html(d1.id),fx(o.saved),o.affected?o.affected+' late':'none late',html(o.tails[0])+' takes '+html(o.other.next)+' ('+html(o.other.city)+', '+hm(o.other.sched)+') instead · '+swapTakes(o)+(o.ready?'':' · '+html(o.tails[1])+' is not ready in time'),{title:'Put '+html(o.tails[1])+' on '+html(d1.id)+' ('+html(d1.city)+')'});
 function pickerHtml(all,d1){
   if(!all.length)return '';
   const sel=st.opt&&st.opt[0]==='p'?+st.opt.slice(1):-1;
-  return `<div class="op-pick"><label for="op-pick">Or choose any aircraft yourself</label><select id="op-pick"><option value="">Choose an aircraft on the ground…</option>${all.map((o,i)=>`<option value="${i}" ${sel===i?'selected':''}>${html(o.tails[1])} · ${html(o.other.arrival)} in, ${html(o.other.next)} ${hm(o.other.sched)} out · ${o.saved>0?'saves '+durTxt(o.saved):(o.saved<0?'adds '+durTxt(-o.saved):'no change')}${o.ready?'':' · not ready in time'}</option>`).join('')}</select></div>`+(sel>=0&&all[sel]?swapCard(all[sel],'p'+sel,d1,true):'')}
+  return `<div class="op-pick"><label for="op-pick">Or choose any other aircraft yourself</label><select id="op-pick"><option value="">Choose an aircraft on the ground…</option>${all.map((o,i)=>`<option value="${i}" ${sel===i?'selected':''}>${html(o.tails[1])} · ${html(o.other.arrival)} in, ${html(o.other.next)} ${hm(o.other.sched)} out · ${o.saved>0?'saves '+durTxt(o.saved):(o.saved<0?'adds '+durTxt(-o.saved):'no change')}${o.ready?'':' · not ready in time'}</option>`).join('')}</select></div>`}
 function bindPicker(box,all,redraw){const pk=box.querySelector('#op-pick');if(pk)pk.onchange=()=>{st.opt=pk.value===''?null:'p'+pk.value;redraw()}}
 function drawConsequences(f,min){
   const O=window.SIMCORE.ops,ko=O.knockOn(f.id,min),sw=O.swapOptions(f.id,min),box=$('#op-cons');
   const li=l=>`<div class="op-row"><span>${html(l.id)} · ${html(l.city)} · ${l.kind==='a'?'arrives':'departs'} ${hm(l.sched)}</span><b class="bad">+${durTxt(l.delay)}</b></div>`;
   let h=`<div class="op-step">${st.inc?'What happens, and what do you do?':'Step 3 of 3 · What happens, and what do you do?'}</div><div class="op-panel"><b>If you wait</b>${ko.error?`<p class="op-lead">${html(ko.error)}</p>`:(ko.legs.length?ko.legs.map(li).join('')+`<div class="op-row tot"><span>Combined delay across these flights</span><b class="bad">${durTxt(ko.total)}</b></div>`:'<p class="op-lead">No knock-on: the rest of the day absorbs the delay.</p>')}</div>`;
   const opts=(sw&&sw.supported)?sw.options:[],allOpts=(sw&&sw.supported)?sw.all:[];
-  h+=`<div class="op-step">This flight · ${html(f.id)}, already under way</div>`;
-  h+=`<div class="op-choice ${!st.opt?'on':''}" data-opt="wait"><b>Wait</b><span>It lands late, and the next departure waits for it unless you change it below.</span></div>`;
-  if(f.next)h+=`<div class="op-choice cxc ${st.opt==='cx'?'on':''}" data-opt="cx"><b>Cancel ${html(f.id)} and ${html(f.next.id)}</b><span>The aircraft does not fly ${html(f.id)} (${html(f.city)}) or its next departure ${html(f.next.id)} (${html(f.next.city)}). Passengers are rebooked.</span><em>2 flights cancelled, the delays above go away</em></div>`;
-  if(f.next&&sw&&sw.supported){h+=`<div class="op-step">Its next departure · ${html(f.next.id)} to ${html(f.next.city)} at ${hm(f.next.t)}</div>`;
-    h+=opts.slice(0,2).map((o,i)=>swapCard(o,'s'+i,f.next,st.opt==='s'+i)).join('');
-    if(opts.length>2)h+=`<p class="op-lead">${opts.length-2} more aircraft would also work: choose from the list below.</p>`;
-    if(!opts.length)h+=`<p class="op-lead">No aircraft of this type is free and ready in time to put on ${html(f.next.id)}.</p>`;
-    h+=pickerHtml(allOpts,f.next)}
+  {const rows=[{g:'This flight · '+html(f.id)+', already under way'},
+     optRow('wait','Wait','<span>—</span>',(ko.legs&&ko.legs.length?ko.legs.length+' late':'none late'),'It lands late, and the next departure waits for it unless you change it below.')];
+   if(f.next)rows.push(optRow('cx','Cancel '+html(f.id)+' and '+html(f.next.id),'<b class="good">removes delays</b>','2 cancelled','The aircraft does not fly '+html(f.id)+' ('+html(f.city)+') or its next departure '+html(f.next.id)+' ('+html(f.next.city)+'). Passengers are rebooked.',{danger:true,title:'Cancel '+html(f.id)+' and '+html(f.next.id)}));
+   if(f.next&&sw&&sw.supported){rows.push({g:'Its next departure · '+html(f.next.id)+' to '+html(f.next.city)+' at '+hm(f.next.t)});
+     opts.slice(0,3).forEach((o,i)=>rows.push(swapRow(o,'s'+i,f.next)));
+     const pi=st.opt&&st.opt[0]==='p'?+st.opt.slice(1):-1;if(pi>=0&&allOpts[pi])rows.push(swapRow(allOpts[pi],'p'+pi,f.next));}
+   h+=optTable(rows,st.opt||'wait');
+   if(f.next&&sw&&sw.supported){if(opts.length>3)h+=`<p class="op-lead">${opts.length-3} more aircraft would also work: choose from the list below.</p>`;
+     if(!opts.length)h+=`<p class="op-lead">No aircraft of this type is free and ready in time to put on ${html(f.next.id)}.</p>`;
+     h+=pickerHtml(allOpts,f.next)}}
   if(sw&&!sw.supported)h+=`<p class="op-lead">${html(sw.reason)}</p>`;
   const sumTxt=(()=>{if(!st.opt)return 'Wait';if(st.opt==='cx')return 'Cancel '+f.id+(f.next?' and '+f.next.id:'');const oo=(st.opt[0]==='s'?opts:allOpts)[+st.opt.slice(1)];return oo&&f.next?'Put '+oo.tails[1]+' on '+f.next.id+' · '+swapGain(oo).toLowerCase():'Wait'})();
   h+=`<div class="op-sticky"><span class="op-sum">${html(sumTxt)}</span><button class="fm-btn ${st.opt==='cx'?'danger':'primary'}" id="op-save">${st.inc?'Record decision':'Record'}</button></div><p class="fm-msg" id="op-msg"></p>`;
   box.innerHTML=h;
-  box.querySelectorAll('.op-choice').forEach(c=>c.onclick=()=>{st.opt=c.dataset.opt==='wait'?null:c.dataset.opt;drawConsequences(f,min)});
+  box.querySelectorAll('.op-choice,.op-opt').forEach(c=>c.onclick=()=>{st.opt=c.dataset.opt==='wait'?null:c.dataset.opt;drawConsequences(f,min)});
   bindPicker(box,allOpts,()=>drawConsequences(f,min));
   $('#op-save').onclick=()=>{
     if(st.opt==='cx'&&!confirm('Cancel '+f.id+(f.next?' and '+f.next.id:'')+'? Passengers are rebooked. You can undo it later from My changes and events.'))return;
@@ -1545,18 +1571,21 @@ function drawAogCons(f,fromMin,untilMin){
     $('#op-save').onclick=()=>saveAog(f,fromMin,untilMin,null);return}
   const li=l=>`<div class="op-row"><span>${html(l.id)} · ${html(l.city)} · departs ${hm(l.sched)}</span><b class="bad">+${durTxt(l.delay)}</b></div>`;
   let h=`<div class="op-step">${st.inc?'What happens, and what do you do?':'Step 3 of 3 · What happens, and what do you do?'}</div><div class="op-panel"><b>If you wait for the repair</b>${o.wait.legs.length?o.wait.legs.map(li).join('')+`<div class="op-row tot"><span>Combined delay across these flights</span><b class="bad">${durTxt(o.wait.total)}</b></div>`:'<p class="op-lead">No flight is delayed.</p>'}</div>`;
-  h+=`<div class="op-step">${html(f.tail)}, out of service</div><div class="op-choice ${!st.opt?'on':''}" data-opt="wait"><b>Wait for the repair</b><span>${html(f.tail)} stays and flies ${html(f.next.id)} when it is back in service.</span></div>`;
-  h+=`<div class="op-choice cxc ${st.opt==='cx'?'on':''}" data-opt="cx"><b>Cancel ${html(f.next.id)}</b><span>${html(f.next.id)} (${html(f.next.city)}) does not operate. Passengers are rebooked; ${html(f.tail)} stays out of service.</span><em>1 flight cancelled</em></div>`;
-  h+=`<div class="op-step">Its next departure · ${html(f.next.id)} to ${html(f.next.city)} at ${hm(f.next.t)}</div>`;
-  if(o.spare)h+=`<div class="op-choice ${st.opt==='spare'?'on':''}" data-opt="spare"><b>Bring in spare ${html(o.spare.reg)}</b><span>${html(o.spare.reg)} takes ${html(f.next.id)} (${html(f.next.city)}) and the rest of ${html(f.tail)}'s day on time. ${html(f.tail)} stays out of service for about ${o.outDays} day${o.outDays>1?'s':''}.</span><em>Saves ${durTxt(o.wait.total)} of delay</em></div>`;
-  h+=o.swaps.slice(0,2).map((x,i)=>swapCard(x,'s'+i,f.next,st.opt==='s'+i)).join('');
-  if(o.swaps.length>2)h+=`<p class="op-lead">${o.swaps.length-2} more aircraft would also work: choose from the list below.</p>`;
-  if(!o.spare&&!o.swaps.length)h+=`<p class="op-lead">No spare, and no aircraft free and ready in time, would reduce the delay.</p>`;
+  {const rows=[{g:html(f.tail)+', out of service'},
+     optRow('wait','Wait for the repair','<span>—</span>',(o.wait.legs.length?o.wait.legs.length+' late':'none late'),html(f.tail)+' stays and flies '+html(f.next.id)+' when it is back in service.'),
+     optRow('cx','Cancel '+html(f.next.id),'<b class="good">removes delay</b>','1 cancelled',html(f.next.id)+' ('+html(f.next.city)+') does not operate. Passengers are rebooked; '+html(f.tail)+' stays out of service.',{danger:true}),
+     {g:'Its next departure · '+html(f.next.id)+' to '+html(f.next.city)+' at '+hm(f.next.t)}];
+   if(o.spare)rows.push(optRow('spare','Bring in spare '+html(o.spare.reg),fx(o.wait.total),'none late',html(o.spare.reg)+' takes '+html(f.next.id)+' ('+html(f.next.city)+') and the rest of '+html(f.tail)+'\'s day on time. '+html(f.tail)+' stays out of service for about '+o.outDays+' day'+(o.outDays>1?'s':'')+'.'));
+   o.swaps.slice(0,3).forEach((x,i)=>rows.push(swapRow(x,'s'+i,f.next)));
+   const pi=st.opt&&st.opt[0]==='p'?+st.opt.slice(1):-1;if(pi>=0&&(o.allSwaps||[])[pi])rows.push(swapRow(o.allSwaps[pi],'p'+pi,f.next));
+   h+=optTable(rows,st.opt||'wait');
+   if(o.swaps.length>3)h+=`<p class="op-lead">${o.swaps.length-3} more aircraft would also work: choose from the list below.</p>`;
+   if(!o.spare&&!o.swaps.length)h+=`<p class="op-lead">No spare, and no aircraft free and ready in time, would reduce the delay.</p>`;}
   h+=pickerHtml(o.allSwaps||[],f.next);
   const sumA=(()=>{if(!st.opt)return 'Wait for the repair';if(st.opt==='cx')return 'Cancel '+f.next.id;if(st.opt==='spare')return 'Bring in spare '+(o.spare&&o.spare.reg);const xx=(st.opt[0]==='s'?o.swaps:o.allSwaps)[+st.opt.slice(1)];return xx?'Put '+xx.tails[1]+' on '+f.next.id+' · '+swapGain(xx).toLowerCase():'Wait for the repair'})();
   h+=`<div class="op-sticky"><span class="op-sum">${html(sumA)}</span><button class="fm-btn ${st.opt==='cx'?'danger':'primary'}" id="op-save">${st.inc?'Record decision':'Record'}</button></div><p class="fm-msg" id="op-msg"></p>`;
   box.innerHTML=h;
-  box.querySelectorAll('.op-choice').forEach(c=>c.onclick=()=>{st.opt=c.dataset.opt==='wait'?null:c.dataset.opt;drawAogCons(f,fromMin,untilMin)});
+  box.querySelectorAll('.op-choice,.op-opt').forEach(c=>c.onclick=()=>{st.opt=c.dataset.opt==='wait'?null:c.dataset.opt;drawAogCons(f,fromMin,untilMin)});
   bindPicker(box,o.allSwaps||[],()=>drawAogCons(f,fromMin,untilMin));
   $('#op-save').onclick=()=>{if(st.opt==='cx'&&!confirm('Cancel '+f.next.id+'? Passengers are rebooked. You can undo it later from My changes and events.'))return;saveAog(f,fromMin,untilMin,o)}}
 function saveAog(f,fromMin,untilMin,o){
