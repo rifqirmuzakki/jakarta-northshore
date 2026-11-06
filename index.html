@@ -1302,18 +1302,20 @@ function handleIncident(e){
   if(e.kind==='wimp'){if(e.dir==='in'){waitReady(()=>{const it=window.SIMCORE.ops.inbound().find(x=>x.id===e.flight&&x.unit);if(!it){go('impact',{inc:e});return}
     go('delay',{inc:e,sel:it,min:0,cause:e.cause,note:e.tnote,opt:null})})}else go('impact',{inc:e});return}
   st={inc:e};screen='incident';draw()}
-function drawImpact(){
+function drawImpact(){waitReady(()=>{
   const e=st.inc,v=incView(e),fl=e.flight||e.arrival,inb=e.kind==='delay'||(e.kind==='wimp'&&e.dir==='in');
+  const it=inb?window.SIMCORE.ops.inbound().find(x=>x.id===fl):null;
+  const waitTxt=!inb?'The flight leaves when the airport is back to normal.':(it?html(it.tail)+' is tracked, but nothing else depends on it today: after landing it stays on the ground at Jakarta (overnight or a long layover), so there is no next departure to swap or protect. Waiting only means passengers arrive late.':'This airline\'s aircraft is not tracked, so there is no swap to offer. The flight arrives late and the delay plays out.');
   $('#op-body').innerHTML=`<div class="op-pad"><div class="op-sel"><b>${html(v.title)}</b><br><small>${html(CAUSE_TAG[e.cause]||'')} · ${html(v.detail)}</small></div>
 <div class="op-step">What do you do?</div>
-<div class="op-choice ${st.opt!=='cx'?'on':''}" data-opt="wait"><b>Wait</b><span>${inb?'The aircraft is not tracked, so there is no swap to offer. The flight arrives late and the delay plays out.':'The flight leaves when the airport is back to normal.'}</span></div>
+<div class="op-choice ${st.opt!=='cx'?'on':''}" data-opt="wait"><b>Wait</b><span>${waitTxt}</span></div>
 <div class="op-choice ${st.opt==='cx'?'on':''}" data-opt="cx"><b>Cancel ${html(fl)}</b><span>The flight does not operate and passengers are rebooked.</span><em>1 flight cancelled</em></div>
 <div class="buttons"><button class="fm-btn primary" id="op-save">Record decision</button></div></div>`;
   $('#op-body').querySelectorAll('.op-choice').forEach(c=>c.onclick=()=>{st.opt=c.dataset.opt==='cx'?'cx':null;drawImpact()});
   $('#op-save').onclick=()=>{const now=new Date().toISOString();let ev;
     if(st.opt==='cx')ev=[{id:uid('op_'),v:1,scope:'ops',kind:'cancelflt',date:e.date,at:'',flights:[fl],cause:e.cause||'other',note:'Cancelled '+fl,resolves:e.id,createdAt:now}];
     else ev=[ackDecision(e,'Waited, the delay plays out')];
-    ev.forEach(x=>C.addOp(x));try{sessionStorage.setItem('jn-op-toast','Decision recorded: '+(st.opt==='cx'?fl+' cancelled':fl+' waits'))}catch(x){}location.reload()}}
+    ev.forEach(x=>C.addOp(x));try{sessionStorage.setItem('jn-op-toast','Decision recorded: '+(st.opt==='cx'?fl+' cancelled':fl+' waits'))}catch(x){}location.reload()}})}
 function drawIncident(){waitReady(()=>{
   const e=st.inc,v=incView(e);
   let body='';
