@@ -2698,7 +2698,13 @@ function tailInfo(e){
 
 function bake(pct){
   RES=new Array(NN);RWY.forEach(r=>{r.busy=[]});STAT={arrDelay:[],pushDelay:[],holdWait:[],cnt:0,unassigned:0,flights:0};
-  if(!FULL)FULL=pairUp(INF,OUTF);
+  if(!FULL){
+    /* v180: pair exactly as the aircraft planner does. Weekly round trips are flown by a separate aircraft from the
+       flights around them, so they are lone arrival/departure entities, never glued to a daily flight. */
+    FULL=pairUp(INF.filter(f=>!T_LOOPED.has(f)),OUTF.filter(f=>!T_LOOPED.has(f)));
+    INF.forEach(f=>{if(T_LOOPED.has(f))FULL.push({a:f,k:'a'})});
+    OUTF.forEach(f=>{if(T_LOOPED.has(f))FULL.push({d:f,k:'d'})});
+  }
   const keepF=f=>hash(f.id+'x')%100<pct;
   const evs=[];
   FULL.forEach(e=>{
