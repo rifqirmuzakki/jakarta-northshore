@@ -2541,6 +2541,7 @@ function tAog(day,F){
   }));
   return{aog:n,moved,kept}}
 let FLEET=null;window.__FL=()=>FLEET;window.__ENTS=()=>ENTS;
+let FLIGHT_TAILS=new Map();
 /* v178: airline-level tail planning. Aircraft rotations are planned from the airline timetable (flights paired by
    pairUp), NOT from the ground simulation's stand entities, so they cannot depend on stand layout or on which
    day is being viewed.
@@ -2616,12 +2617,14 @@ function tailsAssign(){
     c.forEach((n,k)=>spareN.set(k,Math.max(spareN.get(k)||0,n)))}
   const F=tSizeFleets(planV,spareN);
   let carry=null,res=null,aog=null,V=null;
+  FLIGHT_TAILS=new Map();
   for(let d=idx-TAIL_WARM;d<=idx;d++){
     V=planV.map(v=>tVisitOnDay(v,d)).filter(Boolean).map(v=>Object.assign({},v,{tail:null,planned:null,swap:null,aogKept:false,eA:null,eD:null}));
     res=tAssignDay(d,V,F,carry);res.returnSwaps=0;
     tPlaceLoops(d,V,F);
     aog=(d===idx-TAIL_WARM)?{aog:0,moved:0,kept:0}:tAog(d,F);
-    F.forEach(fl=>fl.tails.forEach(t=>{if(t.aog&&!t.seq.length)(t.aogDays=t.aogDays||new Set()).add(d);if(t.seq.length)(t.hist=t.hist||new Map()).set(d,t.seq.slice().sort((p,q)=>p.S-q.S))}));
+    F.forEach(fl=>fl.tails.forEach(t=>{if(t.aog&&!t.seq.length)(t.aogDays=t.aogDays||new Set()).add(d);if(t.seq.length)(t.hist=t.hist||new Map()).set(d,t.seq.slice().sort((p,q)=>p.S-q.S));
+      for(const v of t.seq){const add=f=>{if(f){let m=FLIGHT_TAILS.get(f.id);if(!m)FLIGHT_TAILS.set(f.id,m=new Set());m.add(t.reg)}};if(v.kind!=='pre')add(v.a);if(v.kind!=='ovn')add(v.d)}}));
     carry=new Map();V.forEach(v=>{if(v.kind==='ovn'&&v.night&&v.tail)carry.set(v.night,v.tail.reg)})}
   F.forEach(fl=>fl.tails.forEach((t,i)=>{t.model=v111FleetModel(fl.c,fl.ac,i,fl.tails.length)}));
   const fleets=[];F.forEach(fl=>fleets.push({key:fl.key,c:fl.c,ac:fl.ac,min:fl.min,n:fl.tails.length,used:fl.tails.filter(t=>t.seq.length).length}));
@@ -2797,7 +2800,7 @@ function pose(e,t){
   const f=(t-k.t[lo])/(k.t[hi]-k.t[lo]);
   return{x:k.x[lo]+(k.x[hi]-k.x[lo])*f,y:k.y[lo]+(k.y[hi]-k.y[lo])*f,h:k.h[lo]+(k.h[hi]-k.h[lo])*f,z:k.z[lo]+(k.z[hi]-k.z[lo])*f};
 }
-window.SIMCORE={RX0,RX1,bake,pose,get SCHEDULE_AUDIT(){return v79ScheduleAudit()},setRunwayMode,get runwayMode(){return runwayMode},get ENTS(){return ENTS},get overnightIntegrity(){return ENTS.filter(e=>e.pre).map(e=>({flight:e.id,stand:e.stand?.id||e.stand?.name,source:e.overnightIn?.id,onblock:e.overnightOnblock,appear:e.appear,push:e.pushT,missing:!!e.overnightMissing}))},get STAT(){return STAT},tailInfo,get FLEET(){return FLEET},tailHistory,get TOW(){return ENTS.filter(e=>e.tow&&e.tow.length)},MPP,KD,rdrIcon,rdrDim,flowAt,NX,NY,STANDS,INF,OUTF,RY,RX0,RX1,RWS:RWY};
+window.SIMCORE={flightTails:id=>[...(FLIGHT_TAILS.get(id)||[])],RX0,RX1,bake,pose,get SCHEDULE_AUDIT(){return v79ScheduleAudit()},setRunwayMode,get runwayMode(){return runwayMode},get ENTS(){return ENTS},get overnightIntegrity(){return ENTS.filter(e=>e.pre).map(e=>({flight:e.id,stand:e.stand?.id||e.stand?.name,source:e.overnightIn?.id,onblock:e.overnightOnblock,appear:e.appear,push:e.pushT,missing:!!e.overnightMissing}))},get STAT(){return STAT},tailInfo,get FLEET(){return FLEET},tailHistory,get TOW(){return ENTS.filter(e=>e.tow&&e.tow.length)},MPP,KD,rdrIcon,rdrDim,flowAt,NX,NY,STANDS,INF,OUTF,RY,RX0,RX1,RWS:RWY};
 })();
 </script><script>(function(){
 'use strict';
@@ -3465,7 +3468,7 @@ function cardHTML(e){
 
  const v104=v104Sector(f.city,arr);
  const O=arr?(v104?v104.code:code):'JKT',D=arr?'JKT':(v104?v104.code:code),on=arr?(v104?v104.city:f.city):'Jakarta',dn=arr?'Jakarta':(v104?v104.city:f.city);
- return '<div class="jc-top"><div class="jc-id">'+airlineLogo(f.c,'sm')+'<div><b>'+esc(f.id)+'</b><span>'+esc(NAME[f.c]||f.c)+' · '+esc(f.ac)+'</span></div></div><button id="cX" aria-label="Close">×</button></div>'+
+ return '<div class="jc-top"><div class="jc-id">'+airlineLogo(f.c,'sm')+'<div><b>'+esc(f.id)+'</b><span>'+esc(NAME[f.c]||f.c)+' · '+esc(f.ac)+'</span><a class="v181-fl v181-cardlink" href="#/flight/'+esc(String(f.id).replace(' ',''))+'">Flight history ›</a></div></div><button id="cX" aria-label="Close">×</button></div>'+
  '<div class="jc-route"><div><b>'+esc(O)+'</b><span>'+esc(on)+'</span></div><div class="jc-arrow"><i style="width:'+(frac*100).toFixed(1)+'%"></i><u style="left:'+(frac*100).toFixed(1)+'%">✈</u></div><div class="r"><b>'+esc(D)+'</b><span>'+esc(dn)+'</span></div></div>'+
  (v104?'<div class="v104-sector-route"><strong>'+esc(v104.sector1)+'</strong><span>Stopover · '+esc(v104.via)+'</span><strong>'+esc(v104.sector2)+'</strong><small>Intermediate-sector times not provided</small></div>':'')+
  '<div class="jc-now"><span class="jb-s2 '+tone+'"><i></i>'+esc(st)+(at!=null?' '+fmt(at):'')+'</span>'+perf+'<span class="jc-tag '+(dom?'d':'i')+'">'+(dom?'Domestic':'International')+'</span></div>'+
@@ -4866,6 +4869,18 @@ html body #card ol.v73-line li b{font-weight:650}
 html body #card .v73-dim{color:#8a99a1!important;font-style:italic}
 html body #card .v73-reg{display:block;margin:0 0 10px;color:#2c3d46}
 html body #card .v73-swap strong{color:#b45309}
+/* v181 flight history */
+#v74-ac a.v181-fl{color:inherit;text-decoration:none;border-bottom:1px dotted currentColor}
+a.v181-cardlink{display:block;width:max-content;margin-top:5px;font-size:11px;font-weight:600;color:#1f7a6a;text-decoration:none;border:0}
+#v74-ac .v181-reg{margin-left:auto;font-size:12px;font-weight:600;color:#1b5f78;text-decoration:none;white-space:nowrap}
+#v74-ac .v181-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 14px;margin-top:11px}
+#v74-ac .v181-untracked{color:#8a99a1;font-weight:500}
+#v74-ac .v181-c small{display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#6b7c85}
+#v74-ac .v181-c b{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+#v74-ac .v181-c.dim b{color:#a2afb5}
+#v74-ac .v181-c.est b{color:#b45309}
+#v74-ac .v181-status{margin-top:10px;font-size:12px;font-weight:600;color:#36645d}
+#v74-ac .v181-status.v181-late{color:#b45309}#v74-ac .v181-status.v181-scheduled{color:#6b7c85}#v74-ac .v181-status.v181-live{color:#1b5f78}
 </style><style id="v74-page">#v74-ac{position:fixed;inset:0;z-index:2147483000;background:#f3f6f7;color:#1c2b33;overflow-y:auto;overscroll-behavior:contain;font-family:inherit;-webkit-font-smoothing:antialiased}
 #v74-ac[hidden]{display:none}
 #v74-ac *{box-sizing:border-box}
@@ -5217,7 +5232,7 @@ function render(H){
         '</div>';
       };
       return '<section class="v81-leg v100-leg">'+
-        '<div class="v81-leghead"><span class="v81-dot '+statusClass+'"></span><span class="v81-date">'+esc(dateLabel)+'</span><span class="v81-flight">'+esc(l.flight)+'</span>'+pill+pairNote+'</div>'+
+        '<div class="v81-leghead"><span class="v81-dot '+statusClass+'"></span><span class="v81-date">'+esc(dateLabel)+'</span><a class="v81-flight v181-fl" href="#/flight/'+esc(String(l.flight).replace(' ',''))+'">'+esc(l.flight)+'</a>'+pill+pairNote+'</div>'+
         '<div class="v100-legbody">'+
           '<div class="v81-route">'+
             '<div class="v81-line"><i>↗</i><b>'+esc(fromLabel)+'</b><span class="v81-code">'+esc(fromCode)+'</span></div>'+
@@ -5251,19 +5266,108 @@ function render(H){
   root.scrollTop=0
 }
 
+let lastFlight=null;
+const DOW_NAME=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+function opDays(days){if(!days)return 'Daily';const d=[...new Set(String(days).split(''))].filter(x=>/[1-7]/.test(x)).sort();return d.length===7?'Daily':d.map(x=>DOW_NAME[+x-1]).join(' · ')}
+const fmtDur=m=>{m=Math.round(m);if(!(m>0))return '—';return (Math.floor(m/60)?Math.floor(m/60)+'h ':'')+(m%60)+'m'};
+const typeCodeOf=ac=>{
+  if(/737-?8/i.test(ac))return 'B738';if(/737-?9/i.test(ac))return 'B739';if(/737 MAX 8/i.test(ac))return 'B38M';
+  if(/A330-?3/i.test(ac))return 'A333';if(/A330-?9/i.test(ac))return 'A339';if(/A320neo/i.test(ac))return 'A20N';
+  if(/A321neo/i.test(ac))return 'A21N';if(/A320/i.test(ac))return 'A320';if(/A321/i.test(ac))return 'A321';
+  if(/A350-?1000/i.test(ac))return 'A35K';if(/777-?3/i.test(ac))return 'B773';if(/787-?9/i.test(ac))return 'B789';
+  if(/787-?8/i.test(ac))return 'B788';return String(ac).replace(/[^A-Za-z0-9]/g,'').slice(0,4).toUpperCase()||'—'};
+/* v181: Flightradar24-style flight history. Rows come from exactly the same per-aircraft chain as the aircraft page
+   (same ATD/ATA/status), so a flight and its aircraft always agree. */
+function flightRows(id,now){
+  const c=C(),regs=c.flightTails?c.flightTails(id):[],out=[];
+  regs.forEach(reg=>{const H=c.tailHistory(reg);if(!H)return;
+    let prev=null;
+    H.legs.slice().sort((a,b)=>a.std-b.std).forEach(l=>{
+      const item=legRow(l,now,H.today,prev);prev={...item.nextState,ac:H.ac};
+      if(l.flight===id)v105HistorySectors(item).filter(x=>x.tone!=='untimed').forEach(x=>out.push({r:x,reg,ac:H.ac,today:H.today}))})});
+  return out.sort((a,b)=>b.r.l.std-a.r.l.std)}
+/* Carriers whose aircraft are not tracked individually (foreign airlines): same simulated timing chain per day,
+   built from the schedule, with no registration. */
+function flightRowsFallback(meta,id,now,outb){
+  const c=C(),today=c.FLEET.day,blkOf=window.__DB&&window.__DB().tBlk,blk=blkOf?blkOf(null,meta.city):120,out=[];
+  const ent=(c.ENTS||[]).find(e=>(outb?e.d:e.a)&&(outb?e.d:e.a).id===id)||null;
+  for(let d=today-14;d<=today;d++){
+    const dow=((d+3)%7+7)%7+1;if(meta.days&&!String(meta.days).includes(String(dow)))continue;
+    const base=d*1440;
+    const l=outb?{d,kind:'d',flight:id,from:'Jakarta',to:meta.city,std:base+meta.t,sta:base+meta.t+blk,ent:d===today?ent:null,generated:false}
+                :{d,kind:'a',flight:id,from:meta.city,to:'Jakarta',std:base+meta.t-blk,sta:base+meta.t,ent:d===today?ent:null,generated:false};
+    const item=legRow(l,now,today,null);
+    v105HistorySectors(item).filter(x=>x.tone!=='untimed').forEach(x=>out.push({r:x,reg:null,ac:meta.ac,today}))}
+  return out.sort((a,b)=>b.r.l.std-a.r.l.std)}
+function flightLegHtml(o){
+  const r=o.r,l=r.l,arr=l.from!=='Jakarta';
+  const v104=l.v105Sector?null:v104Sector(arr?l.from:l.to,arr);
+  const fromCode=l.from==='Jakarta'?'JKT':(v104?v104.code:code(l.from)),toCode=l.to==='Jakarta'?'JKT':(v104?v104.code:code(l.to));
+  const fromLabel=l.from==='Jakarta'?'Jakarta':(v104?v104.city:l.from),toLabel=l.to==='Jakarta'?'Jakarta':(v104?v104.city:l.to);
+  const dayLabel=dshort(absDay(l.std));
+  const statusClass=r.tone==='scheduled'?'scheduled':(r.tone==='late'?'late':(r.tone==='live'?'live':'ok'));
+  const pill=r.tone==='live'?'<span class="v100-status live">LIVE</span>':(r.tone==='late'?'<span class="v100-status late">LATE</span>':'');
+  const tm=(m,sh)=>m==null?'—':hm(m)+(sh?'<sup>+'+sh+'d</sup>':'');
+  const shiftOf=(m,ref)=>m!=null&&ref!=null?Math.max(0,absDay(m)-absDay(ref)):0;
+  const sched=l.sta-l.std,actual=r.atd!=null&&r.ata!=null?r.ata-r.atd:null;
+  const durTxt=actual!=null?fmtDur(actual):(r.atd!=null?'En route':'—');
+  const cell=(lab,val,cls)=>'<div class="v181-c'+(cls?' '+cls:'')+'"><small>'+lab+'</small><b>'+val+'</b></div>';
+  return '<section class="v81-leg v100-leg v181-leg">'+
+    '<div class="v81-leghead"><span class="v81-dot '+statusClass+'"></span><span class="v81-date">'+esc(dayLabel)+'</span>'+pill+
+      (o.reg?'<a class="v181-reg v73-regl" href="#/aircraft/'+esc(o.reg)+'">'+esc(o.reg)+' · '+esc(typeCodeOf(o.ac))+' ›</a>':'<span class="v181-reg v181-untracked">'+esc(typeCodeOf(o.ac))+' · registration not tracked</span>')+'</div>'+
+    '<div class="v81-route"><div class="v81-line"><i>↗</i><b>'+esc(fromLabel)+'</b><span class="v81-code">'+esc(fromCode)+'</span></div>'+
+      '<div class="v81-line"><i>↘</i><b>'+esc(toLabel)+'</b><span class="v81-code">'+esc(toCode)+'</span></div></div>'+
+    '<div class="v181-grid">'+
+      cell('STD',tm(l.std,0))+cell('ATD',tm(r.atd,shiftOf(r.atd,l.std)),r.atd==null?'dim':'')+
+      cell('STA',tm(l.sta,shiftOf(l.sta,l.std)))+(r.ata!=null?cell('ATA',tm(r.ata,shiftOf(r.ata,l.std))):(r.atd!=null&&r.eta!=null?cell('ETA',tm(r.eta,shiftOf(r.eta,l.std)),'est'):cell('ATA','—','dim')))+
+      cell('Duration',esc(durTxt))+cell('Scheduled',esc(fmtDur(sched)))+
+    '</div>'+
+    '<div class="v181-status v181-'+statusClass+'">'+esc(r.st)+'</div>'+
+  '</section>'}
+function renderFlight(id){
+  const c=C(),now=jakMin();let rows=flightRows(id,now);
+  const meta=[...(c.OUTF||[]),...(c.INF||[])].find(f=>f.id===id);
+  if(!meta&&!rows.length){root.innerHTML='<div class="top"><button class="back" type="button">‹ Back</button><b>Flight</b></div><div class="wrap"><div class="card" style="padding:28px">No flight found with number '+esc(id)+'.</div></div>';return}
+  const f=meta||{},nm=(typeof NAME!=='undefined'&&NAME[f.c])||f.c||'';
+  const outb=!!(c.OUTF||[]).find(x=>x.id===id);
+  if(!rows.length&&meta)rows=flightRowsFallback(meta,id,now,outb);
+  const city=f.city||(rows[0]&&(rows[0].r.l.from==='Jakarta'?rows[0].r.l.to:rows[0].r.l.from))||'';
+  const cd=code(city),routeTxt=outb?'JKT → '+cd:cd+' → JKT';
+  const done=rows.filter(o=>o.r.ata!=null&&o.r.atd!=null),avg=done.length?done.reduce((a,o)=>a+(o.r.ata-o.r.atd),0)/done.length:null;
+  const late=done.filter(o=>o.r.ata-o.r.l.sta>15).length;
+  const types=[...new Set(rows.map(o=>typeCodeOf(o.ac)))].join(' · ')||typeCodeOf(f.ac||'');
+  const regs=new Set(rows.map(o=>o.reg).filter(Boolean)).size;
+  const groups=new Map();rows.forEach(o=>{const d=absDay(o.r.l.std);if(!groups.has(d))groups.set(d,[]);groups.get(d).push(o)});
+  const history=[...groups.keys()].sort((a,b)=>b-a).map(d=>'<div class="v81-day">'+esc(dstr(d))+'</div>'+groups.get(d).map(flightLegHtml).join('')).join('')||'<div class="card" style="padding:22px">No operations in the last 15 days.</div>';
+  root.innerHTML='<div class="top"><button class="back" type="button">‹</button><b>Flight</b></div><div class="wrap">'+
+    '<section class="v81-head"><div class="v81-id"><small>Flight</small><h1>'+esc(id)+'</h1><div class="v81-sub">'+esc(nm)+' · '+esc(routeTxt)+'</div></div>'+
+    '<div class="v81-grid">'+
+      '<div class="row"><div class="cell"><span>Route</span><b>'+esc(routeTxt)+'</b></div><div class="cell"><span>City</span><b>'+esc(city)+'</b></div></div>'+
+      '<div class="row"><div class="cell"><span>Operates</span><b>'+esc(opDays(f.days))+'</b></div><div class="cell"><span>Aircraft</span><b>'+esc(types)+'</b></div></div>'+
+      '<div class="row"><div class="cell"><span>Scheduled</span><b>'+(f.t!=null?esc(hm(f.t))+' (WIB)':'—')+'</b></div><div class="cell"><span>Airline</span><b>'+esc(nm)+'</b></div></div>'+
+      '<div class="row"><div class="cell"><span>Last 15 days</span><b>'+rows.length+' flights'+(regs?' · '+regs+' aircraft':'')+'</b></div><div class="cell"><span>Average flight time</span><b>'+(avg==null?'—':esc(fmtDur(avg)))+'</b></div></div>'+
+      '<div class="row"><div class="cell"><span>Late arrivals (&gt;15 min)</span><b>'+late+' of '+done.length+'</b></div><div class="cell"><span>Times</span><b>WIB</b></div></div>'+
+    '</div></section>'+
+    '<div class="v81-history">'+history+'</div>'+
+    '<p class="v81-note">Historical actual times are deterministic simulator estimates and match the aircraft page; live-flight timestamps may differ. All displayed clock times are WIB; +1d means the next calendar day.</p></div>';
+  root.scrollTop=0}
 function route(){
-  const m=/^#\/aircraft\/(PK-[A-Z]{3})$/.exec(location.hash);
+  const m=/^#\/aircraft\/(PK-[A-Z]{3})$/.exec(location.hash),fm=/^#\/flight\/([A-Z0-9]{2})(\d{1,4})$/.exec(location.hash);
   ensure();
-  if(!m){root.hidden=true;document.documentElement.style.overflow='';lastReg=null;return}
+  if(!m&&!fm){root.hidden=true;document.documentElement.style.overflow='';lastReg=null;lastFlight=null;return}
   const go=()=>{const c=C();
     if(!c||!c.FLEET||!c.tailHistory){setTimeout(go,300);return}
+    if(fm){root.hidden=false;document.documentElement.style.overflow='hidden';lastReg=null;lastFlight=fm[1]+' '+fm[2];renderFlight(lastFlight);return}
+    lastFlight=null;
     const H=c.tailHistory(m[1]);
+
     root.hidden=false;document.documentElement.style.overflow='hidden';
     if(!H){root.innerHTML='<div class="top"><button class="back" type="button">‹ Back</button><b>Aircraft</b></div><div class="wrap"><div class="card" style="padding:28px">No aircraft found with registration '+esc(m[1])+'.</div></div>';return}
     lastReg=m[1];render(H)};
   go()}
-document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a.v73-regl');if(a)window.__v74from=true},true);
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a.v73-regl,a.v181-fl');if(a)window.__v74from=true},true);
 window.addEventListener('hashchange',route);
+setInterval(()=>{if(root&&!root.hidden&&lastFlight){const st=root.scrollTop;renderFlight(lastFlight);root.scrollTop=st}},30000);
 setInterval(()=>{if(root&&!root.hidden&&lastReg){const c=C();const H=c&&c.tailHistory?c.tailHistory(lastReg):null;if(H){const st=root.scrollTop;render(H);root.scrollTop=st}}},30000);
 route();
 })();
