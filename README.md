@@ -9,6 +9,11 @@ One hub with two kinds of records, both stored in the same dated log:
   leave before the late arrival plus the minimum turn) and the recovery options, for example *swap aircraft*: another aircraft of the
   same type that is free at Jakarta takes the delayed aircraft's next departure and the delayed aircraft takes its later one.
   Recording it applies the delay and the swap to the live ground simulation, the aircraft pages and the flight pages.
+* *An aircraft is out of service*: pick an aircraft that is on the ground at Jakarta between an arrival and its next departure, when it
+  became unserviceable and for how long. It cannot leave before it is repaired, which is a forced delay on its departures in that window
+  (knock-on included). Recovery options: **wait**, **swap** with another same-type aircraft whose next departure is later, or **bring in a
+  spare** from the maintenance pool (the spare takes over the aircraft's line, the broken one sits out for the repair duration; on the
+  ground the arriving aircraft stays parked and the spare departs).
 * Disruptions apply to the date being viewed (`?date=YYYY-MM-DD`, default today).
 
 **Change the timetable (planned)**
@@ -23,4 +28,4 @@ One hub with two kinds of records, both stored in the same dated log:
 * Open the page with `?nochanges=1` to ignore all changes and events.
 
 Record shapes: timetable `{id, v:1, scope:'timetable', kind:'add'|'amend'|'cancel', from, to, ...}`; operational
-`{id, v:1, scope:'ops', kind:'delay'|'swap', date, at, ...}`. The log is meant to be persisted as history later.
+`{id, v:1, scope:'ops', kind:'delay'|'swap'|'aog'|'spare', date, at, ...}`. The log is meant to be persisted as history later.

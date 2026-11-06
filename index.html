@@ -1135,15 +1135,20 @@ all().filter(active).sort((a,b)=>(dayNum(a.from)-dayNum(b.from))||String(a.creat
     swap : arrivals:['GA 3','GA 959']            (the two aircraft arriving on those flights exchange their next departures)} */
 const opsAll=()=>{const r=window.JN_CHANGES_REPO,rr=r&&Array.isArray(r.ops)?r.ops.map(o=>Object.assign({},o,{src:'repo'})):[];
   return noChanges?[]:[...rr,...local.ops.map(o=>Object.assign({},o,{src:'local'}))]};
-const OPS_DELAY=new Map(),OPS_SWAP=new Map(),OPS_META=new Map();
+const OPS_DELAY=new Map(),OPS_SWAP=new Map(),OPS_META=new Map(),OPS_AOG=new Map(),OPS_SPARE=new Map(),OPS_DERIVED=new Map(),OPS_DMETA=new Map();
 opsAll().forEach(o=>{const d=dayNum(o.date);if(d==null)return;
   if(o.kind==='delay'&&o.flight&&+o.minutes>0){const k=d+'|'+o.flight;OPS_DELAY.set(k,(OPS_DELAY.get(k)||0)+ +o.minutes);OPS_META.set(k,o)}
-  else if(o.kind==='swap'&&Array.isArray(o.arrivals)&&o.arrivals.length===2){(OPS_SWAP.get(d)||OPS_SWAP.set(d,[]).get(d)).push(o)}});
+  else if(o.kind==='swap'&&Array.isArray(o.arrivals)&&o.arrivals.length===2){(OPS_SWAP.get(d)||OPS_SWAP.set(d,[]).get(d)).push(o)}
+  else if(o.kind==='aog'&&o.tail){(OPS_AOG.get(d)||OPS_AOG.set(d,[]).get(d)).push(o)}
+  else if(o.kind==='spare'&&o.arrival){(OPS_SPARE.get(d)||OPS_SPARE.set(d,[]).get(d)).push(o)}});
 window.JN_OPS={
-  delayFor:(dayIdx,flight)=>OPS_DELAY.get(dayIdx+'|'+flight)||0,
-  causeFor:(dayIdx,flight)=>{const o=OPS_META.get(dayIdx+'|'+flight);return o?{cause:o.cause||'other',note:o.note||'',minutes:+o.minutes}:null},
-  swapsOn:dayIdx=>OPS_SWAP.get(dayIdx)||[],
-  list:opsAll,hasAny:()=>OPS_DELAY.size>0||OPS_SWAP.size>0};
+  delayFor:(dayIdx,flight)=>{const k=dayIdx+'|'+flight;return (OPS_DELAY.get(k)||0)+(OPS_DERIVED.get(k)||0)},
+  causeFor:(dayIdx,flight)=>{const k=dayIdx+'|'+flight,o=OPS_META.get(k)||OPS_DMETA.get(k);return o?{cause:o.cause||'other',note:o.note||'',minutes:+(o.minutes||OPS_DERIVED.get(k)||0)}:null},
+  swapsOn:dayIdx=>OPS_SWAP.get(dayIdx)||[],sparesOn:dayIdx=>OPS_SPARE.get(dayIdx)||[],aogOn:dayIdx=>OPS_AOG.get(dayIdx)||[],
+  aogFor:(reg,dayIdx)=>(OPS_AOG.get(dayIdx)||[]).find(o=>o.tail===reg)||null,
+  clearDerived:()=>{OPS_DERIVED.clear();OPS_DMETA.clear()},
+  setDerived:(dayIdx,flight,min,o)=>{const k=dayIdx+'|'+flight;OPS_DERIVED.set(k,Math.max(OPS_DERIVED.get(k)||0,min));OPS_DMETA.set(k,o)},
+  list:opsAll,hasAny:()=>OPS_DELAY.size>0||OPS_SWAP.size>0||OPS_AOG.size>0||OPS_SPARE.size>0};
 window.JN_CHG={
   view,viewDs,previewTok,warnings,legacyActive,BASELINE,noChanges,addOp(o){local.ops.push(o);this.save()},removeOp(id){local.ops=local.ops.filter(o=>o.id!==id);this.save()},ops:opsAll,
   all,active,status,dayNum,jakToday,
@@ -1205,13 +1210,13 @@ const setStatus=(m,bad)=>{const e=$('#fm-status');e.textContent=m||'';e.style.co
 const go=(s,init)=>{screen=s;st=init||{};draw()};
 function open(){wrap.classList.add('open');if(!wrap.dataset.once){wrap.dataset.once='1';screen='home'}draw()}
 launch.onclick=open;
-const TITLES={home:'Operations',delay:'A flight is delayed',change:'Change a flight',add:'Add a new service',cancel:'Cancel a flight',mine:'My changes and events'};
+const TITLES={home:'Operations',aog:'An aircraft is out of service',delay:'A flight is delayed',change:'Change a flight',add:'Add a new service',cancel:'Cancel a flight',mine:'My changes and events'};
 function draw(){
   $('#op-title').textContent=TITLES[screen]||'Operations';
   $('#op-sub').textContent=screen==='home'?'Viewing '+longDate(C.viewDs):'';
   $('#op-back').hidden=screen==='home';
   setStatus('');
-  ({home:drawHome,delay:drawDelay,change:drawChange,add:drawAdd,cancel:drawCancel,mine:drawMine}[screen]||drawHome)();
+  ({home:drawHome,aog:drawAog,delay:drawDelay,change:drawChange,add:drawAdd,cancel:drawCancel,mine:drawMine}[screen]||drawHome)();
 }
 const card=(go,title,desc,extra,off)=>`<button class="op-card${off?' off':''}" ${off?'disabled':`data-go="${go}"`}><b>${html(title)}</b><span>${html(desc)}</span>${extra||''}</button>`;
 function drawHome(){
@@ -1219,7 +1224,7 @@ function drawHome(){
   $('#op-body').innerHTML=`<div class="op-pad"><p class="op-lead">Record something that is happening, or plan a change to the timetable. Everything is dated, so you can always see what changed and when.</p>
 <h4 class="op-h">Something happened</h4>
 ${card('delay','A flight is delayed','An inbound flight is running late. See who is affected and recover, for example by swapping aircraft.')}
-${card('', 'An aircraft is out of service','Coming soon',null,true)}${card('','Weather or an airport issue','Coming soon',null,true)}
+${card('aog','An aircraft is out of service','An aircraft on the ground at Jakarta cannot fly. See the knock-on and recover: wait, swap, or bring in a spare.')}${card('','Weather or an airport issue','Coming soon',null,true)}
 <h4 class="op-h">Change the timetable</h4>
 ${card('change','Change a flight','New time, aircraft, days or terminal, from a date you choose.')}
 ${card('add','Add a new service','A new route or extra frequency, with its return flight.')}
@@ -1271,6 +1276,53 @@ function drawConsequences(f,min){
     if(st.opt&&st.opt[0]==='s'){const o=opts[+st.opt.slice(1)];if(o)ev.push({id:uid('op_'),v:1,scope:'ops',kind:'swap',date:C.viewDs,at,arrivals:o.arrivals,cause:st.cause||'other',note:'Recovery: '+o.tails.join(' ↔ '),createdAt:now})}
     ev.forEach(e=>C.addOp(e));try{sessionStorage.setItem('jn-op-toast','Recorded: '+f.id+' +'+durTxt(min)+' ('+causeLabel(st.cause)+')'+(ev.length>1?' · aircraft swapped':''))}catch(x){}
     $('#op-msg').textContent='Recorded. Reloading…';setTimeout(()=>location.reload(),300)}}
+/* ================= AN AIRCRAFT IS OUT OF SERVICE ================= */
+const hmIn=s=>{const m=/^(\d{1,2}):(\d\d)$/.exec(String(s).trim());return m?(+m[1]*60+ +m[2]):NaN};
+function drawAog(){waitReady(()=>{
+  const O=window.SIMCORE.ops,all=O.inbound().filter(x=>x.unit),q=(st.q||'').toLowerCase();
+  const list=all.filter(x=>!q||(x.id+' '+x.city+' '+x.tail+' '+(x.next?x.next.id+' '+x.next.city:'')).toLowerCase().includes(q)).slice(0,40);
+  if(!st.sel){
+    $('#op-body').innerHTML=`<div class="op-pad"><div class="op-step">Step 1 of 3 · Which aircraft?</div><p class="op-lead">Aircraft on the ground at Jakarta on ${html(longDate(C.viewDs))}, between an arrival and its next departure.</p>
+<input class="op-search" id="op-q" placeholder="Search registration, flight or city, e.g. PK-GPX or Jeddah" value="${html(st.q||'')}" autocomplete="off">
+<div class="op-list">${list.map(x=>`<button class="op-item" data-id="${html(x.id)}"><b>${html(x.tail)}</b><span>arrives as ${html(x.id)} (${html(x.city)}) ${hm(x.t)}</span><small>next: ${html(x.next.id)} → ${html(x.next.city)} at ${hm(x.next.t)}</small></button>`).join('')||'<p class="op-lead">No match.</p>'}</div></div>`;
+    $('#op-q').oninput=e=>{st.q=e.target.value;drawAog();const i=$('#op-q');i.focus();i.setSelectionRange(i.value.length,i.value.length)};
+    $('#op-body').querySelectorAll('.op-item').forEach(b=>b.onclick=()=>{const x=all.find(y=>y.id===b.dataset.id);st.sel=x;st.from=hm(x.t+15);st.rep=120;st.cause='technical';st.opt=null;drawAog()});return}
+  const f=st.sel,fromMin=hmIn(st.from),rep=+st.rep||0,untilMin=isNaN(fromMin)?NaN:fromMin+rep;
+  $('#op-body').innerHTML=`<div class="op-pad"><div class="op-step">Step 2 of 3 · What is wrong, and for how long?</div>
+<div class="op-sel"><b>${html(f.tail)}</b> · arrives as ${html(f.id)} (${html(f.city)}) ${hm(f.t)}<br><small>Next: ${html(f.next.id)} → ${html(f.next.city)} at ${hm(f.next.t)}</small> <button class="op-link" id="op-change">Change aircraft</button></div>
+<div class="fm-field"><label>Unserviceable from (WIB)</label><input data-k="from" id="op-from" class="op-mini" value="${html(st.from)}" placeholder="HH:MM"></div>
+<div class="op-chips" id="op-rep" style="margin-top:10px"><span class="op-lead" style="margin:0 6px 0 0">Out of service for</span>${[60,120,240,480,1440].map(m=>`<button class="fm-chip ${rep===m?'on':''}" data-m="${m}">${m===1440?'1 day':durTxt(m)}</button>`).join('')}</div>
+<div class="op-chips" id="op-cause">${[['technical','Technical'],['crew','Crew'],['weather','Weather damage'],['other','Other']].map(c=>`<button class="fm-chip ${st.cause===c[0]?'on':''}" data-c="${c[0]}">${c[1]}</button>`).join('')}</div>
+<input class="op-search" id="op-note" placeholder="Note (optional), e.g. hydraulic leak" value="${html(st.note||'')}"><div id="op-cons"></div></div>`;
+  $('#op-change').onclick=()=>{st.sel=null;st.opt=null;drawAog()};
+  $('#op-from').onchange=e=>{st.from=e.target.value;st.opt=null;drawAog()};
+  $('#op-rep').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{st.rep=+b.dataset.m;st.opt=null;st.from=$('#op-from').value;drawAog()});
+  $('#op-cause').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{st.cause=b.dataset.c;st.note=$('#op-note').value;st.from=$('#op-from').value;drawAog()});
+  $('#op-note').oninput=e=>{st.note=e.target.value};
+  if(!isNaN(untilMin)&&rep>0)drawAogCons(f,fromMin,untilMin);else $('#op-cons').innerHTML='<p class="op-lead">Enter the time it became unserviceable (HH:MM).</p>'})}
+function drawAogCons(f,fromMin,untilMin){
+  const o=window.SIMCORE.ops.aogOptions(f.id,fromMin,untilMin),box=$('#op-cons');
+  if(!o.supported){box.innerHTML=`<p class="op-lead">${html(o.reason)}</p>`;return}
+  if(o.noEffect){box.innerHTML=`<div class="op-step">Step 3 of 3 · What happens</div><div class="op-panel">${html(o.reason)}</div><div class="buttons"><button class="fm-btn primary" id="op-save">Record anyway</button></div><p class="fm-msg" id="op-msg"></p>`;
+    $('#op-save').onclick=()=>saveAog(f,fromMin,untilMin,null);return}
+  const li=l=>`<div class="op-row"><span>${html(l.id)} · ${html(l.city)} · departs ${hm(l.sched)}</span><b class="bad">+${durTxt(l.delay)}</b></div>`;
+  let h=`<div class="op-step">Step 3 of 3 · What happens, and what do you do?</div><div class="op-panel"><b>If you wait for the repair</b>${o.wait.legs.length?o.wait.legs.map(li).join('')+`<div class="op-row tot"><span>Combined delay across these flights</span><b class="bad">${durTxt(o.wait.total)}</b></div>`:'<p class="op-lead">No flight is delayed.</p>'}</div>`;
+  h+=`<div class="op-choice ${!st.opt?'on':''}" data-opt="wait"><b>Wait for the repair</b><span>${html(f.tail)} stays and flies when it is back in service.</span></div>`;
+  if(o.spare)h+=`<div class="op-choice ${st.opt==='spare'?'on':''}" data-opt="spare"><b>Bring in spare ${html(o.spare.reg)}</b><span>${html(o.spare.reg)} takes ${html(f.next.id)} (${html(f.next.city)}) and the rest of ${html(f.tail)}'s day on time. ${html(f.tail)} stays out of service for about ${o.outDays} day${o.outDays>1?'s':''}.</span><em>Saves ${durTxt(o.wait.total)} of delay</em></div>`;
+  h+=o.swaps.map((x,i)=>`<div class="op-choice ${st.opt==='s'+i?'on':''}" data-opt="s${i}"><b>Swap with ${html(x.tails[1])}</b><span>${x.takes.map(t=>html(t.flight)+' ('+html(t.city)+') flown by '+html(t.tail)+(t.delay>=5?' +'+durTxt(t.delay):' on time')).join(' · ')}</span><em>Saves ${durTxt(x.saved)} of delay</em></div>`).join('');
+  if(!o.spare&&!o.swaps.length)h+='<p class="op-lead">No spare or swap would reduce the delay.</p>';
+  h+=`<div class="buttons"><button class="fm-btn primary" id="op-save">Record</button></div><p class="fm-msg" id="op-msg"></p>`;
+  box.innerHTML=h;
+  box.querySelectorAll('.op-choice').forEach(c=>c.onclick=()=>{st.opt=c.dataset.opt==='wait'?null:c.dataset.opt;box.querySelectorAll('.op-choice').forEach(x=>x.classList.toggle('on',x===c))});
+  $('#op-save').onclick=()=>saveAog(f,fromMin,untilMin,o)}
+function saveAog(f,fromMin,untilMin,o){
+  const at=C.dayNum(C.viewDs)===C.dayNum(C.jakToday())?new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date()):'00:00';
+  const now=new Date().toISOString(),mk=x=>Object.assign({id:uid('op_'),v:1,scope:'ops',date:C.viewDs,at,cause:st.cause||'technical',createdAt:now},x);
+  const ev=[mk({kind:'aog',tail:f.tail,arrival:f.id,fromMin,untilMin,note:(st.note||'').trim()})];
+  if(o&&st.opt==='spare')ev.push(mk({kind:'spare',arrival:f.id,untilMin,note:'Recovery: spare '+(o.spare&&o.spare.reg)+' replaces '+f.tail}));
+  else if(o&&st.opt&&st.opt[0]==='s'){const x=o.swaps[+st.opt.slice(1)];if(x)ev.push(mk({kind:'swap',arrivals:x.arrivals,note:'Recovery: '+x.tails.join(' ↔ ')}))}
+  ev.forEach(e=>C.addOp(e));try{sessionStorage.setItem('jn-op-toast','Recorded: '+f.tail+' out of service until '+hm(untilMin)+(st.opt?(st.opt==='spare'?' · spare brought in':' · aircraft swapped'):''))}catch(x){}
+  const m=$('#op-msg');if(m)m.textContent='Recorded. Reloading…';setTimeout(()=>location.reload(),300)}
 /* ================= timetable flows ================= */
 function pickFlight(onPick,hint){
   const q=(st.q||'').toLowerCase(),list=flightsAll().filter(x=>!q||[x.r[0]+x.r[1],x.r[0]+' '+x.r[1],x.r[2],x.r[6]].some(t=>String(t).toLowerCase().includes(q))).sort((a,b)=>a.r[3]-b.r[3]).slice(0,40);
@@ -1395,7 +1447,7 @@ ${whenBlock()}<input class="op-search" data-k="note" placeholder="Note (optional
 /* ---- my changes and events ---- */
 function summary(c){
   const tg=(c.targets||[]).map(t=>t.carrier+' '+t.number).join(' + ');
-  if(c.scope==='ops'){if(c.kind==='delay')return c.flight+' delayed +'+durTxt(c.minutes)+' ('+causeLabel(c.cause)+')';if(c.kind==='swap')return 'Aircraft swapped: '+c.arrivals.join(' ↔ ');return c.kind}
+  if(c.scope==='ops'){if(c.kind==='delay')return c.flight+' delayed +'+durTxt(c.minutes)+' ('+causeLabel(c.cause)+')';if(c.kind==='swap')return 'Aircraft swapped: '+c.arrivals.join(' ↔ ');if(c.kind==='aog')return c.tail+' out of service '+hm(c.fromMin)+'–'+hm(c.untilMin)+' ('+causeLabel(c.cause)+')';if(c.kind==='spare')return 'Spare brought in for the aircraft arriving as '+c.arrival;return c.kind}
   if(c.kind==='add'){const o=(c.rows.OUT||[])[0],i=(c.rows.IN||[])[0],r=o||i;return 'Add '+[o&&o[0]+' '+o[1],i&&i[0]+' '+i[1]].filter(Boolean).join(' / ')+' · '+r[2]+' · '+hm(r[3])+' · '+daysText(r[8])+' · '+r[6]}
   if(c.kind==='cancel')return 'Cancel '+tg;
   const s=c.set||{},p=[];if(s.time!=null)p.push('time '+hm(s.time));if(s.aircraft)p.push(s.aircraft);if(s.terminal)p.push('terminal '+s.terminal);if(s.zone)p.push(s.zone==='I'?'international':'domestic');if('days' in s)p.push(daysText(s.days));
@@ -2960,8 +3012,16 @@ function tRoll(idx){
       const u=P.unitByArr.get(o.arrivals[0]),w=P.unitByArr.get(o.arrivals[1]);
       if(!u||!w||u.fkey!==w.fkey||u.t!==w.t||used.has(u.i)||used.has(w.i))continue;
       const A=rollSlot(K2C.get(u.v.k116),d),B=rollSlot(K2C.get(w.v.k116),d);if(A===B)continue;
+      const tauO=Math.min(1439,Math.max(u.a.t,w.a.t)+1);
+      if(!(u.d.t>tauO&&w.d.t>tauO))continue;          // both aircraft must have arrived before either departs; otherwise the swap is physically impossible
       used.add(u.i);used.add(w.i);
-      evs.push({k:'swap',key:u.fkey,sA:A,sB:B,tau:Math.min(1439,Math.max(u.a.t,w.a.t)+1),u:u.i,w:w.i,ops:true})}
+      evs.push({k:'swap',key:u.fkey,sA:A,sB:B,tau:tauO,u:u.i,w:w.i,ops:true})}
+    /* operational spare takeover: a spare from the idle pool takes over the line of the aircraft arriving on that flight */
+    for(const o of (window.JN_OPS?JN_OPS.sparesOn(d):[])){
+      const u=P.unitByArr.get(o.arrival);if(!u||u.t!=='r'||used.has(u.i))continue;
+      const id=idle.get(u.fkey);if(!id)continue;const pick=id.findIndex(z=>z.rel<=d);if(pick<0)continue;
+      const y=id.splice(pick,1)[0].t;used.add(u.i);
+      evs.push({k:'mx',key:u.fkey,sA:rollSlot(K2C.get(u.v.k116),d),tau:Math.min(1439,u.a.t+1),u:u.i,dur:Math.max(0,Math.ceil(((+o.untilMin||0)-1440)/1440)),ops:true,reserved:true,in:y})}
     for(const u of units){
       if(!u.cand.length||used.has(u.i))continue;
       if(imix(d,u.i,1)%1000>=ROLL_SWAP_P*1000)continue;
@@ -2976,15 +3036,15 @@ function tRoll(idx){
       for(let m=0;m<n;m++){const u=ovs[imix(d,m+1,4+fl.min)%ovs.length];if(used.has(u.i)||!runs(u,d))continue;
         used.add(u.i);evs.push({k:'mx',key:fl.key,sA:rollSlot(K2C.get(u.v.k116),d),tau:Math.min(1439,u.a.t+1),u:u.i,dur:1+imix(d,m+1,9)%3})}});
     evs.sort((x,y)=>x.tau-y.tau||x.u-y.u);
-    const rec=d>=first,hold0=rec?new Map():null;
-    if(rec)hold.forEach((hs,k)=>hold0.set(k,hs.slice()));
+    const rec=d>=first,hold0=rec?new Map():null,idle0=rec?new Map():null;
+    if(rec){hold.forEach((hs,k)=>hold0.set(k,hs.slice()));idle.forEach((a,k)=>idle0.set(k,a.map(z=>({t:z.t,rel:z.rel}))))}
     for(const e of evs){
       const hs=hold.get(e.key);
       if(e.k==='swap'){const x=hs[e.sA];hs[e.sA]=hs[e.sB];hs[e.sB]=x}
-      else{const id=idle.get(e.key),pick=id.findIndex(z=>z.rel<=d);if(pick<0){e.skip=true;continue}
-        const y=id.splice(pick,1)[0].t,x=hs[e.sA];hs[e.sA]=y;e.in=y;e.rel=d+1+e.dur;id.push({t:x,rel:e.rel});e.out=x;
+      else{const id=idle.get(e.key),pick=e.reserved?0:id.findIndex(z=>z.rel<=d);if(pick<0){e.skip=true;continue}
+        const y=e.reserved?e.in:id.splice(pick,1)[0].t,x=hs[e.sA];hs[e.sA]=y;e.in=y;e.rel=d+1+e.dur;id.push({t:x,rel:e.rel});e.out=x;
         if(rec||e.rel>first){let km=mxDays.get(e.key);if(!km)mxDays.set(e.key,km=new Map());let ds=km.get(x);if(!ds)km.set(x,ds=new Set());for(let q=d+1;q<e.rel;q++)ds.add(q)}}}
-    if(rec)days.set(d,{hold0,evs:evs.filter(e=>!e.skip)})}
+    if(rec)days.set(d,{hold0,idle0,evs:evs.filter(e=>!e.skip)})}
   return T_ROLL={idx,days,mxDays,first}}
 /* apply a day's recorded events to a holder array */
 function rollApply(e,hs,idleOut){
@@ -3097,9 +3157,19 @@ function opsChain(legs,inj){
     else{let od=l.t-l.blk+x;if(prev&&prev.k==='d')od=Math.max(od,prev.eff+prev.blk+opsTurn(l.f));l.arrEff=od+l.blk;l.dly=l.arrEff-l.t;prev=l}}
   return legs}
 const ET=f=>Math.min(1435,f.t+(f.dly||0));
+function opsFindTail(reg){let r=null;tPlan().F.forEach(fl=>fl.tails.forEach(t=>{if(t.reg===reg)r=t}));return r}
+/* an unserviceable aircraft cannot leave before it is back in service: that is a forced delay on each departure inside the window */
+function opsDeriveAog(idx){
+  JN_OPS.clearDerived();
+  JN_OPS.list().forEach(o=>{if(o.kind!=='aog'||!o.tail)return;const day=dayNumOf(o.date);if(day==null||day>idx||day<idx-TAIL_WARM)return;
+    const t=opsFindTail(o.tail);if(!t)return;
+    tailLegs(t,[day]).forEach(l=>{if(l.k!=='d'||l.day!==day)return;const rel=l.t-day*1440;
+      if(rel>=(+o.fromMin||0)&&rel<(+o.untilMin||0))JN_OPS.setDerived(day,l.f.id,(+o.untilMin)-rel,Object.assign({},o,{cause:o.cause||'technical'}))})})}
 function opsDelays(idx){
   INF.forEach(f=>{f.dly=0});OUTF.forEach(f=>{f.dly=0});
-  if(!window.JN_OPS||!JN_OPS.hasAny())return;
+  if(!window.JN_OPS)return;
+  opsDeriveAog(idx);
+  if(!JN_OPS.hasAny())return;
   const P=tPlan(),days=[idx-1,idx];
   P.F.forEach(fl=>fl.tails.forEach(t=>{opsChain(tailLegs(t,days)).forEach(l=>{if(l.day===idx&&l.dly>0)l.f.dly=Math.max(l.f.dly||0,l.dly)})}));
   /* flights without tracked aircraft: the injected delay itself, then knock-on through glued turns at Jakarta */
@@ -3151,6 +3221,19 @@ function opsSwapOptions(flightId,minutes){
       takes:[...tk(c2,t2.reg),...tk(c1,t1.reg)],affected:m1.n+m2.n})});
   opts.sort((p,q)=>q.saved-p.saved||p.affected-q.affected);
   return {supported:true,tail:t1.reg,next:{id:u1.d.id,city:u1.d.city,sched:u1.d.t},wait:{total:Math.round(waitM.total),n:waitM.n,legs:opsLegList(wait,day,t1.reg)},options:opts.slice(0,5)}}
+/* aircraft out of service: it cannot leave before it is repaired. Equivalent to the aircraft only being ready at untilMin. */
+function opsAogOptions(arrivalId,fromMin,untilMin){
+  const day=T_COMPUTED,P=tPlan(),u1=P.unitByArr.get(arrivalId),t1=opsTailOf(arrivalId);
+  if(!t1||!u1||u1.t!=='r')return {supported:false,reason:'This aircraft is not on the ground at Jakarta between an arrival and a departure on this date.'};
+  const a1=u1.a,d1=u1.d;
+  if(fromMin>d1.t)return {supported:true,noEffect:true,tail:t1.reg,next:{id:d1.id,city:d1.city,sched:d1.t},reason:'Its next departure ('+d1.id+') leaves before the aircraft becomes unserviceable, so nothing changes today.'};
+  const M=Math.max(0,untilMin-(a1.t+opsTurn(a1)));
+  const ko=opsKnockOn(arrivalId,M),sw=opsSwapOptions(arrivalId,M);
+  const rec=tRoll(day).days.get(day),fl=P.F.get(u1.fkey),idle=(rec&&rec.idle0&&rec.idle0.get(u1.fkey))||[];
+  const free=idle.find(z=>z.rel<=day),spare=free&&fl&&fl.tails[free.t]?{reg:fl.tails[free.t].reg}:null;
+  const legs=(ko.legs||[]).filter(l=>l.kind==='d');
+  return {supported:true,tail:t1.reg,next:{id:d1.id,city:d1.city,sched:d1.t},M,wait:{legs,total:legs.reduce((a,l)=>a+l.delay,0)},
+    swaps:(sw&&sw.supported)?sw.options:[],spare,outDays:1+Math.max(0,Math.ceil((untilMin-1440)/1440))}}
 function tailHistory(reg){
   const F=FLEET&&FLEET.F;if(!F)return null;
   let tail=null;F.forEach(fl=>fl.tails.forEach(t=>{if(t.reg===reg)tail=t}));if(!tail)return null;
@@ -3222,7 +3305,8 @@ function bake(pct){
     OUTF.forEach(f=>{if(T_LOOPED.has(f))FULL.push({d:f,k:'d'})});
     /* v183: apply today's aircraft swaps so ground entities pair arrivals/departures exactly like the aircraft rotations */
     try{const di=tDayIndex().idx,R=tRoll(di),day=R.days.get(di),U=tPlan().units;
-      (day?day.evs:[]).forEach(e=>{if(e.k!=='swap')return;const u=U[e.u],w=U[e.w];
+      (day?day.evs:[]).forEach(e=>{if(e.k==='mx'&&e.ops){const u=U[e.u];const x=FULL.find(z=>z.k==='r'&&z.a===u.a&&z.d===u.d);if(x){x.k='a';delete x.d;FULL.push({d:u.d,k:'d'})}return}
+        if(e.k!=='swap')return;const u=U[e.u],w=U[e.w];
         if(u.t==='r'){const x=FULL.find(z=>z.k==='r'&&z.a===u.a&&z.d===u.d),y=FULL.find(z=>z.k==='r'&&z.a===w.a&&z.d===w.d);if(x&&y){x.d=w.d;y.d=u.d}}
         else{const x=FULL.find(z=>z.k==='ovA'&&z.a===u.a),y=FULL.find(z=>z.k==='ovA'&&z.a===w.a);if(x&&y){const t=x.od;x.od=y.od;y.od=t}}})
     }catch(err){console.error('rolling pairing:',err)}
@@ -3321,7 +3405,7 @@ function pose(e,t){
   const f=(t-k.t[lo])/(k.t[hi]-k.t[lo]);
   return{x:k.x[lo]+(k.x[hi]-k.x[lo])*f,y:k.y[lo]+(k.y[hi]-k.y[lo])*f,h:k.h[lo]+(k.h[hi]-k.h[lo])*f,z:k.z[lo]+(k.z[hi]-k.z[lo])*f};
 }
-window.SIMCORE={ops:{inbound:opsInbound,knockOn:opsKnockOn,swapOptions:opsSwapOptions},flightTails:id=>[...(FLIGHT_TAILS.get(id)||[])],RX0,RX1,bake,pose,get SCHEDULE_AUDIT(){return v79ScheduleAudit()},setRunwayMode,get runwayMode(){return runwayMode},get ENTS(){return ENTS},get overnightIntegrity(){return ENTS.filter(e=>e.pre).map(e=>({flight:e.id,stand:e.stand?.id||e.stand?.name,source:e.overnightIn?.id,onblock:e.overnightOnblock,appear:e.appear,push:e.pushT,missing:!!e.overnightMissing}))},get STAT(){return STAT},tailInfo,get FLEET(){return FLEET},tailHistory,get TOW(){return ENTS.filter(e=>e.tow&&e.tow.length)},MPP,KD,rdrIcon,rdrDim,flowAt,NX,NY,STANDS,INF,OUTF,RY,RX0,RX1,RWS:RWY};
+window.SIMCORE={ops:{inbound:opsInbound,knockOn:opsKnockOn,swapOptions:opsSwapOptions,aogOptions:opsAogOptions},flightTails:id=>[...(FLIGHT_TAILS.get(id)||[])],RX0,RX1,bake,pose,get SCHEDULE_AUDIT(){return v79ScheduleAudit()},setRunwayMode,get runwayMode(){return runwayMode},get ENTS(){return ENTS},get overnightIntegrity(){return ENTS.filter(e=>e.pre).map(e=>({flight:e.id,stand:e.stand?.id||e.stand?.name,source:e.overnightIn?.id,onblock:e.overnightOnblock,appear:e.appear,push:e.pushT,missing:!!e.overnightMissing}))},get STAT(){return STAT},tailInfo,get FLEET(){return FLEET},tailHistory,get TOW(){return ENTS.filter(e=>e.tow&&e.tow.length)},MPP,KD,rdrIcon,rdrDim,flowAt,NX,NY,STANDS,INF,OUTF,RY,RX0,RX1,RWS:RWY};
 })();
 </script><script>(function(){
 'use strict';
@@ -5581,6 +5665,7 @@ function closePage(){
   else{history.replaceState(null,'',location.pathname+location.search);route()}}
 function status(H,now){
   const live=H.live||[];
+  {const ao=window.JN_OPS&&JN_OPS.aogFor(H.reg,H.today);if(ao&&now>=+ao.fromMin&&now<+ao.untilMin)return['mx','Out of service until '+hm(+ao.untilMin)+' · '+(CAUSE_LBL[ao.cause]||'technical')]}
   if(H.aogDays.includes(H.today)&&!live.length)return['mx','Unserviceable today · in maintenance'];
   const T=now*60;
   for(const e of live){
