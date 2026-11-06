@@ -1024,7 +1024,7 @@ FLD.IN.push(
 for(const k of ['IN','OUT'])for(const r of FLD[k])if(r[0]==='GA'&&(r[1]==='904'||r[1]==='905')&&r[2]==='Singapore'&&r[6]==='Boeing 787-9')r[6]='Airbus A350-1000';
 </script><style id="v131-manager-style">
 #fm-launch{position:fixed;z-index:120;right:12px;bottom:18px;background:#18394d;color:#fff;border:1px solid #87a7bc;border-radius:13px;padding:12px 16px;font:600 13px 'Geist',-apple-system,sans-serif;box-shadow:0 9px 24px #0005;cursor:pointer}
-#fm-wrap{display:none;position:fixed;inset:0;z-index:200;background:rgba(10,22,34,.65);padding:16px;box-sizing:border-box;font-family:'Geist',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1a2c3d}
+#fm-wrap{display:none;position:fixed;inset:0;z-index:2147483200;background:rgba(10,22,34,.65);padding:16px;box-sizing:border-box;font-family:'Geist',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1a2c3d}
 #fm-wrap.open{display:flex;align-items:center;justify-content:center}
 #fm-panel{width:min(100%,980px);max-height:94dvh;min-height:0;background:#f7f9fb;border-radius:17px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 80px #0008}
 #fm-panel *{box-sizing:border-box}#fm-panel button,#fm-panel input,#fm-panel select{font:inherit}#fm-panel button{cursor:pointer}
@@ -1040,95 +1040,328 @@ for(const k of ['IN','OUT'])for(const r of FLD[k])if(r[0]==='GA'&&(r[1]==='904'|
 .fm-item.sel{background:#e8f3ff;border-radius:8px}.fm-item strong{font-size:13px}.fm-item span{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fm-item small{font-size:10px;color:#617284}.fm-edit{overflow:auto;padding:15px}.fm-edit h3{font-size:15px;margin:0 0 10px}.fm-edit .fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}.fm-field{display:flex;flex-direction:column;gap:5px}.fm-field.wide{grid-column:1/-1}.fm-field label{font-size:11px;color:#506579;font-weight:600}.fm-edit .buttons{display:flex;gap:7px;margin-top:14px;flex-wrap:wrap}
 .fm-msg{font-size:12px;line-height:1.45;margin:12px 0;white-space:pre-wrap}.fm-note{font-size:11px;color:#627688;line-height:1.45;padding:10px 15px;border-top:1px solid #dbe3e9;background:#fff}
 @media(max-width:700px){#fm-wrap{padding:0}#fm-panel{height:100dvh;max-height:100dvh;border-radius:0}.fm-body{display:flex;flex-direction:column}.fm-list{height:34%;flex:none;border-right:0;border-bottom:1px solid #dbe3e9}.fm-edit{flex:1;min-height:0}.fm-tools{gap:5px}.fm-tools input,.fm-tools select{font-size:12px;padding:9px}#fm-launch{bottom:12px;right:10px}}
+.fm-edit .fields>*,.fm-new .fields>*,.fm-eff>*,.fm-tools>*{min-width:0}.fm-field input,.fm-field select{width:100%}.fm-field{min-width:0}
+#fm-panel{padding-bottom:env(safe-area-inset-bottom,0)}#fm-launch{z-index:2147483100}
+.fm-banner{position:fixed;top:0;left:0;right:0;z-index:2147483150;background:#184e72;color:#fff;padding:9px 14px;font:600 12px 'Geist',-apple-system,sans-serif;text-align:center}.fm-banner a{color:#fff;text-decoration:underline}.fm-banner.bad{background:#a32b2b}.fm-banner button{margin-left:8px;border:1px solid #fff;background:transparent;color:#fff;border-radius:7px;padding:4px 9px;font:inherit;cursor:pointer}
+.fm-tabs{display:flex;gap:4px;padding:8px 12px 0;background:#fff;border-bottom:1px solid #dbe3e9;overflow-x:auto}
+.fm-tabs button{border:0;background:transparent;padding:10px 13px;font-size:13px;font-weight:600;color:#526b7b;border-bottom:3px solid transparent;white-space:nowrap}
+.fm-tabs button.on{color:#184e72;border-bottom-color:#184e72}
+#fm-pane{display:flex;flex-direction:column;min-height:0;flex:1;overflow:hidden}
+#fm-pane .fm-new{overflow:auto;padding:15px}
+.fm-chips{display:flex;flex-wrap:wrap;gap:6px}.fm-chip{border:1px solid #cbd7df;background:#fff;border-radius:999px;padding:7px 11px;font-size:12px;color:#506579}.fm-chip.on{background:#184e72;border-color:#184e72;color:#fff}
+.fm-eff{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.fm-check{display:flex;gap:8px;align-items:center;font-size:12px;margin-top:12px;color:#34495a}
+.fm-sub{font-size:12px;font-weight:700;color:#34495a;margin:6px 0}
+.fm-prev,.fm-prev-wait{margin-top:12px;border:1px solid #cfe0ea;background:#f1f7fb;border-radius:10px;padding:11px 12px;font-size:12px;color:#1a2c3d}.fm-prev.bad{background:#fff3f1;border-color:#efc4be}
+.fm-prow{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid #e1ebf1}.fm-prow.warn b{color:#b22}.fm-prow span{color:#4a6072}.fm-psub{font-weight:700;margin:9px 0 2px;color:#34495a}
+.fm-chlist{overflow:auto;padding:10px 14px;flex:1}.fm-ch{border:1px solid #dbe3e9;background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:9px}.fm-chh{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;font-size:13px}
+.fm-chm{font-size:11px;color:#627688;margin-top:5px}.fm-badge{font-size:10px;font-weight:700;border-radius:999px;padding:3px 8px;white-space:nowrap;background:#e8eef3;color:#4a6072}.fm-badge.active{background:#dff3ea;color:#1d6b4a}.fm-badge.future{background:#fff1d6;color:#8a5a00}
+.fm-link{border:0;background:none;color:#1b5f78;font-size:11px;text-decoration:underline;padding:0 0 0 8px;cursor:pointer}a.fm-link{text-decoration:underline}
+#fm-newap{border:1px dashed #b7c9d6;border-radius:10px;padding:10px;background:#fbfdfe}
 </style>
-<script id="v132-flight-manager">
+<script src="schedule-changes.js"></script>
+<script id="v184-schedule-changes-data">
 (function(){
 'use strict';
-const KEY='jn-flight-manager-v155';
-const incoming=FLD.IN.map(r=>r.slice()),outgoing=FLD.OUT.map(r=>r.slice());
-const baseline={IN:incoming,OUT:outgoing};
-let draft={IN:incoming.map(r=>r.slice()),OUT:outgoing.map(r=>r.slice())};
-let selected=null,query='',carrier='ALL',side='ALL',dirty=false;
-const html=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const isMinutes=n=>Number.isInteger(+n)&&+n>=0&&+n<1440;
-const hm=n=>String(Math.floor(+n/60)).padStart(2,'0')+':'+String(+n%60).padStart(2,'0');
-const minutes=s=>{const m=/^(\d{1,2}):(\d\d)$/.exec(String(s));return m&&+m[1]<24&&+m[2]<60?(+m[1]*60+ +m[2]):NaN;};
-const rowValid=r=>Array.isArray(r)&&r.length>=8&&/^[A-Z0-9]{2}$/.test(String(r[0]))&&/^\d{1,4}$/.test(String(r[1]))&&String(r[2]).trim()&&isMinutes(r[3])&&['T1','T2','T3','T4','CGO'].includes(r[4])&&['D','I'].includes(r[5])&&String(r[6]).trim()&&String(r[7]).trim();
-const cloneDb=d=>({IN:d.IN.map(r=>r.slice()),OUT:d.OUT.map(r=>r.slice())});
-function verify(d){
- if(!d||!Array.isArray(d.IN)||!Array.isArray(d.OUT)||d.IN.length+d.OUT.length>5000)throw Error('Invalid or oversized timetable file.');
- const conflicts=new Set();
- for(const dir of ['IN','OUT'])for(const r of d[dir]){
-   if(!rowValid(r))throw Error('Invalid '+dir+' record: '+JSON.stringify(r));
-   const k=dir+'|'+r[0]+'|'+r[1];if(conflicts.has(k))throw Error('Duplicate flight number in '+dir+': '+r[0]+r[1]);conflicts.add(k);
- }
- return d;
-}
-function readSaved(){try{
- const raw=localStorage.getItem(KEY);if(!raw)return;
- const o=JSON.parse(raw);if(o.version!==1||o.baseline!==baseline.IN.length+'|'+baseline.OUT.length)throw Error('Saved schedule belongs to a different simulator build.');
- verify(o.data);draft=cloneDb(o.data);
-}catch(e){window.__fmRestoreError=String(e.message||e);}}
-readSaved();
-// Apply saved schedule BEFORE the original engine builds INF / OUTF.
-FLD.IN.splice(0,FLD.IN.length,...draft.IN.map(r=>r.slice()));
-FLD.OUT.splice(0,FLD.OUT.length,...draft.OUT.map(r=>r.slice()));
-function mount(){
- const launch=document.createElement('button');launch.id='fm-launch';launch.textContent='Manage flights';launch.title='Edit flight schedule';document.body.append(launch);
- const wrap=document.createElement('div');wrap.id='fm-wrap';wrap.setAttribute('role','dialog');wrap.setAttribute('aria-label','Flight Manager');wrap.innerHTML=`<div id="fm-panel">
- <div class="fm-hd"><div><h2>Flight Manager</h2><p>Northshore Operations · local schedule editor</p></div><button class="fm-btn" id="fm-close">Close ✕</button></div>
- <div class="fm-tools"><input id="fm-search" placeholder="Search flight, destination, rotation…" aria-label="Search flights"><select id="fm-carrier" aria-label="Filter airline"></select><select id="fm-side" aria-label="Filter direction"><option value="ALL">Both directions</option><option value="OUT">JKT departures</option><option value="IN">JKT arrivals</option></select><button class="fm-btn primary" id="fm-add">+ New flight</button></div>
- <div class="fm-body"><div class="fm-list" id="fm-list"></div><div class="fm-edit" id="fm-edit"><p>Select a flight to edit it.</p></div></div>
- <div class="fm-tools"><button class="fm-btn primary" id="fm-save">Save locally & reload</button><button class="fm-btn" id="fm-export">Export JSON backup</button><button class="fm-btn" id="fm-import">Import JSON</button><input type="file" id="fm-file" accept=".json,application/json" hidden><button class="fm-btn danger" id="fm-reset">Restore original schedule</button></div>
- <div class="fm-note" id="fm-status">Changes only save in this browser after “Save locally & reload”. GitHub Pages does not write them to your repository. Export a backup before changing devices.</div>
- </div>`;document.body.append(wrap);
- const $=id=>wrap.querySelector('#'+id),status=(m,bad=false)=>{$('fm-status').textContent=m;$('fm-status').style.color=bad?'#aa2525':'#526b7b';};
- const open=()=>{wrap.classList.add('open');draw();if(window.__fmRestoreError)status('Previous local schedule was not loaded: '+window.__fmRestoreError,true)};
- launch.onclick=open;$('fm-close').onclick=()=>wrap.classList.remove('open');
- const items=()=>['OUT','IN'].flatMap(d=>draft[d].map((r,i)=>({d,i,r}))).filter(x=>(carrier==='ALL'||x.r[0]===carrier)&&(side==='ALL'||x.d===side)&&(!query||[x.r[0]+x.r[1],x.r[2],x.r[7],x.r[6]].some(t=>String(t).toLowerCase().includes(query)))).sort((a,b)=>a.r[3]-b.r[3]||a.r[0].localeCompare(b.r[0]));
- function draw(){
- const carr=[...new Set([...draft.IN,...draft.OUT].map(r=>r[0]))].sort();$('fm-carrier').innerHTML='<option value="ALL">All airlines</option>'+carr.map(c=>`<option value="${html(c)}">${html(c)}</option>`).join('');$('fm-carrier').value=carrier;
- const a=items();$('fm-list').innerHTML=a.slice(0,650).map(x=>`<button class="fm-item ${selected&&selected.d===x.d&&selected.i===x.i?'sel':''}" data-dir="${x.d}" data-i="${x.i}"><strong>${html(x.r[0]+x.r[1])}</strong><span>${html(x.d==='OUT'?'JKT → ':'→ JKT · ')}${html(x.r[2])}<br><small>${html(x.r[6])}</small></span><strong>${hm(x.r[3])}</strong></button>`).join('')+(a.length>650?'<p class="fm-note">Showing first 650 results. Narrow your search.</p>':'');
- $('fm-list').querySelectorAll('button[data-dir]').forEach(b=>b.onclick=()=>{selected={d:b.dataset.dir,i:+b.dataset.i};draw()});
- showEditor();
- }
- function showEditor(){
- const e=$('fm-edit');if(!selected){e.innerHTML='<p>Select a flight or choose + New flight.</p>';return;}
- const isNew=selected.i===-1;const r=isNew?['GA','','',360,'T1','D','Boeing 737-800','']:draft[selected.d]?.[selected.i];if(!r){selected=null;showEditor();return;}
- e.innerHTML=`<h3>${isNew?'Add a flight':'Edit '+html(r[0]+r[1])} · ${selected.d==='OUT'?'JKT departure':'JKT arrival'}</h3>
- <div class="fields">
- ${fld('Airline','carrier',r[0])}${fld('Flight number','number',r[1])}
- ${fld('Destination / origin city','city',r[2],true)}${fld('Time (WIB)','time',hm(r[3]))}
- ${choice('Terminal','terminal',['T1','T2','T3','T4','CGO'],r[4])}${choice('Route type','zone',['D','I'],r[5])}
- ${fld('Aircraft type','aircraft',r[6],true)}${fld('Rotation / pairing ID','pid',r[7],true)}
- </div><p class="fm-msg">${selected.d==='OUT'?'Departure time is from Jakarta.':'Arrival time is at Jakarta.'} The pairing ID does not automatically generate a matching return flight. Add the opposite direction separately.</p>
- <div class="buttons"><button class="fm-btn primary" id="fm-apply">${isNew?'Add to draft':'Apply to draft'}</button>${isNew?'':'<button class="fm-btn danger" id="fm-delete">Delete flight</button>'}</div><p class="fm-msg" id="fm-formmsg"></p>`;
- const formmsg=e.querySelector('#fm-formmsg');
- e.querySelector('#fm-apply').onclick=()=>{
- const val=k=>e.querySelector('[data-fm="'+k+'"]').value.trim();
- const t=minutes(val('time'));
- const nr=[val('carrier').toUpperCase(),val('number'),val('city'),t,val('terminal'),val('zone'),val('aircraft'),val('pid')];
- if(!rowValid(nr)){formmsg.textContent='Invalid fields. Use e.g. GA, 114, 06:35, T1, D, Boeing 737-800 and a nonempty rotation ID.';formmsg.style.color='#b22';return;}
- const existing=['IN','OUT'].flatMap(d=>draft[d].map((rr,i)=>({d,i,rr}))).find(x=>x.d===selected.d&&x.rr[0]===nr[0]&&x.rr[1]===nr[1]&&(isNew||x.i!==selected.i||x.d!==selected.d));
- if(existing){formmsg.textContent='This direction already has flight '+nr[0]+nr[1];formmsg.style.color='#b22';return;}
- if(isNew){draft[selected.d].push(nr);selected={d:selected.d,i:draft[selected.d].length-1}}else draft[selected.d][selected.i]=nr;
- dirty=true;draw();status('Draft modified. Save locally & reload to apply changes to the simulation.');
- };
- const del=e.querySelector('#fm-delete');if(del)del.onclick=()=>{if(!confirm('Delete '+r[0]+r[1]+' '+selected.d+'? This does not remove its opposite-direction flight.'))return;draft[selected.d].splice(selected.i,1);selected=null;dirty=true;draw();status('Flight removed from draft. Save locally & reload to apply.')};
- }
- function fld(label,key,value,wide=false){return `<div class="fm-field ${wide?'wide':''}"><label>${html(label)}</label><input data-fm="${key}" value="${html(value)}" ${key==='time'?'placeholder="HH:MM"':''}></div>`;}
- function choice(label,key,choices,value){return `<div class="fm-field"><label>${html(label)}</label><select data-fm="${key}">${choices.map(v=>`<option value="${v}" ${value===v?'selected':''}>${v}</option>`).join('')}</select></div>`;}
- $('fm-search').oninput=e=>{query=e.target.value.trim().toLowerCase();draw()};$('fm-carrier').onchange=e=>{carrier=e.target.value;draw()};$('fm-side').onchange=e=>{side=e.target.value;draw()};
- $('fm-add').onclick=()=>{selected={d:side==='IN'?'IN':'OUT',i:-1};showEditor()};
- $('fm-save').onclick=()=>{try{verify(draft);localStorage.setItem(KEY,JSON.stringify({version:1,baseline:baseline.IN.length+'|'+baseline.OUT.length,data:draft}));location.reload()}catch(e){status('Could not save: '+e.message,true)}};
- $('fm-reset').onclick=()=>{if(!confirm('Restore the original v155 timetable and remove saved browser edits?'))return;try{localStorage.removeItem(KEY);location.reload()}catch(e){status(String(e),true)}};
- $('fm-export').onclick=()=>{try{verify(draft);const blob=new Blob([JSON.stringify({format:'jakarta-northshore-schedule',version:1,IN:draft.IN,OUT:draft.OUT},null,2)],{type:'application/json'});const a=document.createElement('a');const u=URL.createObjectURL(blob);a.href=u;a.download='jakarta-northshore-flight-schedule.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);status('Schedule backup exported. Save it to Files or your repository.')}catch(e){status(e.message,true)}};
- $('fm-import').onclick=()=>$('fm-file').click();$('fm-file').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;const obj=JSON.parse(await file.text());if(obj.format!=='jakarta-northshore-schedule')throw Error('Not a Northshore schedule backup.');verify(obj);if(!confirm('Replace the current draft with this imported schedule?'))return;draft=cloneDb(obj);dirty=true;selected=null;draw();status('Imported into draft. Select Save locally & reload to apply.')}catch(err){status('Import failed: '+err.message,true)}finally{e.target.value=''}};
- wrap.addEventListener('click',e=>{if(e.target===wrap)wrap.classList.remove('open')});
- draw();
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+/* v184: dated change log layered over the built-in schedule.
+   Records are small and self-describing so the same log can later carry operational events (delays, aircraft swaps,
+   strikes) and be persisted as history:
+     {id, v:1, scope:'timetable', kind:'add'|'amend'|'cancel', from:'YYYY-MM-DD', to:null|'YYYY-MM-DD', note, createdAt, ...}
+   A timetable change applies when the VIEWED date is inside [from, to]; the built-in schedule is never edited. */
+const LS='jn-changes-v1',LEGACY='jn-flight-manager-v155',PREV='jn-changes-preview-';
+const dayNum=s=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||'');return m?Math.round(Date.UTC(+m[1],+m[2]-1,+m[3])/86400000):null};
+const jakToday=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Jakarta',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+const qs=new URLSearchParams(location.search);
+const viewDs=/^\d{4}-\d{2}-\d{2}$/.test(qs.get('date')||'')?qs.get('date'):jakToday();
+const view=dayNum(viewDs),previewTok=qs.get('preview')||null;
+const storeKey=previewTok?PREV+previewTok:LS;
+const emptyStore=()=>({version:1,changes:[],ops:[]});
+function readLocal(){try{const raw=localStorage.getItem(storeKey);if(!raw)return emptyStore();const o=JSON.parse(raw);
+  if(!o||o.version!==1||!Array.isArray(o.changes))throw Error('unsupported change log');return {version:1,changes:o.changes,ops:Array.isArray(o.ops)?o.ops:[]}}
+  catch(e){window.JN_CHG_ERROR='Saved changes could not be read: '+(e.message||e);return emptyStore()}}
+const noChanges=qs.get('nochanges')==='1';
+let local=noChanges?emptyStore():readLocal();
+const repoList=()=>{const r=window.JN_CHANGES_REPO;return !noChanges&&r&&Array.isArray(r.changes)?r.changes.map(c=>Object.assign({},c,{src:'repo'})):[]};
+const all=()=>[...repoList(),...local.changes.map(c=>Object.assign({},c,{src:'local'}))];
+const active=c=>{const f=dayNum(c.from),t=c.to?dayNum(c.to):null;return f!=null&&f<=view&&(t==null||view<=t)};
+const status=c=>{const f=dayNum(c.from),t=c.to?dayNum(c.to):null;return f>view?'future':(t!=null&&t<view?'ended':'active')};
+function registerAirport(a){
+  if(!a||!a.city)return;
+  if(!AIR_CITY[a.city])AIR_CITY[a.city]=[+a.lat,+a.lon,a.region||'E'];
+  if(a.code)SEED_CODES[a.city]=a.code;
+  (window.JN_TZ_EXTRA=window.JN_TZ_EXTRA||{})[a.city]=a.tz||'Asia/Jakarta'}
+function applySet(r,set){
+  if(set.time!=null)r[3]=+set.time;if(set.terminal)r[4]=set.terminal;if(set.zone)r[5]=set.zone;
+  if(set.aircraft)r[6]=set.aircraft;if(set.city)r[2]=set.city;
+  if('days' in set){if(set.days)r[8]=String(set.days);else r.length=Math.min(r.length,8)}}
+/* legacy full-timetable edit (v155 Flight Manager) is honoured as the baseline so nothing saved earlier is lost */
+const BASE={IN:FLD.IN.map(r=>r.slice()),OUT:FLD.OUT.map(r=>r.slice())};
+let legacyActive=false;
+try{const raw=localStorage.getItem(LEGACY);if(raw&&!previewTok){const o=JSON.parse(raw);
+  if(o&&o.version===1&&o.baseline===BASE.IN.length+'|'+BASE.OUT.length&&o.data&&Array.isArray(o.data.IN)&&Array.isArray(o.data.OUT)){
+    FLD.IN.splice(0,FLD.IN.length,...o.data.IN.map(r=>r.slice()));FLD.OUT.splice(0,FLD.OUT.length,...o.data.OUT.map(r=>r.slice()));legacyActive=true}}}catch(e){}
+const BASELINE={IN:FLD.IN.map(r=>r.slice()),OUT:FLD.OUT.map(r=>r.slice())};
+const warnings=[];
+all().filter(active).sort((a,b)=>(dayNum(a.from)-dayNum(b.from))||String(a.createdAt||'').localeCompare(String(b.createdAt||''))).forEach(c=>{
+  try{
+    (c.airports||[]).forEach(registerAirport);
+    if(c.kind==='add'){
+      for(const dir of ['OUT','IN'])((c.rows&&c.rows[dir])||[]).forEach(r=>{
+        if(FLD[dir].some(x=>x[0]===r[0]&&x[1]===r[1])){warnings.push(c.id+': '+r[0]+r[1]+' already exists, skipped');return}
+        FLD[dir].push(r.slice())})}
+    else for(const t of (c.targets||[])){
+      const arr=FLD[t.dir],i=arr?arr.findIndex(x=>x[0]===t.carrier&&x[1]===t.number):-1;
+      if(i<0){warnings.push(c.id+': '+t.carrier+t.number+' ('+t.dir+') not found');continue}
+      if(c.kind==='cancel')arr.splice(i,1);else applySet(arr[i],c.set||{})}
+  }catch(e){warnings.push((c&&c.id)+': '+(e.message||e))}});
+window.JN_CHG={
+  view,viewDs,previewTok,warnings,legacyActive,BASELINE,noChanges,
+  all,active,status,dayNum,jakToday,
+  local:()=>local,
+  save(){localStorage.setItem(storeKey,JSON.stringify(local))},
+  setLocal(o){local={version:1,changes:o.changes||[],ops:o.ops||[]};this.save()},
+  add(c){local.changes.push(c);this.save()},
+  remove(id){local.changes=local.changes.filter(c=>c.id!==id);this.save()},
+  clear(){local=emptyStore();this.save()}};
 })();
+
+</script>
+<script id="v184-schedule-changes-ui">
+(function(){
+'use strict';
+const C=window.JN_CHG;
+const html=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hm=n=>String(Math.floor(+n/60)%24).padStart(2,'0')+':'+String(+n%60).padStart(2,'0');
+const minutes=s=>{const m=/^(\d{1,2}):(\d\d)$/.exec(String(s).trim());return m&&+m[1]<24&&+m[2]<60?(+m[1]*60+ +m[2]):NaN};
+const DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const daysText=d=>{if(!d||String(d).length>=7&&new Set(String(d)).size===7)return 'Daily';return [...new Set(String(d).split(''))].filter(x=>/[1-7]/.test(x)).sort().map(x=>DOW[+x-1]).join(' · ')};
+const tomorrow=()=>{const n=C.dayNum(C.jakToday())+1;return new Date(n*86400000).toISOString().slice(0,10)};
+const uid=()=>'chg_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const TERMS=['T1','T2','T3','T4','CGO'];
+/* ---- metrics (also reported by the hidden preview copy of the app) ---- */
+function metrics(){const S=window.SIMCORE;if(!S||!S.FLEET)return null;const F=S.FLEET,by={};F.fleets.forEach(f=>by[f.key]=f.n);
+  return {total:F.fleets.reduce((a,x)=>a+x.n,0),by,loopFail:window.__TAIL_LOOP_FAIL||0,
+    notailGA:S.ENTS.filter(e=>e.f&&e.f.c==='GA'&&!e.tail).length,unassigned:(S.STAT||{}).unassigned||0,
+    flights:S.INF.length+S.OUTF.length,error:window.JN_TAIL_ERROR||null}}
+function watched(ids){const S=window.SIMCORE;return ids.map(id=>{const f=[...S.INF,...S.OUTF].find(x=>x.id===id);const t=S.flightTails?S.flightTails(id):[];return {id,runsToday:!!f,aircraft:t.length,sample:t.slice(0,3)}})}
+if(C.previewTok){
+  const ids=(new URLSearchParams(location.search).get('watch')||'').split(',').filter(Boolean).map(x=>x.replace(/^([A-Z0-9]{2})(\d+)$/,'$1 $2'));
+  const t0=Date.now(),iv=setInterval(()=>{const S=window.SIMCORE;
+    if(S&&S.FLEET){clearInterval(iv);parent.postMessage({jnPreview:C.previewTok,metrics:metrics(),watched:watched(ids),warnings:C.warnings},'*')}
+    else if(window.JN_TAIL_ERROR||Date.now()-t0>150000){clearInterval(iv);parent.postMessage({jnPreview:C.previewTok,error:window.JN_TAIL_ERROR||'Timed out building the preview'},'*')}},250);
+  return}
+/* ---- reference data from the built-in schedule ---- */
+const base=C.BASELINE,allRows=()=>[...base.IN,...base.OUT];
+const carriers=()=>[...new Set(allRows().map(r=>r[0]))].sort();
+const typesFor=c=>[...new Set(allRows().filter(r=>r[0]===c).map(r=>r[6]))].sort();
+const cityList=()=>[...new Set([...Object.keys(AIR_CITY),...allRows().map(r=>r[2])])].filter(c=>c!=='Jakarta').sort();
+const inIndonesia=tz=>/^Asia\/(Jakarta|Makassar|Jayapura|Pontianak)$/.test(tz||'');
+const JKT=[-6.13,106.66];
+function estBlock(lat,lon){const r=Math.PI/180,dl=(lat-JKT[0])*r,dg=(lon-JKT[1])*r,x=Math.sin(dl/2)**2+Math.cos(JKT[0]*r)*Math.cos(lat*r)*Math.sin(dg/2)**2,km=12742*Math.asin(Math.sqrt(x));return Math.round((22+km/(km>4000?820:700)*60)/5)*5}
+function cityInfo(name){const a=AIR_CITY[name];if(a)return {lat:a[0],lon:a[1],known:true};const e=(window.JN_TZ_EXTRA||{})[name];return null}
+function homeTerm(c,z){const m={};allRows().filter(r=>r[0]===c&&r[5]===z).forEach(r=>m[r[4]]=(m[r[4]]||0)+1);const k=Object.keys(m).sort((a,b)=>m[b]-m[a])[0];return k||(z==='I'?'T2':'T1')}
+/* default aircraft: the carrier's type on the existing route with the most similar block time */
+function suggestType(car,block){let best=null,bd=1e9;
+  allRows().filter(r=>r[0]===car&&AIR_CITY[r[2]]).forEach(r=>{const a=AIR_CITY[r[2]],d=Math.abs(estBlock(a[0],a[1])-block);if(d<bd){bd=d;best=r[6]}});
+  return best||typesFor(car)[0]}
+const curRow=(d,carrier,num)=>FLD[d].find(r=>r[0]===carrier&&r[1]===num);
+const mateOf=(d,r)=>{const o=d==='OUT'?'IN':'OUT';return FLD[o].find(x=>x[0]===r[0]&&x[2]===r[2]&&x[7]===r[7]&&x!==r)};
+/* ---- UI ---- */
+let tab='flights',selected=null,query='',carrier='ALL',side='ALL',previewBox='',busy=false;
+const launch=document.createElement('button');launch.id='fm-launch';launch.textContent='Manage flights';launch.title='Schedule changes';
+const wrap=document.createElement('div');wrap.id='fm-wrap';wrap.setAttribute('role','dialog');wrap.setAttribute('aria-label','Flight Manager');
+wrap.innerHTML=`<div id="fm-panel"><div class="fm-hd"><div><h2>Flight Manager</h2><p id="fm-sub"></p></div><button class="fm-btn" id="fm-close">Close ✕</button></div>
+<div class="fm-tabs"><button data-tab="flights">Flights</button><button data-tab="new">+ New round trip</button><button data-tab="changes">Changes <span id="fm-count"></span></button></div>
+<div id="fm-pane"></div><div class="fm-note" id="fm-status"></div></div>`;
+function setStatus(m,bad){const e=wrap.querySelector('#fm-status');e.textContent=m;e.style.color=bad?'#aa2525':'#526b7b'}
+const $=s=>wrap.querySelector(s);
+function open(){wrap.classList.add('open');draw()}
+launch.onclick=open;
+function draw(){
+  $('#fm-sub').textContent='Timetable for '+C.viewDs+(C.legacyActive?' · legacy full-timetable edit active':'');
+  const n=C.local().changes.length;$('#fm-count').textContent=n?'('+n+')':'';
+  wrap.querySelectorAll('.fm-tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  if(tab==='flights')drawFlights();else if(tab==='new')drawNew();else drawChanges();
+  setStatus(C.warnings.length?'Some saved changes could not be applied: '+C.warnings.slice(0,2).join(' · '):'Changes apply from their effective date. Earlier days are recomputed with the timetable in force on the day you view; persisted history comes later. If a change ever breaks the app, open the page with ?nochanges=1.',C.warnings.length>0);
+}
+/* -- flights tab -- */
+function items(){return ['OUT','IN'].flatMap(d=>FLD[d].map(r=>({d,r}))).filter(x=>(carrier==='ALL'||x.r[0]===carrier)&&(side==='ALL'||x.d===side)&&(!query||[x.r[0]+x.r[1],x.r[0]+' '+x.r[1],x.r[2],x.r[7],x.r[6]].some(t=>String(t).toLowerCase().includes(query)))).sort((a,b)=>a.r[3]-b.r[3])}
+function drawFlights(){
+  const carr=['ALL',...carriers()];
+  $('#fm-pane').innerHTML=`<div class="fm-tools"><input id="fm-search" placeholder="Search flight, destination, aircraft…" value="${html(query)}"><select id="fm-carrier">${carr.map(c=>`<option value="${html(c)}" ${c===carrier?'selected':''}>${c==='ALL'?'All airlines':html(c)}</option>`).join('')}</select><select id="fm-side"><option value="ALL">Both directions</option><option value="OUT" ${side==='OUT'?'selected':''}>JKT departures</option><option value="IN" ${side==='IN'?'selected':''}>JKT arrivals</option></select></div>
+<div class="fm-body"><div class="fm-list" id="fm-list"></div><div class="fm-edit" id="fm-edit"></div></div>`;
+  const list=items();
+  $('#fm-list').innerHTML=list.slice(0,500).map(x=>`<button class="fm-item ${selected&&selected.d===x.d&&selected.id===x.r[0]+x.r[1]?'sel':''}" data-d="${x.d}" data-id="${html(x.r[0]+x.r[1])}"><strong>${html(x.r[0]+x.r[1])}</strong><span>${html(x.d==='OUT'?'JKT → ':'→ JKT · ')}${html(x.r[2])}</span><small>${hm(x.r[3])}</small></button>`).join('')+(list.length>500?'<p class="fm-msg">Showing first 500 — refine the search.</p>':'');
+  $('#fm-list').querySelectorAll('button[data-d]').forEach(b=>b.onclick=()=>{selected={d:b.dataset.d,id:b.dataset.id};previewBox='';drawFlights()});
+  $('#fm-search').oninput=e=>{query=e.target.value.trim().toLowerCase();drawFlights();const s=$('#fm-search');s.focus();s.setSelectionRange(s.value.length,s.value.length)};
+  $('#fm-carrier').onchange=e=>{carrier=e.target.value;drawFlights()};$('#fm-side').onchange=e=>{side=e.target.value;drawFlights()};
+  drawEditor();
+}
+function chips(sel){return `<div class="fm-chips" id="fm-days">${DOW.map((n,i)=>`<button type="button" class="fm-chip ${sel.includes(String(i+1))?'on':''}" data-day="${i+1}">${n}</button>`).join('')}</div>`}
+function readDays(root){const d=[...root.querySelectorAll('#fm-days .fm-chip.on')].map(b=>b.dataset.day).sort().join('');return d}
+function bindChips(root){root.querySelectorAll('#fm-days .fm-chip').forEach(b=>b.onclick=()=>b.classList.toggle('on'))}
+const fld=(label,key,value,extra='')=>`<div class="fm-field"><label>${html(label)}</label><input data-k="${key}" value="${html(value)}" ${extra}></div>`;
+const sel=(label,key,opts,value)=>`<div class="fm-field"><label>${html(label)}</label><select data-k="${key}">${opts.map(o=>`<option value="${html(o)}" ${o===value?'selected':''}>${html(o)}</option>`).join('')}</select></div>`;
+function effectiveRow(){return `<div class="fm-eff"><div class="fm-field"><label>Effective from</label><input type="date" data-k="from" value="${tomorrow()}"></div><div class="fm-field"><label>Until (optional)</label><input type="date" data-k="to" value=""></div></div>`}
+function drawEditor(){
+  const e=$('#fm-edit');if(!selected){e.innerHTML='<p class="fm-msg">Select a flight to amend, change its aircraft, or cancel it. Use “+ New round trip” to add a service.</p>';return}
+  const r=curRow(selected.d,selected.id.slice(0,2),selected.id.slice(2));if(!r){selected=null;e.innerHTML='<p class="fm-msg">That flight is not in the timetable for this date.</p>';return}
+  const mate=mateOf(selected.d,r),types=[...new Set([...typesFor(r[0]),r[6]])];
+  const pend=C.all().filter(c=>(c.targets||[]).some(t=>t.carrier===r[0]&&t.number===r[1]&&t.dir===selected.d)&&C.status(c)!=='ended');
+  e.innerHTML=`<h3>${html(r[0]+' '+r[1])} · ${selected.d==='OUT'?'JKT → ':''}${html(r[2])}${selected.d==='IN'?' → JKT':''}</h3>
+<p class="fm-msg">${html(r[6])} · ${hm(r[3])} WIB · ${html(daysText(r[8]))} · ${html(r[4])} · ${r[5]==='I'?'International':'Domestic'}${pend.length?'<br><b>'+pend.length+' dated change(s) already target this flight.</b>':''}</p>
+<div class="fields">${fld('Time (WIB, '+(selected.d==='OUT'?'departure':'arrival')+')','time',hm(r[3]),'placeholder="HH:MM"')}${sel('Terminal','terminal',TERMS,r[4])}
+${sel('Route type','zone',['D','I'],r[5])}${sel('Aircraft type','aircraft',types,r[6])}
+<div class="fm-field wide"><label>Operating days</label>${chips(r[8]||'1234567')}</div></div>
+${effectiveRow()}
+${mate?`<label class="fm-check"><input type="checkbox" id="fm-mate" checked> Apply aircraft, terminal, route type and days to ${html(mate[0]+mate[1])} (${selected.d==='OUT'?'return':'outbound'}) too</label>`:''}
+<div class="fm-field wide"><label>Note (optional)</label><input data-k="note" placeholder="e.g. winter schedule"></div>
+<div class="buttons"><button class="fm-btn" id="fm-prev">Preview impact</button><button class="fm-btn primary" id="fm-save">Save change</button><button class="fm-btn danger" id="fm-cancel">Cancel flight from date</button></div>
+<div id="fm-impact">${previewBox}</div><p class="fm-msg" id="fm-formmsg"></p>`;
+  bindChips(e);
+  const msg=(m,bad)=>{const x=$('#fm-formmsg');x.textContent=m;x.style.color=bad?'#b22':'#526b7b'};
+  const val=k=>e.querySelector('[data-k="'+k+'"]').value.trim();
+  const build=(kind)=>{
+    const from=val('from'),to=val('to')||null;if(!C.dayNum(from)){msg('Choose an effective-from date.',true);return null}if(to&&C.dayNum(to)<C.dayNum(from)){msg('“Until” is before “from”.',true);return null}
+    const targets=[{dir:selected.d,carrier:r[0],number:r[1]}];const withMate=mate&&e.querySelector('#fm-mate')&&e.querySelector('#fm-mate').checked;
+    const rec={id:uid(),v:1,scope:'timetable',kind,from,to,note:val('note'),createdAt:new Date().toISOString(),targets};
+    if(kind==='cancel'){if(withMate)rec.targets.push({dir:selected.d==='OUT'?'IN':'OUT',carrier:mate[0],number:mate[1]});return rec}
+    const t=minutes(val('time'));if(isNaN(t)){msg('Time must be HH:MM.',true);return null}
+    const set={},days=readDays(e);if(!days){msg('Choose at least one operating day.',true);return null}
+    const shared={};if(val('terminal')!==r[4])shared.terminal=val('terminal');if(val('zone')!==r[5])shared.zone=val('zone');if(val('aircraft')!==r[6])shared.aircraft=val('aircraft');
+    const cur=(r[8]&&r[8]!=='1234567')?r[8]:'',nd=days==='1234567'?'':days;if(nd!==cur)shared.days=nd||null;
+    if(t!==r[3])set.time=t;Object.assign(set,shared);if(!Object.keys(set).length){msg('Nothing changed.',true);return null}
+    rec.set=set;
+    if(withMate&&Object.keys(shared).length){rec.targets.push({dir:selected.d==='OUT'?'IN':'OUT',carrier:mate[0],number:mate[1]});
+      /* the time of the mate is not touched: targets share one set, so time is only applied to the first target */
+      if(set.time!=null){const mateRec=Object.assign({},rec,{id:uid(),targets:[rec.targets[1]],set:Object.assign({},shared)});rec.targets=[rec.targets[0]];rec._extra=mateRec}}
+    return rec};
+  const finish=rec=>{const list=[rec];if(rec._extra){list.push(rec._extra);delete rec._extra}return list};
+  $('#fm-prev').onclick=()=>{const rec=build('amend');if(rec)runPreview(finish(rec),[r[0]+r[1],...(mate?[mate[0]+mate[1]]:[])],msg)};
+  $('#fm-save').onclick=()=>{const rec=build('amend');if(rec)commit(finish(rec),msg)};
+  $('#fm-cancel').onclick=()=>{if(!confirm('Cancel '+r[0]+r[1]+' from the chosen date?'))return;const rec=build('cancel');if(rec)commit(finish(rec),msg)};
+}
+/* -- new round trip tab -- */
+function drawNew(){
+  const cs=carriers(),car=cs.includes('GA')?'GA':cs[0],zdef='I';
+  $('#fm-pane').innerHTML=`<div class="fm-edit fm-new"><h3>Add a service</h3>
+<div class="fields">${sel('Airline','carrier',cs,car)}
+<div class="fm-field"><label>Destination city</label><input data-k="city" list="fm-cities" placeholder="Type or pick a city"><datalist id="fm-cities">${cityList().map(c=>`<option value="${html(c)}">`).join('')}</datalist></div>
+<div id="fm-newap" class="fm-field wide" hidden><div class="fm-sub">New destination — airport details</div><div class="fields">${fld('IATA code','code','','maxlength="3" placeholder="e.g. CNS"')}${sel('Region (approach side)','region',['E','W','NE','NW','N','S'],'E')}${fld('Latitude','lat','','placeholder="-16.8858"')}${fld('Longitude','lon','','placeholder="145.7553"')}<div class="fm-field wide"><label>Time zone (IANA)</label><input data-k="tz" placeholder="Australia/Brisbane"></div></div></div>
+${fld('Outbound flight no.','num','','placeholder="e.g. 8123"')}${fld('Departs Jakarta (WIB)','time','06:00','placeholder="HH:MM"')}
+${sel('Aircraft type','aircraft',typesFor(car),typesFor(car)[0])}${sel('Terminal','terminal',TERMS,homeTerm(car,zdef))}${sel('Route type','zone',['D','I'],zdef)}
+<div class="fm-field wide"><label>Operating days</label>${chips('1234567')}</div></div>
+<label class="fm-check"><input type="checkbox" id="fm-ret" checked> Include return flight</label>
+<div class="fields" id="fm-retf">${fld('Return flight no.','rnum','','placeholder="auto"')}${fld('Arrives Jakarta (WIB)','rtime','','placeholder="auto"')}${fld('Turn at destination (min)','turn','50','inputmode="numeric"')}<div class="fm-field"><label>Block time (est.)</label><input data-k="block" value="" readonly></div></div>
+${effectiveRow()}
+<div class="fm-field wide"><label>Note (optional)</label><input data-k="note" placeholder="e.g. new route"></div>
+<div class="buttons"><button class="fm-btn" id="fm-prev">Preview impact</button><button class="fm-btn primary" id="fm-save">Save new service</button></div><div id="fm-impact">${previewBox}</div><p class="fm-msg" id="fm-formmsg"></p></div>`;
+  const e=$('#fm-pane .fm-new');bindChips(e);
+  const v=k=>e.querySelector('[data-k="'+k+'"]'),val=k=>v(k).value.trim();
+  const msg=(m,bad)=>{const x=$('#fm-formmsg');x.textContent=m;x.style.color=bad?'#b22':'#526b7b'};
+  const geo=()=>{const c=val('city'),a=AIR_CITY[c];if(a)return {lat:a[0],lon:a[1]};const la=parseFloat(val('lat')),lo=parseFloat(val('lon'));return isFinite(la)&&isFinite(lo)?{lat:la,lon:lo}:null};
+  const recalc=()=>{
+    const known=!!AIR_CITY[val('city')];$('#fm-newap').hidden=known||!val('city');
+    const car=val('carrier');const ts=typesFor(car);let cur=val('aircraft');const g=geo(),out=minutes(val('time'));
+    if(!v('aircraft').dataset.touched||!ts.includes(cur)){cur=g?suggestType(car,estBlock(g.lat,g.lon)):ts[0]}
+    v('aircraft').innerHTML=ts.map(o=>`<option ${o===cur?'selected':''}>${html(o)}</option>`).join('');
+    if(known){const tz=(window.JN_TZ_EXTRA||{})[val('city')];}
+    if(g){const b=estBlock(g.lat,g.lon);v('block').value=Math.floor(b/60)+'h '+(b%60)+'m';
+      if(!isNaN(out)&&e.querySelector('#fm-ret').checked&&document.activeElement!==v('rtime')){const t=out+2*b+(+val('turn')||50);v('rtime').value=hm(t%1440);v('rtime').dataset.next=t>=1440?'1':''}}
+    if(val('num')&&document.activeElement!==v('rnum')&&!v('rnum').dataset.touched)v('rnum').value=/^\d+$/.test(val('num'))?String(+val('num')+1):'';
+    e.querySelector('#fm-retf').style.display=e.querySelector('#fm-ret').checked?'':'none'};
+  e.querySelectorAll('input,select').forEach(x=>{x.addEventListener('input',recalc);x.addEventListener('change',recalc)});
+  v('rnum').addEventListener('input',()=>{v('rnum').dataset.touched='1'});
+  v('aircraft').addEventListener('change',()=>{v('aircraft').dataset.touched='1';recalc()});
+  v('carrier').addEventListener('change',()=>{v('terminal').value=homeTerm(val('carrier'),val('zone'))});
+  v('zone').addEventListener('change',()=>{v('terminal').value=homeTerm(val('carrier'),val('zone'))});
+  v('city').addEventListener('change',()=>{const tz=(AIR_CITY[val('city')]&&((window.JN_TZ_EXTRA||{})[val('city')]));const known=!!AIR_CITY[val('city')];if(known){/* guess route type from base schedule */const r=allRows().find(x=>x[2]===val('city'));if(r){v('zone').value=r[5];v('terminal').value=r[4]}}recalc()});
+  recalc();
+  const build=()=>{
+    const car=val('carrier'),city=val('city'),num=val('num'),from=val('from'),to=val('to')||null;
+    if(!city){msg('Enter a destination city.',true);return null}
+    if(!/^\d{1,4}$/.test(num)){msg('Flight number must be 1–4 digits.',true);return null}
+    const t=minutes(val('time'));if(isNaN(t)){msg('Departure time must be HH:MM.',true);return null}
+    const days=readDays(e);if(!days){msg('Choose at least one operating day.',true);return null}
+    if(!C.dayNum(from)){msg('Choose an effective-from date.',true);return null}if(to&&C.dayNum(to)<C.dayNum(from)){msg('“Until” is before “from”.',true);return null}
+    const airports=[];
+    if(!AIR_CITY[city]){
+      const code=val('code').toUpperCase(),la=parseFloat(val('lat')),lo=parseFloat(val('lon')),tz=val('tz');
+      if(!/^[A-Z]{3}$/.test(code)||!isFinite(la)||!isFinite(lo)||Math.abs(la)>90||Math.abs(lo)>180){msg('New destination: enter a 3-letter IATA code, latitude and longitude.',true);return null}
+      try{new Intl.DateTimeFormat('en',{timeZone:tz})}catch(x){msg('New destination: that is not a valid IANA time zone (e.g. Australia/Brisbane).',true);return null}
+      airports.push({city,code,lat:la,lon:lo,region:val('region'),tz})}
+    {const g2=geo(),bl=g2?estBlock(g2.lat,g2.lon):0,ac=val('aircraft');if(/ATR|Q400|Dash/i.test(ac)&&bl>150&&!confirm('Block time is about '+Math.floor(bl/60)+'h '+(bl%60)+'m, which is long for a '+ac+'. Save anyway?'))return null}
+    const pidc=(airports[0]&&airports[0].code)||(typeof airportCodeForCity==='function'?airportCodeForCity(city):'')||city.slice(0,3).toUpperCase();
+    const pid=car+'-CHG-'+pidc+'-'+num,dayf=days==='1234567'?undefined:days;
+    const row=(n,time)=>{const r=[car,n,city,time,val('terminal'),val('zone'),val('aircraft'),pid];if(dayf)r.push(dayf);return r};
+    if(FLD.OUT.some(r=>r[0]===car&&r[1]===num)){msg(car+num+' already exists as a departure.',true);return null}
+    const rows={OUT:[row(num,t)],IN:[]};
+    if(e.querySelector('#fm-ret').checked){const rn=val('rnum'),rt=minutes(val('rtime'));
+      if(!/^\d{1,4}$/.test(rn)||isNaN(rt)){msg('Return flight needs a number and an arrival time (HH:MM).',true);return null}
+      if(FLD.IN.some(r=>r[0]===car&&r[1]===rn)){msg(car+rn+' already exists as an arrival.',true);return null}
+      rows.IN.push(row(rn,rt))}
+    return {id:uid(),v:1,scope:'timetable',kind:'add',from,to,note:val('note'),createdAt:new Date().toISOString(),rows,airports}};
+  const recCar=r=>(r.rows.OUT[0]||r.rows.IN[0])[0],recNum=r=>(r.rows.OUT[0]||r.rows.IN[0])[1];
+  $('#fm-prev').onclick=()=>{const rec=build();if(rec)runPreview([rec],[recCar(rec)+recNum(rec),...(rec.rows.IN[0]?[rec.rows.IN[0][0]+rec.rows.IN[0][1]]:[])],msg)};
+  $('#fm-save').onclick=()=>{const rec=build();if(rec)commit([rec],msg)};
+}
+/* -- changes tab -- */
+function summary(c){
+  const tg=(c.targets||[]).map(t=>t.carrier+t.number).join(' + ');
+  if(c.kind==='add'){const o=(c.rows.OUT||[])[0],i=(c.rows.IN||[])[0],r=o||i;return 'Add '+[o&&o[0]+o[1],i&&i[0]+i[1]].filter(Boolean).join(' / ')+' · '+r[2]+' · '+hm(r[3])+' WIB · '+daysText(r[8])+' · '+r[6]}
+  if(c.kind==='cancel')return 'Cancel '+tg;
+  const s=c.set||{},p=[];if(s.time!=null)p.push('time '+hm(s.time));if(s.aircraft)p.push(s.aircraft);if(s.terminal)p.push('terminal '+s.terminal);if(s.zone)p.push(s.zone==='I'?'international':'domestic');if('days' in s)p.push(daysText(s.days));
+  return tg+': '+(p.join(', ')||'change')}
+function drawChanges(){
+  const list=C.all().sort((a,b)=>C.dayNum(b.from)-C.dayNum(a.from)||String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+  $('#fm-pane').innerHTML=`<div class="fm-tools"><button class="fm-btn" id="fm-exp">Export for repo (schedule-changes.js)</button><button class="fm-btn" id="fm-imp">Import</button><input type="file" id="fm-file" accept=".js,.json,application/json" hidden><button class="fm-btn danger" id="fm-clr">Clear my local changes</button></div>
+<div class="fm-chlist">${list.length?list.map(c=>{const st=C.status(c);return `<div class="fm-ch"><div class="fm-chh"><b>${html(summary(c))}</b><span class="fm-badge ${st}">${st==='active'?'Active now':st==='future'?'Starts '+html(c.from):'Ended'}</span></div><div class="fm-chm">${html(c.from)} → ${html(c.to||'open-ended')} · ${c.src==='repo'?'in repo file':'saved in this browser'}${c.note?' · '+html(c.note):''}${c.src==='local'?` <button class="fm-link" data-del="${html(c.id)}">Delete</button>`:''}${C.dayNum(c.from)>C.view?` <a class="fm-link" href="?date=${html(c.from)}">View on that date</a>`:''}</div></div>`}).join(''):'<p class="fm-msg">No changes yet. Amend a flight, cancel one, or add a round trip.</p>'}</div>
+<p class="fm-msg">The same log will later carry operational events (delays, strikes, aircraft swaps) and be saved as history.</p>`;
+  $('#fm-pane').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(confirm('Delete this change?')){C.remove(b.dataset.del);location.reload()}});
+  $('#fm-clr').onclick=()=>{if(confirm('Remove all changes saved in this browser? Changes in the repo file stay.')){C.clear();location.reload()}};
+  $('#fm-exp').onclick=()=>{const repo=(window.JN_CHANGES_REPO&&window.JN_CHANGES_REPO.changes)||[];const merged=[...repo,...C.local().changes];
+    const txt='/* Schedule changes committed to the repo (loaded before the simulator). */\nwindow.JN_CHANGES_REPO='+JSON.stringify({version:1,changes:merged},null,1)+';\n';
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/javascript'}));a.download='schedule-changes.js';a.click();setStatus('Exported '+merged.length+' change(s). Commit the file to the repo root to share them across devices, then clear your local changes.')};
+  $('#fm-imp').onclick=()=>$('#fm-file').click();
+  $('#fm-file').onchange=async ev=>{try{const f=ev.target.files[0];if(!f)return;let t=await f.text();const i=t.indexOf('{'),j=t.lastIndexOf('}');const o=JSON.parse(t.slice(i,j+1));
+    if(!o||!Array.isArray(o.changes))throw Error('not a change log');const have=new Set(C.all().map(c=>c.id));let n=0;o.changes.forEach(c=>{if(c&&c.kind&&!have.has(c.id)){C.add(Object.assign({},c,{src:undefined}));n++}});setStatus('Imported '+n+' change(s).');if(n)location.reload()}catch(x){setStatus('Import failed: this is not a valid schedule-changes file ('+x.message+').',true)}};
+}
+/* -- save / preview -- */
+function commit(recs,msg){
+  recs.forEach(r=>C.add(r));
+  const first=recs[0];msg('Saved. Reloading…');
+  const here=C.dayNum(first.from)>C.view;
+  setTimeout(()=>{if(here){const u=new URL(location.href);u.searchParams.set('date',first.from);location.href=u.toString()}else location.reload()},350)}
+function runPreview(recs,watch,msg){
+  if(busy)return;busy=true;const tok=Math.random().toString(36).slice(2,9);
+  const base=metrics();const store={version:1,changes:[...C.local().changes,...recs],ops:[]};
+  try{localStorage.setItem('jn-changes-preview-'+tok,JSON.stringify(store))}catch(x){msg('Could not start the preview: '+x.message,true);busy=false;return}
+  const box=$('#fm-impact');box.innerHTML='<div class="fm-prev-wait">Calculating impact with the full simulation… (about 5 s)</div>';
+  const f=document.createElement('iframe');f.setAttribute('aria-hidden','true');f.style.cssText='position:fixed;left:-3000px;top:0;width:1100px;height:800px;border:0;opacity:0;pointer-events:none';
+  const u=new URL(location.href);u.searchParams.set('preview',tok);u.searchParams.set('watch',watch.join(','));u.hash='';f.src=u.toString();
+  const done=()=>{busy=false;window.removeEventListener('message',on);clearTimeout(to);try{localStorage.removeItem('jn-changes-preview-'+tok)}catch(x){}f.remove()};
+  const on=ev=>{if(!ev.data||ev.data.jnPreview!==tok)return;done();
+    if(ev.data.error){box.innerHTML='<div class="fm-prev bad"><b>This change breaks the simulation:</b> '+html(ev.data.error)+'</div>';previewBox=box.innerHTML;return}
+    previewBox=impactHtml(base,ev.data);box.innerHTML=previewBox};
+  const to=setTimeout(()=>{done();box.innerHTML='<div class="fm-prev bad">Preview timed out.</div>'},160000);
+  window.addEventListener('message',on);document.body.appendChild(f)}
+function impactHtml(a,r){
+  const m=r.metrics;if(!m)return '<div class="fm-prev bad">No result.</div>';
+  const d=(x,y)=>x===y?String(y):x+' → '+y+' ('+(y-x>0?'+':'')+(y-x)+')';
+  const rows=[['Aircraft in fleet',d(a.total,m.total),m.total>a.total],['Flights in timetable',d(a.flights,m.flights),false],['Flights without an aircraft (GA)',d(a.notailGA,m.notailGA),m.notailGA>a.notailGA],['Weekly round trips with no idle window',d(a.loopFail,m.loopFail),m.loopFail>a.loopFail],['Unassigned stands',d(a.unassigned,m.unassigned),m.unassigned>a.unassigned]];
+  const per=Object.keys(Object.assign({},a.by,m.by)).filter(k=>(a.by[k]||0)!==(m.by[k]||0)).map(k=>'<div class="fm-prow"><span>'+html(k.replace('|',' · '))+'</span><b>'+d(a.by[k]||0,m.by[k]||0)+'</b></div>').join('');
+  const w=(r.watched||[]).map(x=>'<div class="fm-prow"><span>'+html(x.id)+'</span><b>'+(x.runsToday?x.aircraft+' aircraft in last 15 days'+(x.sample.length?' · '+html(x.sample.join(', ')):''):'not operating on '+html(C.viewDs))+'</b></div>').join('');
+  const bad=m.error||m.notailGA>a.notailGA;
+  return '<div class="fm-prev '+(bad?'bad':'')+'"><b>Impact on '+html(C.viewDs)+' (full simulation)</b>'+rows.map(x=>'<div class="fm-prow'+(x[2]?' warn':'')+'"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+(per?'<div class="fm-psub">Fleet changes</div>'+per:'')+(w?'<div class="fm-psub">Affected flights</div>'+w:'')+(m.error?'<div class="fm-prow warn"><span>Error</span><b>'+html(m.error)+'</b></div>':'')+'<div class="fm-psub">Preview uses the date shown above; a change that starts later may not affect it.</div></div>'}
+wrap.addEventListener('click',e=>{if(e.target===wrap)wrap.classList.remove('open');const t=e.target.closest&&e.target.closest('.fm-tabs button');if(t){tab=t.dataset.tab;previewBox='';draw()}});
+function mount(){document.body.append(launch,wrap);$('#fm-close').onclick=()=>wrap.classList.remove('open');
+  if(C.noChanges){const b=document.createElement('div');b.className='fm-banner';b.innerHTML='Schedule changes are switched off for this view. <a href="'+location.pathname+location.search.replace(/[?&]nochanges=1/,'').replace(/^&/,'?')+'">Turn them back on</a>';document.body.append(b)}
+  /* safety net: if saved changes break the simulation, offer a one-tap way out */
+  const t0=Date.now(),iv=setInterval(()=>{const bad=window.JN_TAIL_ERROR||window.JN_CHG_ERROR;
+    if(bad&&C.local().changes.length&&!document.querySelector('.fm-banner')){clearInterval(iv);const b=document.createElement('div');b.className='fm-banner bad';b.innerHTML='Your saved schedule changes broke the simulation ('+html(String(bad).slice(0,90))+'). <button id="fm-off">Disable my changes</button>';document.body.append(b);b.querySelector('#fm-off').onclick=()=>{C.clear();location.reload()}}
+    else if(window.SIMCORE&&window.SIMCORE.FLEET||Date.now()-t0>120000)clearInterval(iv)},700)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+})();
+
 </script>
 <script>(function(){
 'use strict';
@@ -2680,7 +2913,7 @@ function tPlaceLoops(d,V,F){
     if(!best&&fl&&o.c==='GA'){
       /* on-demand spare (GA registrations only): the next free registration of this type */
       const i=fl.tails.length;
-      try{const t={reg:v128GarudaReg(fl.ac,i),seq:[],rdy:-1e9,loc:null,fleet:fl,spare:true,model:v111FleetModel(fl.c,fl.ac,i,i+1)};
+      try{const t={reg:v128GarudaReg(fl.ac,i),seq:[],hist:new Map(),aogDays:null,aog:false,mxDay:false,dayStartRdy:-1e9,dayStartLoc:null,rdy:-1e9,loc:null,fleet:fl,spare:true,model:v111FleetModel(fl.c,fl.ac,i,i+1)};
         fl.tails.push(t);fl.spares=(fl.spares||0)+1;best=t;window.__TAIL_SPARE_CREATED=(window.__TAIL_SPARE_CREATED||0)+1}catch(e){}}
     if(best&&best.spare)window.__TAIL_SPARE_USED=(window.__TAIL_SPARE_USED||0)+1;
     if(best){best.seq.splice(tFits(best,v),0,v);best.rdy=Math.max(best.rdy,-1e9);v.tail=best;V.push(v)}
@@ -5191,7 +5424,7 @@ const TZ_CITY={'Jakarta':'Asia/Jakarta','Abu Dhabi':'Asia/Dubai','Addis Ababa':'
 /* v182: every STD/ATD/STA/ATA is shown in the LOCAL time of the airport it belongs to (departure times at the origin,
    arrival times at the destination), with DST handled by Intl. Internally times stay Jakarta-based minutes since epoch. */
 const TZ_FMT=new Map(),TZ_OFF=new Map();
-const tzOf=c=>{if(!c||c==='Jakarta')return 'Asia/Jakarta';return TZ_CITY[c]||TZ_CITY[String(c).split(' / ')[0].trim()]||'Asia/Jakarta'};
+const tzOf=c=>{if(!c||c==='Jakarta')return 'Asia/Jakarta';return (window.JN_TZ_EXTRA&&window.JN_TZ_EXTRA[c])||TZ_CITY[c]||TZ_CITY[String(c).split(' / ')[0].trim()]||'Asia/Jakarta'};
 function localAt(absMin,city){
   const z=tzOf(city);let f=TZ_FMT.get(z);
   if(!f){f=new Intl.DateTimeFormat('en-GB',{timeZone:z,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});TZ_FMT.set(z,f)}
