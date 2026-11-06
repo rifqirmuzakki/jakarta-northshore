@@ -6380,51 +6380,79 @@ const lhm=(absMin,city)=>{const t=localAt(absMin,city);return hm(t.min)};
 function ltime(absMin,city,refDay){
   if(absMin==null)return '—';const t=localAt(absMin,city),dd=refDay==null?0:t.day-refDay;
   return hm(t.min)+(dd?'<sup>'+(dd>0?'+':'−')+Math.abs(dd)+'d</sup>':'')}
-function legRow(l,now,today,prior){
-  const nowAbs=today*1440+now;
-  const block=Math.max(0,l.sta-l.std);
-  const plannedDelay=pd(l.flight+'|'+l.d+'|'+l.kind,'a');
-  // Ground and block times are causally linked across consecutive legs.
-  const minTurn=/777|787|330|350|380|747/i.test(prior?.ac||'')?75:45;
-  const priorReady=prior&&prior.to===l.from ? prior.arrival+minTurn : -Infinity;
-  const e=l.ent;
-  // A flight's ATD is wheels-off (takeoff), NOT pushback/off-block.
-  // The JKT simulator directly observes only departure takeoff and inbound landing.
-  const observedDeparture=l.d===today&&e&&l.kind==='d'&&Number.isFinite(e.takeoff)
-    ?today*1440+e.takeoff/60:null;
-  // Already occurred actual simulator events take precedence over history estimates.
-  // For historical legs, carry forward only delays supported by the previous leg.
-  const inj=(window.JN_OPS&&l.d!=null)?JN_OPS.delayFor(l.d,l.flight):0;
-  let predictedDeparture=Math.max(l.std+Math.max(-3,plannedDelay)+inj,priorReady);
-  // v117: the live simulator is authoritative for today's legs, past OR future.
-  // History must never show a departure/landing the simulator has not reached yet.
-  if(observedDeparture!=null){predictedDeparture=observedDeparture;}
-  const enrouteVariance=Math.max(-4,Math.min(9,pd(l.flight+'|'+l.d+'|block','o')));
-  const arrx=(window.JN_OPS&&l.d!=null)?JN_OPS.arrExtraFor(l.d,l.flight):0;
-  /* ATD/ATA are wheels-off / touchdown, while STD/STA (and so the block) are off-block / on-block. For the legs the simulator has
-     actually flown (today) the take-off already carries the taxi and the hold, so the airborne time is the block less the taxi at
-     both ends; otherwise an aircraft that left late would be shown arriving, and leaving again, before it could have. */
-  const simFlown=l.d===today&&(observedDeparture!=null||(l.kind==='a'&&e&&Number.isFinite(e.td)));
-  const air=simFlown?Math.max(20,block-18):block;
-  let predictedArrival=predictedDeparture+air+enrouteVariance+arrx;
-  // If the engine has already recorded touchdown, use that event rather than
-  // a second, random arrival calculation. Past records remain deterministic estimates.
-  if(l.d===today&&e&&l.kind==='a'&&Number.isFinite(e.td)){
-    const liveArrival=today*1440+e.td/60;
-    predictedArrival=Math.max(predictedDeparture+1,liveArrival);
-    // An inbound the simulator already has in the air cannot be shown as not yet departed.
-    predictedDeparture=Math.min(predictedDeparture,predictedArrival-air-enrouteVariance);
+/* Historical phase estimates are calibrated from this simulation's hourly events.
+   The timetable currently repeats daily; historical closures/weather are unknown. */
+function historyLoadProfile(){
+  const bins=Array.from({length:24},()=>({n:0,dep:[],arr:[]}));
+  for(const e of C()?.ENTS||[]){
+    if(e.d){const h=Math.floor(e.d.t/60)%24;bins[h].n++;
+      if(Number.isFinite(e.holdDep)&&Number.isFinite(e.holdArr))bins[h].dep.push(Math.max(0,(e.holdDep-e.holdArr)/60));}
+    if(e.a){const h=Math.floor(e.a.t/60)%24;bins[h].n++;
+      if(Number.isFinite(e.delay))bins[h].arr.push(Math.max(0,e.delay/60));}
   }
-  const outState={arrival:predictedArrival,to:l.to,ac:prior?.ac};
-  // A scheduled flight is not a completed flight: hide its future ATD and ATA.
-  const departed=nowAbs>=predictedDeparture;
-  const arrived=departed&&nowAbs>=predictedArrival;
-  const atd=departed?predictedDeparture:null;
-  const ata=arrived?predictedArrival:null;
-  const atdActual=l.d===today&&l.kind==='d'&&observedDeparture!=null&&nowAbs>=observedDeparture;
-  const ataActual=l.d===today&&l.kind==='a'&&e&&Number.isFinite(e.td)&&nowAbs>=today*1440+e.td/60;
-  const depDelay=Math.round(predictedDeparture-l.std);
-  const arrDelay=Math.round(predictedArrival-l.sta);
+  // Smooth neighboring hours to avoid discontinuities and thin samples.
+  return bins.map((_,h)=>{let n=0,dep=0,arr=0,nd=0,na=0;
+    for(const [offset,w] of [[-1,1],[0,2],[1,1]]){const b=bins[(h+offset+24)%24];n+=b.n*w;
+      for(const x of b.dep){dep+=x*w;nd+=w}for(const x of b.arr){arr+=x*w;na+=w}}
+    return {movements:n/4,departureQueue:nd?dep/nd:0,arrivalHold:na?arr/na:0};});
+}
+function historyPhases(l,profile){
+  const city=l.kind==='d'?l.to:l.from;
+  const seed=l.flight+'|'+l.d+'|'+l.kind;
+  const hour=((Math.floor((l.kind==='d'?l.std:l.sta)/60)%24)+24)%24;
+  const p=profile[hour]||{departureQueue:0,arrivalHold:0};
+  // Outstation estimates are deliberately modest: no outstation traffic feed exists.
+  const large=/Singapore|London|Tokyo|Dubai|Hong Kong|Sydney|Bangkok|Kuala Lumpur/i.test(city);
+  const outTaxiOut=large?12:9,outTaxiIn=large?8:6;
+  const peak=(hour>=6&&hour<9)||(hour>=16&&hour<20);
+  const outQueue=(large?3:1)+(peak?2:0);
+  const outHold=(large?2:1)+(peak?1:0);
+  const baseJktOut=12,baseJktIn=10;
+  const block=Math.max(0,l.sta-l.std);
+  // The existing block estimate includes 22 minutes of ground allowance.
+  const airborne=Math.max(15,block-22);
+  const noise=pd(seed+'|block','o');
+  return l.kind==='d'
+    ?{taxiOut:baseJktOut+p.departureQueue,airborne:Math.max(15,airborne+noise),hold:outHold,taxiIn:outTaxiIn}
+    :{taxiOut:outTaxiOut+outQueue,airborne:Math.max(15,airborne+noise),hold:p.arrivalHold,taxiIn:baseJktIn};
+}
+/* Keep event times and propagated turnaround in the same gate-to-gate timeline. */
+function legRow(l,now,today,prior,profile){
+  const nowAbs=today*1440+now, phases=historyPhases(l,profile);
+  const e=l.ent, minTurn=/777|787|330|350|380|747/i.test(prior?.ac||'')?75:45;
+  const priorReady=prior&&prior.to===l.from?prior.arrival+minTurn:-Infinity;
+  const plannedDelay=pd(l.flight+'|'+l.d+'|'+l.kind,'a');
+  const inj=(window.JN_OPS&&l.d!=null)?JN_OPS.delayFor(l.d,l.flight):0;
+  const arrx=(window.JN_OPS&&l.d!=null)?JN_OPS.arrExtraFor(l.d,l.flight):0;
+  let offblock=Math.max(l.std+Math.max(-3,plannedDelay)+inj,priorReady);
+  let predictedDeparture=offblock+phases.taxiOut;
+  let predictedArrival=predictedDeparture+phases.airborne+phases.hold+arrx;
+  let onblock=predictedArrival+phases.taxiIn;
+  const actualDep=l.d===today&&e&&l.kind==='d'&&Number.isFinite(e.takeoff)?today*1440+e.takeoff/60:null;
+  const actualArr=l.d===today&&e&&l.kind==='a'&&Number.isFinite(e.td)?today*1440+e.td/60:null;
+  if(actualDep!=null){
+    predictedDeparture=actualDep;
+    predictedArrival=predictedDeparture+phases.airborne+phases.hold+arrx;
+    onblock=predictedArrival+phases.taxiIn;
+  }
+  if(actualArr!=null){
+    predictedArrival=actualArr;
+    // Keep the simulated touchdown, but do not backdate takeoff to absorb an
+    // estimated hold. Use the available time to reduce the inferred hold first.
+    const earliestTakeoff=Math.max(l.std-3,priorReady)+phases.taxiOut;
+    const inferredTakeoff=predictedArrival-phases.airborne-phases.hold-arrx;
+    const latestPlausibleTakeoff=predictedArrival-Math.max(15,phases.airborne*0.8);
+    predictedDeparture=earliestTakeoff<=latestPlausibleTakeoff
+      ?Math.max(earliestTakeoff,Math.min(inferredTakeoff,latestPlausibleTakeoff))
+      :null;
+    onblock=Number.isFinite(e.onblock)?today*1440+e.onblock/60:predictedArrival+phases.taxiIn;
+  }
+  const outState={arrival:onblock,to:l.to,ac:prior?.ac};
+  const departed=predictedDeparture!=null&&nowAbs>=predictedDeparture;
+  const arrived=nowAbs>=predictedArrival&&(departed||actualArr!=null);
+  const atd=departed?predictedDeparture:null,ata=arrived?predictedArrival:null;
+  const atdActual=actualDep!=null&&nowAbs>=actualDep,ataActual=actualArr!=null&&nowAbs>=actualArr;
+  const depDelay=Math.round(offblock-l.std),arrDelay=Math.round(onblock-l.sta);
   let st='',tone='';
   if(arrived){st='Landed '+lhm(ata,l.to)+(arrDelay>5?' · +'+arrDelay+' min':'');tone=arrDelay>15?'late':'ok'}
   else if(departed){st='Departed '+lhm(atd,l.from)+' · en route';tone=depDelay>15?'late':'live'}
@@ -6482,8 +6510,9 @@ function render(H){
   // propagation MUST follow the same registration oldest -> newest.
   // Never allow a later flight to influence an earlier sector.
   let previousHistoryLeg=null;
+  const loadProfile=historyLoadProfile();
   const calculated=H.legs.slice().sort((a,b)=>a.std-b.std).map(l=>{
-    const item=legRow(l,now,today,previousHistoryLeg);
+    const item=legRow(l,now,today,previousHistoryLeg,loadProfile);
     previousHistoryLeg={...item.nextState,ac:H.ac};
     return item;
   });
@@ -6580,7 +6609,7 @@ function render(H){
       '<p class="v81-legend">STD / STA scheduled · ATD / ATA simulated actual · ETA estimate · all times local to each airport</p>'+
       '<div class="v81-year">Year '+esc(yearLabel)+'</div>'+
       '<div class="v81-history">'+history+'</div>'+
-      '<p class="v81-note">Historical actual times are deterministic simulator estimates; live-flight timestamps may differ. Multi-stop sectors without source event times are shown separately but untimed. All clock times are local to each airport (UTC offset shown beside it); +1d / −1d is the local calendar day relative to the departure date.</p>'+
+      '<p class="v81-note">Historical takeoff and landing times are estimates based on the current simulation’s hourly queues; historical disruptions and outstation conditions are approximate. Today’s Jakarta events use simulator timestamps. Multi-stop sectors without source event times are untimed. All clock times are local to each airport (UTC offset shown beside it); +1d / −1d is the local calendar day relative to the departure date.</p>'+
     '</div>';
   root.scrollTop=0
 }
@@ -6598,24 +6627,24 @@ const typeCodeOf=ac=>{
 /* v181: Flightradar24-style flight history. Rows come from exactly the same per-aircraft chain as the aircraft page
    (same ATD/ATA/status), so a flight and its aircraft always agree. */
 function flightRows(id,now){
-  const c=C(),regs=c.flightTails?c.flightTails(id):[],out=[];
+  const c=C(),regs=c.flightTails?c.flightTails(id):[],out=[],profile=historyLoadProfile();
   regs.forEach(reg=>{const H=c.tailHistory(reg);if(!H)return;
     let prev=null;
     H.legs.slice().sort((a,b)=>a.std-b.std).forEach(l=>{
-      const item=legRow(l,now,H.today,prev);prev={...item.nextState,ac:H.ac};
+      const item=legRow(l,now,H.today,prev,profile);prev={...item.nextState,ac:H.ac};
       if(l.flight===id)v105HistorySectors(item).filter(x=>x.tone!=='untimed').forEach(x=>out.push({r:x,reg,ac:H.ac,today:H.today}))})});
   return out.sort((a,b)=>b.r.l.std-a.r.l.std)}
 /* Carriers whose aircraft are not tracked individually (foreign airlines): same simulated timing chain per day,
    built from the schedule, with no registration. */
 function flightRowsFallback(meta,id,now,outb){
-  const c=C(),today=c.FLEET.day,blkOf=window.__DB&&window.__DB().tBlk,blk=blkOf?blkOf(null,meta.city):120,out=[];
+  const c=C(),today=c.FLEET.day,blkOf=window.__DB&&window.__DB().tBlk,blk=blkOf?blkOf(null,meta.city):120,out=[],profile=historyLoadProfile();
   const ent=(c.ENTS||[]).find(e=>(outb?e.d:e.a)&&(outb?e.d:e.a).id===id)||null;
   for(let d=today-14;d<=today;d++){
     const dow=((d+3)%7+7)%7+1;if(meta.days&&!String(meta.days).includes(String(dow)))continue;
     const base=d*1440;
     const l=outb?{d,kind:'d',flight:id,from:'Jakarta',to:meta.city,std:base+meta.t,sta:base+meta.t+blk,ent:d===today?ent:null,generated:false}
                 :{d,kind:'a',flight:id,from:meta.city,to:'Jakarta',std:base+meta.t-blk,sta:base+meta.t,ent:d===today?ent:null,generated:false};
-    const item=legRow(l,now,today,null);
+    const item=legRow(l,now,today,null,profile);
     v105HistorySectors(item).filter(x=>x.tone!=='untimed').forEach(x=>out.push({r:x,reg:null,ac:meta.ac,today}))}
   return out.sort((a,b)=>b.r.l.std-a.r.l.std)}
 function flightLegHtml(o){
