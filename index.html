@@ -6603,24 +6603,24 @@ const typeCodeOf=ac=>{
 /* v181: Flightradar24-style flight history. Rows come from exactly the same per-aircraft chain as the aircraft page
    (same ATD/ATA/status), so a flight and its aircraft always agree. */
 function flightRows(id,now){
-  const c=C(),regs=c.flightTails?c.flightTails(id):[],out=[];
+  const c=C(),regs=c.flightTails?c.flightTails(id):[],out=[],profile=historyLoadProfile();
   regs.forEach(reg=>{const H=c.tailHistory(reg);if(!H)return;
     let prev=null;
     H.legs.slice().sort((a,b)=>a.std-b.std).forEach(l=>{
-      const item=legRow(l,now,H.today,prev);prev={...item.nextState,ac:H.ac};
+      const item=legRow(l,now,H.today,prev,profile);prev={...item.nextState,ac:H.ac};
       if(l.flight===id)v105HistorySectors(item).filter(x=>x.tone!=='untimed').forEach(x=>out.push({r:x,reg,ac:H.ac,today:H.today}))})});
   return out.sort((a,b)=>b.r.l.std-a.r.l.std)}
 /* Carriers whose aircraft are not tracked individually (foreign airlines): same simulated timing chain per day,
    built from the schedule, with no registration. */
 function flightRowsFallback(meta,id,now,outb){
-  const c=C(),today=c.FLEET.day,blkOf=window.__DB&&window.__DB().tBlk,blk=blkOf?blkOf(null,meta.city):120,out=[];
+  const c=C(),today=c.FLEET.day,blkOf=window.__DB&&window.__DB().tBlk,blk=blkOf?blkOf(null,meta.city):120,out=[],profile=historyLoadProfile();
   const ent=(c.ENTS||[]).find(e=>(outb?e.d:e.a)&&(outb?e.d:e.a).id===id)||null;
   for(let d=today-14;d<=today;d++){
     const dow=((d+3)%7+7)%7+1;if(meta.days&&!String(meta.days).includes(String(dow)))continue;
     const base=d*1440;
     const l=outb?{d,kind:'d',flight:id,from:'Jakarta',to:meta.city,std:base+meta.t,sta:base+meta.t+blk,ent:d===today?ent:null,generated:false}
                 :{d,kind:'a',flight:id,from:meta.city,to:'Jakarta',std:base+meta.t-blk,sta:base+meta.t,ent:d===today?ent:null,generated:false};
-    const item=legRow(l,now,today,null);
+    const item=legRow(l,now,today,null,profile);
     v105HistorySectors(item).filter(x=>x.tone!=='untimed').forEach(x=>out.push({r:x,reg:null,ac:meta.ac,today}))}
   return out.sort((a,b)=>b.r.l.std-a.r.l.std)}
 function flightLegHtml(o){
