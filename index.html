@@ -4876,6 +4876,7 @@ html body #card .v73-swap strong{color:#b45309}
 a.v181-cardlink{display:block;width:max-content;margin-top:5px;font-size:11px;font-weight:600;color:#1f7a6a;text-decoration:none;border:0}
 #v74-ac .v181-reg{margin-left:auto;font-size:12px;font-weight:600;color:#1b5f78;text-decoration:none;white-space:nowrap}
 #v74-ac .v181-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 14px;margin-top:11px}
+#v74-ac .v182-off{margin-left:6px;font-size:10px;font-weight:600;color:#7b8c95;letter-spacing:.02em}
 #v74-ac .v181-untracked{color:#8a99a1;font-weight:500}
 #v74-ac .v181-c small{display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#6b7c85}
 #v74-ac .v181-c b{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
@@ -5075,6 +5076,26 @@ function status(H,now){
   return['','Away from Jakarta']}
 /* v103: chronological causal simulated timeline per registration.
    Do not generate visible future actuals; do not simulate arrival/departure independently. */
+const TZ_CITY={'Jakarta':'Asia/Jakarta','Abu Dhabi':'Asia/Dubai','Addis Ababa':'Africa/Addis_Ababa','Adelaide':'Australia/Adelaide','Ambon':'Asia/Jayapura','Amman':'Asia/Amman','Amsterdam':'Europe/Amsterdam','Auckland':'Pacific/Auckland','Bahrain':'Asia/Bahrain','Balikpapan':'Asia/Makassar','Banda Aceh':'Asia/Jakarta','Bandar Lampung':'Asia/Jakarta','Bandar Seri Begawan':'Asia/Brunei','Bangkok':'Asia/Bangkok','Bangkok Don Mueang':'Asia/Bangkok','Banjarmasin':'Asia/Makassar','Banyuwangi':'Asia/Jakarta','Barcelona':'Europe/Madrid','Batam':'Asia/Jakarta','Beijing':'Asia/Shanghai','Beijing Daxing':'Asia/Shanghai','Bengaluru':'Asia/Kolkata','Bengkulu':'Asia/Jakarta','Berau':'Asia/Makassar','Biak':'Asia/Jayapura','Brisbane':'Australia/Brisbane','Brussels':'Europe/Brussels','Busan':'Asia/Seoul','Cairo':'Africa/Cairo','Canberra':'Australia/Sydney','Cebu':'Asia/Manila','Chengdu':'Asia/Shanghai','Chennai':'Asia/Kolkata','Chiang Mai':'Asia/Bangkok','Chicago':'America/Chicago','Chongqing':'Asia/Shanghai','Christchurch':'Pacific/Auckland','Colombo':'Asia/Colombo','Copenhagen':'Europe/Copenhagen','Da Nang':'Asia/Ho_Chi_Minh','Darwin':'Australia/Darwin','Delhi':'Asia/Kolkata','Denpasar':'Asia/Makassar','Dhaka':'Asia/Dhaka','Dili':'Asia/Dili','Doha':'Asia/Qatar','Dubai':'Asia/Dubai','Edinburgh':'Europe/London','Frankfurt':'Europe/Berlin','Fukuoka':'Asia/Tokyo','Geneva':'Europe/Zurich','Gold Coast':'Australia/Brisbane','Gorontalo':'Asia/Makassar','Guangzhou':'Asia/Shanghai','Gunungsitoli':'Asia/Jakarta','Haikou':'Asia/Shanghai','Hangzhou':'Asia/Shanghai','Hanoi':'Asia/Ho_Chi_Minh','Helsinki':'Europe/Helsinki','Ho Chi Minh City':'Asia/Ho_Chi_Minh','Hong Kong':'Asia/Hong_Kong','Honolulu':'Pacific/Honolulu','Hyderabad':'Asia/Kolkata','Istanbul':'Europe/Istanbul','Jambi':'Asia/Jakarta','Jayapura':'Asia/Jayapura','Jeddah':'Asia/Riyadh','Jeju':'Asia/Seoul','Johannesburg':'Africa/Johannesburg','Kathmandu':'Asia/Kathmandu','Kendari':'Asia/Makassar','Kolkata':'Asia/Kolkata','Kota Kinabalu':'Asia/Kuching','Krabi':'Asia/Bangkok','Kuala Lumpur':'Asia/Kuala_Lumpur','Kuching':'Asia/Kuching','Kunming':'Asia/Shanghai','Kupang':'Asia/Makassar','Kuwait City':'Asia/Kuwait','Labuan Bajo':'Asia/Makassar','Langkawi':'Asia/Kuala_Lumpur','Lombok':'Asia/Makassar','London':'Europe/London','London Heathrow':'Europe/London','Los Angeles':'America/Los_Angeles','Macau':'Asia/Macau','Madrid':'Europe/Madrid','Makassar':'Asia/Makassar','Malang':'Asia/Jakarta','Male':'Indian/Maldives','Mamuju':'Asia/Makassar','Manado':'Asia/Makassar','Manchester':'Europe/London','Manila':'Asia/Manila','Manokwari':'Asia/Jayapura','Medan':'Asia/Jakarta','Medina':'Asia/Riyadh','Melbourne':'Australia/Melbourne','Merauke':'Asia/Jayapura','Milan':'Europe/Rome','Mumbai':'Asia/Kolkata','Munich':'Europe/Berlin','Muscat':'Asia/Muscat','Nadi':'Pacific/Fiji','Nagoya':'Asia/Tokyo','Nairobi':'Africa/Nairobi','Nanjing':'Asia/Shanghai','Osaka':'Asia/Tokyo','Osaka Kansai':'Asia/Tokyo','Padang':'Asia/Jakarta','Palangkaraya':'Asia/Jakarta','Palembang':'Asia/Jakarta','Palu':'Asia/Makassar','Pangkal Pinang':'Asia/Jakarta','Pangkalan Bun':'Asia/Jakarta','Paris':'Europe/Paris','Pekanbaru':'Asia/Jakarta','Penang':'Asia/Kuala_Lumpur','Perth':'Australia/Perth','Phuket':'Asia/Bangkok','Pontianak':'Asia/Pontianak','Port Louis':'Indian/Mauritius','Port Moresby':'Pacific/Port_Moresby','Riyadh':'Asia/Riyadh','Rome':'Europe/Rome','Samarinda':'Asia/Makassar','San Francisco':'America/Los_Angeles','Sapporo New Chitose':'Asia/Tokyo','Seattle':'America/Los_Angeles','Semarang':'Asia/Jakarta','Seoul Incheon':'Asia/Seoul','Shanghai':'Asia/Shanghai','Sharjah':'Asia/Dubai','Shenzhen':'Asia/Shanghai','Silangit':'Asia/Jakarta','Singapore':'Asia/Singapore','Singkawang':'Asia/Pontianak','Solo':'Asia/Jakarta','Sorong':'Asia/Jayapura','Stockholm':'Europe/Stockholm','Subang':'Asia/Kuala_Lumpur','Surabaya':'Asia/Jakarta','Sydney':'Australia/Sydney','Taipei':'Asia/Taipei','Tanjung Pandan':'Asia/Jakarta','Tanjung Pinang':'Asia/Jakarta','Tarakan':'Asia/Makassar','Ternate':'Asia/Jayapura','Timika':'Asia/Jayapura','Tokyo Haneda':'Asia/Tokyo','Tokyo Narita':'Asia/Tokyo','Vancouver':'America/Vancouver','Vienna':'Europe/Vienna','Washington':'America/New_York','Wuhan':'Asia/Shanghai',"Xi'an":'Asia/Shanghai','Xiamen':'Asia/Shanghai','Yogyakarta':'Asia/Jakarta','Zurich':'Europe/Zurich'};
+/* v182: every STD/ATD/STA/ATA is shown in the LOCAL time of the airport it belongs to (departure times at the origin,
+   arrival times at the destination), with DST handled by Intl. Internally times stay Jakarta-based minutes since epoch. */
+const TZ_FMT=new Map(),TZ_OFF=new Map();
+const tzOf=c=>{if(!c||c==='Jakarta')return 'Asia/Jakarta';return TZ_CITY[c]||TZ_CITY[String(c).split(' / ')[0].trim()]||'Asia/Jakarta'};
+function localAt(absMin,city){
+  const z=tzOf(city);let f=TZ_FMT.get(z);
+  if(!f){f=new Intl.DateTimeFormat('en-GB',{timeZone:z,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});TZ_FMT.set(z,f)}
+  const p=f.formatToParts(new Date((absMin-420)*60000)),g=t=>+p.find(x=>x.type===t).value;
+  return {day:Math.floor(Date.UTC(g('year'),g('month')-1,g('day'))/86400000),min:g('hour')*60+g('minute'),zone:z}}
+function tzLabel(city,absMin){
+  const z=tzOf(city);let f=TZ_OFF.get(z);
+  if(!f){f=new Intl.DateTimeFormat('en-GB',{timeZone:z,timeZoneName:'shortOffset'});TZ_OFF.set(z,f)}
+  const n=(f.formatToParts(new Date(((absMin==null?0:absMin)-420)*60000)).find(x=>x.type==='timeZoneName')||{}).value||'GMT+7';
+  return n.replace('GMT','UTC')}
+const lhm=(absMin,city)=>{const t=localAt(absMin,city);return hm(t.min)};
+/* local clock + day marker (+1d/-1d) relative to refDay (the scheduled departure's local date) */
+function ltime(absMin,city,refDay){
+  if(absMin==null)return '—';const t=localAt(absMin,city),dd=refDay==null?0:t.day-refDay;
+  return hm(t.min)+(dd?'<sup>'+(dd>0?'+':'−')+Math.abs(dd)+'d</sup>':'')}
 function legRow(l,now,today,prior){
   const nowAbs=today*1440+now;
   const block=Math.max(0,l.sta-l.std);
@@ -5114,8 +5135,8 @@ function legRow(l,now,today,prior){
   const depDelay=Math.round(predictedDeparture-l.std);
   const arrDelay=Math.round(predictedArrival-l.sta);
   let st='',tone='';
-  if(arrived){st='Landed '+hm(ata)+(arrDelay>5?' · +'+arrDelay+' min':'');tone=arrDelay>15?'late':'ok'}
-  else if(departed){st='Departed '+hm(atd)+' · en route';tone=depDelay>15?'late':'live'}
+  if(arrived){st='Landed '+lhm(ata,l.to)+(arrDelay>5?' · +'+arrDelay+' min':'');tone=arrDelay>15?'late':'ok'}
+  else if(departed){st='Departed '+lhm(atd,l.from)+' · en route';tone=depDelay>15?'late':'live'}
   else if(l.d===today&&l.kind==='d'&&e&&Number.isFinite(e.pushT)&&nowAbs>=today*1440+e.pushT/60){st='Off-block · taxiing for departure';tone='live'}
   else if(nowAbs>l.std+5){st='Delayed · awaiting departure';tone='late'}
   else{st='Scheduled';tone='scheduled'}
@@ -5197,7 +5218,7 @@ function render(H){
   const blk=Math.round(H.legs.reduce((a,l)=>a+(l.sta-l.std),0)/60);
   const yearLabel=new Date(today*86400000).toLocaleDateString('en-GB',{year:'numeric',timeZone:'UTC'});
   const groups=new Map();
-  rows.forEach(r=>{ const d=Math.floor(r.l.std/1440); if(!groups.has(d))groups.set(d,[]); groups.get(d).push(...v105HistorySectors(r)); });
+  rows.forEach(r=>{ const d=localAt(r.l.std,r.l.from).day; if(!groups.has(d))groups.set(d,[]); groups.get(d).push(...v105HistorySectors(r)); });
   const dayKeys=[...groups.keys()].sort((a,b)=>b-a);
   const history=dayKeys.map(d=>{
     const rs=groups.get(d)||[];
@@ -5219,7 +5240,9 @@ function render(H){
       // Time semantics: ATD/ATA represent completed takeoff/touchdown events
       // (directly observed at JKT or simulated elsewhere). ETA is an estimate
       // and only pulses while the aircraft is en route.
+      const REF=l.std!=null?localAt(l.std,l.from).day:(l.v105Date!=null?localAt(l.v105Date,l.from).day:null);
       const timeRow=(sched,event,estimate,schedShift,eventShift,dep,observed,active)=>{
+        const tcity=dep?l.from:l.to;
         const finished=event!=null;
         const kind=finished?(dep?'atd':'ata'):(dep?'etd':'eta');
         const label=kind.toUpperCase();
@@ -5229,16 +5252,16 @@ function render(H){
         const className='v100-time jn150-'+kind+(kind==='eta'&&estimatedVisible?' jn150-eta-live':'');
         const description=finished&&!observed?'Simulated '+(dep?'takeoff':'touchdown'):' '+label;
         return '<div class="v100-times" aria-label="'+(dep?'Departure':'Arrival')+' times">'+
-          '<div class="v100-time jn150-scheduled"><small>'+(dep?'STD':'STA')+'</small><b>'+timeLabel(sched,schedShift)+'</b></div>'+
-          '<div class="'+className+'" title="'+description.trim()+'"><small>'+label+'</small><b>'+timeLabel(display,displayShift)+'</b></div>'+
+          '<div class="v100-time jn150-scheduled"><small>'+(dep?'STD':'STA')+'</small><b>'+ltime(sched,tcity,REF)+'</b></div>'+
+          '<div class="'+className+'" title="'+description.trim()+'"><small>'+label+'</small><b>'+ltime(display,tcity,REF)+'</b></div>'+
         '</div>';
       };
       return '<section class="v81-leg v100-leg">'+
         '<div class="v81-leghead"><span class="v81-dot '+statusClass+'"></span><span class="v81-date">'+esc(dateLabel)+'</span><a class="v81-flight v181-fl" href="#/flight/'+esc(String(l.flight).replace(' ',''))+'">'+esc(l.flight)+'</a>'+pill+pairNote+'</div>'+
         '<div class="v100-legbody">'+
           '<div class="v81-route">'+
-            '<div class="v81-line"><i>↗</i><b>'+esc(fromLabel)+'</b><span class="v81-code">'+esc(fromCode)+'</span></div>'+
-            '<div class="v81-line"><i>↘</i><b>'+esc(toLabel)+'</b><span class="v81-code">'+esc(toCode)+'</span></div>'+
+            '<div class="v81-line"><i>↗</i><b>'+esc(fromLabel)+'</b><span class="v81-code">'+esc(fromCode)+'</span><span class="v182-off">'+esc(tzLabel(l.from,l.std!=null?l.std:l.v105Date))+'</span></div>'+
+            '<div class="v81-line"><i>↘</i><b>'+esc(toLabel)+'</b><span class="v81-code">'+esc(toCode)+'</span><span class="v182-off">'+esc(tzLabel(l.to,l.sta!=null?l.sta:l.v105Date))+'</span></div>'+
           '</div>'+
           '<div class="v100-times-col">'+
             timeRow(l.std,r.atd,r.etd,0,departActualShift,true,r.atdActual,false)+
@@ -5263,7 +5286,7 @@ function render(H){
       '</section>'+
       '<div class="v81-year">Year '+esc(yearLabel)+'</div>'+
       '<div class="v81-history">'+history+'</div>'+
-      '<p class="v81-note">Historical actual times are deterministic simulator estimates; live-flight timestamps may differ. Multi-stop sectors without source event times are shown separately but untimed. All displayed clock times are WIB; +1d means the next calendar day.</p>'+
+      '<p class="v81-note">Historical actual times are deterministic simulator estimates; live-flight timestamps may differ. Multi-stop sectors without source event times are shown separately but untimed. All clock times are local to each airport (UTC offset shown beside it); +1d / −1d is the local calendar day relative to the departure date.</p>'+
     '</div>';
   root.scrollTop=0
 }
@@ -5306,22 +5329,21 @@ function flightLegHtml(o){
   const v104=l.v105Sector?null:v104Sector(arr?l.from:l.to,arr);
   const fromCode=l.from==='Jakarta'?'JKT':(v104?v104.code:code(l.from)),toCode=l.to==='Jakarta'?'JKT':(v104?v104.code:code(l.to));
   const fromLabel=l.from==='Jakarta'?'Jakarta':(v104?v104.city:l.from),toLabel=l.to==='Jakarta'?'Jakarta':(v104?v104.city:l.to);
-  const dayLabel=dshort(absDay(l.std));
+  const dayLabel=dshort(localAt(l.std,l.from).day);
   const statusClass=r.tone==='scheduled'?'scheduled':(r.tone==='late'?'late':(r.tone==='live'?'live':'ok'));
   const pill=r.tone==='live'?'<span class="v100-status live">LIVE</span>':(r.tone==='late'?'<span class="v100-status late">LATE</span>':'');
-  const tm=(m,sh)=>m==null?'—':hm(m)+(sh?'<sup>+'+sh+'d</sup>':'');
-  const shiftOf=(m,ref)=>m!=null&&ref!=null?Math.max(0,absDay(m)-absDay(ref)):0;
+  const REF=localAt(l.std,l.from).day,T=(m,city)=>ltime(m,city,REF);
   const sched=l.sta-l.std,actual=r.atd!=null&&r.ata!=null?r.ata-r.atd:null;
   const durTxt=actual!=null?fmtDur(actual):(r.atd!=null?'En route':'—');
   const cell=(lab,val,cls)=>'<div class="v181-c'+(cls?' '+cls:'')+'"><small>'+lab+'</small><b>'+val+'</b></div>';
   return '<section class="v81-leg v100-leg v181-leg">'+
     '<div class="v81-leghead"><span class="v81-dot '+statusClass+'"></span><span class="v81-date">'+esc(dayLabel)+'</span>'+pill+
       (o.reg?'<a class="v181-reg v73-regl" href="#/aircraft/'+esc(o.reg)+'">'+esc(o.reg)+' · '+esc(typeCodeOf(o.ac))+' ›</a>':'<span class="v181-reg v181-untracked">'+esc(typeCodeOf(o.ac))+' · registration not tracked</span>')+'</div>'+
-    '<div class="v81-route"><div class="v81-line"><i>↗</i><b>'+esc(fromLabel)+'</b><span class="v81-code">'+esc(fromCode)+'</span></div>'+
-      '<div class="v81-line"><i>↘</i><b>'+esc(toLabel)+'</b><span class="v81-code">'+esc(toCode)+'</span></div></div>'+
+    '<div class="v81-route"><div class="v81-line"><i>↗</i><b>'+esc(fromLabel)+'</b><span class="v81-code">'+esc(fromCode)+'</span><span class="v182-off">'+esc(tzLabel(l.from,l.std))+'</span></div>'+
+      '<div class="v81-line"><i>↘</i><b>'+esc(toLabel)+'</b><span class="v81-code">'+esc(toCode)+'</span><span class="v182-off">'+esc(tzLabel(l.to,l.sta))+'</span></div></div>'+
     '<div class="v181-grid">'+
-      cell('STD',tm(l.std,0))+cell('ATD',tm(r.atd,shiftOf(r.atd,l.std)),r.atd==null?'dim':'')+
-      cell('STA',tm(l.sta,shiftOf(l.sta,l.std)))+(r.ata!=null?cell('ATA',tm(r.ata,shiftOf(r.ata,l.std))):(r.atd!=null&&r.eta!=null?cell('ETA',tm(r.eta,shiftOf(r.eta,l.std)),'est'):cell('ATA','—','dim')))+
+      cell('STD',T(l.std,l.from))+cell('ATD',T(r.atd,l.from),r.atd==null?'dim':'')+
+      cell('STA',T(l.sta,l.to))+(r.ata!=null?cell('ATA',T(r.ata,l.to)):(r.atd!=null&&r.eta!=null?cell('ETA',T(r.eta,l.to),'est'):cell('ATA','—','dim')))+
       cell('Duration',esc(durTxt))+cell('Scheduled',esc(fmtDur(sched)))+
     '</div>'+
     '<div class="v181-status v181-'+statusClass+'">'+esc(r.st)+'</div>'+
@@ -5339,19 +5361,19 @@ function renderFlight(id){
   const late=done.filter(o=>o.r.ata-o.r.l.sta>15).length;
   const types=[...new Set(rows.map(o=>typeCodeOf(o.ac)))].join(' · ')||typeCodeOf(f.ac||'');
   const regs=new Set(rows.map(o=>o.reg).filter(Boolean)).size;
-  const groups=new Map();rows.forEach(o=>{const d=absDay(o.r.l.std);if(!groups.has(d))groups.set(d,[]);groups.get(d).push(o)});
+  const groups=new Map();rows.forEach(o=>{const d=localAt(o.r.l.std,o.r.l.from).day;if(!groups.has(d))groups.set(d,[]);groups.get(d).push(o)});
   const history=[...groups.keys()].sort((a,b)=>b-a).map(d=>'<div class="v81-day">'+esc(dstr(d))+'</div>'+groups.get(d).map(flightLegHtml).join('')).join('')||'<div class="card" style="padding:22px">No operations in the last 15 days.</div>';
   root.innerHTML='<div class="top"><button class="back" type="button">‹</button><b>Flight</b></div><div class="wrap">'+
     '<section class="v81-head"><div class="v81-id"><small>Flight</small><h1>'+esc(id)+'</h1><div class="v81-sub">'+esc(nm)+' · '+esc(routeTxt)+'</div></div>'+
     '<div class="v81-grid">'+
       '<div class="row"><div class="cell"><span>Route</span><b>'+esc(routeTxt)+'</b></div><div class="cell"><span>City</span><b>'+esc(city)+'</b></div></div>'+
       '<div class="row"><div class="cell"><span>Operates</span><b>'+esc(opDays(f.days))+'</b></div><div class="cell"><span>Aircraft</span><b>'+esc(types)+'</b></div></div>'+
-      '<div class="row"><div class="cell"><span>Scheduled</span><b>'+(f.t!=null?esc(hm(f.t))+' (WIB)':'—')+'</b></div><div class="cell"><span>Airline</span><b>'+esc(nm)+'</b></div></div>'+
+      '<div class="row"><div class="cell"><span>Scheduled (local)</span><b>'+(rows[0]?esc(lhm(rows[0].r.l.std,rows[0].r.l.from))+' → '+esc(lhm(rows[0].r.l.sta,rows[0].r.l.to)):(f.t!=null?esc(hm(f.t))+' JKT':'—'))+'</b></div><div class="cell"><span>Airline</span><b>'+esc(nm)+'</b></div></div>'+
       '<div class="row"><div class="cell"><span>Last 15 days</span><b>'+rows.length+' flights'+(regs?' · '+regs+' aircraft':'')+'</b></div><div class="cell"><span>Average flight time</span><b>'+(avg==null?'—':esc(fmtDur(avg)))+'</b></div></div>'+
-      '<div class="row"><div class="cell"><span>Late arrivals (&gt;15 min)</span><b>'+late+' of '+done.length+'</b></div><div class="cell"><span>Times</span><b>WIB</b></div></div>'+
+      '<div class="row"><div class="cell"><span>Late arrivals (&gt;15 min)</span><b>'+late+' of '+done.length+'</b></div><div class="cell"><span>Times</span><b>Local</b></div></div>'+
     '</div></section>'+
     '<div class="v81-history">'+history+'</div>'+
-    '<p class="v81-note">Historical actual times are deterministic simulator estimates and match the aircraft page; live-flight timestamps may differ. All displayed clock times are WIB; +1d means the next calendar day.</p></div>';
+    '<p class="v81-note">Historical actual times are deterministic simulator estimates and match the aircraft page; live-flight timestamps may differ. All clock times are local to each airport (UTC offset shown beside it); +1d / −1d is the local calendar day relative to the departure date.</p></div>';
   root.scrollTop=0}
 function route(){
   const m=/^#\/aircraft\/(PK-[A-Z]{3})$/.exec(location.hash),fm=/^#\/flight\/([A-Z0-9]{2})(\d{1,4})$/.exec(location.hash);
