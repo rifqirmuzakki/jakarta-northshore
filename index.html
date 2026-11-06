@@ -1005,16 +1005,17 @@ window.JN_V158_WB_PAIRING_GUIDE=Object.freeze([{"city":"Singapore","pairs":[{"ou
    Optional 9th row field = operating days as ISO weekday digits (1=Mon ... 7=Sun); omitted = daily.
    GA 714/715 Darwin (DRW): 5x weekly, Mon-Fri.  GA 728/729 Cairns (CNS): 4x weekly, Mon/Wed/Fri/Sun.
    Inbound STA = JKT STD + 2*simulated block + 50 min outstation turn (DRW 260 min, CNS 360 min block).
-   v182: GA 728/729 retimed 07:00/19:50 -> 05:25/18:15 so the 12h50 round trip fits an idle window of a regular aircraft.
+   v182: GA 728/729 retimed 07:00/19:50 -> 05:25/18:15 and GA 714/715 08:00/17:30 -> 03:55/13:25 so both round trips
+   (12h50 and 9h30) fit idle windows of regular aircraft instead of needing the spares.
    Equipment: A330-900 (v179) - the 737-800 pool has no idle window long enough for these round trips. */
 AIR_CITY["Darwin"]=[-12.4147,130.8767,"E"]; SEED_CODES["Darwin"]="DRW";
 AIR_CITY["Cairns"]=[-16.8858,145.7553,"E"]; SEED_CODES["Cairns"]="CNS";
 FLD.OUT.push(
- ["GA","714","Darwin",480,"T2","I","Airbus A330-900","GA-V176-DRW-714","12345"],
+ ["GA","714","Darwin",235,"T2","I","Airbus A330-900","GA-V176-DRW-714","12345"],
  ["GA","728","Cairns",325,"T2","I","Airbus A330-900","GA-V176-CNS-728","1357"]
 );
 FLD.IN.push(
- ["GA","715","Darwin",1050,"T2","I","Airbus A330-900","GA-V176-DRW-714","12345"],
+ ["GA","715","Darwin",805,"T2","I","Airbus A330-900","GA-V176-DRW-714","12345"],
  ["GA","729","Cairns",1095,"T2","I","Airbus A330-900","GA-V176-CNS-728","1357"]
 );
 </script><script id="v177-ga904-a35k">
@@ -2603,20 +2604,20 @@ function tPlaceLoops(d,V,F){
         const sc=(p?v.S-(p.E+turn):720)+(nx?nx.S-(v.E+turn):720)+hash(d+'|'+o.id+'|'+t.reg)%7;
         if(sc<bs){bs=sc;best=t}}
       if(best)break}
+    if(!best&&fl&&o.c==='GA'){
+      /* on-demand spare (GA registrations only): the next free registration of this type */
+      const i=fl.tails.length;
+      try{const t={reg:v128GarudaReg(fl.ac,i),seq:[],rdy:-1e9,loc:null,fleet:fl,spare:true,model:v111FleetModel(fl.c,fl.ac,i,i+1)};
+        fl.tails.push(t);fl.spares=(fl.spares||0)+1;best=t;window.__TAIL_SPARE_CREATED=(window.__TAIL_SPARE_CREATED||0)+1}catch(e){}}
     if(best&&best.spare)window.__TAIL_SPARE_USED=(window.__TAIL_SPARE_USED||0)+1;
     if(best){best.seq.splice(tFits(best,v),0,v);best.rdy=Math.max(best.rdy,-1e9);v.tail=best;V.push(v)}
     else{window.__TAIL_LOOP_FAIL++;}})}
 function tailsAssign(){
   const {idx,ds}=tDayIndex();
   const planV=tCoreVisits();
-  /* Spares: like a real airline, a small standby pool per fleet that hosts weekly round trips. Sized from the peak
-     number of weekly round trips of that fleet on any weekday (date independent). Used only when no regular
-     aircraft has an idle window at Jakarta long enough. */
-  const spareN=new Map();
-  for(let w=1;w<=7;w++){const c=new Map();
-    for(const l of T_LOOPS)if(flRuns(l.out,w)){const k=l.out.c+'|'+(v111Family(l.out.c,l.out.ac)?'Airbus A320 family':l.out.ac);c.set(k,(c.get(k)||0)+1)}
-    c.forEach((n,k)=>spareN.set(k,Math.max(spareN.get(k)||0,n)))}
-  const F=tSizeFleets(planV,spareN);
+  /* No standing spare pool: weekly round trips use idle windows of regular aircraft. Only if no regular aircraft has a
+     long enough window is a spare created on demand (tPlaceLoops), so spares exist only when genuinely needed. */
+  const F=tSizeFleets(planV);
   let carry=null,res=null,aog=null,V=null;
   FLIGHT_TAILS=new Map();
   for(let d=idx-TAIL_WARM;d<=idx;d++){
