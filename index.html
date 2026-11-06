@@ -1149,19 +1149,26 @@ const INC_LS='jn-incidents-v1',INC_LEVELS={off:0,calm:0.4,realistic:1,chaos:2.5}
 let incLevel='realistic';
 try{const q=qs.get('incidents');if(q&&q in INC_LEVELS)incLevel=q;else{const o=JSON.parse(localStorage.getItem(INC_LS)||'null');if(o&&o.level in INC_LEVELS)incLevel=o.level}}catch(e){}
 if(noChanges||previewTok&&qs.get('incidents')==='off')incLevel=noChanges?'off':incLevel;
-const GEN={delay:new Map(),meta:new Map(),aog:new Map(),wx:new Map(),list:[]};
+const GEN={delay:new Map(),meta:new Map(),aog:new Map(),wx:new Map(),swap:new Map(),spare:new Map(),list:[]};
+/* ops controller: 'auto' reacts to incidents by itself after a short reaction time; 'manual' leaves every decision to the user */
+const CTL_LS='jn-controller-v1';let ctlMode='auto';
+try{const q=qs.get('controller');if(q==='auto'||q==='manual')ctlMode=q;else{const o=JSON.parse(localStorage.getItem(CTL_LS)||'null');if(o&&(o.mode==='auto'||o.mode==='manual'))ctlMode=o.mode}}catch(e){}
+if(noChanges)ctlMode='manual';
 window.JN_OPS={
   level:incLevel,levelFactor:INC_LEVELS[incLevel],
   setLevel:l=>{try{localStorage.setItem(INC_LS,JSON.stringify({level:l}))}catch(e){}},
-  setGenerated:list=>{GEN.delay.clear();GEN.meta.clear();GEN.aog.clear();GEN.wx.clear();GEN.list=list.slice();
+  controller:ctlMode,setController:m=>{try{localStorage.setItem(CTL_LS,JSON.stringify({mode:m}))}catch(e){}},
+  setGenerated:list=>{GEN.delay.clear();GEN.meta.clear();GEN.aog.clear();GEN.wx.clear();GEN.swap.clear();GEN.spare.clear();GEN.list=list.slice();
     list.forEach(o=>{const d=dayNum(o.date);if(d==null)return;
       if(o.kind==='delay'){const k=d+'|'+o.flight;GEN.delay.set(k,(GEN.delay.get(k)||0)+ +o.minutes);GEN.meta.set(k,o)}
       else if(o.kind==='aog')(GEN.aog.get(d)||GEN.aog.set(d,[]).get(d)).push(o);
-      else if(o.kind==='weather')(GEN.wx.get(d)||GEN.wx.set(d,[]).get(d)).push(o)})},
+      else if(o.kind==='weather')(GEN.wx.get(d)||GEN.wx.set(d,[]).get(d)).push(o)
+      else if(o.kind==='swap')(GEN.swap.get(d)||GEN.swap.set(d,[]).get(d)).push(o)
+      else if(o.kind==='spare')(GEN.spare.get(d)||GEN.spare.set(d,[]).get(d)).push(o)})},
   generated:()=>GEN.list,
   delayFor:(dayIdx,flight)=>{const k=dayIdx+'|'+flight;return (OPS_DELAY.get(k)||0)+(GEN.delay.get(k)||0)+(OPS_DERIVED.get(k)||0)},
   causeFor:(dayIdx,flight)=>{const k=dayIdx+'|'+flight,o=OPS_META.get(k)||GEN.meta.get(k)||OPS_DMETA.get(k);return o?{cause:o.cause||'other',note:o.note||'',minutes:+(o.minutes||OPS_DERIVED.get(k)||0)}:null},
-  swapsOn:dayIdx=>OPS_SWAP.get(dayIdx)||[],sparesOn:dayIdx=>OPS_SPARE.get(dayIdx)||[],aogOn:dayIdx=>[...(OPS_AOG.get(dayIdx)||[]),...(GEN.aog.get(dayIdx)||[])],
+  swapsOn:dayIdx=>[...(OPS_SWAP.get(dayIdx)||[]),...(GEN.swap.get(dayIdx)||[])],sparesOn:dayIdx=>[...(OPS_SPARE.get(dayIdx)||[]),...(GEN.spare.get(dayIdx)||[])],aogOn:dayIdx=>[...(OPS_AOG.get(dayIdx)||[]),...(GEN.aog.get(dayIdx)||[])],
   aogFor:(reg,dayIdx)=>[...(OPS_AOG.get(dayIdx)||[]),...(GEN.aog.get(dayIdx)||[])].find(o=>(o.tail||o.regResolved)===reg)||null,
   wxOn:dayIdx=>[...(OPS_WX.get(dayIdx)||[]),...(GEN.wx.get(dayIdx)||[])],arrExtraFor:(dayIdx,flight)=>OPS_ARRX.get(dayIdx+'|'+flight)||0,
   setDerivedArr:(dayIdx,flight,min,o)=>{const k=dayIdx+'|'+flight;OPS_ARRX.set(k,Math.max(OPS_ARRX.get(k)||0,min));OPS_DMETA.set(k,o)},
@@ -1251,8 +1258,8 @@ function relevantIncidents(){
   return SIMCORE.incidents.list().filter(e=>e.known&&e.applied&&C.dayNum(e.date)===vd&&(e.kind!=='weather'||(e.hits||0)>0)).sort((a,b)=>b.atMin-a.atMin)}
 function drawHome(){
   const n=C.local().changes.length+C.local().ops.length,repo=((window.JN_CHANGES_REPO&&window.JN_CHANGES_REPO.changes)||[]).length;
-  const inc=relevantIncidents(),open=inc.filter(e=>!e.handled).length,lvl=window.JN_OPS?JN_OPS.level:'realistic';
-  const alerts=inc.length?inc.map(e=>{const v=incView(e);return `<div class="op-alert ${e.handled?'done':''}"><i style="background:${SEV_DOT[v.sev]}"></i><div><b>${html(v.title)}</b><span>${html(v.detail)}</span><small>${e.handled?'Handled'+(e.decision&&e.decision.note?' · '+html(e.decision.note.replace(/^Recovery: /,'')):''):'Open · known since '+hm(((e.atMin%1440)+1440)%1440)+' WIB'}</small></div><button class="fm-btn ${e.handled?'':'primary'}" data-inc="${html(e.id)}">${e.handled?'View':'Handle'}</button></div>`}).join(''):`<p class="op-lead">${lvl==='off'?'Generated incidents are switched off.':'All quiet for now. Incidents appear here as they happen.'}</p>`;
+  const inc=relevantIncidents(),open=inc.filter(e=>!e.handled).length,lvl=window.JN_OPS?JN_OPS.level:'realistic',ctl=window.JN_OPS?JN_OPS.controller:'auto';
+  const alerts=inc.length?inc.map(e=>{const v=incView(e);return `<div class="op-alert ${e.handled?'done':''}"><i style="background:${SEV_DOT[v.sev]}"></i><div><b>${html(v.title)}</b><span>${html(v.detail)}</span><small>${e.handled?(e.decision&&e.decision.by==='auto'?'Handled by the controller':'Handled')+(e.decision&&e.decision.note?' · '+html(e.decision.note.replace(/^(Recovery|Controller): /,'')):''):'Open · known since '+hm(((e.atMin%1440)+1440)%1440)+' WIB'}</small></div><button class="fm-btn ${e.handled?'':'primary'}" data-inc="${html(e.id)}">${e.handled?(e.decision&&e.decision.by==='auto'?'Review':'View'):'Handle'}</button></div>`}).join(''):`<p class="op-lead">${lvl==='off'?'Generated incidents are switched off.':'All quiet for now. Incidents appear here as they happen.'}</p>`;
   $('#op-body').innerHTML=`<div class="op-pad"><h4 class="op-h" style="margin-top:2px">Alerts${open?` <i class="op-count" style="position:static">${open}</i>`:''}</h4>${alerts}
 <h4 class="op-h">Change the timetable</h4>
 ${card('change','Change a flight','New time, aircraft, days or terminal, from a date you choose.')}
@@ -1260,15 +1267,19 @@ ${card('add','Add a new service','A new route or extra frequency, with its retur
 ${card('cancel','Cancel a flight','Remove a flight, and its return, from a date.')}
 <h4 class="op-h">Your log</h4>
 ${card('mine','My changes and events','See, undo, export or import what you have recorded.',n+repo?`<i class="op-count">${n+repo}</i>`:'')}
+<h4 class="op-h">Ops controller</h4><p class="op-lead">Automatic: the controller notices each incident and, after a short reaction time, swaps aircraft, calls in a spare or waits. Manual: nothing is decided until you do it.</p>
+<div class="op-chips" id="op-ctl">${[['auto','Automatic'],['manual','Manual']].map(l=>`<button class="fm-chip ${ctl===l[0]?'on':''}" data-ct="${l[0]}">${l[1]}</button>`).join('')}</div>
 <h4 class="op-h">Disruption level</h4><p class="op-lead">How often things go wrong by themselves. Changing it reloads the page.</p>
 <div class="op-chips" id="op-lvl">${[['off','Off'],['calm','Calm'],['realistic','Realistic'],['chaos','Chaos']].map(l=>`<button class="fm-chip ${lvl===l[0]?'on':''}" data-l="${l[0]}">${l[1]}</button>`).join('')}</div>
 <details class="op-adv"><summary>Create a scenario yourself (advanced)</summary>
 ${card('delay','A flight is delayed','Make an inbound flight late and see the knock-on.')}${card('aog','An aircraft is out of service','Take an aircraft on the ground out of service.')}${card('weather','Weather or an airport issue','Close or slow an airport.')}</details></div>`;
   $('#op-body').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
   $('#op-body').querySelectorAll('[data-inc]').forEach(b=>b.onclick=()=>handleIncident(inc.find(x=>x.id===b.dataset.inc)));
+  $('#op-ctl').querySelectorAll('[data-ct]').forEach(b=>b.onclick=()=>{JN_OPS.setController(b.dataset.ct);const u=new URL(location.href);if(u.searchParams.has('controller'))u.searchParams.set('controller',b.dataset.ct);location.href=u.toString()});
   $('#op-lvl').querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{JN_OPS.setLevel(b.dataset.l);const u=new URL(location.href);if(u.searchParams.has('incidents'))u.searchParams.set('incidents',b.dataset.l);location.href=u.toString()});
 }
 /* ---- handling an incident: the same recovery screens, pre-filled ---- */
+const CTLR={aog:30,delay:25,weather:0};
 function ackDecision(inc,note){return {id:uid('op_'),v:1,scope:'ops',kind:'ack',date:inc.date,at:'',resolves:inc.id,note:note||'Acknowledged',createdAt:new Date().toISOString()}}
 function handleIncident(e){
   if(e.handled){st={inc:e,view:true};screen='incident';draw();return}
@@ -1283,9 +1294,10 @@ function drawIncident(){waitReady(()=>{
   if(e.kind==='weather'){const pv=window.SIMCORE.ops.weatherPreview(Object.assign({},e));
     const li=l=>`<div class="op-row"><span>${html(l.id)} · ${html(l.city)} · ${l.kind==='land'?'lands late (departs '+hm(l.sched)+')':(l.kind==='a'?'arrives':'departs')+' '+hm(l.sched)}</span><b class="bad">+${durTxt(l.delay)}</b></div>`;
     body=`<div class="op-panel"><b>${pv.flights.length} flight${pv.flights.length===1?'':'s'} late</b>${pv.flights.length?`<div class="op-lead" style="margin:4px 0 8px">${pv.aircraft} aircraft · ${durTxt(pv.total)} of delay in total</div>`+pv.flights.slice(0,12).map(li).join(''):'<p class="op-lead">No tracked flight is affected.</p>'}</div>${e.airport!=='Jakarta'?`<p class="op-lead">Flights that leave ${html(e.airport)} in the window reach Jakarta later, so check the next day.</p>`:''}`}
-  else body=`<div class="op-panel">${html(v.detail)}</div><p class="op-lead">${e.kind==='aog'?'The aircraft is not on the ground at Jakarta between an arrival and a departure, so there is no recovery to choose; its flights simply run late.':'This flight has no tracked aircraft, so there is no recovery to choose; the delay simply plays out.'}</p>`;
-  $('#op-body').innerHTML=`<div class="op-pad"><div class="op-sel"><b>${html(v.title)}</b><br><small>${html(v.detail)}</small></div>${body}${e.handled?`<p class="op-lead">${html(e.decision&&e.decision.note||'Handled')}</p>`:'<div class="buttons"><button class="fm-btn primary" id="op-ack">Acknowledge</button></div>'}</div>`;
-  const a=$('#op-ack');if(a)a.onclick=()=>{C.addOp(ackDecision(e,'Acknowledged'));screen='home';location.reload()}})}
+  else body=`<div class="op-panel">${html(v.detail)}</div>${e.handled?'':`<p class="op-lead">${e.kind==='aog'?'The aircraft is not on the ground at Jakarta between an arrival and a departure, so there is no recovery to choose; its flights simply run late.':'This flight has no tracked aircraft, so there is no recovery to choose; the delay simply plays out.'}</p>`}`;
+  $('#op-body').innerHTML=`<div class="op-pad"><div class="op-sel"><b>${html(v.title)}</b><br><small>${html(v.detail)}</small></div>${body}${e.handled?`<p class="op-lead">${html(e.decision&&e.decision.note||'Handled')}</p>${e.decision&&e.decision.by==='auto'?`<p class="op-lead">Decided automatically at ${html(e.decision.at||'')} WIB, ${(CTLR[e.kind]||30)} minutes after the incident was known. If you would rather decide yourself, stand the controller down for this incident and it reopens for you.</p><div class="buttons"><button class="fm-btn" id="op-veto">Stand the controller down</button></div>`:''}`:'<div class="buttons"><button class="fm-btn primary" id="op-ack">Acknowledge</button></div>'}</div>`;
+  const a=$('#op-ack');if(a)a.onclick=()=>{C.addOp(ackDecision(e,'Acknowledged'));screen='home';location.reload()};
+  const vt=$('#op-veto');if(vt)vt.onclick=()=>{C.addOp({id:uid('op_'),v:1,scope:'ops',kind:'veto',date:e.date,at:'',vetoes:e.id,note:'Controller stood down',createdAt:new Date().toISOString()});screen='home';location.reload()}})}
 const readyOps=()=>window.SIMCORE&&window.SIMCORE.ops&&window.SIMCORE.FLEET;
 function waitReady(fn){if(readyOps())return fn();$('#op-body').innerHTML='<div class="op-pad"><p class="op-lead">Loading the simulation…</p></div>';const iv=setInterval(()=>{if(readyOps()){clearInterval(iv);if(wrap.classList.contains('open'))fn()}},400)}
 /* ================= A FLIGHT IS DELAYED ================= */
@@ -3104,6 +3116,7 @@ function tPlan(){
 const rollSlot=(m,d)=>m.base+(((d-m.w)%m.k)+m.k)%m.k;
 function tRoll(idx){
   if(T_ROLL&&T_ROLL.idx===idx)return T_ROLL;
+  try{incApply(idx)}catch(err){console.error('incidents:',err)}          // generated incidents and the controller's decisions must be known before the rotations are replayed
   const P=tPlan(),F=P.F,K2C=P.K2C,units=P.units;
   const first=idx-TAIL_WARM-ROLL_HIDDEN,start=Math.min(ROLL_EPOCH,first),last=idx+1;
   const hold=new Map(),idle=new Map();
@@ -3210,6 +3223,7 @@ function tRollPlace(d,V,F,dayInfo,P){
 let T_LASTV=null,T_COMPUTED=-1;
 function tailsCompute(){
   const {idx,ds}=tDayIndex();
+  try{incApply(idx)}catch(err){console.error('incidents:',err)}
   const P=tPlan(),planV=P.planV,F=P.F,R=tRoll(idx);
   F.forEach(fl=>{fl.tails.length=fl.baseTails;fl.spares=fl.baseTails-fl.min;
     fl.tails.forEach(t=>{t.seq=[];t.hist=new Map();t.rdy=-1e9;t.loc=null;t.aogDays=null;t.aog=false;t.mxDay=false;t.dayStartRdy=undefined;t.dayStartLoc=undefined;t.spare=false})});
@@ -3356,14 +3370,71 @@ function incClock(){const t=dayNumOf(new Intl.DateTimeFormat('en-CA',{timeZone:'
   const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()),g=k=>+p.find(x=>x.type===k).value;return {today:t,nowMin:g('hour')*60+g('minute')}}
 function incKnown(ev,clk){const d=dayNumOf(ev.date);return d<clk.today||(d===clk.today&&ev.atMin<=clk.nowMin)}
 let INC_ALL=[];
+/* ---- the ops controller: reacts to what the world throws at the operation ----
+   Rule based and a pure function of the incident (never of the viewed date), so the same day always plays out the same way.
+   It notices an incident, waits a short reaction time, then chooses: swap the next departure with another aircraft of the same
+   line, call in a spare, or wait. Only decisions already taken at the clock apply; the user can still decide first, or stand it down. */
+const CTL_REACT={aog:30,delay:25};
+const INC_DECMEMO=new Map();
+function ctlDecide(ev,P,used){
+  const d=dayNumOf(ev.date),dow=tDow(d),runs=f=>flRuns(f,dow);
+  const note=t=>({kind:'ack',note:'Controller: '+t});
+  if(ev.kind==='weather')return {kind:'ack',at:ev.untilMin,note:'Controller: monitored, operation back to normal'};
+  const id=ev.kind==='aog'?ev.arrival:ev.flight,u1=P.unitByArr.get(id);
+  if(!u1||u1.t!=='r'||used.has(u1.i)||!runs(u1.a)||!runs(u1.d))return note(u1&&u1.t==='r'?'no recovery needed, the flight is already covered':'no tracked aircraft, the delay plays out');
+  const a1=u1.a,d1=u1.d,turn=opsTurn(a1);
+  const ready=ev.kind==='aog'?Math.max(ev.untilMin,a1.t+turn):a1.t+ +ev.minutes+turn;
+  const dly1=Math.max(0,ready-d1.t);
+  if(dly1<15)return note('absorbed by the turnaround, no action needed');
+  let best=null;
+  P.units.forEach(u2=>{
+    if(u2===u1||u2.t!=='r'||u2.fkey!==u1.fkey||used.has(u2.i)||!runs(u2.a)||!runs(u2.d))return;
+    const a2=u2.a,d2=u2.d;
+    if(d2.c!==a1.c||!v111SameType(d2,a1)||!v111SameType(d1,a2))return;
+    const term=(a,x)=>x.term===a.term||verifiedSwingPair(a,x)||/-SW-/.test(a.pid||'');
+    if(!term(a1,d2)||!term(a2,d1)||a1.zone!==d2.zone||a2.zone!==d1.zone)return;
+    if(!(d1.t>a2.t+rollMinT(a2)-1)||!(d2.t>a1.t)||d2.t-a1.t>600)return;
+    const tau=Math.min(1439,Math.max(a1.t,a2.t)+1);if(!(d1.t>tau&&d2.t>tau))return;
+    const dly2=Math.max(0,ready-d2.t),saved=dly1-dly2;
+    if(saved<20)return;
+    if(!best||saved>best.saved||(saved===best.saved&&(dly2<best.dly2||(dly2===best.dly2&&u2.i<best.u.i))))best={u:u2,saved,dly2}});
+  const swap=()=>{used.add(u1.i);used.add(best.u.i);return {kind:'swap',arrivals:[a1.id,best.u.a.id],note:'Controller: swapped the next departure with '+best.u.d.id+' ('+best.u.d.city+'); saves '+Math.round(best.saved)+' min'+(best.dly2>=15?', '+best.u.d.id+' leaves '+Math.round(best.dly2)+' min late':'')}};
+  if(ev.kind==='aog'){
+    if(best&&best.dly2<=30&&best.saved>=30)return swap();
+    if(dly1>=60||ev.untilMin>=1440){used.add(u1.i);return {kind:'spare',arrival:a1.id,untilMin:ev.untilMin,note:'Controller: called in a spare for '+d1.id+' ('+d1.city+') and the rest of the day'}}
+    if(best&&best.saved>=30)return swap();
+    return note('waiting for the repair, no better option')}
+  if(best&&best.saved>=30)return swap();
+  return note('waiting, no aircraft available to swap')}
+function incController(idx,f,clk){
+  const P=tPlan(),dec=new Set(),veto=new Set();
+  (JN_CHG.ops()||[]).forEach(o=>{if(o.resolves)dec.add(o.resolves);if(o.kind==='veto'&&o.vetoes)veto.add(o.vetoes)});
+  const out=[],first=Math.min(ROLL_EPOCH,idx-TAIL_WARM-ROLL_HIDDEN);
+  for(let d=first;d<=idx;d++){
+    const key=d+'|'+f+'|'+JN_OPS.controller;let L=INC_DECMEMO.get(key);
+    if(!L){L=[];const used=new Set(),evs=[...incAogs(d,f),...incLates(d,f)];
+      evs.sort((x,y)=>(x.atMin-y.atMin)||(x.id<y.id?-1:1));
+      evs.forEach(ev=>{const r=ctlDecide(ev,P,used),at=r.at!=null?r.at:ev.atMin+(CTL_REACT[ev.kind]||30);
+        L.push(Object.assign({id:'auto_'+ev.id,v:1,scope:'ops',src:'auto',by:'auto',date:ev.date,resolves:ev.id,atMin:at,at:incHm(at)},r,{at:incHm(at),atMin:at}))});
+      INC_DECMEMO.set(key,L)}
+    L.forEach(x=>{if(!dec.has(x.resolves)&&!veto.has(x.resolves)&&incKnown(x,clk))out.push(x)})}
+  INC_ALL.forEach(e=>{if(e.kind!=='weather'||dec.has(e.id)||veto.has(e.id))return;const at=e.untilMin,x={id:'auto_'+e.id,v:1,scope:'ops',src:'auto',by:'auto',kind:'ack',date:e.date,resolves:e.id,atMin:at,at:incHm(at),note:'Controller: monitored, operation back to normal'};if(incKnown(x,clk))out.push(x)});
+  return out}
+let INC_IDX=null;
 /* generate for the 15-day window; only incidents already known at the clock apply */
 function incApply(idx){
+  if(INC_IDX===idx)return;
   const f=JN_OPS.levelFactor;INC_ALL=[];
-  if(!f){JN_OPS.setGenerated([]);return}
+  if(!f){JN_OPS.setGenerated([]);INC_IDX=idx;return}
   const clk=incClock();
   for(let d=idx-TAIL_WARM;d<=idx;d++)incDay(d,f).forEach(ev=>{ev.applied=incKnown(ev,clk);INC_ALL.push(ev)});
-  JN_OPS.setGenerated(INC_ALL.filter(e=>e.applied));
-  /* how many flights a recent weather incident touches (alerts only list the ones that matter) */
+  let decs=[];if(JN_OPS.controller==='auto'){try{decs=incController(idx,f,clk)}catch(err){console.error('ops controller:',err)}}
+  JN_OPS.setGenerated(INC_ALL.filter(e=>e.applied).concat(decs));
+  INC_IDX=idx}
+let INC_HITS=null;
+/* how many flights a recent weather incident touches (alerts only list the ones that matter); needs the aircraft, so it runs after they are placed */
+function incHits(idx){
+  if(INC_HITS===idx)return;INC_HITS=idx;
   {const tails=[];tPlan().F.forEach(fl=>fl.tails.forEach(t=>tails.push(t)));
    INC_ALL.forEach(e=>{if(e.kind==='weather'&&dayNumOf(e.date)>=idx-1)e.hits=wxEffects(e,tails,[idx-1,idx]).length})}}
 function incidentsList(){
@@ -3372,7 +3443,7 @@ function incidentsList(){
 function opsDelays(idx){
   INF.forEach(f=>{f.dly=0});OUTF.forEach(f=>{f.dly=0});
   if(!window.JN_OPS)return;
-  incApply(idx);
+  incApply(idx);incHits(idx);
   opsDeriveAog(idx);opsDeriveWx(idx);
   if(!JN_OPS.hasAny())return;
   const P=tPlan(),days=[idx-1,idx];
