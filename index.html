@@ -6420,12 +6420,19 @@ function legRow(l,now,today,prior,profile){
   }
   if(actualArr!=null){
     predictedArrival=actualArr;
-    // The Jakarta landing event is authoritative; infer the outstation departure.
-    predictedDeparture=predictedArrival-phases.airborne-phases.hold-arrx;
+    // Keep the simulated touchdown, but do not backdate takeoff to absorb an
+    // estimated hold. Use the available time to reduce the inferred hold first.
+    const earliestTakeoff=Math.max(l.std-3,priorReady)+phases.taxiOut;
+    const inferredTakeoff=predictedArrival-phases.airborne-phases.hold-arrx;
+    const latestPlausibleTakeoff=predictedArrival-Math.max(15,phases.airborne*0.8);
+    predictedDeparture=earliestTakeoff<=latestPlausibleTakeoff
+      ?Math.max(earliestTakeoff,Math.min(inferredTakeoff,latestPlausibleTakeoff))
+      :null;
     onblock=Number.isFinite(e.onblock)?today*1440+e.onblock/60:predictedArrival+phases.taxiIn;
   }
   const outState={arrival:onblock,to:l.to,ac:prior?.ac};
-  const departed=nowAbs>=predictedDeparture,arrived=departed&&nowAbs>=predictedArrival;
+  const departed=predictedDeparture!=null&&nowAbs>=predictedDeparture;
+  const arrived=nowAbs>=predictedArrival&&(departed||actualArr!=null);
   const atd=departed?predictedDeparture:null,ata=arrived?predictedArrival:null;
   const atdActual=actualDep!=null&&nowAbs>=actualDep,ataActual=actualArr!=null&&nowAbs>=actualArr;
   const depDelay=Math.round(offblock-l.std),arrDelay=Math.round(onblock-l.sta);
