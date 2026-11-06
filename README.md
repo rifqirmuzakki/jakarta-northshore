@@ -11,13 +11,14 @@ what is open, with a *Handle* button that opens the recovery screen pre-filled (
 *decisions* are saved (linked to the incident); the incidents themselves are regenerated identically from the date, so history is stable.
 `?incidents=off|calm|realistic|chaos` overrides the saved level.
 
-**Ops controller (Automatic by default).** Each incident is noticed, and after a short reaction time (30 min for an aircraft out of
-service, 25 min for a late inbound flight; weather is simply monitored until it clears) a rule-based controller decides: swap the
-next departure with another aircraft of the same line (when it saves at least 30 min), call in a spare (aircraft out of service for an hour
-or more, or overnight), or wait. Decisions depend only on the incident, never on the viewed date, so a past day always plays out the same
-way; for today they take effect as the clock passes the reaction time. Alerts show them as *Handled by the controller*; *Review* explains
-the choice and *Stand the controller down* reopens the incident for you (saved as a `veto` record). Deciding yourself first also
-works: your decision wins. Switch to Manual in the hub (or `?controller=manual`) to leave every decision to you.
+**You decide; the controller is the fallback.** Each open alert shows a deadline ("decide by 17:55 or the controller acts"): 60 minutes
+after the incident is known, shortened when the next departure is close (never under 15 minutes). In *Handle* you pick the intervention
+(swap equipment, bring in a spare, or wait) and see its effect on both aircraft first. Any aircraft of the same type that is on the ground
+at Jakarta and ready in time (arrival plus minimum turn) can take over a departure; the two aircraft exchange their next flights, terminals
+follow the flight. If nobody decides before the deadline, the rule-based controller acts (swap if it saves 30+ minutes, spare for long
+outages, otherwise wait). Decisions depend only on the incident, never on the viewed date, so past days always play out the same way.
+Alerts show them as *Handled by the controller*; *Review* explains the choice and *Stand the controller down* reopens the incident
+(saved as a `veto` record). Deciding first wins. Set the controller to *Never* in the hub (or `?controller=manual`) to decide everything yourself.
 
 The hub also has manual tools, below, for building a scenario yourself (under *Create a scenario yourself*).
 
