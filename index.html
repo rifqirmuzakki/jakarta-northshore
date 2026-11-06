@@ -1141,12 +1141,13 @@ all().filter(active).sort((a,b)=>(dayNum(a.from)-dayNum(b.from))||String(a.creat
     swap : arrivals:['GA 3','GA 959']            (the two aircraft arriving on those flights exchange their next departures)} */
 const opsAll=()=>{const r=window.JN_CHANGES_REPO,rr=r&&Array.isArray(r.ops)?r.ops.map(o=>Object.assign({},o,{src:'repo'})):[];
   return noChanges?[]:[...rr,...local.ops.map(o=>Object.assign({},o,{src:'local'}))]};
-const OPS_PRIO=new Map(),OPS_CX=new Map(),OPS_DELAY=new Map(),OPS_SWAP=new Map(),OPS_META=new Map(),OPS_AOG=new Map(),OPS_SPARE=new Map(),OPS_DERIVED=new Map(),OPS_DMETA=new Map(),OPS_WX=new Map(),OPS_ARRX=new Map();
+const OPS_RWMODE=new Map(),OPS_PRIO=new Map(),OPS_CX=new Map(),OPS_DELAY=new Map(),OPS_SWAP=new Map(),OPS_META=new Map(),OPS_AOG=new Map(),OPS_SPARE=new Map(),OPS_DERIVED=new Map(),OPS_DMETA=new Map(),OPS_WX=new Map(),OPS_ARRX=new Map();
 opsAll().forEach(o=>{const d=dayNum(o.date);if(d==null)return;
   if(o.kind==='delay'&&o.flight&&+o.minutes>0){const k=d+'|'+o.flight;OPS_DELAY.set(k,(OPS_DELAY.get(k)||0)+ +o.minutes);OPS_META.set(k,o)}
   else if(o.kind==='swap'&&Array.isArray(o.arrivals)&&o.arrivals.length===2){(OPS_SWAP.get(d)||OPS_SWAP.set(d,[]).get(d)).push(o)}
   else if(o.kind==='aog'&&o.tail){(OPS_AOG.get(d)||OPS_AOG.set(d,[]).get(d)).push(o)}
   else if(o.kind==='spare'&&o.arrival){(OPS_SPARE.get(d)||OPS_SPARE.set(d,[]).get(d)).push(o)}
+  else if(o.kind==='rwmode'&&['mixed','strict','flex'].includes(o.mode)){OPS_RWMODE.set(d,o)}
   else if(o.kind==='prio'&&Array.isArray(o.flights)){const set=OPS_PRIO.get(d)||OPS_PRIO.set(d,new Set()).get(d);o.flights.forEach(id=>set.add(id))}
   else if(o.kind==='cancelflt'&&Array.isArray(o.flights)){o.flights.forEach(id=>OPS_CX.set(d+'|'+id,o))}
   else if(o.kind==='weather'&&o.airport){(OPS_WX.get(d)||OPS_WX.set(d,[]).get(d)).push(o)}});
@@ -1174,6 +1175,7 @@ window.JN_OPS={
   generated:()=>GEN.list,
   delayFor:(dayIdx,flight)=>{const k=dayIdx+'|'+flight;return (OPS_DELAY.get(k)||0)+(GEN.delay.get(k)||0)+(OPS_DERIVED.get(k)||0)},
   causeFor:(dayIdx,flight)=>{const k=dayIdx+'|'+flight,o=OPS_META.get(k)||GEN.meta.get(k)||OPS_DMETA.get(k);return o?{cause:o.cause||'other',note:o.note||'',minutes:+(o.minutes||OPS_DERIVED.get(k)||0)}:null},
+  rwModeOn:dayIdx=>(OPS_RWMODE.get(dayIdx)||{}).mode||null,
   prioOn:dayIdx=>OPS_PRIO.get(dayIdx)||new Set(),
   cancelledOn:(dayIdx,flight)=>OPS_CX.has(dayIdx+'|'+flight),cancelRec:(dayIdx,flight)=>OPS_CX.get(dayIdx+'|'+flight)||null,
   swapsOn:dayIdx=>[...(OPS_SWAP.get(dayIdx)||[]),...(GEN.swap.get(dayIdx)||[])],sparesOn:dayIdx=>[...(OPS_SPARE.get(dayIdx)||[]),...(GEN.spare.get(dayIdx)||[])],aogOn:dayIdx=>[...(OPS_AOG.get(dayIdx)||[]),...(GEN.aog.get(dayIdx)||[])],
@@ -1182,7 +1184,7 @@ window.JN_OPS={
   setDerivedArr:(dayIdx,flight,min,o)=>{const k=dayIdx+'|'+flight;OPS_ARRX.set(k,Math.max(OPS_ARRX.get(k)||0,min));OPS_DMETA.set(k,o)},
   clearDerived:()=>{OPS_DERIVED.clear();OPS_DMETA.clear();OPS_ARRX.clear()},
   setDerived:(dayIdx,flight,min,o)=>{const k=dayIdx+'|'+flight;OPS_DERIVED.set(k,Math.max(OPS_DERIVED.get(k)||0,min));OPS_DMETA.set(k,o)},
-  list:()=>[...opsAll(),...GEN.list],hasAny:()=>OPS_PRIO.size>0||OPS_CX.size>0||OPS_DELAY.size>0||OPS_SWAP.size>0||OPS_AOG.size>0||OPS_SPARE.size>0||OPS_WX.size>0||GEN.list.length>0};
+  list:()=>[...opsAll(),...GEN.list],hasAny:()=>OPS_RWMODE.size>0||OPS_PRIO.size>0||OPS_CX.size>0||OPS_DELAY.size>0||OPS_SWAP.size>0||OPS_AOG.size>0||OPS_SPARE.size>0||OPS_WX.size>0||GEN.list.length>0};
 window.JN_CHG={
   view,viewDs,previewTok,warnings,legacyActive,BASELINE,noChanges,addOp(o){local.ops.push(o);this.save()},removeOp(id){local.ops=local.ops.filter(o=>o.id!==id);this.save()},ops:opsAll,
   all,active,status,dayNum,jakToday,
@@ -1330,24 +1332,30 @@ function drawQueue(){waitReady(()=>{
   const clo=(window.JN_OPS?JN_OPS.wxOn(vd):[]).filter(o=>o.airport==='Jakarta'&&o.mode!=='slow');
   const row=(x,kind)=>{const on=sel[x.id]||(prio.has(x.id)?'prio0':null);
     return `<div class="op-q"><div><b>${html(x.id)}</b> <span>${html(String(x.city).split(' / ')[0])}</span><small>${kind==='a'?'due '+fm(x.sched)+' · lands about '+fm(x.at):'planned '+fm(x.sched)+' · takes off about '+fm(x.at)}</small></div><em class="${x.delay>=30?'bad':''}">+${durTxt(Math.round(x.delay))}</em>
-<div class="op-qa">${prio.has(x.id)?'<i class="op-tag">Expedited</i>':`<button class="fm-chip ${sel[x.id]==='prio'?'on':''}" data-q="${html(x.id)}" data-a="prio">Move up</button>`}<button class="fm-chip ${sel[x.id]==='cx'?'on':''}" data-q="${html(x.id)}" data-a="cx">Cancel</button></div></div>`};
+<div class="op-qa">${prio.has(x.id)?'<i class="op-tag">Expedited</i>':`<button class="fm-chip ${sel[x.id]==='prio'?'on':''}" data-q="${html(x.id)}" data-a="prio">Move up</button>`}${kind==='d'?`<button class="fm-chip ${sel[x.id]==='h15'?'on':''}" data-q="${html(x.id)}" data-a="h15">Hold at gate 15</button><button class="fm-chip ${sel[x.id]==='h30'?'on':''}" data-q="${html(x.id)}" data-a="h30">Hold 30</button>`:''}<button class="fm-chip ${sel[x.id]==='cx'?'on':''}" data-q="${html(x.id)}" data-a="cx">Cancel</button></div></div>`};
   const mine=(C.ops()||[]).filter(o=>C.dayNum(o.date)===vd&&o.kind==='prio');
   $('#op-body').innerHTML=`<div class="op-pad">
 ${clo.length?clo.map(o=>`<div class="op-panel"><b>${o.mode==='rwy'?html(RWYN[o.rwy]||'A runway')+' closed':'Jakarta closed'}</b> ${fm(+o.fromMin)}–${fm(+o.untilMin)} WIB · ${html(o.note||'')}</div>`).join(''):''}
 <div class="op-panel"><b>${html(longDate(C.viewDs))}</b><div class="op-lead" style="margin:4px 0 0">Over the day, ${dayA.length} flight${dayA.length===1?'':'s'} waited 20 min or more to land (worst ${mx(dayA)} min) and ${dayD.length} to take off (worst ${mx(dayD)} min). The number on an hour is how many flights were held 15 min or more.</div></div>
 <div class="op-chips op-hours" id="op-hours">${chips}</div>
+<h4 class="op-h">Runway configuration for the day</h4><div class="op-chips" id="op-rwm">${[['flex','Flexible'],['mixed','Mixed'],['strict','Strict']].map(m=>`<button class="fm-chip ${(S.runwayMode||'flex')===m[0]?'on':''}" data-rm="${m[0]}">${m[1]}</button>`).join('')}</div>
+<p class="op-lead">Flexible: arrivals prefer the north runway and departures the south, either can use the other at a small penalty. Mixed: both runways take both, which copes best when one is closed. Strict: arrivals only north, departures only south, so a closed runway stops that traffic. Changing it reloads the page${JN_OPS.rwModeOn(vd)?' (set by you for this day)':''}.</p>
 <p class="op-lead">Moving a flight up makes it go ahead of the others waiting for the same runway, so the flights behind it wait a little longer. It does not help a flight that is held only because its stand is still occupied. Cancelling removes it from the queue.</p>
 <h4 class="op-h">Landing queue · ${String(st.hour).padStart(2,'0')}:00</h4>${A.map(x=>row(x,'a')).join('')||'<p class="op-lead">Nobody is held to land in this hour.</p>'}
 <h4 class="op-h">Take-off queue · ${String(st.hour).padStart(2,'0')}:00</h4>${D.map(x=>row(x,'d')).join('')||'<p class="op-lead">Nobody is held to take off in this hour.</p>'}
 ${mine.length?`<h4 class="op-h">Your sequence decisions</h4>${mine.map(o=>`<div class="op-row"><span>Moved up: ${html((o.flights||[]).join(', '))}</span><button class="op-link" data-undo="${html(o.id)}">Undo</button></div>`).join('')}`:''}
 <div class="buttons"><button class="fm-btn primary" id="op-qsave" ${Object.keys(sel).length?'':'disabled'}>Apply ${Object.keys(sel).length?'('+Object.keys(sel).length+')':''}</button></div><p class="fm-msg" id="op-msg"></p></div>`;
+  $('#op-body').querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{const m=b.dataset.rm;(C.ops()||[]).filter(o=>o.kind==='rwmode'&&C.dayNum(o.date)===vd).forEach(o=>C.removeOp(o.id));
+    C.addOp({id:uid('op_'),v:1,scope:'ops',kind:'rwmode',mode:m,date:C.viewDs,at:'',note:'Runway configuration for the day: '+m,createdAt:new Date().toISOString()});
+    try{sessionStorage.setItem('jn-open-queue','1');sessionStorage.setItem('jn-op-toast','Runway configuration set to '+m)}catch(x){}location.reload()});
   $('#op-body').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{st.hour=+b.dataset.h;drawQueue()});
   $('#op-body').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{const id=b.dataset.q,a=b.dataset.a;if(sel[id]===a)delete sel[id];else sel[id]=a;drawQueue()});
   $('#op-body').querySelectorAll('[data-undo]').forEach(b=>b.onclick=()=>{C.removeOp(b.dataset.undo);try{sessionStorage.setItem('jn-open-queue','1')}catch(x){}location.reload()});
   const sv=$('#op-qsave');if(sv)sv.onclick=()=>{const now=new Date().toISOString(),up=Object.keys(sel).filter(k=>sel[k]==='prio'),dn=Object.keys(sel).filter(k=>sel[k]==='cx'),mk=x=>Object.assign({id:uid('op_'),v:1,scope:'ops',date:C.viewDs,at:'',cause:'other',createdAt:now},x);
     if(up.length)C.addOp(mk({kind:'prio',flights:up,note:'Expedited in the queue: '+up.join(', ')}));
+    Object.keys(sel).filter(k=>sel[k]==='h15'||sel[k]==='h30').forEach(k=>C.addOp(mk({kind:'delay',flight:k,minutes:sel[k]==='h15'?15:30,cause:'other',note:'Held at the gate by the controller to ease the queue'})));
     if(dn.length)C.addOp(mk({kind:'cancelflt',flights:dn,note:'Cancelled from the queue: '+dn.join(', ')}));
-    try{sessionStorage.setItem('jn-open-queue','1');sessionStorage.setItem('jn-op-toast','Sequence decision recorded'+(up.length?' · '+up.length+' moved up':'')+(dn.length?' · '+dn.length+' cancelled':''))}catch(x){}
+    try{sessionStorage.setItem('jn-open-queue','1');sessionStorage.setItem('jn-op-toast','Sequence decision recorded'+(up.length?' · '+up.length+' moved up':'')+(Object.keys(sel).some(k=>sel[k][0]==='h')?' · held at the gate':'')+(dn.length?' · '+dn.length+' cancelled':''))}catch(x){}
     $('#op-msg').textContent='Recorded. Reloading…';setTimeout(()=>location.reload(),300)}})}
 function drawImpact(){waitReady(()=>{
   const e=st.inc,v=incView(e),fl=e.flight||e.arrival,inb=e.kind==='delay'||(e.kind==='wimp'&&e.dir==='in');
@@ -4690,6 +4698,7 @@ $('pct').oninput=ev=>{pct=100;$('pv').textContent='100%'};
 $('pct').onchange=()=>{};
 document.querySelectorAll('#spd button')[0].classList.add('on');
 setMode('gnd');
+try{const m=JN_OPS.rwModeOn(JN_CHG.dayNum(JN_CHG.viewDs));if(m&&m!==currentRunwayMode){currentRunwayMode=m;C.setRunwayMode(m);document.querySelectorAll('[data-rmode]').forEach(b=>{b.classList.toggle('on',b.dataset.rmode===m);b.setAttribute('aria-pressed',String(b.dataset.rmode===m))});$('rmMode').textContent=modeNames[m];$('rmDesc').textContent=modeDescriptions[m]}}catch(err){console.error('runway configuration:',err)}
 rebake();
 const lt=()=>document.documentElement.style.setProperty('--layTop',($('hud').getBoundingClientRect().bottom+6)+'px');lt();addEventListener('resize',lt);setInterval(lt,1500);
 requestAnimationFrame(frame);

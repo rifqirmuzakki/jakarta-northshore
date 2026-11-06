@@ -19,7 +19,7 @@ cause. A weather event lists the flights it makes late (at least 30 minutes, the
 **Jakarta queue and sequence.** The hub has a *Jakarta queue* screen: per hour, who is held to land and to take off (read straight from the
 ground simulation, so it includes runway closures), with *Move up* (the flight is handled ahead of the others waiting for the same
 runway, saved as a `prio` record) and *Cancel*. A new trigger closes one runway for 45-120 minutes (disabled aircraft, bird-strike
-inspection, lighting fault); the remaining runway queues the traffic. Moving a flight up does not help one that waits for a stand.
+inspection, lighting fault); the remaining runway queues the traffic. Moving a flight up does not help one that waits for a stand. The same screen sets the **runway configuration for the day** (flexible, mixed or strict; saved as an `rwmode` record, applied when the page loads) and can **hold a departure at the gate** for 15 or 30 minutes (a `delay` record) to ease the take-off queue. With one runway closed, mixed copes best and strict worst.
 
 **You decide; the controller is the fallback.** Each open impact shows a deadline ("decide by 17:55 or the controller acts"): 60 minutes
 after it is known, shortened when the next departure is close (never under 15 minutes). In *Handle* you choose **wait**, **swap
