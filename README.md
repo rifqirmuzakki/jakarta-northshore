@@ -11,6 +11,13 @@ what is open, with a *Handle* button that opens the recovery screen pre-filled (
 *decisions* are saved (linked to the incident); the incidents themselves are regenerated identically from the date, so history is stable.
 `?incidents=off|calm|realistic|chaos` overrides the saved level.
 
+**Scenario clock.** By default time is live. In the hub (*Scenario clock*) pick a date and time and press *Start*, or open the page with
+`?clock=2026-10-29T14:00` (Jakarta time): the whole app, map included, treats that moment as "now", and time runs from there. You can pause, run
+10x or 60x, jump 15 minutes or an hour (reloads the simulation), and *Back to live* (`?clock=real`). The state is kept in sessionStorage, so
+decisions (which reload the page) do not reset it. As the clock runs, new incidents and passed deadlines show a banner to apply them. A decided
+item stays on the **Watching** tab, with the current state of the flights it protects, until those flights have gone, and is flagged if the
+protected departure is still 15+ minutes late.
+
 **Operations log** (hub > Log). A timeline of everything on the viewed day: incidents as they became known, controller decisions, and your own decisions,
 each linked to the incident it answers, with the outcome (the flight's delay and its next departure now). Filter by incidents / controller / you; routine
 "no action needed" controller notes are hidden unless asked for. *Copy handover* and *Download .txt* produce a plain-text shift summary. *My changes and

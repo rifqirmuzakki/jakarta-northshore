@@ -1,5 +1,25 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Jakarta Northshore | Widebody Optimization v158</title><style>html,body{margin:0;height:100%;background:#eeece6;overflow:hidden;overscroll-behavior:none;position:fixed;width:100%}svg{width:100%;height:100%;display:block;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;font-family:"Helvetica Neue",Arial,sans-serif}
+<html lang="en"><head><meta charset="utf-8"/><script id="jn-scenario-clock">(function(){
+/* Scenario clock: with ?clock=YYYY-MM-DDTHH:MM (Jakarta time) the whole app sees that moment as "now", and time then runs from there
+   (pausable, faster). The state lives in sessionStorage so decisions, which reload the page, keep the same scenario time. ?clock=real leaves it. */
+const R=Date,KEY='jn-scn-v1';let st=null;
+const parse=s=>{const m=/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/.exec(s||'');return m?R.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5])-7*3600000:null};
+try{const q=new URLSearchParams(location.search).get('clock');
+ if(q==='real')sessionStorage.removeItem(KEY);
+ else if(q){const t=parse(q);if(t!=null)sessionStorage.setItem(KEY,JSON.stringify({startSim:t,startReal:R.now(),speed:1,paused:false,frozen:t}))}
+ st=JSON.parse(sessionStorage.getItem(KEY)||'null');
+ if(q){const u=new URL(location.href);u.searchParams.delete('clock');history.replaceState(null,'',u.pathname+u.search+u.hash)}}catch(e){}
+if(!st)return;
+const now=()=>st.paused?st.frozen:st.startSim+(R.now()-st.startReal)*st.speed;
+class D extends R{constructor(...a){if(a.length)super(...a);else super(now())}static now(){return now()}}
+window.Date=D;
+const save=()=>{try{sessionStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
+const rebase=()=>{const n=now();st.startSim=n;st.startReal=R.now();st.frozen=n;return n};
+window.JN_SCN={active:true,now,realNow:()=>R.now(),state:()=>Object.assign({},st),
+ setSpeed(x){rebase();st.speed=x;save()},setPaused(b){rebase();st.paused=!!b;save()},
+ setTime(ms){st.startSim=ms;st.startReal=R.now();st.frozen=ms;save()},jump(min){this.setTime(now()+min*60000)}};
+document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('jn-scn'));
+})()</script><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Jakarta Northshore | Widebody Optimization v158</title><style>html,body{margin:0;height:100%;background:#eeece6;overflow:hidden;overscroll-behavior:none;position:fixed;width:100%}svg{width:100%;height:100%;display:block;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;font-family:"Helvetica Neue",Arial,sans-serif}
 .term{fill:#dbc7a6;stroke:#b8a07c;stroke-width:4;stroke-linejoin:round}.t1{fill:none;stroke:#d0b992;stroke-width:2.5;opacity:.7}.t2{fill:none;stroke:#eadcc2;stroke-width:2.5;opacity:.7}
 .apron{fill:#eceae4;stroke:#d8d6cd;stroke-width:2.5}.rn{font:700 68px Arial;fill:#fff}
 .bxE{fill:#f5f4f0;stroke:#d9bb82;stroke-width:1.5}.bxC{fill:#f5f4f0;stroke:#a6bdd2;stroke-width:1.5}
@@ -1058,6 +1078,7 @@ for(const k of ['IN','OUT'])for(const r of FLD[k])if(r[0]==='GA'&&(r[1]==='904'|
  body.fm-docked #v49-close-card{right:calc(var(--dock) + 16px)!important}
 }
 body.jn-board-open #jnSearchLaunch{display:none!important}
+body.jn-scn #hud #clk::before{content:'SCENARIO'!important;background:#dbeafe!important;color:#1e4a8a!important}
 html body #hud #clk::before{content:'SIM';font:700 9px -apple-system,Helvetica,sans-serif;letter-spacing:.06em;color:#8a5a00;background:#fdeec8;border-radius:4px;padding:2px 5px;margin-right:7px;vertical-align:middle}
 body.jn-detail #fm-launch{display:block;top:calc(10px + env(safe-area-inset-top,0px));bottom:auto;right:10px;padding:8px 12px;font-size:12px;border-radius:10px;box-shadow:0 4px 14px #0004}
 #ops-v16 button[data-view="ops"]{position:relative}#ops-v16 .ops-badge{position:absolute;top:2px;right:4px;font-style:normal;font-weight:700;background:#c0392b;color:#fff;border-radius:9px;padding:1px 5px;font-size:9.5px;line-height:1.2;min-width:8px;text-align:center}#ops-v16 .ops-badge[hidden]{display:none}
@@ -1082,7 +1103,7 @@ body.jn-detail #fm-launch{display:block;top:calc(10px + env(safe-area-inset-top,
 .op-group{margin:0 0 10px;border:1px solid #cfdde8;border-radius:12px;background:#f2f6f9;padding:0 8px 8px}.op-group>summary{cursor:pointer;font-size:12.5px;color:#1c4a63;padding:11px 4px}.op-group .op-alert{margin-bottom:6px}.op-group .op-alert>div>span{display:none}.op-gbar{display:flex;justify-content:flex-end;padding:2px 2px 0}
 .op-lq{display:block;font-size:12.5px;color:#37556b;margin:2px 0 10px}.op-lq input{margin-right:6px}
 .op-tools{display:flex;gap:8px;margin:2px 0 12px}.op-log{list-style:none;margin:0;padding:0;border-left:2px solid #d3dde4}.op-le{display:grid;grid-template-columns:48px 1fr;gap:8px;padding:0 0 14px 12px;position:relative}.op-le::before{content:'';position:absolute;left:-7px;top:4px;width:10px;height:10px;border-radius:50%;background:#8ea3b3;border:2px solid #fff}.op-le.incident::before{background:#d68910}.op-le.controller::before{background:#2e86c1}.op-le.you::before{background:#1b6b3f}.op-le time{font:600 12.5px ui-monospace,Menlo,monospace;color:#1a2c3d}.op-le b{font-size:13px}.op-le span,.op-le small{display:block;font-size:12px;color:#44596a;margin-top:2px}.op-le small{color:#526678}
-.op-tabs{display:flex;gap:6px;margin:6px 0 10px}.op-tabs button{flex:1;border:1px solid #d3dde4;background:#fff;color:#37556b;border-radius:10px;padding:9px 6px;font:600 12.5px inherit;cursor:pointer}.op-tabs button.on{background:#18394d;color:#fff;border-color:#18394d}.op-tabs i{font-style:normal;font-size:10.5px;background:#8798a5;color:#fff;border-radius:8px;padding:0 6px;margin-left:3px}.op-tabs [data-tab="needs"] i{background:#c0392b}.op-tabs button.on i{background:#fff;color:#18394d}
+.op-tabs{display:flex;gap:6px;margin:6px 0 10px}.op-tabs button{min-width:0;font-size:12px!important;padding:9px 4px!important;flex:1;border:1px solid #d3dde4;background:#fff;color:#37556b;border-radius:10px;padding:9px 6px;font:600 12.5px inherit;cursor:pointer}.op-tabs button.on{background:#18394d;color:#fff;border-color:#18394d}.op-tabs i{font-style:normal;font-size:10.5px;background:#8798a5;color:#fff;border-radius:8px;padding:0 6px;margin-left:3px}.op-tabs [data-tab="needs"] i{background:#c0392b}.op-tabs button.on i{background:#fff;color:#18394d}
 .op-trigs{margin-top:16px}.op-trigs summary{cursor:pointer;font-size:12.5px;color:#37556b;padding:9px 0}.op-alert small b.bad{color:#b03030;display:inline}
 .op-sticky{position:sticky;bottom:0;margin:14px -16px 0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.96);border-top:1px solid #dbe3e9;display:flex;gap:10px;align-items:center;justify-content:space-between;z-index:3}.op-sum{font-size:12.5px;color:#37556b;min-width:0}.fm-btn.danger{background:#a83232;color:#fff;border-color:#a83232}.op-choice.cxc.on{border-color:#a83232;background:#fdf1f1}
 .op-q .fm-chip{padding:5px 11px;font-size:12px}.op-q [data-a="cx"]{margin-left:auto;color:#a83232;border-color:#e3b9b9}.op-q{padding:8px 11px}
@@ -1090,6 +1111,7 @@ body.jn-detail #fm-launch{display:block;top:calc(10px + env(safe-area-inset-top,
 .op-table{border:1px solid #dbe3e9;border-radius:12px;background:#fff;overflow:hidden}.op-th,.op-opt{display:grid;grid-template-columns:minmax(0,1fr) 92px 74px;gap:8px;align-items:center;padding:0 12px}.op-th{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#526678;background:#f1f5f8;min-height:30px}.op-tg{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#1c4a63;background:#eaf2f7;padding:7px 12px;border-top:1px solid #dbe3e9}
 .op-opt{width:100%;min-height:48px;border:0;border-top:1px solid #e6edf2;background:#fff;text-align:left;font:inherit;cursor:pointer}.op-opt .n{font-weight:600;font-size:13px;color:#1a2c3d}.op-opt .e,.op-opt .l{font-size:12px;color:#44596a;text-align:right}.op-opt .good{color:#1b6b3f}.op-opt .bad,.op-detail .bad{color:#b03030}.op-opt.on{background:#eaf3fb;box-shadow:inset 3px 0 0 #18394d}.op-opt.cxc.on{background:#fdf1f1;box-shadow:inset 3px 0 0 #a83232}.op-opt:focus-visible{outline:2px solid #18394d;outline-offset:-2px}
 .op-detail{margin:10px 0 4px;padding:11px 13px;border:1px solid #cfdde8;border-radius:10px;background:#f6fafd}.op-detail.cxc{border-color:#e3b9b9;background:#fdf6f6}.op-detail b{font-size:13.5px}.op-detail p{margin:4px 0 0;font-size:12.5px;line-height:1.5;color:#37556b}
+.op-scnform{display:flex;gap:8px;flex-wrap:wrap}.op-scnform input{flex:1;min-width:120px;padding:9px 10px;border:1px solid #cfd9e0;border-radius:9px;font:inherit;min-height:44px}
 .op-trig{display:grid;grid-template-columns:10px 1fr;gap:10px;background:#f4f7f9;border:1px solid #e2e9ee;border-radius:11px;padding:9px 12px;margin-bottom:8px}.op-trig i{width:10px;height:10px;border-radius:50%;margin-top:5px}.op-trig b{display:block;font-size:13px}.op-trig span{display:block;font-size:12px;color:#44596a;margin-top:2px}.op-trig small{display:block;font-size:11px;color:#526678;margin-top:2px}.op-tag{font-style:normal;font-size:10.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;background:#e8eef3;color:#37556b;border-radius:5px;padding:1px 6px;margin-right:4px}
 .op-pick{margin:10px 0 6px}.op-pick label{display:block;font-size:12px;color:#44596a;margin-bottom:4px}.op-pick select{width:100%;padding:9px 10px;border:1px solid #cfd9e0;border-radius:9px;font-size:13px;background:#fff}
 .op-chart{display:flex;align-items:flex-end;gap:2px;height:88px;padding:6px 2px 0;background:#fff;border:1px solid #dbe3e9;border-radius:10px}.op-bar{flex:1;height:100%;display:flex;align-items:flex-end;cursor:pointer;border-radius:4px;position:relative}.op-bar i{display:block;width:100%;border-radius:3px 3px 0 0;background:#9db6c6}.op-bar i.a{background:#d9a33a}.op-bar i.r{background:#c0392b}.op-bar.on{background:#e8f0f6;box-shadow:inset 0 -3px 0 #18394d}.op-bar.cl{background:repeating-linear-gradient(135deg,#f6d9d6,#f6d9d6 3px,#fff 3px,#fff 7px)}.op-bar.cl.on{background:repeating-linear-gradient(135deg,#f0c4bf,#f0c4bf 3px,#fff 3px,#fff 7px)}.op-chart-ax{display:flex;justify-content:space-between;font-size:10px;color:#526678;padding:2px 6px 0}
@@ -1316,6 +1338,12 @@ function impactInfo(e){
     return tot>=15?{needs:true,down:tot,n:d.length,next:it.next}:{needs:false,down:0,n:0,why:'Absorbed by the turnaround, nothing else is late'}
   }catch(x){return null}}
 let homeTab='needs';
+const wibMin=()=>{const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date());return +p.find(x=>x.type==='hour').value*60+ +p.find(x=>x.type==='minute').value};
+/* a decided item stays on the Watching list until the flight it protects has gone */
+function watchInfo(e){try{const S=window.SIMCORE;if(!S||!S.ops||!S.FLEET)return null;const vdn=C.dayNum(C.viewDs),today=C.dayNum(C.jakToday()),nowM=vdn===today?wibMin():(vdn>today?-1:99999);
+  const id=e.kind==='aog'?e.arrival:e.flight;let ids=[id],t=e.sched;const it=S.ops.inbound().find(x=>x.id===id);if(it){t=it.next?it.next.t:it.t;if(it.next)ids.push(it.next.id)}
+  if(t==null||t+30<nowM)return {watch:false};
+  const worst=ids.length>1?delayNow(ids[ids.length-1]):0;return {watch:true,worst,text:ids.map(i=>{const f=S.INF.concat(S.OUTF).find(x=>x.id===i);const d=delayNow(i);return i+': '+(f&&f.cx?'cancelled':(d>=5?'+'+durTxt(d):'on time'))}).join(' · ')}}catch(x){return null}}
 /* before a decision is saved the page reloads (the simulation is rebuilt); remember what the affected flights looked like, and show the outcome afterwards */
 const delayNow=id=>{const S=window.SIMCORE;if(!S||!S.INF)return 0;const f=S.INF.concat(S.OUTF).find(x=>x.id===id);return f?Math.round(f.dly||0):0};
 function stashPending(ids,extra){try{const items=[...new Set(ids.filter(Boolean))].map(id=>({id,k:'f',before:delayNow(id)})).concat(extra||[]);sessionStorage.setItem('jn-op-pending',JSON.stringify({items}));sessionStorage.setItem('jn-open-alerts','1')}catch(x){}}
@@ -1329,23 +1357,29 @@ function relevantTriggers(){
   const vd=C.dayNum(C.viewDs),L=SIMCORE.incidents.list();
   return L.filter(e=>e.kind==='weather'&&e.known&&e.applied&&C.dayNum(e.date)===vd&&((e.hits||0)>0||e.mode==='rwy')).map(e=>Object.assign({},e,{n:L.filter(x=>x.trigger===e.id).length})).sort((a,b)=>b.atMin-a.atMin)}
 const CAUSE_TAG={weather:'Weather',technical:'Technical',crew:'Crew',atc:'Air traffic',strike:'Strike',other:'Other'};
+function scnHtml(){
+  const sc=window.JN_SCN;
+  if(!sc)return `<h3 class="op-h">Scenario clock</h3><div class="op-panel"><div class="op-lead" style="margin:0 0 8px">Time is live. Start a scenario to rehearse a day from a moment you choose: the clock then runs from there, and you can pause it or run it faster.</div><div class="op-scnform"><input type="date" id="op-scn-d" value="${html(C.viewDs)}" aria-label="Scenario date"><input type="time" id="op-scn-h" value="06:00" aria-label="Scenario time (Jakarta)"><button class="fm-btn primary" id="op-scn-go">Start</button></div></div>`;
+  const st=sc.state(),sp=[1,10,60];
+  return `<h3 class="op-h">Scenario clock</h3><div class="op-panel"><div><b id="op-scn-t" style="font-size:20px">${hm(wibMin())}</b> WIB · ${st.paused?'paused':st.speed+'×'} · simulated</div><div class="op-lead" style="margin:4px 0 8px">Decisions and deadlines follow this clock. Speed and pause apply at once; jumping reloads the simulation.</div>
+<div class="op-chips" id="op-scn"><button class="fm-chip ${st.paused?'on':''}" data-sc="pause">${st.paused?'▶ Resume':'⏸ Pause'}</button>${sp.map(x=>`<button class="fm-chip ${(!st.paused&&st.speed===x)?'on':''}" data-sc="sp${x}">${x}×</button>`).join('')}<button class="fm-chip" data-sc="j15">+15 min</button><button class="fm-chip" data-sc="j60">+1 h</button><button class="fm-chip" data-sc="exit">Back to live</button></div></div>`}
 function drawHome(){
   const n=C.local().changes.length+C.local().ops.length,repo=((window.JN_CHANGES_REPO&&window.JN_CHANGES_REPO.changes)||[]).length;
   const inc=relevantIncidents(),open=inc.filter(e=>!e.handled).length,lvl=window.JN_OPS?JN_OPS.level:'realistic',ctl=window.JN_OPS?JN_OPS.controller:'auto';
   const trg=relevantTriggers();
   const strip=trg.length?`<details class="op-trigs"><summary><b>What is happening</b> · ${trg.length} event${trg.length===1?'':'s'}${trg.some(e=>e.mode==='rwy')?' · a runway is closed':''}</summary>`+trg.map(e=>{const v=incView(e);return `<div class="op-trig"><i style="background:${SEV_DOT[v.sev]}"></i><div><b>${html(v.title)}</b><span>${html(v.detail)}</span><small>${e.mode==='rwy'?'Open Jakarta queue to see who waits and move flights up':(e.n?e.n+' flight'+(e.n===1?'':'s')+' below can be affected':'Flights follow the weather, nothing to decide')}</small></div></div>`}).join('')+`</details>`:'';
-  const imp=inc.map(e=>({e,info:e.handled?null:impactInfo(e)}));
-  const bucket=x=>x.e.handled?'done':((x.info&&x.info.needs===false)?'fyi':'needs');
-  const cnt={needs:0,fyi:0,done:0};imp.forEach(x=>cnt[bucket(x)]++);
-  if(homeTab==='needs'&&!cnt.needs&&(cnt.fyi||cnt.done))homeTab=cnt.fyi?'fyi':'done';
+  const imp=inc.map(e=>({e,info:e.handled?null:impactInfo(e),w:e.handled?watchInfo(e):null}));
+  const bucket=x=>x.e.handled?((x.w&&x.w.watch)?'watch':'done'):((x.info&&x.info.needs===false)?'fyi':'needs');
+  const cnt={needs:0,fyi:0,watch:0,done:0};imp.forEach(x=>cnt[bucket(x)]++);
+  if(homeTab==='needs'&&!cnt.needs&&(cnt.fyi||cnt.watch||cnt.done))homeTab=cnt.fyi?'fyi':(cnt.watch?'watch':'done');
   const row=x=>{const e=x.e,v=incView(e),inf=x.info,dl=e.deadline!=null?hm(((e.deadline%1440)+1440)%1440):null;
     let line;
-    if(e.handled)line=(e.decision&&e.decision.by==='auto'?'Handled by the controller':'Handled')+(e.decision&&e.decision.note?' · '+html(e.decision.note.replace(/^(Recovery|Controller): /,'')):'');
+    if(e.handled){line=(e.decision&&e.decision.by==='auto'?'Handled by the controller':'Handled')+(e.decision&&e.decision.note?' · '+html(e.decision.note.replace(/^(Recovery|Controller): /,'')):'');if(x.w&&x.w.watch)line+=`<br>Now: ${html(x.w.text)}${x.w.worst>=15?' · <b class="bad">still late, review</b>':''}`}
     else if(inf&&inf.needs)line=`<b class="bad">If you wait: +${durTxt(inf.down)}${inf.n>1?' across '+inf.n+' flights':''}</b>${inf.next?' · '+html(inf.next.id)+' to '+html(String(inf.next.city).split(' / ')[0])+' at risk':''}${dl?' · decide by '+dl:''}`;
     else if(inf)line=html(inf.why||'Nothing else is affected');
     else line='Open · known since '+hm(((e.atMin%1440)+1440)%1440)+' WIB'+(dl?' · decide by '+dl+' or the controller acts':'');
     return `<div class="op-alert ${e.handled?'done':''}"><i style="background:${SEV_DOT[v.sev]}"></i><div><b>${html(v.title)}</b><span><em class="op-tag">${html(CAUSE_TAG[e.cause]||'Other')}</em> ${html(v.detail)}</span><small>${line}</small></div><button class="fm-btn ${e.handled||(inf&&inf.needs===false)?'':'primary'}" data-inc="${html(e.id)}">${e.handled?(e.decision&&e.decision.by==='auto'?'Review':'View'):'Handle'}</button></div>`};
-  const tabs=`<div class="op-tabs" role="tablist">${[['needs','Needs you'],['fyi','No knock-on'],['done','Handled']].map(t=>`<button role="tab" aria-selected="${homeTab===t[0]}" class="${homeTab===t[0]?'on':''}" data-tab="${t[0]}">${t[1]}${cnt[t[0]]?` <i>${cnt[t[0]]}</i>`:''}</button>`).join('')}</div>`;
+  const tabs=`<div class="op-tabs" role="tablist">${[['needs','Needs you'],['fyi','No knock-on'],['watch','Watching'],['done','Handled']].map(t=>`<button role="tab" aria-selected="${homeTab===t[0]}" class="${homeTab===t[0]?'on':''}" data-tab="${t[0]}">${t[1]}${cnt[t[0]]?` <i>${cnt[t[0]]}</i>`:''}</button>`).join('')}</div>`;
   const shown=imp.filter(x=>bucket(x)===homeTab).sort((p,q)=>homeTab==='done'?q.e.atMin-p.e.atMin:((p.e.deadline==null?1e9:p.e.deadline)-(q.e.deadline==null?1e9:q.e.deadline)));
   /* items caused by the same event are grouped: a storm that delays seven flights is one decision to review, not seven */
   const gsize=new Map();shown.forEach(x=>{if(x.e.trigger)gsize.set(x.e.trigger,(gsize.get(x.e.trigger)||0)+1)});
@@ -1355,7 +1389,7 @@ function drawHome(){
     if(printed.has(t))return '';printed.add(t);
     const mem=shown.filter(y=>y.e.trigger===t),cost=mem.reduce((a,y)=>a+((y.info&&y.info.needs)?y.info.down:0),0),v0=mem[0].e;
     return `<details class="op-group" open><summary><b>${html(v0.tnote||'Disruption')}${v0.airport?' · '+html(v0.airport):''}</b> · ${mem.length} flights${cost?' · waiting costs +'+durTxt(cost):''}</summary>${homeTab==='done'?'':`<div class="op-gbar"><button class="fm-btn" data-gwait="${html(t)}">${homeTab==='needs'?'Wait for all '+mem.length:'Acknowledge all '+mem.length}</button></div>`}${mem.map(row).join('')}</details>`}).join('');
-  const alerts=tabs+(shown.length?list:`<p class="op-lead">${homeTab==='needs'?(lvl==='off'?'Generated incidents are switched off.':'Nothing needs you right now. Disruptions appear here as they happen.'):(homeTab==='fyi'?'No late flights without a knock-on.':'Nothing handled yet.')}</p>`);
+  const alerts=tabs+(shown.length?list:`<p class="op-lead">${homeTab==='needs'?(lvl==='off'?'Generated incidents are switched off.':'Nothing needs you right now. Disruptions appear here as they happen.'):(homeTab==='fyi'?'No late flights without a knock-on.':(homeTab==='watch'?'Nothing is being watched: decided items stay here until their flight has gone.':'Nothing handled yet.'))}</p>`);
   $('#op-body').innerHTML=`<div class="op-pad"><h3 class="op-h" style="margin-top:2px">Flights affected${cnt.needs?` <i class="op-count" style="position:static">${cnt.needs}</i>`:''}</h3>${alerts}${strip}
 <h3 class="op-h">Jakarta</h3>
 ${card('queue','Jakarta queue and sequence','Who is waiting to land and take off, and who goes first.')}
@@ -1366,6 +1400,7 @@ ${card('cancel','Cancel a flight','Remove a flight, and its return, from a date.
 <h3 class="op-h">Log</h3>
 ${card('log','Operations log','Every incident, controller decision and your decision today, with outcomes. Copy it for shift handover.')}
 ${card('mine','My changes and events','See, undo, export or import what you have recorded.',n+repo?`<i class="op-count">${n+repo}</i>`:'')}
+${scnHtml()}
 <h3 class="op-h">Ops controller</h3><p class="op-lead">You decide how each incident is handled. If nobody decides before the deadline shown on the alert, Automatic lets the controller take over (swap aircraft, call in a spare or wait). Manual never does: nothing happens until you decide.</p>
 <div class="op-chips" id="op-ctl">${[['auto','Takes over at the deadline'],['manual','Never']].map(l=>`<button class="fm-chip ${ctl===l[0]?'on':''}" data-ct="${l[0]}">${l[1]}</button>`).join('')}</div>
 <h3 class="op-h">Disruption level</h3><p class="op-lead">How often things go wrong by themselves. Changing it reloads the page.</p>
@@ -1373,6 +1408,12 @@ ${card('mine','My changes and events','See, undo, export or import what you have
 <details class="op-adv"><summary>Create a scenario yourself (advanced)</summary>
 ${card('delay','A flight is delayed','Make an inbound flight late and see the knock-on.')}${card('aog','An aircraft is out of service','Take an aircraft on the ground out of service.')}${card('weather','Weather or an airport issue','Close or slow an airport.')}</details></div>`;
   $('#op-body').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{homeTab=b.dataset.tab;drawHome()});
+  {const go=$('#op-scn-go');if(go)go.onclick=()=>{const d=$('#op-scn-d').value,h=$('#op-scn-h').value;if(!d||!h)return;const u=new URL(location.href);u.searchParams.set('clock',d+'T'+h);u.searchParams.set('date',d);location.href=u.toString()};
+   const sc=window.JN_SCN;$('#op-body').querySelectorAll('[data-sc]').forEach(b=>b.onclick=()=>{const k=b.dataset.sc;
+    if(k==='pause'){sc.setPaused(!sc.state().paused);drawHome()}
+    else if(k[0]==='s'&&k[1]==='p'){sc.setPaused(false);sc.setSpeed(+k.slice(2));drawHome()}
+    else if(k==='j15'||k==='j60'){sc.jump(k==='j15'?15:60);try{sessionStorage.setItem('jn-open-alerts','1')}catch(x){}location.reload()}
+    else if(k==='exit'){const u=new URL(location.href);u.searchParams.set('clock','real');u.searchParams.delete('date');location.href=u.toString()}})}
   $('#op-body').querySelectorAll('[data-gwait]').forEach(b=>b.onclick=()=>{const t=b.dataset.gwait,mem=imp.filter(y=>y.e.trigger===t&&bucket(y)===homeTab);
     stashPending(mem.map(y=>y.e.flight).filter(Boolean));mem.forEach(y=>C.addOp(ackDecision(y.e,'Waited, the delay plays out')));
     try{sessionStorage.setItem('jn-op-toast','Decision recorded: waiting for '+mem.length+' flights')}catch(x){}location.reload()});
@@ -1874,7 +1915,8 @@ function mount(){document.body.append(launch,wrap);$('#fm-close').onclick=()=>wr
   let pend=null;try{pend=JSON.parse(sessionStorage.getItem('jn-op-pending')||'null');sessionStorage.removeItem('jn-op-pending')}catch(x){}
   if(toast||pend){const b=banner('ok',html(toast||'Decision recorded')+'<div class="fm-res" hidden></div> <button id="fm-ok">OK</button>');b.querySelector('#fm-ok').onclick=()=>b.remove();
     if(pend&&pend.items&&pend.items.length){const iv=setInterval(()=>{if(window.SIMCORE&&SIMCORE.FLEET){clearInterval(iv);try{const L=resultLines(pend);if(L.length){const r=b.querySelector('.fm-res');r.innerHTML='Result: '+L.join(' · ');r.hidden=false}}catch(e){}setTimeout(()=>b.remove(),20000)}},400)}else setTimeout(()=>b.remove(),9000)}
-  let seenNew=new Set(),lastN=0;const label=n=>{lastN=n;launch.textContent=n>0?'Operations · '+n:'Operations';const nb=document.getElementById('ops-nav-btn'),bd=nb&&nb.querySelector('.ops-badge');if(bd){bd.textContent=n>0?String(n):'';bd.hidden=!(n>0)}};
+  let seenNew=new Set(),seenDue=new Set(),lastN=0;
+  setInterval(()=>{const el=document.getElementById('op-scn-t');if(el)el.textContent=hm(wibMin())},1000);const label=n=>{lastN=n;launch.textContent=n>0?'Operations · '+n:'Operations';const nb=document.getElementById('ops-nav-btn'),bd=nb&&nb.querySelector('.ops-badge');if(bd){bd.textContent=n>0?String(n):'';bd.hidden=!(n>0)}};
   window.__jnOpsLabel=()=>label(lastN);
   {const dt=()=>{const r=document.getElementById('v74-ac');document.body.classList.toggle('jn-detail',!!(r&&!r.hidden))};addEventListener('hashchange',dt);addEventListener('popstate',dt);setInterval(dt,400);dt()}
   const refresh=()=>{if(!window.SIMCORE||!window.SIMCORE.incidents)return;
@@ -1883,6 +1925,8 @@ function mount(){document.body.append(launch,wrap);$('#fm-close').onclick=()=>wr
     /* reactive: an incident that becomes known after the page was baked is announced; applying it reloads the page */
     if(C.dayNum(C.viewDs)===C.dayNum(C.jakToday())&&!C.noChanges){
       const fresh=SIMCORE.incidents.list().filter(e=>e.known&&!e.applied&&!seenNew.has(e.id)&&e.kind!=='wimp'&&(e.kind!=='weather'||(e.hits||0)>0));
+      if(window.JN_OPS&&JN_OPS.controller==='auto'){const nm=wibMin(),due=SIMCORE.incidents.list().filter(e=>e.isImpact&&e.known&&e.applied&&!e.handled&&e.deadline!=null&&e.deadline<=nm&&!seenDue.has(e.id));
+        if(due.length){due.forEach(x=>seenDue.add(x.id));const b=banner('warn','Deadline passed on '+due.length+' item'+(due.length===1?'':'s')+': the controller acts. <button id="fm-due">Apply and open</button>');b.querySelector('#fm-due').onclick=()=>{try{sessionStorage.setItem('jn-open-alerts','1')}catch(x){}location.reload()}}}
       if(fresh.length){const e=fresh[0];fresh.forEach(x=>seenNew.add(x.id));const v=incView(e);
         const b=banner('warn','New incident: '+html(v.title)+' · '+html(v.detail)+(fresh.length>1?' (+'+(fresh.length-1)+' more)':'')+' <button id="fm-apply">Apply and open alerts</button>');
         b.querySelector('#fm-apply').onclick=()=>{try{sessionStorage.setItem('jn-open-alerts','1')}catch(x){}location.reload()}}}};
