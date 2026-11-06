@@ -1795,12 +1795,15 @@ ${whenBlock()}<input class="op-search" data-k="note" placeholder="Note (optional
     {const g2=geo(),bl=g2?estBlock(g2.lat,g2.lon):0,ac=val('aircraft');if(/ATR|Q400|Dash/i.test(ac)&&bl>150&&!confirm('The flight time is about '+durTxt(bl)+', which is long for a '+ac+'. Save anyway?'))return null}
     const pidc=(airports[0]&&airports[0].code)||(typeof airportCodeForCity==='function'?airportCodeForCity(city):'')||city.slice(0,3).toUpperCase();
     const pid=car+'-CHG-'+pidc+'-'+num,dayf=days==='1234567'?undefined:days;
-    const row=(n,time)=>{const r=[car,n,city,time,val('terminal'),val('zone'),val('aircraft'),pid];if(dayf)r.push(dayf);return r};
+    const row=(n,time,dd)=>{const r=[car,n,city,time,val('terminal'),val('zone'),val('aircraft'),pid];if(dd)r.push(dd);return r};
     if(FLD.OUT.some(r=>r[0]===car&&r[1]===num)){msgTo(car+' '+num+' already exists as a departure.',true);return null}
-    const rows={OUT:[row(num,t)],IN:[]};
+    const rows={OUT:[row(num,t,dayf)],IN:[]};
     if(e.querySelector('#fm-ret').checked){const rn=val('rnum'),rt=minutes(val('rtime'));
       if(!/^\d{1,4}$/.test(rn)||isNaN(rt)){msgTo('The return flight needs a number and an arrival time.',true);return null}
-      if(FLD.IN.some(r=>r[0]===car&&r[1]===rn)){msgTo(car+' '+rn+' already exists as an arrival.',true);return null}rows.IN.push(row(rn,rt))}
+      if(FLD.IN.some(r=>r[0]===car&&r[1]===rn)){msgTo(car+' '+rn+' already exists as an arrival.',true);return null}
+      /* a long round trip lands on a later weekday: the return flight's operating days move with it, or the pair would not match up */
+      let rdays=dayf;{const g3=geo();if(dayf&&g3){const ideal=t+2*estBlock(g3.lat,g3.lon)+(+val('turn')||50),off=Math.max(0,Math.round((ideal-rt)/1440));if(off)rdays=dayf.split('').map(x=>((+x-1+off)%7)+1).sort().join('')}}
+      rows.IN.push(row(rn,rt,rdays))}
     return [{id:uid('chg_'),v:1,scope:'timetable',kind:'add',from,to,note:val('note'),createdAt:new Date().toISOString(),rows,airports}]};
   $('#fm-prev').onclick=()=>{const recs=build();if(recs){const rr=recs[0].rows;runPreview(recs,[...rr.OUT.map(r=>r[0]+r[1]),...rr.IN.map(r=>r[0]+r[1])])}};
   $('#fm-save').onclick=()=>{const recs=build();if(recs)commit(recs)}}
@@ -3932,13 +3935,27 @@ function tailInfo(e){
   return{reg:t.reg,ac:t.model||t.fleet.ac,c:t.fleet.c,fleetN:t.fleet.tails.length,planned:e.tailPlanned||null,why:e.tailWhy||null,
     line:t.seq.slice().sort((p,q)=>p.S-q.S).map(v=>({kind:v.kind,a:v.a?{id:v.a.id,t:v.a.t,city:v.a.city}:null,d:v.d?{id:v.d.id,t:v.d.t,city:v.d.city}:null,me:v===tv}))}}
 
+/* The ground simulation pairs arrivals and departures exactly as the aircraft plan does: from the plan's own pairing (built once from the
+   full-week timetable), keeping the pairs whose flights operate on the viewed day. Pairing the day's flights again from scratch would
+   let a flight that runs only some days (a weekly service) change the pairs of unrelated flights, so ground and aircraft would disagree. */
+function fullFromCore(){
+  try{tCoreVisits();const EV=T_CORE_EV;if(!EV||!EV.length)return null;
+    const runs=f=>!!f&&flRuns(f,v176Dow)&&!f.cx,prev=v176Dow===1?7:v176Dow-1,out=[];
+    EV.forEach(e=>{
+      if(e.k==='r'){const ra=runs(e.a),rd=runs(e.d);if(ra&&rd)out.push(Object.assign({},e));else{if(ra)out.push({k:'a',a:e.a});if(rd)out.push({k:'d',d:e.d})}}
+      else if(e.k==='a'){if(runs(e.a))out.push(Object.assign({},e))}
+      else if(e.k==='d'){if(runs(e.d))out.push(Object.assign({},e))}
+      else if(e.k==='ovA'){if(runs(e.a))out.push(Object.assign({},e))}
+      else if(e.k==='ovD'){if(runs(e.d)){const A=EV.find(z=>z.k==='ovA'&&z.od===e.d);if(A&&flRuns(A.a,prev))out.push(Object.assign({},e));else out.push({k:'d',d:e.d})}}
+      else out.push(Object.assign({},e))});
+    return out}catch(err){console.error('ground pairing from the aircraft plan:',err);return null}}
 function bake(pct){
   RES=new Array(NN);RWY.forEach(r=>{r.busy=[]});STAT={arrDelay:[],pushDelay:[],holdWait:[],cnt:0,unassigned:0,flights:0};
   if(!FULL){
     /* v180: pair exactly as the aircraft planner does. Weekly round trips are flown by a separate aircraft from the
        flights around them, so they are lone arrival/departure entities, never glued to a daily flight. */
     {const di=tDayIndex().idx;INF.concat(OUTF).forEach(f=>{f.cx=JN_OPS.cancelledOn(di,f.id)})}      // cancelled flights do not operate: no stand, no runway, no aircraft movement
-    FULL=pairUp(INF.filter(f=>!T_LOOPED.has(f)&&!f.cx),OUTF.filter(f=>!T_LOOPED.has(f)&&!f.cx));
+    FULL=fullFromCore()||pairUp(INF.filter(f=>!T_LOOPED.has(f)&&!f.cx),OUTF.filter(f=>!T_LOOPED.has(f)&&!f.cx));
     INF.forEach(f=>{if(T_LOOPED.has(f)&&!f.cx)FULL.push({a:f,k:'a'})});
     OUTF.forEach(f=>{if(T_LOOPED.has(f)&&!f.cx)FULL.push({d:f,k:'d'})});
     /* v183: apply today's aircraft swaps so ground entities pair arrivals/departures exactly like the aircraft rotations */

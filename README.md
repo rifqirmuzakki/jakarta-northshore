@@ -18,6 +18,12 @@ decisions (which reload the page) do not reset it. As the clock runs, new incide
 item stays on the **Watching** tab, with the current state of the flights it protects, until those flights have gone, and is flagged if the
 protected departure is still 15+ minutes late.
 
+**Weekly and multi-day services.** The ground simulation takes its arrival/departure pairing from the same plan as the aircraft rotations (built from the full-week
+timetable) and keeps the pairs whose flights operate on the viewed day, so a service that runs only some weekdays cannot disagree with the aircraft plan. A round trip
+that lands on a later weekday needs its return flight's operating days shifted accordingly (the Add form now does this). New services are listed in
+`schedule-changes.js` (Taipei GA 938/939, Amsterdam GA 44/45, Wellington GA 1000/1001, AlUla GA 1002/1003, Baku GA 1004/1005, Ankara GA 46/47, Marrakech GA 48/49,
+Casablanca GA 50/51), from 2026-11-07.
+
 **Operations log** (hub > Log). A timeline of everything on the viewed day: incidents as they became known, controller decisions, and your own decisions,
 each linked to the incident it answers, with the outcome (the flight's delay and its next departure now). Filter by incidents / controller / you; routine
 "no action needed" controller notes are hidden unless asked for. *Copy handover* and *Download .txt* produce a plain-text shift summary. *My changes and
