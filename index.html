@@ -1833,7 +1833,7 @@ function mount(){document.body.append(launch,wrap);$('#fm-close').onclick=()=>wr
     if(pend&&pend.items&&pend.items.length){const iv=setInterval(()=>{if(window.SIMCORE&&SIMCORE.FLEET){clearInterval(iv);try{const L=resultLines(pend);if(L.length){const r=b.querySelector('.fm-res');r.innerHTML='Result: '+L.join(' · ');r.hidden=false}}catch(e){}setTimeout(()=>b.remove(),20000)}},400)}else setTimeout(()=>b.remove(),9000)}
   let seenNew=new Set(),lastN=0;const label=n=>{lastN=n;launch.textContent=n>0?'Operations · '+n:'Operations';const nb=document.getElementById('ops-nav-btn'),bd=nb&&nb.querySelector('.ops-badge');if(bd){bd.textContent=n>0?String(n):'';bd.hidden=!(n>0)}};
   window.__jnOpsLabel=()=>label(lastN);
-  {const dt=()=>document.body.classList.toggle('jn-detail',/^#\/(aircraft|flight)\//.test(location.hash));addEventListener('hashchange',dt);dt()}
+  {const dt=()=>{const r=document.getElementById('v74-ac');document.body.classList.toggle('jn-detail',!!(r&&!r.hidden))};addEventListener('hashchange',dt);addEventListener('popstate',dt);setInterval(dt,400);dt()}
   const refresh=()=>{if(!window.SIMCORE||!window.SIMCORE.incidents)return;
     const rel=relevantIncidents();label(rel.filter(e=>{if(e.handled)return false;const i=impactInfo(e);return !(i&&i.needs===false)}).length);
     if(wrap.classList.contains('open')&&screen==='home')draw();
@@ -4641,7 +4641,7 @@ function cardHTML(e){
 }
 function setSel(e,opt){
   pinF=(opt&&opt.f)||null;sel=e;flightExpanded=false;trL.innerHTML='';$('aSel').innerHTML='';selTick=0;
-  if(!e){$('card').style.display='none';follow=false;return}
+  if(!e){$('card').style.display='none';follow=false;document.body.classList.remove('jn-card-expanded');return}
   $('card').style.display='block';cardTick=0;
   if(opt&&opt.follow)follow=true;else if(opt&&opt.follow===false)follow=false;
   if(opt&&opt.zoom){const want=mode==='gnd'?3.4:9;if(k<want){k=want}}
@@ -4662,7 +4662,9 @@ function renderCard(){
  const wasExpanded=flightExpanded;
  $('card').classList.toggle('expanded',wasExpanded);
  $('card').innerHTML=wasExpanded?'<div class="v7-grab" aria-hidden="true"></div>'+cardHTML(sel):stripHTML(sel);
- if(wasExpanded){$('cFol').onclick=()=>{follow=!follow;renderCard()};$('card').querySelector('.v7-grab').onclick=()=>{flightExpanded=false;renderCard()};$('card').querySelectorAll('[data-v57-tab]').forEach(btn=>btn.onclick=()=>{const tab=btn.dataset.v57Tab;$('card').querySelectorAll('[data-v57-tab]').forEach(b=>{const yes=b.dataset.v57Tab===tab;b.classList.toggle('active',yes);b.setAttribute('aria-selected',String(yes));});$('card').querySelectorAll('[data-v57-panel]').forEach(p=>p.classList.toggle('active',p.dataset.v57Panel===tab));});const internalClose=$('cX');if(internalClose)internalClose.onclick=()=>setSel(null);} 
+ document.body.classList.toggle('jn-card-expanded',!!wasExpanded);
+ if(wasExpanded){{const xb=document.createElement('button');xb.type='button';xb.className='jc-x';xb.setAttribute('aria-label','Close flight details');xb.textContent='×';xb.onclick=()=>setSel(null);$('card').insertBefore(xb,$('card').children[1]||null)}
+  $('cFol').onclick=()=>{follow=!follow;renderCard()};$('card').querySelector('.v7-grab').onclick=()=>{flightExpanded=false;renderCard()};$('card').querySelectorAll('[data-v57-tab]').forEach(btn=>btn.onclick=()=>{const tab=btn.dataset.v57Tab;$('card').querySelectorAll('[data-v57-tab]').forEach(b=>{const yes=b.dataset.v57Tab===tab;b.classList.toggle('active',yes);b.setAttribute('aria-selected',String(yes));});$('card').querySelectorAll('[data-v57-panel]').forEach(p=>p.classList.toggle('active',p.dataset.v57Panel===tab));});const internalClose=$('cX');if(internalClose)internalClose.onclick=()=>setSel(null);} 
  else {$('card').querySelector('.v7-strip').onclick=()=>{flightExpanded=true;renderCard()};$('card').querySelector('.v7-strip').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();flightExpanded=true;renderCard()}};}
 }
 /* The card is expanded or collapsed by a deliberate vertical drag on its handle or header, never by scrolling its content:
@@ -6598,6 +6600,12 @@ html body #v74-ac .v81-pill{font-weight:500!important}
 html body #v74-ac .v81-stat{display:inline-block;margin-top:10px;padding:5px 12px;border-radius:999px;background:#2b4558;color:#fff;font-weight:600;font-size:12.5px;line-height:1.2}html body #v74-ac .v81-stat.v181-live{background:#1f6f5a}html body #v74-ac .v81-stat.v181-late{background:#8a5a00}html body #v74-ac .v81-stat.v181-ok{background:#2f6a4f}
 html body #v74-ac .v81-more{margin-top:12px;border-top:1px solid #35505f}html body #v74-ac .v81-more summary{cursor:pointer;color:#b9ccd7;font-weight:600;font-size:12.5px;line-height:1.2;padding:13px 2px}html body #v74-ac .v81-more .v81-grid{margin-bottom:6px}
 html body #card .v53-hero p{color:inherit!important;opacity:.88!important}
+html body #card .jc-tele{border-left:0!important}
+html body #card .v53-hero-top{background:transparent!important;color:inherit!important;padding:0!important}
+html body #card .v53-hero-top strong{color:inherit!important}
+html body #card .v53-hero-top small{color:inherit!important;opacity:.8!important}
+@media(max-width:700px){body.v49-card-visible #jnSearchLaunch{display:none!important}body.jn-card-expanded #v49-close-card{display:none!important}}
+#card .jc-x{position:sticky;top:8px;float:right;clear:none;margin:8px 10px -44px 0;width:40px;height:40px;border-radius:50%;border:1px solid #cfd9e0;background:#fff;color:#1a2c3d;font-size:24px;line-height:1;cursor:pointer;z-index:5;padding:0;display:flex;align-items:center;justify-content:center}
 html body #v74-ac .v81-legend{margin:10px 16px 2px;font-size:11px;line-height:1.4;color:#5b6e7a}
 </style>
 <style id="v84-mobile-sheet-fix">
