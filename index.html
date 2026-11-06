@@ -1043,6 +1043,20 @@ for(const k of ['IN','OUT'])for(const r of FLD[k])if(r[0]==='GA'&&(r[1]==='904'|
 @media(max-width:700px){#fm-wrap{padding:0}#fm-panel{height:100dvh;max-height:100dvh;border-radius:0}.fm-body{display:flex;flex-direction:column}.fm-list{height:34%;flex:none;border-right:0;border-bottom:1px solid #dbe3e9}.fm-edit{flex:1;min-height:0}.fm-tools{gap:5px}.fm-tools input,.fm-tools select{font-size:12px;padding:9px}#fm-launch{bottom:12px;right:10px}}
 .fm-edit .fields>*,.fm-new .fields>*,.fm-eff>*,.fm-tools>*{min-width:0}.fm-field input,.fm-field select{width:100%}.fm-field{min-width:0}
 #fm-panel{padding-bottom:env(safe-area-inset-bottom,0)}#fm-launch{z-index:2147483100}
+/* wide screens: the Operations panel docks on the right and the map stays visible and usable beside it */
+@media(min-width:1100px){
+ #fm-wrap.open.docked{inset:0 0 0 auto;width:min(500px,36vw);padding:0;background:transparent;display:block;pointer-events:none}
+ #fm-wrap.docked #fm-panel{pointer-events:auto;width:100%;height:100vh;max-height:100vh;border-radius:0;box-shadow:-10px 0 40px #0004;border-left:1px solid #cfd9e0}
+ body.fm-docked{--dock:min(500px,36vw)}
+ body.fm-docked #ops-v16{right:calc(var(--dock) + 16px)!important}
+ body.fm-docked #ops-v16 button span{display:none}
+ body.fm-docked #ops-v16 button{padding:9px 11px!important}
+ body.fm-docked #runway-panel,body.fm-docked #v9-tools{right:calc(var(--dock) + 16px)!important}
+ body.fm-docked #jnSearchLaunch{right:calc(var(--dock) + 18px)!important}
+ body.fm-docked #card{right:calc(var(--dock) + 12px)!important;max-width:min(460px,calc(100vw - var(--dock) - 24px))!important}
+ body.fm-docked #board{right:calc(var(--dock) + 16px)!important}
+ body.fm-docked #v49-close-card{right:calc(var(--dock) + 16px)!important}
+}
 body.jn-board-open #jnSearchLaunch{display:none!important}
 html body #hud #clk::before{content:'SIM';font:700 9px -apple-system,Helvetica,sans-serif;letter-spacing:.06em;color:#8a5a00;background:#fdeec8;border-radius:4px;padding:2px 5px;margin-right:7px;vertical-align:middle}
 body.jn-detail #fm-launch{display:block;top:calc(10px + env(safe-area-inset-top,0px));bottom:auto;right:10px;padding:8px 12px;font-size:12px;border-radius:10px;box-shadow:0 4px 14px #0004}
@@ -1264,6 +1278,7 @@ function draw(){
   $('#op-back').hidden=screen==='home';
   setStatus('');
   ({home:drawHome,queue:drawQueue,impact:drawImpact,incident:drawIncident,weather:drawWeather,aog:drawAog,delay:drawDelay,change:drawChange,add:drawAdd,cancel:drawCancel,mine:drawMine}[screen]||drawHome)();
+  if(wrap.classList.contains('open')&&(document.activeElement===document.body||!wrap.contains(document.activeElement))&&!wrap.classList.contains('docked'))$('#fm-panel').focus({preventScroll:true});
 }
 const card=(go,title,desc,extra,off)=>`<button class="op-card${off?' off':''}" ${off?'disabled':`data-go="${go}"`}><b>${html(title)}</b><span>${html(desc)}</span>${extra||''}</button>`;
 const RWYN=['north runway (09L/27R)','south runway (09R/27L)'];
@@ -1351,6 +1366,7 @@ ${card('delay','A flight is delayed','Make an inbound flight late and see the kn
 /* ---- handling an incident: the same recovery screens, pre-filled ---- */
 function ackDecision(inc,note){return {id:uid('op_'),v:1,scope:'ops',kind:'ack',date:inc.date,at:'',resolves:inc.id,note:note||'Acknowledged',createdAt:new Date().toISOString()}}
 function handleIncident(e){
+  try{if(wrap.classList.contains('docked')&&window.JN_MAP&&e.kind!=='weather')JN_MAP.focus(e.flight||e.arrival)}catch(x){}
   if(e.handled){st={inc:e,view:true};screen='incident';draw();return}
   if(e.kind==='aog'){waitReady(()=>{const it=window.SIMCORE.ops.inbound().find(x=>x.id===e.arrival&&x.unit);if(!it){st={inc:e};screen='incident';draw();return}
     go('aog',{inc:e,sel:it,from:hm(e.fromMin%1440),rep:Math.max(15,e.untilMin-e.fromMin),cause:'technical',note:e.note,opt:null})});return}
@@ -1762,13 +1778,18 @@ wrap.addEventListener('click',e=>{if(e.target===wrap)wrap.classList.remove('open
 /* dialog behaviour for keyboard and screen-reader users: focus moves in, Tab stays inside, Escape closes, focus goes back to where it was */
 wrap.setAttribute('aria-modal','true');
 {let lastFocus=null;
+  let lastOpen=null,lastWide=null;
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&wrap.classList.contains('open')&&wrap.classList.contains('docked')&&!document.body.classList.contains('jn-searching'))wrap.classList.remove('open')});
  new MutationObserver(()=>{
+  const isOpen=wrap.classList.contains('open'),wide=matchMedia('(min-width:1100px)').matches;
+  if(isOpen===lastOpen&&wide===lastWide)return;lastOpen=isOpen;lastWide=wide;
+  wrap.classList.toggle('docked',isOpen&&wide);document.body.classList.toggle('fm-docked',isOpen&&wide);wrap.setAttribute('aria-modal',(isOpen&&wide)?'false':'true');
   if(wrap.classList.contains('open')){if(!wrap.dataset.fo){wrap.dataset.fo='1';lastFocus=document.activeElement;setTimeout(()=>{const t=wrap.querySelector('#fm-panel');if(t){t.setAttribute('tabindex','-1');t.focus({preventScroll:true})}},40)}}
   else if(wrap.dataset.fo){delete wrap.dataset.fo;const f=lastFocus;lastFocus=null;try{if(f&&f.focus&&document.contains(f))f.focus({preventScroll:true})}catch(e){}}
  }).observe(wrap,{attributes:true,attributeFilter:['class']});
  wrap.addEventListener('keydown',e=>{
   if(e.key==='Escape'){e.stopPropagation();wrap.classList.remove('open');return}
-  if(e.key!=='Tab')return;
+  if(e.key!=='Tab'||wrap.classList.contains('docked'))return;
   const f=[...wrap.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),summary,[tabindex="0"]')].filter(x=>x.offsetParent!==null);
   if(!f.length)return;const first=f[0],last=f[f.length-1],a=document.activeElement,panel=wrap.querySelector('#fm-panel');
   if(e.shiftKey&&(a===first||a===panel)){e.preventDefault();last.focus()}
@@ -4597,6 +4618,8 @@ function setSel(e,opt){
   if(opt&&opt.zoom){const want=mode==='gnd'?3.4:9;if(k<want){k=want}}
   renderCard();
 }
+/* lets the Operations dock point the map at a flight (only if that flight is being simulated right now) */
+window.JN_MAP={focus(id){const e=(C.ENTS||[]).find(x=>(x.a&&x.a.id===id)||(x.d&&x.d.id===id));if(!e)return false;const f=(e.a&&e.a.id===id)?e.a:e.d;setSel(e,{follow:true,zoom:true,f});return true},clear(){setSel(null)}};
 let cardTick=0,selTick=0;
 let flightExpanded=false;
 function stripHTML(e){
@@ -4987,7 +5010,7 @@ window.SIMDBG={get T(){return T},set T(v){T=v},get els(){return els},get pool(){
 (function(){
   const map=document.getElementById('s');
   if(!map || document.getElementById('v9-tools'))return;
-  const panel=document.createElement('div');panel.id='v9-tools';
+  const panel=document.createElement('div');panel.id='v9-tools';panel.setAttribute('role','region');panel.setAttribute('aria-label','Map controls');
   panel.innerHTML='<div class="v9-stack" role="group" aria-label="Map detail"><button data-map="clean">Clean</button><button data-map="standard">Standard</button><button data-map="detail">Detail</button></div><div class="v9-zoom"><button data-zoom="in" aria-label="Zoom in">+</button><button data-zoom="out" aria-label="Zoom out">−</button><button data-zoom="reset" aria-label="Reset view">⌂</button></div><span id="v9-scale">Ground view</span>';
   document.body.appendChild(panel);
   function density(kind){
@@ -5723,7 +5746,7 @@ html body #card .jc-foot{border-top:1px solid #e0e5e3;margin-top:8px;}
 @media(min-width:701px){html body #card #cX{display:flex!important;align-items:center;justify-content:center;min-height:34px;min-width:34px;cursor:pointer;}}
 @media(max-width:700px){html body #card.expanded{max-height:min(78dvh,800px)!important;}html body #card .v57-tabs{margin:0 12px 12px;}html body #card .v57-tabs button{font-size:13px;}html body #card .jc-top{padding-right:56px!important;} }
 </style><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"><style id="v70-ui">/* ===== v70 UI — light, clean system ===== */
-:root{--u-ink:#0f1b26;--u-sub:#5b6b7a;--u-faint:#8a97a4;--u-line:rgba(15,27,38,.09);--u-card:rgba(255,255,255,.92);--u-chip:#f1f4f7;--u-acc:#2563eb;
+:root{--u-ink:#0f1b26;--u-sub:#5b6b7a;--u-faint:#5f6f7d;--u-line:rgba(15,27,38,.09);--u-card:rgba(255,255,255,.92);--u-chip:#f1f4f7;--u-acc:#2563eb;
 --u-ok:#0e7a3d;--u-warn:#e8890c;--u-late:#e5484d;--u-push:#7c3aed;--u-shadow:0 1px 2px rgba(15,27,38,.06),0 10px 30px rgba(15,27,38,.13);--u-r:16px;
 --u-font:Inter,"SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif}
 html body,html body #hud,html body #card,html body #board,html body #lay,html body #lg,html body #runway-panel,html body #ops-v16,html body #v9-tools,html body #v16-map-key,html body #v70-kpi{font-family:var(--u-font)!important;-webkit-font-smoothing:antialiased}
@@ -5948,7 +5971,7 @@ html body #card .jc-now{margin-bottom:12px!important}
    const t=key==='ops'?'Operations':b.textContent.replace(/[◈✈]/g,'').trim();
    const ic=ICON[key]||ICON[t.toLowerCase()]||ICON[t.toLowerCase().replace(/s$/,'')];
    if(!ic)return;
-   b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+ic+'</svg><span>'+t+'</span>'+(key==='ops'?'<i class="ops-badge" hidden></i>':'');b.dataset.v70=1;if(key==='ops'){try{window.__jnOpsLabel&&window.__jnOpsLabel()}catch(e){}}
+   b.setAttribute('aria-label',t);   b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+ic+'</svg><span>'+t+'</span>'+(key==='ops'?'<i class="ops-badge" hidden></i>':'');b.dataset.v70=1;if(key==='ops'){try{window.__jnOpsLabel&&window.__jnOpsLabel()}catch(e){}}
   });
   const key=document.getElementById('v16-map-key');
   if(key&&!key.dataset.v70){key.dataset.v70=1;
