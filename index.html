@@ -1004,16 +1004,17 @@ window.JN_V158_WB_PAIRING_GUIDE=Object.freeze([{"city":"Singapore","pairs":[{"ou
 /* v176: new Australian services with weekly (not daily) patterns. All times WIB; IN rows store Jakarta STA.
    Optional 9th row field = operating days as ISO weekday digits (1=Mon ... 7=Sun); omitted = daily.
    GA 714/715 Darwin (DRW): 5x weekly, Mon-Fri.  GA 728/729 Cairns (CNS): 4x weekly, Mon/Wed/Fri/Sun.
-   Inbound STA = JKT STD + 2*simulated block + 50 min outstation turn (DRW 260 min, CNS 360 min block). */
+   Inbound STA = JKT STD + 2*simulated block + 50 min outstation turn (DRW 260 min, CNS 360 min block).
+   Equipment: A330-900 (v179) - the 737-800 pool has no idle window long enough for these round trips. */
 AIR_CITY["Darwin"]=[-12.4147,130.8767,"E"]; SEED_CODES["Darwin"]="DRW";
 AIR_CITY["Cairns"]=[-16.8858,145.7553,"E"]; SEED_CODES["Cairns"]="CNS";
 FLD.OUT.push(
- ["GA","714","Darwin",480,"T2","I","Boeing 737-800","GA-V176-DRW-714","12345"],
- ["GA","728","Cairns",420,"T2","I","Boeing 737-800","GA-V176-CNS-728","1357"]
+ ["GA","714","Darwin",480,"T2","I","Airbus A330-900","GA-V176-DRW-714","12345"],
+ ["GA","728","Cairns",420,"T2","I","Airbus A330-900","GA-V176-CNS-728","1357"]
 );
 FLD.IN.push(
- ["GA","715","Darwin",1050,"T2","I","Boeing 737-800","GA-V176-DRW-714","12345"],
- ["GA","729","Cairns",1190,"T2","I","Boeing 737-800","GA-V176-CNS-728","1357"]
+ ["GA","715","Darwin",1050,"T2","I","Airbus A330-900","GA-V176-DRW-714","12345"],
+ ["GA","729","Cairns",1190,"T2","I","Airbus A330-900","GA-V176-CNS-728","1357"]
 );
 </script><script id="v177-ga904-a35k">
 /* v177: equipment-only change. GA 904/905 Singapore moved from Boeing 787-9 to Airbus A350-1000.
@@ -2434,7 +2435,7 @@ function v128CheckGarudaRegs(F){
     seen.add(t.reg);
   })});
 }
-function tSizeFleets(V){
+function tSizeFleets(V,extra){
   V.forEach((v,i)=>{v.k116=i});
   const F=new Map();const keys=[...new Set(V.map(v=>v.c+'|'+v.ac))].sort();
   keys.forEach(k=>F.set(k,{key:k,c:k.split('|')[0],ac:k.split('|')[1],tails:[]}));
@@ -2442,13 +2443,13 @@ function tSizeFleets(V){
   F.forEach(fl=>{
     const P=v116Plan(V.filter(v=>v.c+'|'+v.ac===fl.key));
     fl.plan=P.cycles;fl.ferry=P.ferry;fl.ferryList=P.ferryList;let N=0;P.cycles.forEach(c=>{c.base=N;N+=c.k});
-    fl.min=N;fl.tails=[];
+    fl.min=N;fl.tails=[];const X=(extra&&extra.get(fl.key))||0;fl.spares=X;
     const c=fl.c,pfx=TAIL_PFX[c]||'ZZ';const n0=cnt[c]||0;
-    for(let i=0;i<N;i++){
+    for(let i=0;i<N+X;i++){
       const g=n0+i,L1=pfx[0],L2=String.fromCharCode(pfx.charCodeAt(1)+Math.floor(g/26)),L3=String.fromCharCode(65+g%26);
       const reg=c==='GA'?v128GarudaReg(fl.ac,i):'PK-'+L1+L2+L3;
-      fl.tails.push({reg,seq:[],rdy:-1e9,loc:null,fleet:fl,model:v111FleetModel(fl.c,fl.ac,i,N)})}
-    cnt[c]=n0+N});
+      fl.tails.push({reg,seq:[],rdy:-1e9,loc:null,fleet:fl,spare:i>=N,model:v111FleetModel(fl.c,fl.ac,i,N+X)})}
+    cnt[c]=n0+N+X});
   v128CheckGarudaRegs(F);
   return F}
 /* v113 preserves v95 fleet rightsizing: no up-front slack, and 20 passes of feasible tail-suffix rebalance.
@@ -2590,18 +2591,30 @@ function tPlaceLoops(d,V,F){
     const o=l.out,ac=v111Family(o.c,o.ac)?'Airbus A320 family':o.ac,fl=F.get(o.c+'|'+ac);
     const v={kind:'wk',a:l.in,d:o,S:o.t,E:l.in.t,orig:'Jakarta',dest:'Jakarta',c:o.c,ac,id:o.id+'|'+l.in.id+'|wk',k116:-1000-n,e:null,tail:null,planned:null,swap:null,aogKept:false,eA:null,eD:null};
     let best=null,bs=1e18;
-    if(fl)for(const t of fl.tails){
-      const pos=tFits(t,v);if(pos<0)continue;
-      const p=t.seq[pos-1],nx=t.seq[pos],turn=o.c==='GA'?55:40;
-      /* best fit: leave the least slack around the inserted round trip so big free windows stay free elsewhere */
-      const sc=(p?v.S-(p.E+turn):720)+(nx?nx.S-(v.E+turn):720)+hash(d+'|'+o.id+'|'+t.reg)%7;
-      if(sc<bs){bs=sc;best=t}}
+    /* regular aircraft first (best fit: least slack around the round trip, so big free windows stay free elsewhere);
+       a spare is used only when no regular aircraft has a gap */
+    if(fl)for(const spare of [false,true]){
+      for(const t of fl.tails){
+        if(!!t.spare!==spare)continue;
+        const pos=tFits(t,v);if(pos<0)continue;
+        const p=t.seq[pos-1],nx=t.seq[pos],turn=o.c==='GA'?55:40;
+        const sc=(p?v.S-(p.E+turn):720)+(nx?nx.S-(v.E+turn):720)+hash(d+'|'+o.id+'|'+t.reg)%7;
+        if(sc<bs){bs=sc;best=t}}
+      if(best)break}
+    if(best&&best.spare)window.__TAIL_SPARE_USED=(window.__TAIL_SPARE_USED||0)+1;
     if(best){best.seq.splice(tFits(best,v),0,v);best.rdy=Math.max(best.rdy,-1e9);v.tail=best;V.push(v)}
     else{window.__TAIL_LOOP_FAIL++;}})}
 function tailsAssign(){
   const {idx,ds}=tDayIndex();
   const planV=tCoreVisits();
-  const F=tSizeFleets(planV);
+  /* Spares: like a real airline, a small standby pool per fleet that hosts weekly round trips. Sized from the peak
+     number of weekly round trips of that fleet on any weekday (date independent). Used only when no regular
+     aircraft has an idle window at Jakarta long enough. */
+  const spareN=new Map();
+  for(let w=1;w<=7;w++){const c=new Map();
+    for(const l of T_LOOPS)if(flRuns(l.out,w)){const k=l.out.c+'|'+(v111Family(l.out.c,l.out.ac)?'Airbus A320 family':l.out.ac);c.set(k,(c.get(k)||0)+1)}
+    c.forEach((n,k)=>spareN.set(k,Math.max(spareN.get(k)||0,n)))}
+  const F=tSizeFleets(planV,spareN);
   let carry=null,res=null,aog=null,V=null;
   for(let d=idx-TAIL_WARM;d<=idx;d++){
     V=planV.map(v=>tVisitOnDay(v,d)).filter(Boolean).map(v=>Object.assign({},v,{tail:null,planned:null,swap:null,aogKept:false,eA:null,eD:null}));
