@@ -11,14 +11,21 @@ what is open, with a *Handle* button that opens the recovery screen pre-filled (
 *decisions* are saved (linked to the incident); the incidents themselves are regenerated identically from the date, so history is stable.
 `?incidents=off|calm|realistic|chaos` overrides the saved level.
 
-**You decide; the controller is the fallback.** Each open alert shows a deadline ("decide by 17:55 or the controller acts"): 60 minutes
-after the incident is known, shortened when the next departure is close (never under 15 minutes). In *Handle* you pick the intervention
-(swap equipment, bring in a spare, or wait) and see its effect on both aircraft first. Any aircraft of the same type that is on the ground
-at Jakarta and ready in time (arrival plus minimum turn) can take over a departure; the two aircraft exchange their next flights, terminals
-follow the flight. If nobody decides before the deadline, the rule-based controller acts (swap if it saves 30+ minutes, spare for long
-outages, otherwise wait). Decisions depend only on the incident, never on the viewed date, so past days always play out the same way.
-Alerts show them as *Handled by the controller*; *Review* explains the choice and *Stand the controller down* reopens the incident
-(saved as a `veto` record). Deciding first wins. Set the controller to *Never* in the hub (or `?controller=manual`) to decide everything yourself.
+**Triggers and impacts.** Weather, technical faults, crew, airport closures, strikes and air traffic restrictions are *triggers*: they
+are context ("What is happening"), not something to resolve. What you act on are the *impacts*: a late inbound flight, a late
+outbound flight, an aircraft that cannot operate its next departure. The inbox ("Flights affected") lists those, each tagged with its
+cause. A weather event lists the flights it makes late (at least 30 minutes, the ten worst per event) as soon as it is announced.
+
+**You decide; the controller is the fallback.** Each open impact shows a deadline ("decide by 17:55 or the controller acts"): 60 minutes
+after it is known, shortened when the next departure is close (never under 15 minutes). In *Handle* you choose **wait**, **swap
+equipment**, **bring in a spare** (aircraft out of service) or **cancel**, and see the effect first. Cancelling a late inbound cancels it
+and its next departure; for an aircraft out of service it cancels the next departure. A cancelled flight has no stand, runway or
+movement, and shows *Cancelled* on the flight and aircraft pages (saved as a `cancelflt` record). Any aircraft of the same type that is
+on the ground at Jakarta and ready in time can take over a departure; the two aircraft exchange their next flights, terminals follow the
+flight. If nobody decides before the deadline, the rule-based controller acts (swap if it saves 30+ minutes, spare for long outages,
+otherwise wait; it never cancels). Decisions depend only on the incident, never on the viewed date, so past days always play out the
+same way. Alerts show them as *Handled by the controller*; *Review* explains the choice and *Stand the controller down* reopens it
+(saved as a `veto` record). Deciding first wins. Set the controller to *Never* in the hub (or `?controller=manual`) to decide everything.
 
 The hub also has manual tools, below, for building a scenario yourself (under *Create a scenario yourself*).
 
