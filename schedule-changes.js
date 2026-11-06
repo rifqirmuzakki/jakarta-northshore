@@ -8,6 +8,7 @@ window.JN_CHANGES_REPO={
    "scope": "timetable",
    "kind": "add",
    "from": "2026-11-07",
+   "retFrom": "2026-11-07",
    "note": "New service Taipei: GA 938/939 Airbus A330-900 (ISO days 246)",
    "createdAt": "2026-11-06T12:00:00.000Z",
    "rows": {
@@ -46,6 +47,7 @@ window.JN_CHANGES_REPO={
    "scope": "timetable",
    "kind": "add",
    "from": "2026-11-07",
+   "retFrom": "2026-11-08",
    "note": "New service Amsterdam: GA 44/45 Airbus A350-1000 (daily)",
    "createdAt": "2026-11-06T12:00:00.000Z",
    "rows": {
@@ -82,6 +84,7 @@ window.JN_CHANGES_REPO={
    "scope": "timetable",
    "kind": "add",
    "from": "2026-11-07",
+   "retFrom": "2026-11-09",
    "note": "New service Wellington: GA 56/57 Boeing 787-9 (ISO days 1357)",
    "createdAt": "2026-11-06T12:00:00.000Z",
    "rows": {
@@ -129,6 +132,7 @@ window.JN_CHANGES_REPO={
    "scope": "timetable",
    "kind": "add",
    "from": "2026-11-07",
+   "retFrom": "2026-11-09",
    "note": "New service AlUla: GA 52/53 Airbus A330-900 (ISO days 257)",
    "createdAt": "2026-11-06T12:00:00.000Z",
    "rows": {
@@ -176,6 +180,7 @@ window.JN_CHANGES_REPO={
    "scope": "timetable",
    "kind": "add",
    "from": "2026-11-07",
+   "retFrom": "2026-11-08",
    "note": "New service Baku: GA 54/55 Airbus A330-900 (ISO days 136)",
    "createdAt": "2026-11-06T12:00:00.000Z",
    "rows": {
@@ -223,6 +228,7 @@ window.JN_CHANGES_REPO={
    "scope": "timetable",
    "kind": "add",
    "from": "2026-11-07",
+   "retFrom": "2026-11-09",
    "note": "New service Ankara: GA 46/47 Airbus A330-900 (ISO days 247)",
    "createdAt": "2026-11-06T12:00:00.000Z",
    "rows": {
@@ -270,6 +276,7 @@ window.JN_CHANGES_REPO={
    "scope": "timetable",
    "kind": "add",
    "from": "2026-11-07",
+   "retFrom": "2026-11-08",
    "note": "New service Marrakech: GA 48/49 Boeing 787-9 (ISO days 146)",
    "createdAt": "2026-11-06T12:00:00.000Z",
    "rows": {
@@ -317,6 +324,7 @@ window.JN_CHANGES_REPO={
    "scope": "timetable",
    "kind": "add",
    "from": "2026-11-07",
+   "retFrom": "2026-11-10",
    "note": "New service Casablanca: GA 50/51 Boeing 787-9 (ISO days 357)",
    "createdAt": "2026-11-06T12:00:00.000Z",
    "rows": {

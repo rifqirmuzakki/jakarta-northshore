@@ -1182,7 +1182,7 @@ all().filter(active).sort((a,b)=>(dayNum(a.from)-dayNum(b.from))||String(a.creat
     if(c.kind==='add'){
       for(const dir of ['OUT','IN'])((c.rows&&c.rows[dir])||[]).forEach(r=>{
         if(FLD[dir].some(x=>x[0]===r[0]&&x[1]===r[1])){warnings.push(c.id+': '+r[0]+r[1]+' already exists, skipped');return}
-        FLD[dir].push(r.slice())})}
+        FLD[dir].push(r.slice());(window.JN_EFF=window.JN_EFF||new Map()).set(r[0]+' '+r[1],{from:dayNum(dir==='IN'&&c.retFrom?c.retFrom:c.from),to:c.to?dayNum(c.to):null})})}
     else for(const t of (c.targets||[])){
       const arr=FLD[t.dir],i=arr?arr.findIndex(x=>x[0]===t.carrier&&x[1]===t.number):-1;
       if(i<0){warnings.push(c.id+': '+t.carrier+t.number+' ('+t.dir+') not found');continue}
@@ -1804,7 +1804,11 @@ ${whenBlock()}<input class="op-search" data-k="note" placeholder="Note (optional
       /* a long round trip lands on a later weekday: the return flight's operating days move with it, or the pair would not match up */
       let rdays=dayf;{const g3=geo();if(dayf&&g3){const ideal=t+2*estBlock(g3.lat,g3.lon)+(+val('turn')||50),off=Math.max(0,Math.round((ideal-rt)/1440));if(off)rdays=dayf.split('').map(x=>((+x-1+off)%7)+1).sort().join('')}}
       rows.IN.push(row(rn,rt,rdays))}
-    return [{id:uid('chg_'),v:1,scope:'timetable',kind:'add',from,to,note:val('note'),createdAt:new Date().toISOString(),rows,airports}]};
+    /* the first return flight cannot arrive before the first outbound has gone and come back */
+    let retFrom;if(rows.IN.length){const D0=C.dayNum(from);let k=0;while(k<7&&!String(days).includes(String(((D0+k+3)%7+7)%7+1)))k++;
+      const lag=(()=>{const g3=geo(),rt=minutes(val('rtime'));if(!g3||isNaN(rt))return 0;return Math.max(0,Math.round((t+2*estBlock(g3.lat,g3.lon)+(+val('turn')||50)-rt)/1440))})();
+      if(k+lag>0)retFrom=new Date((D0+k+lag)*86400000).toISOString().slice(0,10)}
+    return [Object.assign({id:uid('chg_'),v:1,scope:'timetable',kind:'add',from,to,note:val('note'),createdAt:new Date().toISOString(),rows,airports},retFrom?{retFrom}:{})]};
   $('#fm-prev').onclick=()=>{const recs=build();if(recs){const rr=recs[0].rows;runPreview(recs,[...rr.OUT.map(r=>r[0]+r[1]),...rr.IN.map(r=>r[0]+r[1])])}};
   $('#fm-save').onclick=()=>{const recs=build();if(recs)commit(recs)}}
 /* ---- my changes and events ---- */
@@ -2564,9 +2568,12 @@ function v125SinWide(f){
 const v176Dow=(()=>{const i=tDayIndex().idx;return ((i+3)%7+7)%7+1})();
 const INF_ALL=FD.IN.map(r=>v125SinWide(v111Equip(v108ApplyLcc(mkFl(r,false))))).sort((a,b)=>a.t-b.t||a.id.localeCompare(b.id));
 const flRuns=(f,dow)=>!f.days||String(f.days).includes(String(dow));
-const INF=INF_ALL.filter(f=>flRuns(f,v176Dow));
+/* a service added from a date (and optionally until a date) does not exist before it starts or after it ends, in history too */
+const effOn=(f,d)=>{const e=window.JN_EFF&&JN_EFF.get(f.id);return !e||((e.from==null||d>=e.from)&&(e.to==null||d<=e.to))};
+const v176Day=tDayIndex().idx;
+const INF=INF_ALL.filter(f=>flRuns(f,v176Dow)&&effOn(f,v176Day));
 const OUTF_ALL=FD.OUT.map(r=>v125SinWide(v111Equip(mkFl(r,true)))).sort((a,b)=>a.t-b.t||a.id.localeCompare(b.id));
-const OUTF=OUTF_ALL.filter(f=>flRuns(f,v176Dow));
+const OUTF=OUTF_ALL.filter(f=>flRuns(f,v176Dow)&&effOn(f,v176Day));
 window.__DB=()=>({INF,OUTF,tBlk});const num=f=>+f.num||0;
 const E_SWING_CARRIERS=new Set(['GA','QG','IP']);
 const swingCarrier=f=>E_SWING_CARRIERS.has(f.c);
@@ -3389,7 +3396,7 @@ let T_CORE=null,T_CORE_EV=null;
 function tCoreVisits(){if(!T_CORE){const cap={};T_CORE=tVisitsFor(INF_ALL.filter(f=>!T_LOOPED.has(f)),OUTF_ALL.filter(f=>!T_LOOPED.has(f)),cap);T_CORE_EV=cap.ev}return T_CORE}
 /* Weekly flights that could not be turned into a loop stay in the plan as daily; trim them out on days they do not run. */
 function tVisitOnDay(v,d){
-  const dow=tDow(d),ok=f=>!f||flRuns(f,dow);
+  const dow=tDow(d),ok=f=>!f||(flRuns(f,dow)&&effOn(f,d));
   if(v.kind==='ovn')return ok(v.a)?v:null;
   if(v.kind==='pre')return ok(v.d)?v:null;
   const a=ok(v.a),dd=ok(v.d);
@@ -3445,7 +3452,7 @@ function tRoll(idx){
   F.forEach(fl=>{const N=fl.min,hs=new Int16Array(N);for(let s=0;s<N;s++)hs[s]=s;hold.set(fl.key,hs);
     const id=[];for(let t=N;t<fl.baseTails;t++)id.push({t,rel:start});idle.set(fl.key,id)});
   const days=new Map(),mxDays=new Map();
-  const runs=(u,d)=>{const w=tDow(d);return flRuns(u.a,w)&&flRuns(u.d,w)};
+  const runs=(u,d)=>{const w=tDow(d);return flRuns(u.a,w)&&flRuns(u.d,w)&&effOn(u.a,d)&&effOn(u.d,d)};
   for(let d=start;d<=last;d++){
     const evs=[],used=new Set();
     /* operational swaps (recovery decisions) come first and reserve their turns for the day */
@@ -3492,7 +3499,7 @@ function rollApply(e,hs,idleOut){
   if(e.k==='swap'){const x=hs[e.sA];hs[e.sA]=hs[e.sB];hs[e.sB]=x}
   else{/* maintenance: the spare that took over is recorded implicitly by replaying order */hs[e.sA]=e.in}}
 function tPlaceLoops(d,V,F){
-  const dow=tDow(d),today=T_LOOPS.filter(l=>flRuns(l.out,dow)).sort((a,b)=>a.out.t-b.out.t||(a.out.id<b.out.id?-1:1));
+  const dow=tDow(d),today=T_LOOPS.filter(l=>flRuns(l.out,dow)&&effOn(l.out,d)).sort((a,b)=>a.out.t-b.out.t||(a.out.id<b.out.id?-1:1));
   if(!today.length)return;
   F.forEach(fl=>fl.tails.forEach(t=>t.seq.sort((a,b)=>a.S-b.S)));
   today.forEach((l,n)=>{
@@ -3940,13 +3947,13 @@ function tailInfo(e){
    let a flight that runs only some days (a weekly service) change the pairs of unrelated flights, so ground and aircraft would disagree. */
 function fullFromCore(){
   try{tCoreVisits();const EV=T_CORE_EV;if(!EV||!EV.length)return null;
-    const runs=f=>!!f&&flRuns(f,v176Dow)&&!f.cx,prev=v176Dow===1?7:v176Dow-1,out=[];
+    const runs=f=>!!f&&flRuns(f,v176Dow)&&effOn(f,v176Day)&&!f.cx,prev=v176Dow===1?7:v176Dow-1,out=[];
     EV.forEach(e=>{
       if(e.k==='r'){const ra=runs(e.a),rd=runs(e.d);if(ra&&rd)out.push(Object.assign({},e));else{if(ra)out.push({k:'a',a:e.a});if(rd)out.push({k:'d',d:e.d})}}
       else if(e.k==='a'){if(runs(e.a))out.push(Object.assign({},e))}
       else if(e.k==='d'){if(runs(e.d))out.push(Object.assign({},e))}
       else if(e.k==='ovA'){if(runs(e.a))out.push(Object.assign({},e))}
-      else if(e.k==='ovD'){if(runs(e.d)){const A=EV.find(z=>z.k==='ovA'&&z.od===e.d);if(A&&flRuns(A.a,prev))out.push(Object.assign({},e));else out.push({k:'d',d:e.d})}}
+      else if(e.k==='ovD'){if(runs(e.d)){const A=EV.find(z=>z.k==='ovA'&&z.od===e.d);if(A&&flRuns(A.a,prev)&&effOn(A.a,v176Day-1))out.push(Object.assign({},e));else out.push({k:'d',d:e.d})}}
       else out.push(Object.assign({},e))});
     return out}catch(err){console.error('ground pairing from the aircraft plan:',err);return null}}
 function bake(pct){

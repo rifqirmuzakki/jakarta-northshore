@@ -18,6 +18,10 @@ decisions (which reload the page) do not reset it. As the clock runs, new incide
 item stays on the **Watching** tab, with the current state of the flights it protects, until those flights have gone, and is flagged if the
 protected departure is still 15+ minutes late.
 
+**Effective dates.** A service added "from" a date does not exist before it, in history either: flight and aircraft pages start at the effective date, and a long round trip's
+return flight starts only once the first outbound has gone and come back (`retFrom`, set by the Add form). Cancels and amendments are not yet history-aware: an amended or cancelled
+flight shows its new form in the days before the change.
+
 **Weekly and multi-day services.** The ground simulation takes its arrival/departure pairing from the same plan as the aircraft rotations (built from the full-week
 timetable) and keeps the pairs whose flights operate on the viewed day, so a service that runs only some weekdays cannot disagree with the aircraft plan. A round trip
 that lands on a later weekday needs its return flight's operating days shifted accordingly (the Add form now does this). New services are listed in
