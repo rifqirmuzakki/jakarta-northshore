@@ -1057,8 +1057,10 @@ for(const k of ['IN','OUT'])for(const r of FLD[k])if(r[0]==='GA'&&(r[1]==='904'|
 .op-panel{background:#fff;border:1px solid #dbe3e9;border-radius:10px;padding:11px 12px;font-size:13px;line-height:1.5;margin:8px 0}.op-row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid #eef2f5;font-size:12.5px}.op-row.tot{border-bottom:0;font-weight:700}.op-row .bad{color:#b45309}
 .op-choice{background:#fff;border:2px solid #dbe3e9;border-radius:11px;padding:11px 13px;margin:8px 0;cursor:pointer}.op-choice.on{border-color:#184e72;background:#eef6fb}.op-choice b{display:block;font-size:14px}.op-choice span{display:block;font-size:12px;color:#44596a;margin-top:3px;line-height:1.45}.op-choice em{display:block;font-style:normal;font-size:12px;font-weight:700;color:#1d6b4a;margin-top:4px}
 .op-when{background:#fff;border:1px solid #dbe3e9;border-radius:10px;padding:11px 12px;margin:12px 0;font-size:13px}.op-when .fm-check{margin-top:8px}
-.fm-banner.ok{background:#1d6b4a}.fm-banner.info{background:#184e72}.fm-banner button{margin-left:8px}
+.fm-banner.warn{background:#9a5b00}.fm-banner.ok{background:#1d6b4a}.fm-banner.info{background:#184e72}.fm-banner button{margin-left:8px}
 #fm-panel #op-body .fm-tools{background:transparent;border:0;padding:0 0 10px}
+.op-alert{display:grid;grid-template-columns:10px 1fr auto;gap:10px;align-items:start;background:#fff;border:1px solid #dbe3e9;border-radius:11px;padding:11px 12px;margin-bottom:8px}.op-alert i{width:10px;height:10px;border-radius:50%;margin-top:5px}.op-alert b{display:block;font-size:13.5px}.op-alert span{display:block;font-size:12px;color:#44596a;margin-top:2px;line-height:1.4}.op-alert small{display:block;font-size:11px;color:#6a7d8c;margin-top:3px}.op-alert.done{opacity:.72}
+.op-adv{margin-top:18px}.op-adv summary{font-size:12px;color:#6a7d8c;cursor:pointer;margin-bottom:8px}
 .fm-tabs{display:flex;gap:4px;padding:8px 12px 0;background:#fff;border-bottom:1px solid #dbe3e9;overflow-x:auto}
 .fm-tabs button{border:0;background:transparent;padding:10px 13px;font-size:13px;font-weight:600;color:#526b7b;border-bottom:3px solid transparent;white-space:nowrap}
 .fm-tabs button.on{color:#184e72;border-bottom-color:#184e72}
@@ -1142,16 +1144,30 @@ opsAll().forEach(o=>{const d=dayNum(o.date);if(d==null)return;
   else if(o.kind==='aog'&&o.tail){(OPS_AOG.get(d)||OPS_AOG.set(d,[]).get(d)).push(o)}
   else if(o.kind==='spare'&&o.arrival){(OPS_SPARE.get(d)||OPS_SPARE.set(d,[]).get(d)).push(o)}
   else if(o.kind==='weather'&&o.airport){(OPS_WX.get(d)||OPS_WX.set(d,[]).get(d)).push(o)}});
+/* disruption level for generated incidents: off | calm | realistic | chaos (URL ?incidents=... overrides the saved choice) */
+const INC_LS='jn-incidents-v1',INC_LEVELS={off:0,calm:0.4,realistic:1,chaos:2.5};
+let incLevel='realistic';
+try{const q=qs.get('incidents');if(q&&q in INC_LEVELS)incLevel=q;else{const o=JSON.parse(localStorage.getItem(INC_LS)||'null');if(o&&o.level in INC_LEVELS)incLevel=o.level}}catch(e){}
+if(noChanges||previewTok&&qs.get('incidents')==='off')incLevel=noChanges?'off':incLevel;
+const GEN={delay:new Map(),meta:new Map(),aog:new Map(),wx:new Map(),list:[]};
 window.JN_OPS={
-  delayFor:(dayIdx,flight)=>{const k=dayIdx+'|'+flight;return (OPS_DELAY.get(k)||0)+(OPS_DERIVED.get(k)||0)},
-  causeFor:(dayIdx,flight)=>{const k=dayIdx+'|'+flight,o=OPS_META.get(k)||OPS_DMETA.get(k);return o?{cause:o.cause||'other',note:o.note||'',minutes:+(o.minutes||OPS_DERIVED.get(k)||0)}:null},
-  swapsOn:dayIdx=>OPS_SWAP.get(dayIdx)||[],sparesOn:dayIdx=>OPS_SPARE.get(dayIdx)||[],aogOn:dayIdx=>OPS_AOG.get(dayIdx)||[],
-  aogFor:(reg,dayIdx)=>(OPS_AOG.get(dayIdx)||[]).find(o=>o.tail===reg)||null,
-  wxOn:dayIdx=>OPS_WX.get(dayIdx)||[],arrExtraFor:(dayIdx,flight)=>OPS_ARRX.get(dayIdx+'|'+flight)||0,
+  level:incLevel,levelFactor:INC_LEVELS[incLevel],
+  setLevel:l=>{try{localStorage.setItem(INC_LS,JSON.stringify({level:l}))}catch(e){}},
+  setGenerated:list=>{GEN.delay.clear();GEN.meta.clear();GEN.aog.clear();GEN.wx.clear();GEN.list=list.slice();
+    list.forEach(o=>{const d=dayNum(o.date);if(d==null)return;
+      if(o.kind==='delay'){const k=d+'|'+o.flight;GEN.delay.set(k,(GEN.delay.get(k)||0)+ +o.minutes);GEN.meta.set(k,o)}
+      else if(o.kind==='aog')(GEN.aog.get(d)||GEN.aog.set(d,[]).get(d)).push(o);
+      else if(o.kind==='weather')(GEN.wx.get(d)||GEN.wx.set(d,[]).get(d)).push(o)})},
+  generated:()=>GEN.list,
+  delayFor:(dayIdx,flight)=>{const k=dayIdx+'|'+flight;return (OPS_DELAY.get(k)||0)+(GEN.delay.get(k)||0)+(OPS_DERIVED.get(k)||0)},
+  causeFor:(dayIdx,flight)=>{const k=dayIdx+'|'+flight,o=OPS_META.get(k)||GEN.meta.get(k)||OPS_DMETA.get(k);return o?{cause:o.cause||'other',note:o.note||'',minutes:+(o.minutes||OPS_DERIVED.get(k)||0)}:null},
+  swapsOn:dayIdx=>OPS_SWAP.get(dayIdx)||[],sparesOn:dayIdx=>OPS_SPARE.get(dayIdx)||[],aogOn:dayIdx=>[...(OPS_AOG.get(dayIdx)||[]),...(GEN.aog.get(dayIdx)||[])],
+  aogFor:(reg,dayIdx)=>[...(OPS_AOG.get(dayIdx)||[]),...(GEN.aog.get(dayIdx)||[])].find(o=>(o.tail||o.regResolved)===reg)||null,
+  wxOn:dayIdx=>[...(OPS_WX.get(dayIdx)||[]),...(GEN.wx.get(dayIdx)||[])],arrExtraFor:(dayIdx,flight)=>OPS_ARRX.get(dayIdx+'|'+flight)||0,
   setDerivedArr:(dayIdx,flight,min,o)=>{const k=dayIdx+'|'+flight;OPS_ARRX.set(k,Math.max(OPS_ARRX.get(k)||0,min));OPS_DMETA.set(k,o)},
   clearDerived:()=>{OPS_DERIVED.clear();OPS_DMETA.clear();OPS_ARRX.clear()},
   setDerived:(dayIdx,flight,min,o)=>{const k=dayIdx+'|'+flight;OPS_DERIVED.set(k,Math.max(OPS_DERIVED.get(k)||0,min));OPS_DMETA.set(k,o)},
-  list:opsAll,hasAny:()=>OPS_DELAY.size>0||OPS_SWAP.size>0||OPS_AOG.size>0||OPS_SPARE.size>0||OPS_WX.size>0};
+  list:()=>[...opsAll(),...GEN.list],hasAny:()=>OPS_DELAY.size>0||OPS_SWAP.size>0||OPS_AOG.size>0||OPS_SPARE.size>0||OPS_WX.size>0||GEN.list.length>0};
 window.JN_CHG={
   view,viewDs,previewTok,warnings,legacyActive,BASELINE,noChanges,addOp(o){local.ops.push(o);this.save()},removeOp(id){local.ops=local.ops.filter(o=>o.id!==id);this.save()},ops:opsAll,
   all,active,status,dayNum,jakToday,
@@ -1213,29 +1229,63 @@ const setStatus=(m,bad)=>{const e=$('#fm-status');e.textContent=m||'';e.style.co
 const go=(s,init)=>{screen=s;st=init||{};draw()};
 function open(){wrap.classList.add('open');if(!wrap.dataset.once){wrap.dataset.once='1';screen='home'}draw()}
 launch.onclick=open;
-const TITLES={home:'Operations',weather:'Weather or an airport issue',aog:'An aircraft is out of service',delay:'A flight is delayed',change:'Change a flight',add:'Add a new service',cancel:'Cancel a flight',mine:'My changes and events'};
+const TITLES={home:'Operations',incident:'Incident',weather:'Weather or an airport issue',aog:'An aircraft is out of service',delay:'A flight is delayed',change:'Change a flight',add:'Add a new service',cancel:'Cancel a flight',mine:'My changes and events'};
 function draw(){
   $('#op-title').textContent=TITLES[screen]||'Operations';
   $('#op-sub').textContent=screen==='home'?'Viewing '+longDate(C.viewDs):'';
   $('#op-back').hidden=screen==='home';
   setStatus('');
-  ({home:drawHome,weather:drawWeather,aog:drawAog,delay:drawDelay,change:drawChange,add:drawAdd,cancel:drawCancel,mine:drawMine}[screen]||drawHome)();
+  ({home:drawHome,incident:drawIncident,weather:drawWeather,aog:drawAog,delay:drawDelay,change:drawChange,add:drawAdd,cancel:drawCancel,mine:drawMine}[screen]||drawHome)();
 }
 const card=(go,title,desc,extra,off)=>`<button class="op-card${off?' off':''}" ${off?'disabled':`data-go="${go}"`}><b>${html(title)}</b><span>${html(desc)}</span>${extra||''}</button>`;
+const SEV_DOT={major:'#c0392b',minor:'#d68910',info:'#2e86c1'};
+const fmtLocal=(city,wibMin)=>{try{const tz=city==='Jakarta'?'Asia/Jakarta':(window.JN_TZOF?JN_TZOF(city):'Asia/Jakarta');const D=C.dayNum(C.viewDs);const ms=(D*1440+wibMin-420)*60000;return new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date(ms))}catch(e){return hm(((wibMin%1440)+1440)%1440)}};
+function incView(e){
+  if(e.kind==='weather')return {sev:e.mode==='closed'||e.cause==='strike'?'major':'minor',title:e.airport+': '+(e.cause==='strike'?'strike':(e.mode==='closed'?'closed':'slowed (+'+e.slowMin+' min)')),
+    detail:fmtLocal(e.airport,e.fromMin)+'–'+fmtLocal(e.airport,e.untilMin)+' local · '+e.note+' · '+(e.hits||0)+' flight'+((e.hits||0)===1?'':'s')+' affected'};
+  if(e.kind==='aog'){const long=(e.untilMin-e.fromMin)>=240;return {sev:long?'major':'minor',title:(e.regResolved||'An aircraft')+' out of service',detail:'Arrives as '+e.arrival+' · repair until '+hm(((e.untilMin%1440)+1440)%1440)+' WIB'+(e.untilMin>=1440?' (next day)':'')+' · '+e.note}}
+  return {sev:e.minutes>=180?'major':'minor',title:e.flight+' delayed +'+durTxt(e.minutes),detail:e.note}}
+function relevantIncidents(){
+  if(!window.SIMCORE||!window.SIMCORE.incidents)return [];
+  const vd=C.dayNum(C.viewDs);
+  return SIMCORE.incidents.list().filter(e=>e.known&&e.applied&&C.dayNum(e.date)===vd&&(e.kind!=='weather'||(e.hits||0)>0)).sort((a,b)=>b.atMin-a.atMin)}
 function drawHome(){
   const n=C.local().changes.length+C.local().ops.length,repo=((window.JN_CHANGES_REPO&&window.JN_CHANGES_REPO.changes)||[]).length;
-  $('#op-body').innerHTML=`<div class="op-pad"><p class="op-lead">Record something that is happening, or plan a change to the timetable. Everything is dated, so you can always see what changed and when.</p>
-<h4 class="op-h">Something happened</h4>
-${card('delay','A flight is delayed','An inbound flight is running late. See who is affected and recover, for example by swapping aircraft.')}
-${card('aog','An aircraft is out of service','An aircraft on the ground at Jakarta cannot fly. See the knock-on and recover: wait, swap, or bring in a spare.')}${card('weather','Weather or an airport issue','An airport is closed or slow. Flights to, from or at it are held; see who is affected.')}
+  const inc=relevantIncidents(),open=inc.filter(e=>!e.handled).length,lvl=window.JN_OPS?JN_OPS.level:'realistic';
+  const alerts=inc.length?inc.map(e=>{const v=incView(e);return `<div class="op-alert ${e.handled?'done':''}"><i style="background:${SEV_DOT[v.sev]}"></i><div><b>${html(v.title)}</b><span>${html(v.detail)}</span><small>${e.handled?'Handled'+(e.decision&&e.decision.note?' · '+html(e.decision.note.replace(/^Recovery: /,'')):''):'Open · known since '+hm(((e.atMin%1440)+1440)%1440)+' WIB'}</small></div><button class="fm-btn ${e.handled?'':'primary'}" data-inc="${html(e.id)}">${e.handled?'View':'Handle'}</button></div>`}).join(''):`<p class="op-lead">${lvl==='off'?'Generated incidents are switched off.':'All quiet for now. Incidents appear here as they happen.'}</p>`;
+  $('#op-body').innerHTML=`<div class="op-pad"><h4 class="op-h" style="margin-top:2px">Alerts${open?` <i class="op-count" style="position:static">${open}</i>`:''}</h4>${alerts}
 <h4 class="op-h">Change the timetable</h4>
 ${card('change','Change a flight','New time, aircraft, days or terminal, from a date you choose.')}
 ${card('add','Add a new service','A new route or extra frequency, with its return flight.')}
 ${card('cancel','Cancel a flight','Remove a flight, and its return, from a date.')}
 <h4 class="op-h">Your log</h4>
-${card('mine','My changes and events','See, undo, export or import what you have recorded.',n+repo?`<i class="op-count">${n+repo}</i>`:'')}</div>`;
+${card('mine','My changes and events','See, undo, export or import what you have recorded.',n+repo?`<i class="op-count">${n+repo}</i>`:'')}
+<h4 class="op-h">Disruption level</h4><p class="op-lead">How often things go wrong by themselves. Changing it reloads the page.</p>
+<div class="op-chips" id="op-lvl">${[['off','Off'],['calm','Calm'],['realistic','Realistic'],['chaos','Chaos']].map(l=>`<button class="fm-chip ${lvl===l[0]?'on':''}" data-l="${l[0]}">${l[1]}</button>`).join('')}</div>
+<details class="op-adv"><summary>Create a scenario yourself (advanced)</summary>
+${card('delay','A flight is delayed','Make an inbound flight late and see the knock-on.')}${card('aog','An aircraft is out of service','Take an aircraft on the ground out of service.')}${card('weather','Weather or an airport issue','Close or slow an airport.')}</details></div>`;
   $('#op-body').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+  $('#op-body').querySelectorAll('[data-inc]').forEach(b=>b.onclick=()=>handleIncident(inc.find(x=>x.id===b.dataset.inc)));
+  $('#op-lvl').querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{JN_OPS.setLevel(b.dataset.l);const u=new URL(location.href);if(u.searchParams.has('incidents'))u.searchParams.set('incidents',b.dataset.l);location.href=u.toString()});
 }
+/* ---- handling an incident: the same recovery screens, pre-filled ---- */
+function ackDecision(inc,note){return {id:uid('op_'),v:1,scope:'ops',kind:'ack',date:inc.date,at:'',resolves:inc.id,note:note||'Acknowledged',createdAt:new Date().toISOString()}}
+function handleIncident(e){
+  if(e.handled){st={inc:e,view:true};screen='incident';draw();return}
+  if(e.kind==='aog'){waitReady(()=>{const it=window.SIMCORE.ops.inbound().find(x=>x.id===e.arrival&&x.unit);if(!it){st={inc:e};screen='incident';draw();return}
+    go('aog',{inc:e,sel:it,from:hm(e.fromMin%1440),rep:Math.max(15,e.untilMin-e.fromMin),cause:'technical',note:e.note,opt:null})});return}
+  if(e.kind==='delay'){waitReady(()=>{const it=window.SIMCORE.ops.inbound().find(x=>x.id===e.flight);if(!it){st={inc:e};screen='incident';draw();return}
+    go('delay',{inc:e,sel:it,min:e.minutes,cause:e.cause,note:e.note,opt:null})});return}
+  st={inc:e};screen='incident';draw()}
+function drawIncident(){waitReady(()=>{
+  const e=st.inc,v=incView(e);
+  let body='';
+  if(e.kind==='weather'){const pv=window.SIMCORE.ops.weatherPreview(Object.assign({},e));
+    const li=l=>`<div class="op-row"><span>${html(l.id)} · ${html(l.city)} · ${l.kind==='land'?'lands late (departs '+hm(l.sched)+')':(l.kind==='a'?'arrives':'departs')+' '+hm(l.sched)}</span><b class="bad">+${durTxt(l.delay)}</b></div>`;
+    body=`<div class="op-panel"><b>${pv.flights.length} flight${pv.flights.length===1?'':'s'} late</b>${pv.flights.length?`<div class="op-lead" style="margin:4px 0 8px">${pv.aircraft} aircraft · ${durTxt(pv.total)} of delay in total</div>`+pv.flights.slice(0,12).map(li).join(''):'<p class="op-lead">No tracked flight is affected.</p>'}</div>${e.airport!=='Jakarta'?`<p class="op-lead">Flights that leave ${html(e.airport)} in the window reach Jakarta later, so check the next day.</p>`:''}`}
+  else body=`<div class="op-panel">${html(v.detail)}</div><p class="op-lead">${e.kind==='aog'?'The aircraft is not on the ground at Jakarta between an arrival and a departure, so there is no recovery to choose; its flights simply run late.':'This flight has no tracked aircraft, so there is no recovery to choose; the delay simply plays out.'}</p>`;
+  $('#op-body').innerHTML=`<div class="op-pad"><div class="op-sel"><b>${html(v.title)}</b><br><small>${html(v.detail)}</small></div>${body}${e.handled?`<p class="op-lead">${html(e.decision&&e.decision.note||'Handled')}</p>`:'<div class="buttons"><button class="fm-btn primary" id="op-ack">Acknowledge</button></div>'}</div>`;
+  const a=$('#op-ack');if(a)a.onclick=()=>{C.addOp(ackDecision(e,'Acknowledged'));screen='home';location.reload()}})}
 const readyOps=()=>window.SIMCORE&&window.SIMCORE.ops&&window.SIMCORE.FLEET;
 function waitReady(fn){if(readyOps())return fn();$('#op-body').innerHTML='<div class="op-pad"><p class="op-lead">Loading the simulation…</p></div>';const iv=setInterval(()=>{if(readyOps()){clearInterval(iv);if(wrap.classList.contains('open'))fn()}},400)}
 /* ================= A FLIGHT IS DELAYED ================= */
@@ -1275,9 +1325,10 @@ function drawConsequences(f,min){
   box.querySelectorAll('.op-choice').forEach(c=>c.onclick=()=>{st.opt=c.dataset.opt==='wait'?null:c.dataset.opt;box.querySelectorAll('.op-choice').forEach(x=>x.classList.toggle('on',x===c))});
   $('#op-save').onclick=()=>{
     const at=C.dayNum(C.viewDs)===C.dayNum(C.jakToday())?new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date()):'00:00';
-    const now=new Date().toISOString(),ev=[{id:uid('op_'),v:1,scope:'ops',kind:'delay',date:C.viewDs,at,flight:f.id,minutes:min,cause:st.cause||'other',note:(st.note||'').trim(),createdAt:now}];
+    const now=new Date().toISOString();let ev=[{id:uid('op_'),v:1,scope:'ops',kind:'delay',date:C.viewDs,at,flight:f.id,minutes:min,cause:st.cause||'other',note:(st.note||'').trim(),createdAt:now}];
     if(st.opt&&st.opt[0]==='s'){const o=opts[+st.opt.slice(1)];if(o)ev.push({id:uid('op_'),v:1,scope:'ops',kind:'swap',date:C.viewDs,at,arrivals:o.arrivals,cause:st.cause||'other',note:'Recovery: '+o.tails.join(' ↔ '),createdAt:now})}
-    ev.forEach(e=>C.addOp(e));try{sessionStorage.setItem('jn-op-toast','Recorded: '+f.id+' +'+durTxt(min)+' ('+causeLabel(st.cause)+')'+(ev.length>1?' · aircraft swapped':''))}catch(x){}
+    if(st.inc){ev=ev.filter(x=>x.kind!=='delay');ev.forEach(x=>x.resolves=st.inc.id);if(!ev.length)ev.push(ackDecision(st.inc,'Waited, the delay plays out'))}
+    ev.forEach(e=>C.addOp(e));try{sessionStorage.setItem('jn-op-toast',(st.inc?'Decision recorded: ':'Recorded: ')+f.id+' +'+durTxt(min)+' ('+causeLabel(st.cause)+')'+(ev.some(x=>x.kind==='swap')?' · aircraft swapped':''))}catch(x){}
     $('#op-msg').textContent='Recorded. Reloading…';setTimeout(()=>location.reload(),300)}}
 /* ================= AN AIRCRAFT IS OUT OF SERVICE ================= */
 const hmIn=s=>{const m=/^(\d{1,2}):(\d\d)$/.exec(String(s).trim());return m?(+m[1]*60+ +m[2]):NaN};
@@ -1306,6 +1357,7 @@ function drawAog(){waitReady(()=>{
 function drawAogCons(f,fromMin,untilMin){
   const o=window.SIMCORE.ops.aogOptions(f.id,fromMin,untilMin),box=$('#op-cons');
   if(!o.supported){box.innerHTML=`<p class="op-lead">${html(o.reason)}</p>`;return}
+  if(!o.noEffect&&!(o.wait.total>0)){box.innerHTML=`<div class="op-step">Step 3 of 3 · What happens</div><div class="op-panel">The repair finishes before ${html(o.next.id)} needs the aircraft, so no flight is delayed.</div><div class="buttons"><button class="fm-btn primary" id="op-save">${st.inc?'Acknowledge':'Record'}</button></div><p class="fm-msg" id="op-msg"></p>`;$('#op-save').onclick=()=>saveAog(f,fromMin,untilMin,null);return}
   if(o.noEffect){box.innerHTML=`<div class="op-step">Step 3 of 3 · What happens</div><div class="op-panel">${html(o.reason)}</div><div class="buttons"><button class="fm-btn primary" id="op-save">Record anyway</button></div><p class="fm-msg" id="op-msg"></p>`;
     $('#op-save').onclick=()=>saveAog(f,fromMin,untilMin,null);return}
   const li=l=>`<div class="op-row"><span>${html(l.id)} · ${html(l.city)} · departs ${hm(l.sched)}</span><b class="bad">+${durTxt(l.delay)}</b></div>`;
@@ -1321,10 +1373,11 @@ function drawAogCons(f,fromMin,untilMin){
 function saveAog(f,fromMin,untilMin,o){
   const at=C.dayNum(C.viewDs)===C.dayNum(C.jakToday())?new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date()):'00:00';
   const now=new Date().toISOString(),mk=x=>Object.assign({id:uid('op_'),v:1,scope:'ops',date:C.viewDs,at,cause:st.cause||'technical',createdAt:now},x);
-  const ev=[mk({kind:'aog',tail:f.tail,arrival:f.id,fromMin,untilMin,note:(st.note||'').trim()})];
+  let ev=[mk({kind:'aog',tail:f.tail,arrival:f.id,fromMin,untilMin,note:(st.note||'').trim()})];
   if(o&&st.opt==='spare')ev.push(mk({kind:'spare',arrival:f.id,untilMin,note:'Recovery: spare '+(o.spare&&o.spare.reg)+' replaces '+f.tail}));
   else if(o&&st.opt&&st.opt[0]==='s'){const x=o.swaps[+st.opt.slice(1)];if(x)ev.push(mk({kind:'swap',arrivals:x.arrivals,note:'Recovery: '+x.tails.join(' ↔ ')}))}
-  ev.forEach(e=>C.addOp(e));try{sessionStorage.setItem('jn-op-toast','Recorded: '+f.tail+' out of service until '+hm(untilMin)+(st.opt?(st.opt==='spare'?' · spare brought in':' · aircraft swapped'):''))}catch(x){}
+  if(st.inc){ev=ev.filter(x=>x.kind!=='aog');ev.forEach(x=>x.resolves=st.inc.id);if(!ev.length)ev.push(ackDecision(st.inc,'Waited for the repair'))}
+  ev.forEach(e=>C.addOp(e));try{sessionStorage.setItem('jn-op-toast',(st.inc?'Decision recorded: ':'Recorded: ')+f.tail+' out of service until '+hm(untilMin)+(st.opt?(st.opt==='spare'?' · spare brought in':' · aircraft swapped'):''))}catch(x){}
   const m=$('#op-msg');if(m)m.textContent='Recorded. Reloading…';setTimeout(()=>location.reload(),300)}
 /* ================= WEATHER OR AN AIRPORT ISSUE ================= */
 function tzOffsetMin(tz,utcMs){try{const n=new Intl.DateTimeFormat('en-US',{timeZone:tz,timeZoneName:'shortOffset'}).formatToParts(new Date(utcMs)).find(x=>x.type==='timeZoneName').value;const m=/GMT([+-])(\d{1,2})(?::(\d\d))?/.exec(n);return m?(m[1]==='-'?-1:1)*(+m[2]*60+(+m[3]||0)):0}catch(e){return 420}}
@@ -1490,7 +1543,7 @@ ${whenBlock()}<input class="op-search" data-k="note" placeholder="Note (optional
 /* ---- my changes and events ---- */
 function summary(c){
   const tg=(c.targets||[]).map(t=>t.carrier+' '+t.number).join(' + ');
-  if(c.scope==='ops'){if(c.kind==='delay')return c.flight+' delayed +'+durTxt(c.minutes)+' ('+causeLabel(c.cause)+')';if(c.kind==='swap')return 'Aircraft swapped: '+c.arrivals.join(' ↔ ');if(c.kind==='weather')return c.airport+(c.mode==='slow'?' slowed':' closed')+' (WIB '+hm((c.fromMin%1440+1440)%1440)+'–'+hm((c.untilMin%1440+1440)%1440)+') · '+causeLabel(c.cause);if(c.kind==='aog')return c.tail+' out of service '+hm(c.fromMin)+'–'+hm(c.untilMin)+' ('+causeLabel(c.cause)+')';if(c.kind==='spare')return 'Spare brought in for the aircraft arriving as '+c.arrival;return c.kind}
+  if(c.scope==='ops'){if(c.kind==='delay')return c.flight+' delayed +'+durTxt(c.minutes)+' ('+causeLabel(c.cause)+')';if(c.kind==='swap')return 'Aircraft swapped: '+c.arrivals.join(' ↔ ');if(c.kind==='ack')return 'Incident acknowledged: '+(c.note||'');if(c.kind==='weather')return c.airport+(c.mode==='slow'?' slowed':' closed')+' (WIB '+hm((c.fromMin%1440+1440)%1440)+'–'+hm((c.untilMin%1440+1440)%1440)+') · '+causeLabel(c.cause);if(c.kind==='aog')return c.tail+' out of service '+hm(c.fromMin)+'–'+hm(c.untilMin)+' ('+causeLabel(c.cause)+')';if(c.kind==='spare')return 'Spare brought in for the aircraft arriving as '+c.arrival;return c.kind}
   if(c.kind==='add'){const o=(c.rows.OUT||[])[0],i=(c.rows.IN||[])[0],r=o||i;return 'Add '+[o&&o[0]+' '+o[1],i&&i[0]+' '+i[1]].filter(Boolean).join(' / ')+' · '+r[2]+' · '+hm(r[3])+' · '+daysText(r[8])+' · '+r[6]}
   if(c.kind==='cancel')return 'Cancel '+tg;
   const s=c.set||{},p=[];if(s.time!=null)p.push('time '+hm(s.time));if(s.aircraft)p.push(s.aircraft);if(s.terminal)p.push('terminal '+s.terminal);if(s.zone)p.push(s.zone==='I'?'international':'domestic');if('days' in s)p.push(daysText(s.days));
@@ -1536,8 +1589,18 @@ function mount(){document.body.append(launch,wrap);$('#fm-close').onclick=()=>wr
   if(C.noChanges)banner('','Changes and events are switched off for this view. <a href="'+location.pathname+location.search.replace(/[?&]nochanges=1/,'').replace(/^&/,'?')+'">Turn them back on</a>');
   let toast=null;try{toast=sessionStorage.getItem('jn-op-toast');sessionStorage.removeItem('jn-op-toast')}catch(x){}
   if(toast){const b=banner('ok',html(toast)+' <button id="fm-ok">OK</button>');b.querySelector('#fm-ok').onclick=()=>b.remove();setTimeout(()=>b.remove(),9000)}
-  const act=window.JN_OPS&&JN_OPS.list().filter(o=>C.dayNum(o.date)===C.view).length;
-  if(act&&!toast&&!C.noChanges){const b=banner('info',act+' disruption event'+(act>1?'s':'')+' on this day. <a href="#" id="fm-see">See</a>');b.querySelector('#fm-see').onclick=ev=>{ev.preventDefault();b.remove();screen='mine';open()}}
+  let seenNew=new Set();const label=n=>{launch.textContent=n>0?'Operations · '+n:'Operations'};
+  const refresh=()=>{if(!window.SIMCORE||!window.SIMCORE.incidents)return;
+    const rel=relevantIncidents();label(rel.filter(e=>!e.handled).length);
+    if(wrap.classList.contains('open')&&screen==='home')draw();
+    /* reactive: an incident that becomes known after the page was baked is announced; applying it reloads the page */
+    if(C.dayNum(C.viewDs)===C.dayNum(C.jakToday())&&!C.noChanges){
+      const fresh=SIMCORE.incidents.list().filter(e=>e.known&&!e.applied&&!seenNew.has(e.id)&&(e.kind!=='weather'||(e.hits||0)>0));
+      if(fresh.length){const e=fresh[0];fresh.forEach(x=>seenNew.add(x.id));const v=incView(e);
+        const b=banner('warn','New incident: '+html(v.title)+' · '+html(v.detail)+(fresh.length>1?' (+'+(fresh.length-1)+' more)':'')+' <button id="fm-apply">Apply and open alerts</button>');
+        b.querySelector('#fm-apply').onclick=()=>{try{sessionStorage.setItem('jn-open-alerts','1')}catch(x){}location.reload()}}}};
+  let openAlerts=false;try{openAlerts=sessionStorage.getItem('jn-open-alerts')==='1';sessionStorage.removeItem('jn-open-alerts')}catch(x){}
+  const ready0=setInterval(()=>{if(window.SIMCORE&&window.SIMCORE.incidents){clearInterval(ready0);refresh();if(openAlerts){screen='home';open()}setInterval(refresh,30000)}},500);
   const t0=Date.now(),iv=setInterval(()=>{const bad=window.JN_TAIL_ERROR||window.JN_CHG_ERROR;
     if(bad&&(C.local().changes.length||C.local().ops.length)&&!document.querySelector('.fm-banner.bad')){clearInterval(iv);const b=banner('bad','Your saved changes broke the simulation ('+html(String(bad).slice(0,90))+'). <button id="fm-off">Disable my changes</button>');b.querySelector('#fm-off').onclick=()=>{C.clear();location.reload()}}
     else if(window.SIMCORE&&window.SIMCORE.FLEET||Date.now()-t0>120000)clearInterval(iv)},700)}
@@ -3205,12 +3268,13 @@ function opsChain(legs,inj,arrx){
   legs.forEach((l,i)=>{l.dly=Math.max(0,cur.out[i]-base.out[i]);l.landDly=l.k==='d'?Math.max(0,cur.land[i]-base.land[i]):0});
   return legs}
 const ET=f=>Math.min(1435,f.t+(f.dly||0));
+function opsTailOnDay(flightId,day){let r=null;tPlan().F.forEach(fl=>fl.tails.forEach(t=>{if(r)return;const seq=t.hist&&t.hist.get(day);if(seq&&seq.some(v=>v.a&&v.a.id===flightId&&v.kind!=='pre'))r=t}));return r}
 function opsFindTail(reg){let r=null;tPlan().F.forEach(fl=>fl.tails.forEach(t=>{if(t.reg===reg)r=t}));return r}
 /* an unserviceable aircraft cannot leave before it is back in service: that is a forced delay on each departure inside the window */
 function opsDeriveAog(idx){
   JN_OPS.clearDerived();
-  JN_OPS.list().forEach(o=>{if(o.kind!=='aog'||!o.tail)return;const day=dayNumOf(o.date);if(day==null||day>idx||day<idx-TAIL_WARM)return;
-    const t=opsFindTail(o.tail);if(!t)return;
+  JN_OPS.list().forEach(o=>{if(o.kind!=='aog')return;const day=dayNumOf(o.date);if(day==null||day>idx||day<idx-TAIL_WARM)return;
+    const t=o.tail?opsFindTail(o.tail):opsTailOnDay(o.arrival,day);if(!t)return;o.regResolved=t.reg;
     tailLegs(t,[day]).forEach(l=>{if(l.k!=='d'||l.day!==day)return;const rel=l.t-day*1440;
       if(rel>=(+o.fromMin||0)&&rel<(+o.untilMin||0))JN_OPS.setDerived(day,l.f.id,(+o.untilMin)-rel,Object.assign({},o,{cause:o.cause||'technical'}))})})}
 /* ---- airport issues (weather etc.): window [fromMin, untilMin) in WIB minutes from midnight of the event date ----
@@ -3235,9 +3299,80 @@ function opsDeriveWx(idx){
   const days=[];for(let d=idx-TAIL_WARM;d<=idx;d++)days.push(d);
   const tails=[];tPlan().F.forEach(fl=>fl.tails.forEach(t=>tails.push(t)));
   evs.forEach(o=>wxEffects(o,tails,days).forEach(e=>{if(e.kind==='dep')JN_OPS.setDerived(e.day,e.flight,e.min,Object.assign({},o,{cause:o.cause||'weather'}));else JN_OPS.setDerivedArr(e.day,e.flight,e.min,Object.assign({},o,{cause:o.cause||'weather'}))}))}
+/* ================= v186: incident generator =================
+   The world throws problems at the operation; the user reacts. Everything is a pure function of the date (and the chosen disruption
+   level), so a given day always has the same incidents whichever date is open. Incidents already known at the current clock apply
+   automatically (delays, holds, aircraft out of service); recovery choices are separate, saved decisions. */
+const INC_SCALE={wx:0.45,aog:0.6,late:1.0,strike:0.03};
+const incU=(d,k,i)=>imix(d|0,(k*7919+i)|0,0x1c3)/4294967296;
+const incDs=d=>new Date(d*86400000).toISOString().slice(0,10);
+const incHm=m=>{m=((Math.round(m)%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
+function incCount(d,k,lam){let n=0,t=Math.exp(-lam),p=t;const u=incU(d,k,99);while(u>p&&n<6){n++;t*=lam/n;p+=t}return n}
+let INC_AP=null;
+function incAirports(){if(!INC_AP){const m=new Map();INF_ALL.concat(OUTF_ALL).forEach(f=>{const c=String(f.city).split(' / ')[0].trim();m.set(c,(m.get(c)||0)+1)});m.set('Jakarta',1);INC_AP=[...m.keys()].sort()}return INC_AP}
+function incGeo(c){if(c==='Jakarta')return [-6.13,106.66];const a=AIR_CITY[c];if(a)return a;const k=Object.keys(AIR_CITY).find(x=>x.split(' / ')[0].trim()===c);return k?AIR_CITY[k]:null}
+function incClimate(c,lat,lon,mon){
+  if(c==='Jakarta')return (mon>=10||mon<=2)?0.10:0.03;
+  if(lat>-12&&lat<20&&lon>95&&lon<150)return (mon>=9||mon<=3)?0.045:0.02;
+  if(lat>=42)return (mon===11||mon<=1)?0.05:((mon>=5&&mon<=7)?0.025:0.012);
+  if(lat>=20&&lat<42&&lon>100&&lon<150)return (mon>=7&&mon<=9)?0.04:0.012;
+  if(lon>60&&lon<95&&lat>5&&lat<35)return (mon>=5&&mon<=8)?0.04:0.01;
+  if(lat<-20)return (mon>=11||mon<=2)?0.03:0.012;
+  return 0.012}
+function incWeather(d,f){
+  const out=[],mon=new Date(d*86400000).getUTCMonth();
+  incAirports().forEach((c,i)=>{
+    const g=incGeo(c);if(!g)return;const p=incClimate(c,g[0],g[1],mon)*INC_SCALE.wx*f;if(incU(d,1,i)>=p)return;
+    const off=Math.round(g[1]/15)*60,r=n=>incU(d,2+n,i);let st,dur,mode,slow=45,note='Thunderstorms';
+    if(c==='Jakarta'){st=13*60+Math.floor(r(0)*270);dur=60+Math.floor(r(1)*90);mode=r(2)<0.35?'closed':'slow';slow=r(3)<0.5?30:45;note='Thunderstorm over the airport'}
+    else if(g[0]>=42&&(mon===11||mon<=1)&&r(0)<0.6){st=300+Math.floor(r(1)*180);dur=120+Math.floor(r(2)*120);mode=r(3)<0.3?'closed':'slow';slow=r(4)<0.5?60:90;note='Fog and low visibility'}
+    else if(g[0]>=20&&g[0]<42&&g[1]>100&&g[1]<150&&mon>=7&&mon<=9){st=Math.floor(r(0)*14*60);dur=240+Math.floor(r(1)*240);mode=r(2)<0.7?'closed':'slow';slow=90;note='Typhoon'}
+    else{st=12*60+Math.floor(r(0)*420);dur=60+Math.floor(r(1)*120);mode=r(2)<0.4?'closed':'slow'}
+    const from=st-off+420;
+    out.push({id:'gen_'+d+'_wx_'+c.replace(/\W+/g,''),v:1,scope:'ops',src:'gen',kind:'weather',date:incDs(d),airport:c,mode,slowMin:slow,fromMin:from,untilMin:from+dur,cause:'weather',note,atMin:from-60,at:incHm(from-60)})});
+  return out}
+function incStrikes(d,f){
+  const out=[],eu=incAirports().filter(c=>{const g=incGeo(c);return g&&g[0]>40&&g[1]<45});if(!eu.length)return out;
+  for(let k=0;k<3;k++){const sd=d-k;if(incU(sd,50,0)>=INC_SCALE.strike*f)continue;const len=1+Math.floor(incU(sd,52,0)*3);if(k>=len)continue;
+    const c=eu[Math.floor(incU(sd,51,0)*eu.length)],g=incGeo(c),off=Math.round(g[1]/15)*60,from=6*60-off+420;
+    out.push({id:'gen_'+d+'_strike_'+sd,v:1,scope:'ops',src:'gen',kind:'weather',date:incDs(d),airport:c,mode:'slow',slowMin:90,fromMin:from,untilMin:from+8*60,cause:'strike',note:'Ground handlers strike (day '+(k+1)+' of '+len+')',atMin:from-120,at:incHm(from-120)})}
+  return out}
+function incAogs(d,f){
+  const out=[],P=tPlan(),dow=tDow(d),el=P.units.filter(u=>u.t==='r'&&flRuns(u.a,dow)&&flRuns(u.d,dow));if(!el.length)return out;
+  const n=incCount(d,3,INC_SCALE.aog*f);
+  for(let k=0;k<n;k++){const u=el[Math.floor(incU(d,30,k)*el.length)],from=u.a.t+15;if(u.d.t<=from+20)continue;
+    const r=incU(d,31,k),gap=u.d.t-from,extra=r<0.15?-30:(r<0.6?30+Math.floor(incU(d,32,k)*120):(r<0.9?150+Math.floor(incU(d,33,k)*270):1440+Math.floor(incU(d,34,k)*1440))),dur=Math.max(30,gap+extra);
+    out.push({id:'gen_'+d+'_aog_'+k,v:1,scope:'ops',src:'gen',kind:'aog',date:incDs(d),arrival:u.a.id,fromMin:from,untilMin:from+dur,cause:'technical',note:['Hydraulic leak','Engine indication fault','Landing gear sensor','Bleed air fault','Cabin pressurisation'][Math.floor(incU(d,35,k)*5)],atMin:from,at:incHm(from)})}
+  return out}
+function incLates(d,f){
+  const out=[],dow=tDow(d),el=INF_ALL.filter(x=>flRuns(x,dow)&&x.t>=120&&x.t<=1320);if(!el.length)return out;
+  const n=incCount(d,4,INC_SCALE.late*f),W=[[45,30],[60,25],[90,20],[120,12],[180,8],[300,5]],CA=[['technical',25],['crew',20],['atc',25],['weather',25],['strike',5]];
+  const pick=(arr,u)=>{let t=u*arr.reduce((a,x)=>a+x[1],0);for(const x of arr){t-=x[1];if(t<0)return x[0]}return arr[0][0]};
+  for(let k=0;k<n;k++){const fl=el[Math.floor(incU(d,40,k)*el.length)],min=pick(W,incU(d,41,k)),cause=pick(CA,incU(d,42,k));
+    out.push({id:'gen_'+d+'_late_'+k,v:1,scope:'ops',src:'gen',kind:'delay',date:incDs(d),flight:fl.id,minutes:min,cause,note:{technical:'Late departure from origin: technical',crew:'Crew arrived late',atc:'Air traffic flow restriction',weather:'Weather at the origin airport',strike:'Industrial action at the origin'}[cause],atMin:fl.t-120,at:incHm(fl.t-120)})}
+  return out}
+function incDay(d,f){return [...incWeather(d,f),...incStrikes(d,f),...incAogs(d,f),...incLates(d,f)]}
+function incClock(){const t=dayNumOf(new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Jakarta',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()));
+  const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()),g=k=>+p.find(x=>x.type===k).value;return {today:t,nowMin:g('hour')*60+g('minute')}}
+function incKnown(ev,clk){const d=dayNumOf(ev.date);return d<clk.today||(d===clk.today&&ev.atMin<=clk.nowMin)}
+let INC_ALL=[];
+/* generate for the 15-day window; only incidents already known at the clock apply */
+function incApply(idx){
+  const f=JN_OPS.levelFactor;INC_ALL=[];
+  if(!f){JN_OPS.setGenerated([]);return}
+  const clk=incClock();
+  for(let d=idx-TAIL_WARM;d<=idx;d++)incDay(d,f).forEach(ev=>{ev.applied=incKnown(ev,clk);INC_ALL.push(ev)});
+  JN_OPS.setGenerated(INC_ALL.filter(e=>e.applied));
+  /* how many flights a recent weather incident touches (alerts only list the ones that matter) */
+  {const tails=[];tPlan().F.forEach(fl=>fl.tails.forEach(t=>tails.push(t)));
+   INC_ALL.forEach(e=>{if(e.kind==='weather'&&dayNumOf(e.date)>=idx-1)e.hits=wxEffects(e,tails,[idx-1,idx]).length})}}
+function incidentsList(){
+  const clk=incClock(),dec=new Map();(JN_OPS.list()||[]).forEach(o=>{if(o.resolves)dec.set(o.resolves,o)});
+  return INC_ALL.map(e=>Object.assign({},e,{known:incKnown(e,clk),handled:dec.has(e.id),decision:dec.get(e.id)||null}))}
 function opsDelays(idx){
   INF.forEach(f=>{f.dly=0});OUTF.forEach(f=>{f.dly=0});
   if(!window.JN_OPS)return;
+  incApply(idx);
   opsDeriveAog(idx);opsDeriveWx(idx);
   if(!JN_OPS.hasAny())return;
   const P=tPlan(),days=[idx-1,idx];
@@ -3489,7 +3624,7 @@ function pose(e,t){
   const f=(t-k.t[lo])/(k.t[hi]-k.t[lo]);
   return{x:k.x[lo]+(k.x[hi]-k.x[lo])*f,y:k.y[lo]+(k.y[hi]-k.y[lo])*f,h:k.h[lo]+(k.h[hi]-k.h[lo])*f,z:k.z[lo]+(k.z[hi]-k.z[lo])*f};
 }
-window.SIMCORE={ops:{inbound:opsInbound,knockOn:opsKnockOn,swapOptions:opsSwapOptions,aogOptions:opsAogOptions,weatherPreview:opsWeatherPreview},flightTails:id=>[...(FLIGHT_TAILS.get(id)||[])],RX0,RX1,bake,pose,get SCHEDULE_AUDIT(){return v79ScheduleAudit()},setRunwayMode,get runwayMode(){return runwayMode},get ENTS(){return ENTS},get overnightIntegrity(){return ENTS.filter(e=>e.pre).map(e=>({flight:e.id,stand:e.stand?.id||e.stand?.name,source:e.overnightIn?.id,onblock:e.overnightOnblock,appear:e.appear,push:e.pushT,missing:!!e.overnightMissing}))},get STAT(){return STAT},tailInfo,get FLEET(){return FLEET},tailHistory,get TOW(){return ENTS.filter(e=>e.tow&&e.tow.length)},MPP,KD,rdrIcon,rdrDim,flowAt,NX,NY,STANDS,INF,OUTF,RY,RX0,RX1,RWS:RWY};
+window.SIMCORE={incidents:{list:incidentsList,level:()=>JN_OPS.level},ops:{inbound:opsInbound,knockOn:opsKnockOn,swapOptions:opsSwapOptions,aogOptions:opsAogOptions,weatherPreview:opsWeatherPreview},flightTails:id=>[...(FLIGHT_TAILS.get(id)||[])],RX0,RX1,bake,pose,get SCHEDULE_AUDIT(){return v79ScheduleAudit()},setRunwayMode,get runwayMode(){return runwayMode},get ENTS(){return ENTS},get overnightIntegrity(){return ENTS.filter(e=>e.pre).map(e=>({flight:e.id,stand:e.stand?.id||e.stand?.name,source:e.overnightIn?.id,onblock:e.overnightOnblock,appear:e.appear,push:e.pushT,missing:!!e.overnightMissing}))},get STAT(){return STAT},tailInfo,get FLEET(){return FLEET},tailHistory,get TOW(){return ENTS.filter(e=>e.tow&&e.tow.length)},MPP,KD,rdrIcon,rdrDim,flowAt,NX,NY,STANDS,INF,OUTF,RY,RX0,RX1,RWS:RWY};
 })();
 </script><script>(function(){
 'use strict';

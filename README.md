@@ -2,6 +2,17 @@
 Jakarta Northshore simulator hosted with GitHub Pages
 
 ## Operations (the "Operations" button)
+**Incidents happen by themselves; you react.** A deterministic generator (a pure function of the date and the *disruption level*:
+Off / Calm / Realistic / Chaos) creates weather at airports (climate and season dependent, Jakarta thunderstorms in the rainy season,
+winter fog in northern Europe, typhoons, monsoon), aircraft failures at the turn, late inbound flights, and rare multi-day strikes.
+Incidents known at the current clock apply automatically (delays, holds, closures, aircraft out of service); for today they are revealed as
+the real clock passes (a banner announces a new one, and applying it reloads the page). The **Alerts** list at the top of the hub shows
+what is open, with a *Handle* button that opens the recovery screen pre-filled (wait, swap aircraft, bring in a spare). Only your
+*decisions* are saved (linked to the incident); the incidents themselves are regenerated identically from the date, so history is stable.
+`?incidents=off|calm|realistic|chaos` overrides the saved level.
+
+The hub also has manual tools, below, for building a scenario yourself (under *Create a scenario yourself*).
+
 One hub with two kinds of records, both stored in the same dated log:
 
 **Something happened (reactive disruptions)**
