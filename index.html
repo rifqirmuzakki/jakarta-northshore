@@ -6014,14 +6014,19 @@ function legRow(l,now,today,prior){
   if(observedDeparture!=null){predictedDeparture=observedDeparture;}
   const enrouteVariance=Math.max(-4,Math.min(9,pd(l.flight+'|'+l.d+'|block','o')));
   const arrx=(window.JN_OPS&&l.d!=null)?JN_OPS.arrExtraFor(l.d,l.flight):0;
-  let predictedArrival=predictedDeparture+block+enrouteVariance+arrx;
+  /* ATD/ATA are wheels-off / touchdown, while STD/STA (and so the block) are off-block / on-block. For the legs the simulator has
+     actually flown (today) the take-off already carries the taxi and the hold, so the airborne time is the block less the taxi at
+     both ends; otherwise an aircraft that left late would be shown arriving, and leaving again, before it could have. */
+  const simFlown=l.d===today&&(observedDeparture!=null||(l.kind==='a'&&e&&Number.isFinite(e.td)));
+  const air=simFlown?Math.max(20,block-18):block;
+  let predictedArrival=predictedDeparture+air+enrouteVariance+arrx;
   // If the engine has already recorded touchdown, use that event rather than
   // a second, random arrival calculation. Past records remain deterministic estimates.
   if(l.d===today&&e&&l.kind==='a'&&Number.isFinite(e.td)){
     const liveArrival=today*1440+e.td/60;
     predictedArrival=Math.max(predictedDeparture+1,liveArrival);
     // An inbound the simulator already has in the air cannot be shown as not yet departed.
-    predictedDeparture=Math.min(predictedDeparture,predictedArrival-block-enrouteVariance);
+    predictedDeparture=Math.min(predictedDeparture,predictedArrival-air-enrouteVariance);
   }
   const outState={arrival:predictedArrival,to:l.to,ac:prior?.ac};
   // A scheduled flight is not a completed flight: hide its future ATD and ATA.
