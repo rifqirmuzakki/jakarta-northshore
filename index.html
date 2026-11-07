@@ -6616,6 +6616,12 @@ function v105HistorySectors(r){
   // History is newest first. ORD→EDI precedes EDI→JKT; JKT→EDI precedes EDI→ORD.
   return arr?[src,untimed]:[untimed,src];
 }
+/* History is read as an operations log. Sort by the latest physical event on
+   the sector, in the common simulator clock, rather than its local display
+   time or the Jakarta-boundary timetable record. */
+function historyMoment(r){
+  return r.ata??r.atd??r.eta??r.etd??r.l.sta??r.l.std??-Infinity;
+}
 function render(H){
   const now=jakMin(),today=H.today;
   const nm=(typeof NAME!=='undefined'&&NAME[H.c])||H.c;
@@ -6654,6 +6660,7 @@ function render(H){
   const yearLabel=new Date(today*86400000).toLocaleDateString('en-GB',{year:'numeric',timeZone:'UTC'});
   const groups=new Map();
   rows.forEach(r=>{ const d=localAt(r.l.std,r.l.from).day; if(!groups.has(d))groups.set(d,[]); groups.get(d).push(...v105HistorySectors(r)); });
+  groups.forEach(rs=>rs.sort((a,b)=>historyMoment(b)-historyMoment(a)));
   const dayKeys=[...groups.keys()].sort((a,b)=>b-a);
   const history=dayKeys.map(d=>{
     const rs=groups.get(d)||[];
@@ -6747,7 +6754,7 @@ function flightRows(id,now){
     H.legs.slice().sort((a,b)=>a.std-b.std).forEach(l=>{
       const item=legRow(l,now,H.today,prev,profile);prev={...item.nextState,ac:H.ac};
       if(l.flight===id)v105HistorySectors(item).filter(x=>x.tone!=='untimed').forEach(x=>out.push({r:x,reg,ac:H.ac,today:H.today}))})});
-  return out.sort((a,b)=>b.r.l.std-a.r.l.std)}
+  return out.sort((a,b)=>historyMoment(b.r)-historyMoment(a.r))}
 /* Carriers whose aircraft are not tracked individually (foreign airlines): same simulated timing chain per day,
    built from the schedule, with no registration. */
 function flightRowsFallback(meta,id,now,outb){
@@ -6760,7 +6767,7 @@ function flightRowsFallback(meta,id,now,outb){
                 :{d,kind:'a',flight:id,from:meta.city,to:'Jakarta',std:base+meta.t-blk,sta:base+meta.t,ent:d===today?ent:null,generated:false};
     const item=legRow(l,now,today,null,profile);
     v105HistorySectors(item).filter(x=>x.tone!=='untimed').forEach(x=>out.push({r:x,reg:null,ac:meta.ac,today}))}
-  return out.sort((a,b)=>b.r.l.std-a.r.l.std)}
+  return out.sort((a,b)=>historyMoment(b.r)-historyMoment(a.r))}
 /* the times the flight history shows (ATD, ETA, ATA), so the map cards agree with it */
 window.JN_FLIGHT_TIMES=(id,std)=>{try{const c=C(),now=jakMin();let rows=flightRows(id,now);
   if(!rows.length){const AF=c.allFlights?c.allFlights():null,meta=[...(c.OUTF||[]),...(c.INF||[])].find(f=>f.id===id)||(AF?[...AF.out,...AF.in].find(f=>f.id===id):null);if(meta)rows=flightRowsFallback(meta,id,now,!!(c.OUTF||[]).find(x=>x.id===id)||!!(AF&&AF.out.find(x=>x.id===id)))}
