@@ -7469,9 +7469,12 @@ function stopFollow(){if(fol){fol=false;redraw();if(sel){card._wh=null;renderCar
 const KMAX=150,KEDGE=112,mppOf=()=>111320*Math.cos(JKT[0]*RAD)/view.k;
 const getView=()=>{const lat=(2*Math.atan(Math.exp(view.cy*RAD))-Math.PI/2)/RAD;return {lat,lon:view.cx,mpp:111320*Math.cos(lat*RAD)/view.k}};
 const setViewLL=(lat,lon,mpp)=>{view.cx=lon;view.cy=my(lat);if(mpp)view.k=Math.max(1.2,Math.min(KMAX,111320*Math.cos(lat*RAD)/mpp));redraw()};
-function toAirspace(){const v=getView();if(gcd([v.lat,v.lon],JKT)>900||!M()||!M().setView)return;hide();M().setMode('air');M().setView(v.lat,v.lon,Math.max(v.mpp,900));
+function toAirspace(){const v=getView(),m=M();if(gcd([v.lat,v.lon],JKT)>900||!m||!m.setView)return;const tracked=sel&&sel.id;
+  /* A zoom handoff is not a close action: retain the selected flight and let
+     the airspace map own the same trail/camera state. */
+  hide({preserveSelection:true});m.setMode('air');m.setView(v.lat,v.lon,Math.max(v.mpp,900));if(tracked)m.track(tracked);
   document.querySelectorAll('#ops-v16 button').forEach(x=>{x.classList.toggle('active',x.dataset.view==='map')})}
-setInterval(()=>{const m=M();if(on||!m||!m.centre||m.mode!=='air'||document.body.classList.contains('jn-detail'))return;const c=m.centre();if(c.mpp>1500&&gcd([c.lat,c.lon],JKT)<900){show({keepView:true});setViewLL(c.lat,c.lon,c.mpp)}},350);
+setInterval(()=>{const m=M();if(on||!m||!m.centre||m.mode!=='air'||document.body.classList.contains('jn-detail'))return;const c=m.centre();if(c.mpp>1500&&gcd([c.lat,c.lon],JKT)<900){const tracked=m.selId&&m.selId();show({keepView:true});setViewLL(c.lat,c.lon,c.mpp);if(tracked)window.JN_WORLD.select(tracked,{follow:true})}},350);
 /* card */
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const hm=m=>{m=((Math.round(m)%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
@@ -7521,7 +7524,8 @@ function renderCard(){const l=sel;if(!l)return;const now=nowAbs(),m=M(),city=Str
 function show(o){if(on)return;on=true;if(!cv.parentNode){document.body.append(cv,ui);ui.querySelector('#jnw-in').onclick=()=>zoomAt(W/2,H/2,1.5);ui.querySelector('#jnw-out').onclick=()=>zoomAt(W/2,H/2,1/1.5);ui.querySelector('#jnw-fit').onclick=()=>{fit();redraw()};
     ui.querySelector('#jnw-ga').onclick=e=>{gaOnly=!gaOnly;e.currentTarget.setAttribute('aria-pressed',String(gaOnly));e.currentTarget.classList.toggle('on',gaOnly);redraw()}}
   document.body.classList.add('jn-world');cv.hidden=false;ui.hidden=false;size();if(!(o&&o.keepView))fit();document.dispatchEvent(new CustomEvent('jn-world',{detail:true}));draw();raf=requestAnimationFrame(loop)}
-function hide(){if(!on)return;on=false;cancelAnimationFrame(raf);document.body.classList.remove('jn-world');cv.hidden=true;ui.hidden=true;cardOff();sel=null;fol=false;document.dispatchEvent(new CustomEvent('jn-world',{detail:false}))}
+function hide(o){if(!on)return;on=false;cancelAnimationFrame(raf);document.body.classList.remove('jn-world');cv.hidden=true;ui.hidden=true;
+  if(!(o&&o.preserveSelection)){cardOff();sel=null;fol=false}document.dispatchEvent(new CustomEvent('jn-world',{detail:false}))}
 window.addEventListener('resize',()=>{if(on){size();redraw()}});
 /* the phone's close button for the flight card also clears the World selection */
 document.addEventListener('click',e=>{if(on&&sel&&e.target.closest&&e.target.closest('#v49-close-card')){sel=null;fol=false;cardOff();redraw()}},true);
