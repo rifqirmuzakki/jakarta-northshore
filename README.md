@@ -180,3 +180,4 @@ The World, airspace and airport maps now hand over to each other:
 - **No corner at the handoff.** The world route joins the airspace track with a smooth curve that arrives along the airspace track's own heading, so the trail is one continuous line in both views.
 
 Run `node tools/tests/world-tracking.cjs` to check terminal/timetable overlaps for GA731, GA847 and GA877, marker and altitude ownership, trail continuity and rewinds, rebuilt handoffs, and altitude-appropriate arrival status. Terminal poses take precedence over overlapping timetable estimates. When a handoff is unavailable, the selected trail shows the known terminal history until that shared endpoint is ready.
+The same test checks KL7941, 5X6260 and GA736 around midnight: trails start on the runway, sample the complete simulated SID up to the aircraft, and retain the SID after the World handoff, including departures from the previous calendar day.

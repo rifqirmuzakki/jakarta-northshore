@@ -50,4 +50,39 @@ try{const page=await browser.newPage({viewport:{width:390,height:844}}),errors=[
  });
  assert.deepEqual(result.issues,[]);assert.deepEqual(errors,[]);
  console.log('PASS: GA731/847/877 overlap, one terminal marker and altitude, continuous trails, rewind, track rebuilds and flight status');
+ // Real simulated departures around midnight, including the three reported flights.
+ await page.goto('https://northshore.test/index.html?clock=2026-11-07T00:21&incidents=off');
+ await page.waitForFunction(()=>window.SIMDBG&&window.JN_WORLD&&SIMCORE.FLEET);
+ const midnight=await page.evaluate(()=>{
+  JN_SCN.setPaused(true);SIMDBG.pause();const W=__trackingTest,M=JN_MAP,A=AIRCORE,day=SIMCORE.FLEET.day,issues=[],details=[];
+  const check=(v,m)=>{if(!v)issues.push(m)},near=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1])<1e-7;
+  const move=seconds=>{SIMDBG.T=seconds;JN_SCN.setTime((day*1440-420)*60000+seconds*1000)};
+  for(const id of ['KL 7941','5X 6260','GA 736']){
+   const e=M.ent(id),tr=e?.dT;check(!!tr,id+' departure track missing');if(!tr)continue;
+   const complete=M.depTrackLL(id),start=A.posAtOff(tr,tr.t0),end=A.posAtOff(tr,tr.t1);
+   check(complete.length>10,id+' SID trail too short');
+   check(near(complete[0],A.airLL(start.x,start.y)),id+' trail does not start at runway');
+   check(near(complete.at(-1),A.airLL(end.x,end.y)),id+' trail misses exact SID handoff');
+   // Sample an active track using a wall clock wrapped onto another date.
+   const raw=Math.max(tr.t0+20,(tr.t0+tr.t1)/2),clock=((raw%86400)+86400)%86400;move(clock);
+   const q=A.poseOf(e,clock);check(q?.tr===tr,id+' wrapped departure pose missing');if(q?.tr!==tr)continue;
+   const trail=M.trailLL(id),expected=[];
+   for(let t=tr.t0;t<clock+q.off;t+=20){const p=A.posAtOff(tr,t);if(p)expected.push(A.airLL(p.x,p.y))}expected.push(A.airLL(q.x,q.y));
+   check(trail.length===expected.length&&trail.every((p,i)=>near(p,expected[i])),id+' wrapped trail omits or skips SID samples');
+   const l=JN_WORLD.legOf(id),r=W.routeFor(l),pts=W.selectedTrail(l,r,[A.airLL(q.x,q.y)[1],A.airLL(q.x,q.y)[0]],true);
+   check(near([pts[0][1],pts[0][0]],complete[0]),id+' active trail does not start on runway');
+   // After handoff, yesterday's World instance must keep the whole SID prefix.
+   const absolute=tr.t1+600,dateOffset=Math.floor(absolute/86400);move(absolute-dateOffset*86400);
+   const prev=W.getLegs().find(l=>l.id===id&&l.d===day-dateOffset);
+   check(!!prev?.hand,id+' adjacent-day handoff missing');if(!prev?.hand)continue;
+   const rr=W.routeFor(prev),full=W.selectedTrail(prev,rr,[rr.lon.at(-1),rr.lat.at(-1)],false);
+   check(complete.every((p,i)=>near([full[i]?.[1],full[i]?.[0]],p)),id+' World trail does not preserve SID');
+   check(near(complete.at(-1),prev.hand),id+' SID and World handoff disconnected');
+   details.push({id,wrappedOffset:q.off,trailPoints:trail.length,sidPoints:complete.length});
+  }
+  // The screenshot's GA736 instance left on the previous calendar day.
+  move(21*60);const ga=JN_WORLD.legOf('GA 736');check(ga?.d===day-1&&!!ga.hand,'GA736 previous-day SID missing at 00:21');
+  return {issues,details};
+ });
+ assert.deepEqual(midnight.issues,[]);assert.deepEqual(errors,[]);console.log('PASS: midnight departures start on runway and preserve SID into World routes',midnight.details);
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});
