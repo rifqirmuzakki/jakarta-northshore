@@ -94,3 +94,11 @@ One hub with two kinds of records, both stored in the same dated log:
 
 Record shapes: timetable `{id, v:1, scope:'timetable', kind:'add'|'amend'|'cancel', from, to, ...}`; operational
 `{id, v:1, scope:'ops', kind:'delay'|'swap'|'aog'|'spare'|'weather', date, at, ...}`. The log is meant to be persisted as history later.
+
+## World view (the "World" button)
+
+Shows the Jakarta flights that are in the air right now on a world map (Natural Earth basemap, public domain), all airlines, Garuda highlighted ("GA only" filter). Aircraft sit on typical routings, not great-circle arcs: each destination follows a hand-curated corridor graph (`tools/world/graph.js`) chosen with a small jet-stream cost (eastbound is cheaper than westbound, so the track out and the track back can differ). Airspace we do not route through (Russia, Ukraine and Belarus, Iran, Iraq, Syria, the Black Sea) simply has no node. Routes are approximate, not real airways. Multi-stop destinations are drawn to the first city.
+
+Position is derived from the timetable (airborne from STD+14 min to STA−8 min), delays of the viewed day included. Tap an aircraft for its card (arrival in local time, time to go, links to flight and aircraft history). Pan, pinch or wheel to zoom; Esc closes the card, then the view.
+
+Regenerate the data: `node tools/world/build-routes.js --embed` (routes, after editing the graph or timetable) and `node tools/world/build-basemap.js <node_modules>` (basemap; needs `world-atlas@2.0.2` and `topojson-client@3.1.0`).
