@@ -656,6 +656,10 @@ const V104_SECTORS=Object.freeze({
   'Melbourne / Santiago':{via:'Melbourne',viaCode:'MEL',final:'Santiago',finalCode:'SCL'},
   'Sydney / Buenos Aires':{via:'Sydney',viaCode:'SYD',final:'Buenos Aires',finalCode:'EZE'}
 });
+/* Pilot physical timetable for the Edinburgh / Chicago rotation. Minutes are
+   common-clock block times; the history page converts them to local airport
+   clocks. The published GA 10 / 11 times remain the Jakarta-boundary times. */
+const V186_GA10_11=Object.freeze({turn:120,edinburghChicagoBlock:485});
 function v104Sector(city,isArrival){
  const a=V104_SECTORS[city];if(!a)return null;
  const codes=isArrival?[a.finalCode,a.viaCode,'JKT']:['JKT',a.viaCode,a.finalCode];
@@ -6569,6 +6573,27 @@ function mobileRow(r){
 function v105HistorySectors(r){
   const l=r.l, arr=l.from!=='Jakarta', d=v104Sector(arr?l.from:l.to,arr);
   if(!d)return [r];
+  if((l.flight==='GA 10'||l.flight==='GA 11')&&d.via==='Edinburgh'&&d.city==='Chicago'){
+    const turn=V186_GA10_11.turn,other=V186_GA10_11.edinburghChicagoBlock,
+      jktBlock=l.sta-l.std;
+    const row=(from,to,std,sta,atd,ata,n,note,isBoundary)=>({
+      ...r,atd,ata,etd:atd,eta:ata,
+      atdActual:isBoundary&&!!r.atdActual,ataActual:isBoundary&&!!r.ataActual,
+      st:isBoundary?r.st:(ata!=null?'Arrived at '+to:'Scheduled'),
+      l:{...l,from,to,std,sta,rotationMate:null,turnMinutes:null,
+         v105Sector:n+' / 2',v105Note:note,v105Date:l.std}
+    });
+    if(!arr){
+      const s1=row('Jakarta','Edinburgh',l.std,l.sta,r.atd,r.ata,1,'Jakarta → Edinburgh',true);
+      const s2std=l.sta+turn,s2atd=r.ata==null?null:r.ata+turn;
+      return [s1,row('Edinburgh','Chicago',s2std,s2std+other,s2atd,s2atd==null?null:s2atd+other,2,'Edinburgh stop · 2h',false)];
+    }
+    const s1sta=l.std-turn,s1std=s1sta-other,s1ata=r.atd==null?null:r.atd-turn;
+    return [
+      row('Chicago','Edinburgh',s1std,s1sta,s1ata==null?null:s1ata-other,s1ata,1,'Edinburgh stop · 2h',false),
+      row('Edinburgh','Jakarta',l.std,l.sta,r.atd,r.ata,2,'Edinburgh → Jakarta',true)
+    ];
+  }
   const src={...r,l:{...l,from:arr?d.via:'Jakarta',to:arr?'Jakarta':d.via,
     v105Sector:arr?'2 / 2':'1 / 2',v105Note:'Timed Jakarta-boundary sector',
     v105Date:l.std}};
