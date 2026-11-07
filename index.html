@@ -6588,13 +6588,15 @@ function v105HistorySectors(r){
   if(physical){
     const turn=physical.turn,other=physical.block;
     const turnLabel=Math.floor(turn/60)+'h'+(turn%60?' '+(turn%60)+'m':'');
-    const row=(from,to,std,sta,atd,ata,n,note,isBoundary)=>({
-      ...r,atd,ata,etd:atd,eta:ata,
-      atdActual:isBoundary&&!!r.atdActual,ataActual:isBoundary&&!!r.ataActual,
-      st:isBoundary?r.st:(ata!=null?'Arrived at '+to:'Scheduled'),
-      l:{...l,from,to,std,sta,rotationMate:null,turnMinutes:null,
-         v105Sector:n+' / 2',v105Note:note,v105Date:l.std}
-    });
+    const row=(from,to,std,sta,atd,ata,n,note,isBoundary)=>{
+      /* A completed first sector must not inherit LIVE from its parent flight. */
+      const tone=isBoundary?r.tone:(ata!=null?'ok':(atd!=null?'live':'scheduled'));
+      const st=isBoundary?r.st:(ata!=null?'Arrived at '+to:(atd!=null?'Departed '+from:'Scheduled'));
+      return {...r,atd,ata,etd:atd,eta:ata,tone,st,
+        atdActual:isBoundary&&!!r.atdActual,ataActual:isBoundary&&!!r.ataActual,
+        l:{...l,from,to,std,sta,rotationMate:null,turnMinutes:null,
+           v105Sector:n+' / 2',v105Note:note,v105Date:l.std}};
+    };
     if(!arr){
       const s1=row('Jakarta',d.via,l.std,l.sta,r.atd,r.ata,1,'Jakarta → '+d.via,true);
       const s2std=l.sta+turn,s2atd=r.ata==null?null:r.ata+turn;
