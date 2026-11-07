@@ -650,16 +650,27 @@ const NAME={"3U":"Sichuan Airlines","5J":"Cebu Pacific","5X":"UPS Airlines","6E"
 /* v104: An intermediate-stop service is one published service with two physical sectors.
    We only have a Jakarta-boundary schedule record, not separate EDI/ORD event times. */
 const V104_SECTORS=Object.freeze({
+  'London / New York':{via:'London',viaCode:'LHR',final:'New York',finalCode:'JFK'},
+  'Bangkok / Copenhagen':{via:'Bangkok',viaCode:'BKK',final:'Copenhagen',finalCode:'CPH'},
+  'Manchester / Boston':{via:'Manchester',viaCode:'MAN',final:'Boston',finalCode:'BOS'},
+  'Barcelona / Sao Paulo':{via:'Barcelona',viaCode:'BCN',final:'Sao Paulo',finalCode:'GRU'},
+  'Madrid / Lisbon':{via:'Madrid',viaCode:'MAD',final:'Lisbon',finalCode:'LIS'},
   'Edinburgh / Chicago':{via:'Edinburgh',viaCode:'EDI',final:'Chicago',finalCode:'ORD'},
   'Geneva / Washington':{via:'Geneva',viaCode:'GVA',final:'Washington',finalCode:'IAD'},
   'Tokyo Haneda / Vancouver':{via:'Tokyo Haneda',viaCode:'HND',final:'Vancouver',finalCode:'YVR'},
   'Melbourne / Santiago':{via:'Melbourne',viaCode:'MEL',final:'Santiago',finalCode:'SCL'},
   'Sydney / Buenos Aires':{via:'Sydney',viaCode:'SYD',final:'Buenos Aires',finalCode:'EZE'}
 });
-/* Pilot physical timetable for the Edinburgh / Chicago rotation. Minutes are
-   common-clock block times; the history page converts them to local airport
-   clocks. The published GA 10 / 11 times remain the Jakarta-boundary times. */
-const V186_GA10_11=Object.freeze({turn:120,edinburghChicagoBlock:485});
+/* Physical stop and onward-sector times for the published multi-leg services.
+   Jakarta-boundary STD/STA remain the timetable source; history derives the
+   timed onward sector in a common clock and displays each airport locally. */
+const V186_MULTILEG=Object.freeze({
+  'London / New York':{turn:120,block:425}, 'Bangkok / Copenhagen':{turn:105,block:650},
+  'Manchester / Boston':{turn:120,block:395}, 'Barcelona / Sao Paulo':{turn:120,block:665},
+  'Madrid / Lisbon':{turn:75,block:65}, 'Edinburgh / Chicago':{turn:120,block:485},
+  'Geneva / Washington':{turn:120,block:500}, 'Tokyo Haneda / Vancouver':{turn:120,block:570},
+  'Melbourne / Santiago':{turn:135,block:850}, 'Sydney / Buenos Aires':{turn:135,block:885}
+});
 function v104Sector(city,isArrival){
  const a=V104_SECTORS[city];if(!a)return null;
  const codes=isArrival?[a.finalCode,a.viaCode,'JKT']:['JKT',a.viaCode,a.finalCode];
@@ -6573,9 +6584,10 @@ function mobileRow(r){
 function v105HistorySectors(r){
   const l=r.l, arr=l.from!=='Jakarta', d=v104Sector(arr?l.from:l.to,arr);
   if(!d)return [r];
-  if((l.flight==='GA 10'||l.flight==='GA 11')&&d.via==='Edinburgh'&&d.city==='Chicago'){
-    const turn=V186_GA10_11.turn,other=V186_GA10_11.edinburghChicagoBlock,
-      jktBlock=l.sta-l.std;
+  const physical=V186_MULTILEG[arr?l.from:l.to];
+  if(physical){
+    const turn=physical.turn,other=physical.block;
+    const turnLabel=Math.floor(turn/60)+'h'+(turn%60?' '+(turn%60)+'m':'');
     const row=(from,to,std,sta,atd,ata,n,note,isBoundary)=>({
       ...r,atd,ata,etd:atd,eta:ata,
       atdActual:isBoundary&&!!r.atdActual,ataActual:isBoundary&&!!r.ataActual,
@@ -6584,14 +6596,14 @@ function v105HistorySectors(r){
          v105Sector:n+' / 2',v105Note:note,v105Date:l.std}
     });
     if(!arr){
-      const s1=row('Jakarta','Edinburgh',l.std,l.sta,r.atd,r.ata,1,'Jakarta → Edinburgh',true);
+      const s1=row('Jakarta',d.via,l.std,l.sta,r.atd,r.ata,1,'Jakarta → '+d.via,true);
       const s2std=l.sta+turn,s2atd=r.ata==null?null:r.ata+turn;
-      return [s1,row('Edinburgh','Chicago',s2std,s2std+other,s2atd,s2atd==null?null:s2atd+other,2,'Edinburgh stop · 2h',false)];
+      return [s1,row(d.via,d.city,s2std,s2std+other,s2atd,s2atd==null?null:s2atd+other,2,d.via+' stop · '+turnLabel,false)];
     }
     const s1sta=l.std-turn,s1std=s1sta-other,s1ata=r.atd==null?null:r.atd-turn;
     return [
-      row('Chicago','Edinburgh',s1std,s1sta,s1ata==null?null:s1ata-other,s1ata,1,'Edinburgh stop · 2h',false),
-      row('Edinburgh','Jakarta',l.std,l.sta,r.atd,r.ata,2,'Edinburgh → Jakarta',true)
+      row(d.city,d.via,s1std,s1sta,s1ata==null?null:s1ata-other,s1ata,1,d.via+' stop · '+turnLabel,false),
+      row(d.via,'Jakarta',l.std,l.sta,r.atd,r.ata,2,d.via+' → Jakarta',true)
     ];
   }
   const src={...r,l:{...l,from:arr?d.via:'Jakarta',to:arr?'Jakarta':d.via,

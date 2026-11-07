@@ -28,6 +28,11 @@ that lands on a later weekday needs its return flight's operating days shifted a
 `schedule-changes.js` (Taipei GA 938/939, Amsterdam GA 44/45, Wellington GA 56/57, AlUla GA 52/53, Baku GA 54/55, Ankara GA 46/47, Marrakech GA 48/49,
 Casablanca GA 50/51), from 2026-11-07.
 
+**Multi-leg history.** Aircraft and flight history split every listed two-sector service into its physical sectors. The Jakarta-boundary
+sector retains the published timetable and simulated actuals; the onward sector receives a published stop allowance, a sector block time,
+and matching simulated take-off and touchdown times. Each time is displayed in the local time of its airport. This is a history display
+model for now: the fleet allocator and World map still plan and draw the Jakarta-boundary sector only.
+
 **Operations log** (hub > Log). A timeline of everything on the viewed day: incidents as they became known, controller decisions, and your own decisions,
 each linked to the incident it answers, with the outcome (the flight's delay and its next departure now). Filter by incidents / controller / you; routine
 "no action needed" controller notes are hidden unless asked for. *Copy handover* and *Download .txt* produce a plain-text shift summary. *My changes and
