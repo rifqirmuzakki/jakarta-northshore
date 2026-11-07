@@ -4798,7 +4798,8 @@ window.JN_MAP={focus(id){const e=(C.ENTS||[]).find(x=>(x.a&&x.a.id===id)||(x.d&&
     if(mode!==want)setMode(want);
     setSel(e,{follow:true,f});if(want==='air'){if(k<2.2||k>12){k=2.5;}}else if(k<3.4)k=3.4;ap();return true}
   const trailLL=id=>{const e=ent(id);if(!e)return null;const q=A.poseOf(e,T);if(!q)return null;const tr=q.tr,o=[];for(let t=tr.t0;t<T;t+=20){const qq=A.posAtOff(tr,t);if(qq)o.push(A.airLL(qq.x,qq.y))}o.push(A.airLL(q.x,q.y));return o};
-  Object.assign(M,{ent,pose,airPoses,llAt,hdAt,clear:()=>setSel(null),centre,setView,track,trailLL,time:()=>T,setMode:m=>{if(mode!==m)setMode(m)},selId:()=>{if(!sel)return null;const f=pinF||curFlight(sel,T);return f?f.id:null},ents:()=>C.ENTS});
+  const depTrackLL=id=>{const e=ent(id);const tr=e&&e.dT&&e.d&&e.d.id===id?e.dT:null;if(!tr)return null;const o=[];for(let t=tr.t0;t<=tr.t1;t+=20){const q=A.posAtOff(tr,t);if(q)o.push(A.airLL(q.x,q.y))}return o};
+  Object.assign(M,{ent,pose,airPoses,llAt,hdAt,depTrackLL,clear:()=>setSel(null),centre,setView,track,trailLL,time:()=>T,setMode:m=>{if(mode!==m)setMode(m)},selId:()=>{if(!sel)return null;const f=pinF||curFlight(sel,T);return f?f.id:null},ents:()=>C.ENTS});
   Object.defineProperty(M,'mode',{get:()=>mode,configurable:true});
 })();
 let cardTick=0,selTick=0;
@@ -7248,6 +7249,8 @@ function marker(o,isSel,tag){const l=o.l,a=o.air,ring=l.dly>=15?RING.late:(a&&a.
   if(isSel){ctx.beginPath();ctx.arc(o.x,o.y,r+5,0,7);ctx.lineWidth=1.8;ctx.strokeStyle='#33434b';ctx.stroke()}
   if(tag){const t=String(l.id).replace(' ','')+(o.alt!=null?' '+(o.alt>=11000?'FL'+String(Math.round(o.alt/100)).padStart(3,'0'):(Math.round(o.alt/100)*100)+"'"):'');ctx.font='700 10px '+FONT;ctx.lineWidth=3;ctx.lineJoin='round';ctx.strokeStyle='#fbfaf6';ctx.strokeText(t,o.x+r+5,o.y+3.5);ctx.fillStyle='#33434b';ctx.fillText(t,o.x+r+5,o.y+3.5)}}
 function airSyn(a,day){return byId.get(a.id)||{id:a.id,c:a.c,city:'',ac:'',dir:a.kind==='dep'?'out':'in',d:day,dly:0,sta:0,std:0,off:0,land:0}}
+let dtc=null;
+function depTrack(id){if(dtc&&dtc.id===id)return dtc.v;const m=M(),t=m&&m.depTrackLL?m.depTrackLL(id):null;const v=t&&t.length>1?t.map(q=>[q[1],q[0]]):[[JKT[1],JKT[0]]];dtc={id,v};return v}
 let atc=null;
 function airTrailCached(id,m){const t=performance.now();if(!atc||atc.id!==id||t-atc.t>1500)atc={id,t,v:m.trailLL(id)};return atc.v}
 function ensureSA(l,r){if(l.hand&&l.sA==null)l.sA=sAtDist(r,gcd(JKT,l.hand),l.dir==='in');return l.sA}
@@ -7269,7 +7272,7 @@ function draw(){
   ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(base,0,0);ctx.scale(dpr,dpr);
   if(sel&&selLL){const l=sel,r=l.city?routeFor(l):null;if(r){const cur=[selLL[0],selLL[1]],u=Math.max(0,Math.min(1,(now-l.off)/(l.land-l.off))),p=distFrac(u),P=l.hand?legPath(l,r):r;let pts;
     if(l.dir==='in')pts=selAir?pathUpTo(P,P.len):pathUpTo(P,p*P.len);
-    else if(l.hand)pts=selAir?[]:[[JKT[1],JKT[0]],...pathUpTo(P,p*P.len)];
+    else if(l.hand)pts=selAir?[]:[...depTrack(selId),...pathUpTo(P,p*P.len)];
     else pts=pathUpTo(P,p*P.len);
     if(selAir){const m=M(),tl=m&&m.trailLL?airTrailCached(selId,m):null;if(tl)tl.forEach(q=>pts.push([q[1],q[0]]))}
     pts.push(cur);
