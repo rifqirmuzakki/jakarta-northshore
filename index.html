@@ -4093,6 +4093,7 @@ const AIR={on:false,o:{star:1,sid:1,hold:1,fix:1,lbl:1},sel:null,follow:false,ca
   W:1500000,X0:-1000000,X1:1000000,Y0:-1200000,Y1:800000,HW:338400,EXT:230000,HV:113,HMIN:100,upp:100};
 const AIR_LON0=106.95,AIR_LAT0=-6.0,AIR_XC=740,AIR_YC=660,AIR_KX=111320*Math.cos(6*Math.PI/180),AIR_KY=110574;
 const airXY=(la,lo)=>[AIR_XC+(lo-AIR_LON0)*AIR_KX,AIR_YC-(la-AIR_LAT0)*AIR_KY];
+const airLL=(x,y)=>[AIR_LAT0-(y-AIR_YC)/AIR_KY,AIR_LON0+(x-AIR_XC)/AIR_KX];
 /* The airport is drawn rotated 20 deg anticlockwise (runways 25/07, parallel to CGK) and sits 13 km north of the original site, clear of the CGK runway 25 final.
    The sim and the ground map stay in the airport frame; everything the airspace takes from them is carried into the north-up map frame by airP / airV. */
 const AIR_TH=-20*Math.PI/180,AIR_DY=-13000,AIR_CA=Math.cos(AIR_TH),AIR_SA=Math.sin(AIR_TH);
@@ -4387,7 +4388,7 @@ function routeSVG(tr,q){
   const R=tr.sd,i=q&&q.ei!=null?Math.min(R.n-1,q.ei):0;
   return `<path class="a-sel past dep" d="${airPath(R,0,i)}"/><path class="a-sel fut dep" d="${airPath(R,i,tr.iEnd)}"/>`;
 }
-window.AIRCORE={AIR,gw,airP,airV,AIR_C,AIR_XC,AIR_YC,AIR_DY,AIR_TH,MPP,KD,PXC,PYC,buildTracks,poseOf,posAtOff,geoSVG,refSVG,labelsSVG,procSVG,routeSVG,AIR_PLANE,airFL,airFLs,airGateOf,airRwy};
+window.AIRCORE={airXY,airLL,AIR,gw,airP,airV,AIR_C,AIR_XC,AIR_YC,AIR_DY,AIR_TH,MPP,KD,PXC,PYC,buildTracks,poseOf,posAtOff,geoSVG,refSVG,labelsSVG,procSVG,routeSVG,AIR_PLANE,airFL,airFLs,airGateOf,airRwy};
 })();
 </script><script>(function(){
 const C=SIMCORE,A=AIRCORE,AIR=A.AIR,KD=C.KD,MPP=C.MPP;
@@ -4758,7 +4759,7 @@ function cardHTML(e){
  '<div class="jc-now"><span class="jb-s2 '+tone+'"><i></i>'+esc(st)+(at!=null?' '+fmt(at):'')+'</span>'+perf+'<span class="jc-tag '+(dom?'d':'i')+'">'+(dom?'Domestic':'International')+'</span></div>'+
  '<div class="jc-gate"><div><small>Terminal</small><b>'+esc(term==='R'?'Remote':term==='V'?'VIP':term)+'</b></div><div><small>'+(term==='R'?'Stand':'Gate')+'</small><b>'+esc(e.stand.id)+'</b></div><div><small>'+lab[0]+'</small><b>'+fmt(sched)+'</b></div></div>'+
  hero+tabs+'<section role="tabpanel" class="v57-panel active" data-v57-panel="journey">'+timeGrid+delayChainHTML(e,f,arr)+tele+milestone+'<ol class="jc-tl">'+(tl||'<li class="v57-empty">No timeline events available</li>')+'</ol></section><section role="tabpanel" class="v57-panel" data-v57-panel="rotation">'+rotation+rotNote+'</section><section role="tabpanel" class="v57-panel" data-v57-panel="aircraft">'+aircraftPanel+'</section>'+
- '<div class="jc-foot"><button id="cFol" class="'+(follow?'on':'')+'">'+(follow?'Following aircraft':'Follow aircraft')+'</button></div>';
+ '<div class="jc-foot"><button id="cFol" class="'+(follow?'on':'')+'">'+(follow?'Following aircraft':'Follow aircraft')+'</button><button type="button" id="cWorld" data-jn-world="'+esc(f.id)+'">On world map</button></div>';
 }
 function setSel(e,opt){
   pinF=(opt&&opt.f)||null;sel=e;flightExpanded=false;trL.innerHTML='';$('aSel').innerHTML='';selTick=0;
@@ -4770,6 +4771,30 @@ function setSel(e,opt){
 }
 /* lets the Operations dock point the map at a flight (only if that flight is being simulated right now) */
 window.JN_MAP={focus(id){const e=(C.ENTS||[]).find(x=>(x.a&&x.a.id===id)||(x.d&&x.d.id===id));if(!e)return false;const f=(e.a&&e.a.id===id)?e.a:e.d;setSel(e,{follow:true,zoom:true,f});return true},clear(){setSel(null)}};
+
+/* One position per flight, whichever map is showing it (used by the World view and the live tracker). Latitude/longitude through the airspace frame. */
+(function(){const M=window.JN_MAP;
+  const ent=id=>(C.ENTS||[]).find(x=>(x.a&&x.a.id===id)||(x.d&&x.d.id===id))||null;
+  const fl=(e,id)=>(e.a&&e.a.id===id)?e.a:((e.d&&e.d.id===id)?e.d:null);
+  function pose(id){const e=ent(id);if(!e)return null;const f=fl(e,id);
+    const q=A.poseOf(e,T);
+    if(q){const qf=q.tr.kind==='dep'?e.d:e.a;if(qf&&qf.id===id){const L=A.airLL(q.x,q.y);return {src:'air',e,f,lat:L[0],lon:L[1],alt:q.alt,hd:q.hd,ph:q.ph,kind:q.tr.kind}}}
+    const p=C.pose(e,T);
+    if(p){const isArr=f===e.a,ok=isArr?(e.td!=null&&T>=e.td&&(!e.d||e.pushT==null||T<e.pushT)):(e.takeoff==null||T<e.takeoff);
+      if(ok){const W=A.gw(p.x,p.y),L=A.airLL(W[0],W[1]);return {src:'gnd',e,f,lat:L[0],lon:L[1],alt:p.z/0.3048,hd:0,kind:isArr?'arr':'dep'}}}
+    return {src:null,e,f}}
+  const airPoses=()=>{const o=[];for(const e of (C.ENTS||[])){const q=A.poseOf(e,T);if(!q)continue;const f=q.tr.kind==='dep'?e.d:e.a;if(!f)continue;const L=A.airLL(q.x,q.y);o.push({id:f.id,c:f.c,lat:L[0],lon:L[1],hd:q.hd,alt:q.alt,kind:q.tr.kind,ph:q.ph})}return o};
+  const llAt=(e,t)=>{const q=A.poseOf(e,t);if(!q)return null;return A.airLL(q.x,q.y)};
+  const ppu=()=>{const m=G.getScreenCTM();return m&&m.a&&k?m.a/k:Math.max(1,svg.clientWidth)/12000};
+  function centre(){const u=(5600-x)/k,v=(3300-y)/k,X=AC[0]+(u-5600)/SW,Y=AC[1]+(v-3300)/SW,L=A.airLL(X,Y);return {lat:L[0],lon:L[1],mpp:mppNow()}}
+  function setView(lat,lon,mpp){const P=A.airXY(lat,lon),u=5600+(P[0]-AC[0])*SW,v=3300+(P[1]-AC[1])*SW;if(mpp)k=1/(mpp*ppu()*SW*1);x=5600-u*k;y=3300-v*k;ap()}
+  /* put the camera on a flight in the right mode and follow it */
+  function track(id){const e=ent(id);if(!e)return false;const ps=pose(id),f=fl(e,id),want=ps&&ps.src==='air'?'air':'gnd';
+    if(mode!==want)setMode(want);
+    setSel(e,{follow:true,f});if(want==='air'){if(k<2.2||k>12){k=2.5;}}else if(k<3.4)k=3.4;ap();return true}
+  Object.assign(M,{ent,pose,airPoses,llAt,centre,setView,track,time:()=>T,setMode:m=>{if(mode!==m)setMode(m)},selId:()=>{if(!sel)return null;const f=pinF||curFlight(sel,T);return f?f.id:null},ents:()=>C.ENTS});
+  Object.defineProperty(M,'mode',{get:()=>mode,configurable:true});
+})();
 let cardTick=0,selTick=0;
 let flightExpanded=false;
 function stripHTML(e){
@@ -4886,7 +4911,7 @@ function renderBoard(){
  const summary=document.getElementById('v46-board-summary');
  if(summary){const zn={all:'',D:'domestic',I:'international',T1:'terminal 1',T2:'terminal 2',T3:'terminal 3',T4:'terminal 4'}[bZ]||'';summary.innerHTML='<b>'+list.length+' '+(zn?zn+' ':'')+'flight'+(list.length===1?'':'s')+'</b>'+(q?' matching “'+esc(q)+'”':'')+' · '+(bTab==='dep'?'Scheduled departure / actual take-off':'Scheduled arrival / actual landing')+' · simulated';}
 
- $('bList').querySelectorAll('.jb-row').forEach((el,i)=>el.onclick=()=>{const r=list[i];boardToggle(false);setSel(r[1],{follow:true,zoom:true,f:r[2]})});
+ $('bList').querySelectorAll('.jb-row').forEach((el,i)=>el.onclick=()=>{const r=list[i];boardToggle(false);if(window.JN_TRACK&&r[2]&&JN_TRACK.start(r[2].id)){}else setSel(r[1],{follow:true,zoom:true,f:r[2]})});
 }
 document.querySelectorAll('#bF button').forEach(b=>b.onclick=()=>{bZ=b.dataset.z;document.querySelectorAll('#bF button').forEach(x=>x.classList.toggle('on',x===b));renderBoard()});
 function boardToggle(on){boardOpen=on;document.body.classList.toggle('jn-board-open',on);$('board').style.display=on?'flex':'none';$('bFl').classList.toggle('on',on);if(on)renderBoard()}
@@ -6596,7 +6621,7 @@ function render(H){
         '</div>';
       };
       return '<section class="v81-leg v100-leg">'+
-        '<div class="v81-leghead"><span class="v81-dot '+statusClass+'"></span><span class="v81-date">'+esc(dateLabel)+'</span><a class="v81-flight v181-fl" href="#/flight/'+esc(String(l.flight).replace(' ',''))+'">'+esc(l.flight)+'</a>'+pill+disPill(l,r)+pairNote+'</div>'+
+        '<div class="v81-leghead"><span class="v81-dot '+statusClass+'"></span><span class="v81-date">'+esc(dateLabel)+'</span><a class="v81-flight v181-fl" href="#/flight/'+esc(String(l.flight).replace(' ',''))+'">'+esc(l.flight)+'</a>'+pill+(statusClass==='live'?'<button type="button" class="jn-trk" data-jn-track="'+esc(l.flight)+'">⌖ Track live</button>':'')+disPill(l,r)+pairNote+'</div>'+
         '<div class="v100-legbody">'+
           '<div class="v81-route">'+
             '<div class="v81-line"><i>↗</i><b>'+esc(fromLabel)+'</b><span class="v81-code">'+esc(fromCode)+'</span><span class="v182-off">'+esc(tzLabel(l.from,l.std!=null?l.std:l.v105Date))+'</span></div>'+
@@ -6678,7 +6703,7 @@ function flightLegHtml(o){
   const durTxt=actual!=null?fmtDur(actual):(r.atd!=null?'En route':'—');
   const cell=(lab,val,cls)=>'<div class="v181-c'+(cls?' '+cls:'')+'"><small>'+lab+'</small><b>'+val+'</b></div>';
   return '<section class="v81-leg v100-leg v181-leg">'+
-    '<div class="v81-leghead"><span class="v81-dot '+statusClass+'"></span><span class="v81-date">'+esc(dayLabel)+'</span>'+pill+disPill(l,r)+
+    '<div class="v81-leghead"><span class="v81-dot '+statusClass+'"></span><span class="v81-date">'+esc(dayLabel)+'</span>'+pill+(r.tone==='live'?'<button type="button" class="jn-trk" data-jn-track="'+esc(lastFlight)+'">⌖ Track live</button>':'')+disPill(l,r)+
       (o.reg?'<a class="v181-reg v73-regl" href="#/aircraft/'+esc(o.reg)+'">'+esc(o.reg)+' · '+esc(typeCodeOf(o.ac))+' ›</a>':'<span class="v181-reg v181-untracked">'+esc(typeCodeOf(o.ac))+' · registration not tracked</span>')+'</div>'+
     '<div class="v81-route"><div class="v81-line"><i>↗</i><b>'+esc(fromLabel)+'</b><span class="v81-code">'+esc(fromCode)+'</span><span class="v182-off">'+esc(tzLabel(l.from,l.std))+'</span></div>'+
       '<div class="v81-line"><i>↘</i><b>'+esc(toLabel)+'</b><span class="v81-code">'+esc(toCode)+'</span><span class="v182-off">'+esc(tzLabel(l.to,l.sta))+'</span></div></div>'+
@@ -7056,6 +7081,14 @@ html body #card .airline-logo.sm{width:28px!important;height:28px!important;bord
 .jnw-bar{height:6px;border-radius:3px;background:#dbe5ec;overflow:hidden}.jnw-bar i{display:block;height:100%;background:#0f6b8a}
 .jnw-g{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}.jnw-g small{display:block;color:#566a78;font-size:10.5px}.jnw-g b{font-size:12.5px}
 .jnw-l{display:flex;gap:14px}.jnw-l a{color:#0b5a78;font-weight:600;text-decoration:none}
+#jn-world-card .jnw-top{display:flex;gap:10px;align-items:center;padding-right:28px}#jn-world-card .jnw-top b{font-size:17px;display:block}#jn-world-card .jnw-top span{color:#4a5d6b;font-size:12px}#jn-world-card .jnw-top a{color:#0b5a78;font-weight:600;text-decoration:none}
+#jn-world-card .jnw-route{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:6px;align-items:center;margin:10px 0 8px}#jn-world-card .jnw-route b{display:block;font-size:14px}#jn-world-card .jnw-route span{color:#566a78;font-size:11px}#jn-world-card .jnw-route .r{text-align:right}
+#jn-world-card .jnw-arrow{position:relative;height:4px;border-radius:2px;background:#dbe5ec}#jn-world-card .jnw-arrow i{position:absolute;left:0;top:0;height:100%;background:#0f6b8a;border-radius:2px}#jn-world-card .jnw-arrow u{position:absolute;top:-9px;transform:translateX(-50%);text-decoration:none;font-size:13px;color:#0f6b8a}
+#jn-world-card .jnw-now{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 2px}.jnw-pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;background:#e8eef3;color:#27404f;font-size:11px;font-weight:600;padding:3px 9px}.jnw-pill i{width:7px;height:7px;border-radius:50%;background:#8aa0ae}.jnw-pill.live i{background:#1f9d57}.jnw-pill.late{background:#fdf0d5;color:#8a5a00}.jnw-pill.dim{background:transparent;border:1px solid #cdd8e0;color:#566a78}
+#jn-world-card .jnw-g.two{grid-template-columns:1fr 1fr;margin-top:0}.jnw-fol{margin-left:auto;border:1px solid #0f6b8a;background:#fff;color:#0f6b8a;border-radius:9px;font:600 12px inherit;padding:6px 12px;cursor:pointer}.jnw-fol.on{background:#0f6b8a;color:#fff}.jnw-fol:focus-visible{outline:3px solid #fbbf24;outline-offset:2px}
+html body #v74-ac .jn-trk{border:1px solid #0f6b8a!important;background:#fff!important;color:#0f6b8a!important;border-radius:999px;font-size:11px!important;font-weight:600;padding:3px 10px;cursor:pointer;margin-left:6px}html body #v74-ac .jn-trk:hover{background:#0f6b8a!important;color:#fff!important}
+#card #cWorld{margin-left:8px;border:1px solid #5b6c7b;background:transparent;color:inherit;border-radius:9px;padding:8px 12px;font-size:12px;cursor:pointer}
+#jn-world-card .airline-logo{flex:none}
 body.jn-world #v9-tools,body.jn-world #v70-kpi,body.jn-world #hud,body.jn-world #card,body.jn-world #board,body.jn-world #v16-map-key,body.jn-world #runway-panel{display:none!important}
 @media(max-width:700px){#jn-world-ui{bottom:auto;top:12px;left:12px;max-width:calc(100vw - 80px)}#jn-world-card{bottom:84px;right:12px}}
 </style>
@@ -7067,7 +7100,7 @@ const RAD=Math.PI/180,JKT=[-6.13,106.66];
 const cv=document.createElement('canvas');cv.id='jn-world';cv.setAttribute('role','region');cv.setAttribute('aria-label','World map of flights to and from Jakarta that are in the air now');
 const ui=document.createElement('div');ui.id='jn-world-ui';ui.innerHTML='<div id="jnw-count" role="status"></div><div class="jnw-btns"><button type="button" id="jnw-ga" aria-pressed="false">GA only</button><button type="button" id="jnw-in" aria-label="Zoom in">+</button><button type="button" id="jnw-out" aria-label="Zoom out">−</button><button type="button" id="jnw-fit" aria-label="Fit the whole network">⌂</button></div>';
 const card=document.createElement('div');card.id='jn-world-card';card.hidden=true;card.setAttribute('role','region');card.setAttribute('aria-label','Selected flight');
-let on=false,ctx=null,W=0,H=0,dpr=1,base=null,baseKey='',raf=0,lastDraw=0,legs=null,legsKey='',sel=null,gaOnly=false,pos=[];
+let on=false,ctx=null,W=0,H=0,dpr=1,base=null,baseKey='',raf=0,lastDraw=0,legs=null,legsKey='',legsEnts=null,sel=null,gaOnly=false,pos=[],fol=false,selLL=null,byId=new Map();
 const view={cx:100,cy:0,k:2};
 const my=lat=>Math.log(Math.tan(Math.PI/4+lat*RAD/2))/RAD;         // mercator y in "degrees"
 const sx=lon=>W/2+(lon-view.cx)*view.k,sy=y=>H/2-(y-view.cy)*view.k;
@@ -7109,8 +7142,14 @@ function at(r,s){let lo=0,hi=r.cum.length-1;if(s<=0)return [r.lon[0],r.lat[0],0]
 /* flights */
 const nowAbs=()=>{const d=new Date(),p=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(d),g=k=>+p.find(x=>x.type===k).value;
   const S=window.SIMCORE;return (S&&S.FLEET?S.FLEET.day:0)*1440+g('hour')*60+g('minute')+g('second')/60};
-function getLegs(){const S=window.SIMCORE;if(!S||!S.worldLegs)return [];const k=S.FLEET?S.FLEET.day:0;if(legs&&legsKey===k)return legs;
-  legs=S.worldLegs().map(l=>{const dep=l.std+14,arr=l.sta-8;return Object.assign(l,{off:dep,land:Math.max(dep+20,arr)})});legsKey=k;return legs}
+const M=()=>window.JN_MAP,smooth=u=>{u=Math.max(0,Math.min(1,u));return u*u*(3-2*u)};
+/* where the airspace tracks take over: an arrival leaves the world map where its air track starts, a departure joins it where its air track ends, so a flight is never in two places */
+function anchor(l,day){const m=M();if(!m||!m.ent||l.d!==day)return;const e=m.ent(l.id);if(!e)return;
+  if(l.dir==='in'&&e.aT&&e.a&&e.a.id===l.id){const t=day*1440+e.aT.t0/60;l.hand=m.llAt(e,e.aT.t0+0.05);l.land=Math.max(l.off+2,t);l.air=true;if(e.td!=null)l.eta=day*1440+e.td/60;if(t<=l.off+0.5||!l.hand)l.noWorld=true}
+  else if(l.dir==='out'&&e.dT&&e.d&&e.d.id===l.id){const t=day*1440+e.dT.t1/60,shift=e.takeoff!=null?day*1440+e.takeoff/60-(l.std+14):0;l.hand=m.llAt(e,e.dT.t1-0.05);l.off=t;l.land+=shift;l.eta=l.land+8;l.air=true;if(l.land<=l.off+2||!l.hand)l.noWorld=true}}
+function getLegs(){const S=window.SIMCORE;if(!S||!S.worldLegs)return [];const day=S.FLEET?S.FLEET.day:0,ents=M()&&M().ents?M().ents():null;if(legs&&legsKey===day&&legsEnts===ents)return legs;
+  legs=S.worldLegs().map(l=>{const dep=l.std+14,arr=l.sta-8;return Object.assign(l,{off:dep,land:Math.max(dep+20,arr)})});legsKey=day;legsEnts=ents;
+  byId=new Map();legs.forEach(l=>{anchor(l,day);if(l.d===day)byId.set(l.id,l)});return legs}
 /* drawing */
 function fit(){const lon0=-12,lon1=205,y0=my(-46),y1=my(64);view.k=Math.min(W/(lon1-lon0),H/(y1-y0))*0.96;view.cx=(lon0+lon1)/2;view.cy=(y0+y1)/2}
 function size(){dpr=Math.min(2,window.devicePixelRatio||1);W=window.innerWidth;H=window.innerHeight;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.width=W+'px';cv.style.height=H+'px';ctx=cv.getContext('2d');base=null}
@@ -7130,61 +7169,145 @@ function drawBase(){
   {c.fillStyle='#37556b';c.font='11px -apple-system,Helvetica,sans-serif';const minD=view.k>=16?0:view.k>=11?900:view.k>=8?2500:view.k>=4?4500:1e9;Object.keys(WORLD_ROUTES).forEach(city=>{const R=WORLD_ROUTES[city],p=R.o[0][R.o[0].length-1];if(gcd(JKT,p)<minD||Math.hypot(p[1]-JKT[1],p[0]-JKT[0])<2)return;c.fillText(city.split(' / ')[0],sx(p[1])+4,sy(my(p[0]))-3)})}
   base=b;baseKey=[view.cx,view.cy,view.k,W,H].join('|')}
 function status(l,now){return now<l.off?0:(now>l.land?2:1)}
+/* position along the route, joined to the airspace track at the handoff point */
+function sAtDist(r,D,fromEnd){const n=r.lon.length,dj=i=>gcd(JKT,[r.lat[i],r.lon[i]]);
+  if(fromEnd){for(let i=n-1;i>0;i--){const d=dj(i-1);if(d>=D){const d2=dj(i),t=(D-d2)/Math.max(1e-6,d-d2);return r.cum[i]+(r.cum[i-1]-r.cum[i])*Math.max(0,Math.min(1,t))}}return 0}
+  for(let i=1;i<n;i++){const d=dj(i);if(d>=D){const d0=dj(i-1),t=(D-d0)/Math.max(1e-6,d-d0);return r.cum[i-1]+(r.cum[i]-r.cum[i-1])*Math.max(0,Math.min(1,t))}}return r.len}
+const routeFor=l=>routeOf(l.city,l.dir,altOf(l.id,l.d,nAlt(l.city,l.dir),l.dir));
+function legPos(l,now,r){const u=Math.max(0,Math.min(1,(now-l.off)/(l.land-l.off))),p=distFrac(u);let s,w=0,sA;
+  if(l.hand){if(l.sA==null)l.sA=sAtDist(r,gcd(JKT,l.hand),l.dir==='in');sA=l.sA;
+    if(l.dir==='in'){s=p*sA;w=smooth(u)}else{s=sA+(r.len-sA)*p;w=1-smooth(u)}}
+  else s=p*r.len;
+  const pt=at(r,s);let lon=pt[0],lat=pt[1];
+  if(w>0){const e=at(r,sA);lon+=(l.hand[1]-e[0])*w;lat+=(l.hand[0]-e[1])*w}
+  return [lon,lat,u]}
+const cruiseFt=len=>len<700?22000:len<1800?31000:len<4500?36000:39000;
+function est(l,u,r){const len=r?r.len:1500,cr=cruiseFt(len),cl=Math.min(1,u/0.14),ds=Math.min(1,(1-u)/0.14),f=Math.min(cl,ds);
+  return {alt:Math.round(cr*Math.pow(f,0.8)/100)*100,gs:Math.round((len<700?330:455)*Math.min(0.42+0.58*cl,0.38+0.62*ds)),ph:u<0.14?'Climbing':u>0.86?'Descending':'Cruising'}}
+function glyph(x,y,ang,c,dly,isSel,big){ctx.save();ctx.translate(x,y);ctx.rotate(ang);const s=(c==='GA'?6.5:5)*(big?1.25:1);
+  ctx.beginPath();ctx.moveTo(0,-s);ctx.lineTo(s*.62,s*.8);ctx.lineTo(0,s*.35);ctx.lineTo(-s*.62,s*.8);ctx.closePath();
+  ctx.fillStyle=dly>=15?'#d68910':(c==='GA'?'#0f6b8a':'#52667a');ctx.fill();ctx.lineWidth=isSel?2:.8;ctx.strokeStyle=isSel?'#2563eb':'#fff';ctx.stroke();ctx.restore()}
+function airSyn(a,day){return byId.get(a.id)||{id:a.id,c:a.c,city:'',ac:'',dir:a.kind==='dep'?'out':'in',d:day,dly:0,sta:0,std:0,off:0,land:0}}
 function draw(){
-  if(!on||!ctx)return;const key=[view.cx,view.cy,view.k,W,H].join('|');if(!base||key!==baseKey)drawBase();
-  ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(base,0,0);ctx.scale(dpr,dpr);
-  const now=nowAbs(),L=getLegs();pos=[];let n=0,nga=0;
+  if(!on||!ctx)return;
+  const now=nowAbs(),L=getLegs(),day=window.SIMCORE&&SIMCORE.FLEET?SIMCORE.FLEET.day:0;pos=[];selLL=null;let n=0,nga=0;
   const selId=sel&&sel.id;
-  L.forEach(l=>{if(l.cx||now<l.off||now>l.land)return;if(gaOnly&&l.c!=='GA')return;const r=routeOf(l.city,l.dir,altOf(l.id,l.d,nAlt(l.city,l.dir),l.dir));if(!r)return;
-    const p=distFrac((now-l.off)/(l.land-l.off)),pt=at(r,p*r.len),nx=at(r,Math.min(r.len,p*r.len+60));
-    const x=sx(pt[0]),y=sy(my(pt[1]));if(x<-20||y<-20||x>W+20||y>H+20)return;
-    const ang=Math.atan2(sx(nx[0])-x,-(sy(my(nx[1]))-y));n++;if(l.c==='GA')nga++;pos.push({l,x,y,p});
-    ctx.save();ctx.translate(x,y);ctx.rotate(ang);const s=l.c==='GA'?6.5:5;
-    ctx.beginPath();ctx.moveTo(0,-s);ctx.lineTo(s*.62,s*.8);ctx.lineTo(0,s*.35);ctx.lineTo(-s*.62,s*.8);ctx.closePath();
-    ctx.fillStyle=l.dly>=15?'#d68910':(l.c==='GA'?'#0f6b8a':'#52667a');ctx.fill();ctx.lineWidth=l.id===selId?2:.8;ctx.strokeStyle=l.id===selId?'#2563eb':'#fff';ctx.stroke();ctx.restore()});
-  if(sel){const l=sel,r=routeOf(l.city,l.dir,altOf(l.id,l.d,nAlt(l.city,l.dir),l.dir));if(r){const p=distFrac((now-l.off)/(l.land-l.off));
+  L.forEach(l=>{if(l.cx||l.noWorld||now<l.off||now>l.land)return;const gaMiss=gaOnly&&l.c!=='GA';const r=routeFor(l);if(!r)return;
+    const q=legPos(l,now,r);if(l.id===selId)selLL=q;if(gaMiss)return;
+    const x=sx(q[0]),y=sy(my(q[1]));if(x<-20||y<-20||x>W+20||y>H+20)return;
+    const q3=legPos(l,now+3,r);
+    const ang=Math.atan2(sx(q3[0])-x,-(sy(my(q3[1]))-y));n++;if(l.c==='GA')nga++;pos.push({l,x,y,ang})});
+  const AP=M()&&M().airPoses?M().airPoses():[];
+  AP.forEach(a=>{const leg=airSyn(a,day);if(leg.id===selId)selLL=[a.lon,a.lat,null];if(gaOnly&&a.c!=='GA')return;const x=sx(a.lon),y=sy(my(a.lat));if(x<-20||y<-20||x>W+20||y>H+20)return;n++;if(a.c==='GA')nga++;pos.push({l:leg,x,y,ang:a.hd*RAD,air:a})});
+  /* follow the selected flight */
+  if(fol&&selLL){const ty=my(selLL[1]),dx=selLL[0]-view.cx,dy=ty-view.cy,f=Math.min(1,0.18);if(Math.hypot(dx,dy)*view.k>0.5){view.cx+=dx*f;view.cy+=dy*f}}
+  const key=[view.cx,view.cy,view.k,W,H].join('|');if(!base||key!==baseKey)drawBase();
+  ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(base,0,0);ctx.scale(dpr,dpr);
+  if(sel){const l=sel,r=routeFor(l);if(r){const u=Math.max(0,Math.min(1,(now-l.off)/(l.land-l.off))),p=distFrac(u);
     ctx.lineWidth=2.5;ctx.strokeStyle='#2563eb';ctx.beginPath();for(let i=0;i<r.lon.length;i++){const x=sx(r.lon[i]),y=sy(my(r.lat[i]));if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.setLineDash([6,5]);ctx.globalAlpha=.55;ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
     ctx.font='600 10px -apple-system,Helvetica,sans-serif';ctx.lineWidth=3;r.fix.forEach(f=>{const x=sx(f.lon),y=sy(my(f.lat));ctx.beginPath();ctx.arc(x,y,2.4,0,7);ctx.fillStyle='#2563eb';ctx.fill();ctx.strokeStyle='#ffffffd9';ctx.strokeText(f.id,x+5,y-4);ctx.fillStyle='#1e3a8a';ctx.fillText(f.id,x+5,y-4)});
     ctx.lineWidth=2.5;ctx.strokeStyle='#2563eb';
     const cut=p*r.len;ctx.beginPath();for(let i=0;i<r.lon.length&&r.cum[i]<=cut;i++){const x=sx(r.lon[i]),y=sy(my(r.lat[i]));if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke()}}
+  pos.forEach(o=>glyph(o.x,o.y,o.ang,o.l.c,o.l.dly,o.l.id===selId,o.l.id===selId));
   document.getElementById('jnw-count').textContent=n+' aircraft in the air'+(nga?' · '+nga+' Garuda':'')+(gaOnly?' (GA only)':'');
   if(sel)renderCard();lastDraw=performance.now()}
-function loop(){if(!on)return;if(performance.now()-lastDraw>400||dirty)draw();dirty=false;raf=requestAnimationFrame(loop)}
+function loop(){if(!on)return;if(performance.now()-lastDraw>(fol&&sel?40:400)||dirty)draw();dirty=false;raf=requestAnimationFrame(loop)}
 let dirty=false;const redraw=()=>{dirty=true};
 /* interaction */
 const P=new Map();let drag=null,pinch=null;
 cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);P.set(e.pointerId,[e.clientX,e.clientY]);if(P.size===1)drag={x:e.clientX,y:e.clientY,cx:view.cx,cy:view.cy,moved:false};else{drag=null;const a=[...P.values()];pinch={d:Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]),k:view.k}}});
 cv.addEventListener('pointermove',e=>{if(!P.has(e.pointerId))return;P.set(e.pointerId,[e.clientX,e.clientY]);
   if(pinch&&P.size>=2){const a=[...P.values()],d=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);zoomAt((a[0][0]+a[1][0])/2,(a[0][1]+a[1][1])/2,pinch.k*d/pinch.d/view.k);return}
-  if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>5)drag.moved=true;view.cx=drag.cx-dx/view.k;view.cy=drag.cy+dy/view.k;redraw()}});
+  if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>5){drag.moved=true;stopFollow()}view.cx=drag.cx-dx/view.k;view.cy=drag.cy+dy/view.k;redraw()}});
 const up=e=>{const wasTap=drag&&!drag.moved&&P.size===1;P.delete(e.pointerId);if(P.size<2)pinch=null;if(wasTap)tap(e.clientX,e.clientY);if(!P.size)drag=null};
 cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
 cv.addEventListener('wheel',e=>{e.preventDefault();zoomAt(e.clientX,e.clientY,Math.exp(-e.deltaY*0.0015))},{passive:false});
-function zoomAt(px,py,f){const nk=Math.max(1.2,Math.min(60,view.k*f));f=nk/view.k;const lon=view.cx+(px-W/2)/view.k,y=view.cy-(py-H/2)/view.k;view.k=nk;view.cx=lon-(px-W/2)/view.k;view.cy=y+(py-H/2)/view.k;redraw()}
-function tap(x,y){let best=null,bd=26;pos.forEach(o=>{const d=Math.hypot(o.x-x,o.y-y);if(d<bd){bd=d;best=o}});sel=best?best.l:null;card.hidden=!sel;if(sel)renderCard();redraw()}
+function zoomAt(px,py,f){const nk=Math.max(1.2,Math.min(KMAX,view.k*f));f=nk/view.k;const lon=view.cx+(px-W/2)/view.k,y=view.cy-(py-H/2)/view.k;view.k=nk;view.cx=lon-(px-W/2)/view.k;view.cy=y+(py-H/2)/view.k;redraw();if(f>1&&nk>=KEDGE)toAirspace()}
+function tap(x,y){let best=null,bd=26;pos.forEach(o=>{const d=Math.hypot(o.x-x,o.y-y);if(d<bd){bd=d;best=o}});sel=best?best.l:null;fol=false;card.hidden=!sel;if(sel)renderCard();redraw()}
+function stopFollow(){if(fol){fol=false;redraw();if(sel)renderCard()}}
+/* the zoom handoff: past about 1 km per pixel over Jakarta the airspace map takes over, and zooming out of it brings the world back */
+const KMAX=150,KEDGE=112,mppOf=()=>111320*Math.cos(JKT[0]*RAD)/view.k;
+const getView=()=>{const lat=(2*Math.atan(Math.exp(view.cy*RAD))-Math.PI/2)/RAD;return {lat,lon:view.cx,mpp:111320*Math.cos(lat*RAD)/view.k}};
+const setViewLL=(lat,lon,mpp)=>{view.cx=lon;view.cy=my(lat);if(mpp)view.k=Math.max(1.2,Math.min(KMAX,111320*Math.cos(lat*RAD)/mpp));redraw()};
+function toAirspace(){const v=getView();if(gcd([v.lat,v.lon],JKT)>900||!M()||!M().setView)return;hide();M().setMode('air');M().setView(v.lat,v.lon,Math.max(v.mpp,900));
+  document.querySelectorAll('#ops-v16 button').forEach(x=>{x.classList.toggle('active',x.dataset.view==='map')})}
+setInterval(()=>{const m=M();if(on||!m||!m.centre||m.mode!=='air'||document.body.classList.contains('jn-detail'))return;const c=m.centre();if(c.mpp>1500&&gcd([c.lat,c.lon],JKT)<900){show({keepView:true});setViewLL(c.lat,c.lon,c.mpp)}},350);
 /* card */
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const hm=m=>{m=((Math.round(m)%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
 function local(absMin,city){try{const z=(window.JN_TZOF&&JN_TZOF(city))||'Asia/Jakarta';return new Intl.DateTimeFormat('en-GB',{timeZone:z,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date((absMin-420)*60000))}catch(e){return hm(absMin)}}
-function renderCard(){const l=sel;if(!l)return;const S=window.SIMCORE,now=nowAbs(),pct=Math.round(Math.max(0,Math.min(1,(now-l.off)/(l.land-l.off)))*100),city=String(l.city).split(' / ')[0];
+const codeOf=c=>{try{return typeof airportCodeForCity==='function'?(airportCodeForCity(c)||''):''}catch(e){return ''}};
+function renderCard(){const l=sel;if(!l)return;const S=window.SIMCORE,now=nowAbs(),m=M(),city=String(l.city||'').split(' / ')[0]||'—';
+  const u=l.land>l.off?Math.max(0,Math.min(1,(now-l.off)/(l.land-l.off))):0,r=l.city?routeFor(l):null;
+  const ap=sel&&pos.find(o=>o.l.id===l.id&&o.air),air=ap&&ap.air,E=est(l,u,r);
+  const live=now>=l.off&&now<=l.land||!!air,state=air?(air.ph==='hold'?'Holding':air.kind==='dep'?'Climbing out':'On approach'):(live?E.ph:(now<l.off?'Not yet airborne':'Landed'));
   let reg=null;try{reg=S.worldTail?S.worldTail(l.id,l.d):null}catch(e){}
-  const nm=(typeof NAME!=='undefined'&&NAME[l.c])||l.c,remain=Math.max(0,Math.round(l.land-now)),rt=l.dir==='out'?'JKT → '+esc(city):esc(city)+' → JKT';
-  card.innerHTML='<button type="button" class="jnw-x" aria-label="Close flight details">×</button><div class="jnw-h"><b>'+esc(l.id)+'</b><span>'+esc(nm)+' · '+esc(l.ac)+'</span></div><div class="jnw-r">'+rt+'</div>'+
-   '<div class="jnw-bar" aria-hidden="true"><i style="width:'+pct+'%"></i></div>'+
-   '<div class="jnw-g"><div><small>Status</small><b>'+(l.dly>=15?'Delayed +'+l.dly+' min':'En route')+' · '+pct+'%</b></div><div><small>Arrives'+(l.dir==='out'?' '+esc(city):' Jakarta')+'</small><b>'+local(l.sta,l.dir==='out'?l.city:'Jakarta')+' local</b></div><div><small>Time to go</small><b>'+Math.floor(remain/60)+'h '+String(remain%60).padStart(2,'0')+'m</b></div></div>'+
-   '<div class="jnw-l"><a href="#/flight/'+esc(String(l.id).replace(' ',''))+'">Flight history ›</a>'+(reg?' <a href="#/aircraft/'+esc(reg)+'">'+esc(reg)+' ›</a>':'')+'</div>';
-  const x=card.querySelector('.jnw-x');if(x)x.onclick=()=>{sel=null;card.hidden=true;redraw()}}
+  const nm=(typeof NAME!=='undefined'&&NAME[l.c])||l.c,jk=l.dir==='out',oC=jk?'Jakarta':city,dC=jk?city:'Jakarta',oK=jk?'CGK':codeOf(city),dK=jk?codeOf(city):'CGK';
+  const alt=air?Math.round(air.alt/100)*100:E.alt,gs=air?null:E.gs,eta=l.eta!=null?l.eta:l.sta,remain=Math.max(0,Math.round(eta-now));
+  const pct=Math.round((air&&!l.noWorld&&false?1:Math.max(0,Math.min(1,(now-l.std)/Math.max(1,l.sta-l.std))))*100);
+  const logo=typeof airlineLogo==='function'?airlineLogo(l.c,'sm'):'';
+  const lt=(abs,c)=>local(abs,c);
+  const hx='<button type="button" class="jnw-x" aria-label="Close flight details">×</button>'+
+   '<div class="jnw-top">'+logo+'<div><b>'+esc(l.id)+'</b><span>'+esc(nm)+' · '+esc(l.ac||'')+(reg?' · <a href="#/aircraft/'+esc(reg)+'">'+esc(reg)+'</a>':'')+'</span></div></div>'+
+   '<div class="jnw-route"><div><b>'+esc(oC)+'</b><span>'+esc(oK||'')+'</span></div><div class="jnw-arrow" aria-hidden="true"><i style="width:'+pct+'%"></i><u style="left:'+pct+'%">✈</u></div><div class="r"><b>'+esc(dC)+'</b><span>'+esc(dK||'')+'</span></div></div>'+
+   '<div class="jnw-now"><span class="jnw-pill'+(live?' live':'')+'"><i></i>'+esc(state)+'</span>'+(l.dly>=15?'<span class="jnw-pill late">Delayed +'+Math.round(l.dly)+' min</span>':'')+'<span class="jnw-pill dim">'+(l.c==='GA'?'Garuda':esc(l.c))+'</span></div>'+
+   '<div class="jnw-g"><div><small>Altitude</small><b>'+(live?(alt>=10000?'FL'+String(Math.round(alt/100)).padStart(3,'0'):alt.toLocaleString('en')+' ft'):'—')+'</b></div><div><small>Ground speed</small><b>'+(live&&gs?gs+' kt':'—')+'</b></div><div><small>Time to go</small><b>'+(live?Math.floor(remain/60)+'h '+String(remain%60).padStart(2,'0')+'m':'—')+'</b></div></div>'+
+   '<div class="jnw-g two"><div><small>STD '+esc(oK||oC)+' · local</small><b>'+lt(l.std,oC)+'</b></div><div><small>'+(l.eta!=null?'ETA':'STA')+' '+esc(dK||dC)+' · local</small><b>'+lt(eta,dC)+'</b></div></div>'+
+   '<div class="jnw-l"><a href="#/flight/'+esc(String(l.id).replace(' ',''))+'">Flight history ›</a>'+(reg?'<a href="#/aircraft/'+esc(reg)+'">'+esc(reg)+' ›</a>':'')+'<button type="button" class="jnw-fol'+(fol?' on':'')+'" aria-pressed="'+fol+'">'+(fol?'Following':'Follow')+'</button></div>';
+  if(card._h===hx)return;card._h=hx;card.innerHTML=hx;   /* only rebuild when something changed, so the logo is not reloaded every frame */
+  const x=card.querySelector('.jnw-x');if(x)x.onclick=()=>{sel=null;fol=false;card.hidden=true;redraw()};
+  const f=card.querySelector('.jnw-fol');if(f)f.onclick=()=>{fol=!fol;redraw()}}
 /* show / hide */
-function show(){if(on)return;on=true;if(!cv.parentNode){document.body.append(cv,ui,card);ui.querySelector('#jnw-in').onclick=()=>zoomAt(W/2,H/2,1.5);ui.querySelector('#jnw-out').onclick=()=>zoomAt(W/2,H/2,1/1.5);ui.querySelector('#jnw-fit').onclick=()=>{fit();redraw()};
+function show(o){if(on)return;on=true;if(!cv.parentNode){document.body.append(cv,ui,card);ui.querySelector('#jnw-in').onclick=()=>zoomAt(W/2,H/2,1.5);ui.querySelector('#jnw-out').onclick=()=>zoomAt(W/2,H/2,1/1.5);ui.querySelector('#jnw-fit').onclick=()=>{fit();redraw()};
     ui.querySelector('#jnw-ga').onclick=e=>{gaOnly=!gaOnly;e.currentTarget.setAttribute('aria-pressed',String(gaOnly));e.currentTarget.classList.toggle('on',gaOnly);redraw()}}
-  document.body.classList.add('jn-world');cv.hidden=false;ui.hidden=false;size();fit();document.dispatchEvent(new CustomEvent('jn-world',{detail:true}));draw();raf=requestAnimationFrame(loop)}
-function hide(){if(!on)return;on=false;cancelAnimationFrame(raf);document.body.classList.remove('jn-world');cv.hidden=true;ui.hidden=true;card.hidden=true;sel=null;document.dispatchEvent(new CustomEvent('jn-world',{detail:false}))}
+  document.body.classList.add('jn-world');cv.hidden=false;ui.hidden=false;size();if(!(o&&o.keepView))fit();document.dispatchEvent(new CustomEvent('jn-world',{detail:true}));draw();raf=requestAnimationFrame(loop)}
+function hide(){if(!on)return;on=false;cancelAnimationFrame(raf);document.body.classList.remove('jn-world');cv.hidden=true;ui.hidden=true;card.hidden=true;sel=null;fol=false;document.dispatchEvent(new CustomEvent('jn-world',{detail:false}))}
 window.addEventListener('resize',()=>{if(on){size();redraw()}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&on&&!document.getElementById('fm-wrap')?.classList.contains('open')){if(sel){sel=null;card.hidden=true;redraw()}else hide()}});
 /* the ground map's own selection or the nav should leave the world view */
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#ops-v16 [data-view]');if(!b)return;const v=b.dataset.view;if(v==='world'){on?hide():show();requestAnimationFrame(()=>document.querySelectorAll('#ops-v16 button').forEach(x=>{if(x.dataset.view==='world'){x.classList.toggle('active',on);x.setAttribute('aria-pressed',String(on))}else if(on&&x.dataset.view==='map')x.classList.remove('active')}))}
   else if(v!=='ops'&&on)hide()},true);
-window.JN_WORLD={show,hide,toggle:()=>on?hide():show(),get on(){return on},select:id=>{const l=getLegs().find(x=>x.id===id&&nowAbs()>=x.off&&nowAbs()<=x.land);if(l){sel=l;card.hidden=false;redraw()}return !!l}};
+function posOfId(id){const now=nowAbs(),m=M();const a=m&&m.airPoses?m.airPoses().find(q=>q.id===id):null;if(a)return {lat:a.lat,lon:a.lon,active:true,air:true};
+  getLegs();const l=byId.get(id);if(!l||l.cx||l.noWorld)return null;const r=l.city?routeFor(l):null;if(!r)return null;const q=legPos(l,now,r);return {lat:q[1],lon:q[0],active:now>=l.off&&now<=l.land,state:now<l.off?'before':(now>l.land?'after':'active'),leg:l}}
+window.JN_WORLD={show,hide,toggle:()=>on?hide():show(),get on(){return on},
+  select:(id,o)=>{getLegs();const l=byId.get(id);if(!l)return false;sel=l;fol=!!(o&&o.follow);card.hidden=false;redraw();return true},
+  selId:()=>sel?sel.id:null,follow:b=>{fol=!!b;redraw()},get following(){return fol},legOf:id=>{getLegs();return byId.get(id)||null},posOf:posOfId,getView,setView:setViewLL,
+  stage:()=>{const v=getView();return v}};
+})();</script>
+<script id="jn-track">(function(){'use strict';
+/* Live tracking of one flight across all three maps: the world map while it is far away, the airspace map in the terminal area, the airport map on the ground.
+   The flight is followed as it passes from one to the next. Started from the flight board, the flight and aircraft history pages, or the Operations hub. */
+let id=null,cur=null,timer=0,first=false;
+const W=()=>window.JN_WORLD,M=()=>window.JN_MAP;
+function where(id){const m=M(),w=W();if(!m||!w)return {v:null};
+  const ps=m.pose?m.pose(id):null;if(ps&&ps.src)return {v:ps.src==='air'?'air':'gnd',ps};
+  const wp=w.posOf?w.posOf(id):null;if(wp&&wp.active)return {v:'world',wp};
+  /* not located right now: a departure that has reached its destination stays on the world map there; anything else rests at the airport */
+  if(wp&&wp.leg&&wp.leg.dir==='out'&&wp.state==='after')return {v:'world',idle:true};
+  if(ps&&ps.e)return {v:'gnd',idle:true};
+  return {v:'world',idle:true}}
+function closeOverlays(){if(/^#\/(flight|aircraft)\//.test(location.hash))history.pushState(null,'',location.pathname+location.search);try{window.dispatchEvent(new HashChangeEvent('hashchange'))}catch(e){}
+  const b=document.getElementById('bX');if(b&&getComputedStyle(document.getElementById('board')).display!=='none')b.click()}
+function apply(v,isFirst){const w=W(),m=M();cur=v;
+  if(v==='world'){w.show({keepView:!isFirst||w.on});w.select(id,{follow:true});const p=w.posOf(id);
+    if(p&&(isFirst||w.getView().mpp>40000))w.setView(p.lat,p.lon,Math.min(w.getView().mpp,9000)||9000);
+    w.follow(true)}
+  else{if(w.on)w.hide();m.track(id)}
+  document.querySelectorAll('#ops-v16 button').forEach(x=>{const on=(x.dataset.view==='world')===(v==='world')&&x.dataset.view==='world';if(x.dataset.view==='world'||x.dataset.view==='map'){x.classList.toggle('active',v==='world'?x.dataset.view==='world':x.dataset.view==='map');x.setAttribute('aria-pressed',String(x.classList.contains('active')))}})}
+function lost(){const w=W(),m=M();if(w.on)return w.selId()!==id;const sid=m.selId?m.selId():null;return sid!==id}
+function tick(){if(!id)return;const r=where(id);
+  if(r.v!==cur){apply(r.v,false);return}
+  if(!first&&lost())stop();first=false}
+function start(flight){if(!flight)return false;const m=M(),w=W();if(!m||!w||!(window.SIMCORE&&SIMCORE.FLEET))return false;
+  stop();id=flight;first=true;closeOverlays();const r=where(id);apply(r.v||'world',true);
+  clearInterval(timer);timer=setInterval(tick,300);setTimeout(()=>{first=false},900);document.dispatchEvent(new CustomEvent('jn-track',{detail:id}));return true}
+function stop(){if(!id)return;id=null;cur=null;clearInterval(timer);document.dispatchEvent(new CustomEvent('jn-track',{detail:null}))}
+window.JN_TRACK={start,stop,get id(){return id},get view(){return cur},where};
+function onWorld(fid){const m=M(),w=W();if(!m||!w)return;const ps=m.pose?m.pose(fid):null;w.show();w.select(fid,{follow:false});
+  const p=ps&&ps.src?{lat:ps.lat,lon:ps.lon}:w.posOf(fid);if(p)w.setView(p.lat,p.lon,12000);w.follow(true);id=fid;cur=where(fid).v;first=true;clearInterval(timer);timer=setInterval(tick,300);setTimeout(()=>{first=false},900);
+  document.querySelectorAll('#ops-v16 button').forEach(x=>{if(x.dataset.view==='world'||x.dataset.view==='map'){x.classList.toggle('active',x.dataset.view==='world');x.setAttribute('aria-pressed',String(x.classList.contains('active')))}})}
+document.addEventListener('click',e=>{const wb=e.target.closest&&e.target.closest('[data-jn-world]');if(wb){e.preventDefault();e.stopPropagation();onWorld(wb.getAttribute('data-jn-world'));return}
+  const b=e.target.closest&&e.target.closest('[data-jn-track]');if(!b)return;e.preventDefault();e.stopPropagation();start(b.getAttribute('data-jn-track'))},true);
 })();</script>
 <script id="v145-global-search-js">(function(){'use strict';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
