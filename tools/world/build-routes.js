@@ -3,7 +3,7 @@
            node tools/world/build-routes.js --embed    (also splices the result into index.html between the WORLD_ROUTES markers)
    The network: ~3,600 real VOR beacons (beacons.json, OurAirports, public domain) joined to their near neighbours, plus the hand-made ocean/gate waypoints of graph.js
    where there are no beacons (oceans, sparse regions). Airspace we do not route through (avoid.json: Russia, Ukraine, Belarus, Iran, Iraq, Syria, and a box over the
-   Black Sea) is never crossed. Routes are the cheapest paths through that network: physical distance. One corridor is kept per direction; unnecessary intermediate nodes are removed when the shortcut stays clear.
+   Black Sea) is never crossed. Routes are the cheapest paths through that network: distance plus penalties for sharp turns and backtracking. One corridor is kept per direction; unnecessary intermediate nodes are removed when the shortcut stays clear.
    These are inferred from beacon positions, not the published airway database (which is not open data). */
 const fs=require('fs'),path=require('path');
 const {N,CHAINS}=require('./graph.js');
@@ -28,7 +28,7 @@ const slerp=geometry.interpolate;
 /* ---- nodes ---- */
 const nodes=[];   // {la,lo,id,kind}  kind 0 beacon, 1 waypoint, 2 gate
 const idx={};
-Object.keys(N).forEach(k=>{if(k==='JKT')return;idx[k]=nodes.length;nodes.push({la:N[k][0],lo:N[k][1],id:null,kind:/^G_/.test(k)?2:1,key:k})});
+Object.keys(N).forEach(k=>{if(k==='JKT')return;idx[k]=nodes.length;nodes.push({la:N[k][0],lo:N[k][1],id:k,kind:/^G_/.test(k)?2:1,key:k})});
 BEACONS.forEach(b=>{if(bad(b[1],b[2]))return;nodes.push({la:b[1],lo:b[2],id:b[0],kind:0})});
 /* Real beacons are sparse over deserts and open sea, so a path there would follow coasts and zigzag. Fill every gap with an unnamed waypoint on a 3.5 degree grid
    (kind 3); paths are pulled straight across runs of them afterwards, so those stretches come out as the great circle between the real beacons either side. */
@@ -45,26 +45,57 @@ nodes.forEach((x,i)=>{
   else{nearest(i,4,450,j=>nodes[j].kind===0).forEach(([d,j])=>{if(edgeOK(P[i],P[j]))link(i,j)})}});
 const ADJ=adj.map(s=>[...s]);
 /* ---- costs and search ---- */
-// No fabricated jet-stream discount: the default minimises physical distance.
+// Base length plus explicit heading-change penalties; no fabricated wind discount.
 const cost=(a,b)=>gc(P[a],P[b]);
 class Heap{constructor(){this.a=[]}push(k,v){const a=this.a;a.push([k,v]);let i=a.length-1;while(i>0){const p=(i-1)>>1;if(a[p][0]<=a[i][0])break;[a[p],a[i]]=[a[i],a[p]];i=p}}
   pop(){const a=this.a,t=a[0],l=a.pop();if(a.length){a[0]=l;let i=0;for(;;){let m=i;const L=2*i+1,R=L+1;if(L<a.length&&a[L][0]<a[m][0])m=L;if(R<a.length&&a[R][0]<a[m][0])m=R;if(m===i)break;[a[m],a[i]]=[a[i],a[m]];i=m}}return t}
   get size(){return this.a.length}}
-/* sources: [[node, initial cost]]; gates are only ever a start or the end of a path, never a stop on the way */
-function search(sources,mult,stopAt){
-  const dist=new Float64Array(n).fill(Infinity),prev=new Int32Array(n).fill(-1),h=new Heap();
-  sources.forEach(([s,d0])=>{if(d0<dist[s]){dist[s]=d0;h.push(d0,s)}});
-  while(h.size){const [d,u]=h.pop();if(d>dist[u])continue;if(u===stopAt||(stopAt===-2&&nodes[u].kind===2))break;
-    for(const v of ADJ[u]){if(nodes[v].kind===2&&v!==stopAt&&stopAt!==-2)continue;const c=d+cost(u,v)*mult[v]+(stopAt===-2&&nodes[v].kind===2?gc(JKT,P[v]):0);if(c<dist[v]){dist[v]=c;prev[v]=u;h.push(c,v)}}}
-  return {dist,prev}}
-const trace=(prev,t)=>{const p=[t];while(prev[p[0]]>=0)p.unshift(prev[p[0]]);return p};
-/* Keep one shortest corridor per direction. Alternatives need an explicit
-   scenario reason, rather than penalising the best path to manufacture variety. */
-function corridors(find){const r=find(new Float32Array(n).fill(1));return r?[r]:[]}
-function pull(path){return path}
-const pt=i=>nodes[i].id?[r2(P[i][0]),r2(P[i][1]),nodes[i].id]:[r2(P[i][0]),r2(P[i][1])];
+/* Heading-aware Dijkstra: (previous node, current node) is the state.
+   A single distance per node would discard an arrival heading that makes the
+   next sector straighter. Include airport connectors in the same scoring. */
+function search(sources,targets,startPoint,endPoint){
+ const states=[],byEdge=new Map(),h=new Heap();let best=null;
+ const offer=(prev,node,cost,parent)=>{const key=(prev+1)*n+node;let id=byEdge.get(key);
+  if(id==null){id=states.length;states.push({prev,node,cost:Infinity,parent:-1});byEdge.set(key,id)}
+  if(cost<states[id].cost){states[id].cost=cost;states[id].parent=parent;h.push(cost,id)}};
+ sources.forEach(([node,d])=>offer(-1,node,d,-1));
+ while(h.size){const [d,id]=h.pop(),state=states[id],u=state.node;if(d>state.cost)continue;if(best&&d>best.total)break;
+  const from=state.prev<0?startPoint:P[state.prev];
+  if(targets.has(u)){const total=d+targets.get(u)+geometry.turnPenalty(from,P[u],endPoint);
+   if(!best||total<best.total)best={id,total}}
+  if(nodes[u].kind===2&&state.prev>=0)continue;
+  for(const v of ADJ[u]){if(v===state.prev||(nodes[v].kind===2&&!targets.has(v)))continue;
+   offer(u,v,d+cost(u,v)+geometry.turnPenalty(from,P[u],P[v]),id)}
+ }
+ if(!best)return null;
+ const path=[];for(let id=best.id;id>=0;id=states[id].parent)path.unshift(states[id].node);
+ return {path,total:best.total};
+}
+const pt=i=>[r2(P[i][0]),r2(P[i][1]),nodes[i].id||('FIC'+String(i).padStart(4,'0'))];
 function nearest0(p,k,maxD,any){const o=[];for(let j=0;j<n;j++){if(any?nodes[j].kind!==1:nodes[j].kind!==0)continue;const d=gc(P[j],p);if(d<=maxD&&edgeOK(p,P[j]))o.push([d,j])}o.sort((a,b)=>a[0]-b[0]);return o.slice(0,k)}
 const GATES=Object.values(GATE).map(k=>idx[k]);
+/* Long curated ocean/continental legs still need a filed fix sequence. Use a
+   nearby real beacon when it stays close to the corridor and clears the same
+   exclusions; otherwise keep an explicitly fictional coordinate fix. */
+function fillLongLegs(path){
+ const out=[path[0]];
+ for(let i=1;i<path.length;i++){
+  const a=path[i-1],b=path[i],km=gc(a,b),steps=Math.ceil(km/800);
+  for(let k=1;k<steps;k++){
+   const q=geometry.interpolate(a,b,k/steps),previous=out[out.length-1],before=out[out.length-2],after=path[i+1];
+   let best=null,bestDistance=80;
+   for(const [id,la,lo] of BEACONS){const p=[la,lo,id],d=gc(q,p);if(d>=bestDistance)continue;
+    if(gc(previous,p)+gc(p,b)>(gc(previous,q)+gc(q,b))*1.025)continue;
+    if(geometry.turnAngle(previous,p,b)>30||(before&&geometry.turnAngle(before,previous,p)>60)||(after&&geometry.turnAngle(p,b,after)>60))continue;
+    if(!edgeOK(previous,p)||!edgeOK(p,b))continue;best=p;bestDistance=d;
+   }
+   out.push(best||[r2(q[0]),r2(q[1]),'FIC'+r2(q[0]).toFixed(2)+'/'+r2(q[1]).toFixed(2)]);
+  }
+  out.push(b);
+ }
+ return out;
+}
+
 /* ---- routes ---- */
 const routes={},report=[];
 Object.keys(air).forEach(city=>{
@@ -77,17 +108,22 @@ Object.keys(air).forEach(city=>{
   const eastIndo=dest[1]>115&&dest[1]<142&&dest[0]>-11&&dest[0]<8&&direct<4000;     // eastern Indonesia: domestic, nearly direct
   if(direct<1500||eastIndo){const gi=nearGate();O=[[[P[gi][0],P[gi][1]],dest]];I=[[dest,[P[gi][0],P[gi][1]]]];OG=[keyOf(gi)];IG=[keyOf(gi)]}
   else{
-    const attempt=cand=>{const ends=[JKT,dest];
-    const out=corridors(mult=>{const r=search(GATES.map(gi=>[gi,gc(JKT,P[gi])]),mult,-1);let b=null;cand.forEach(([d,j])=>{const t=r.dist[j]+d;if(isFinite(t)&&(!b||t<b.t))b={t,j}});return b?{path:pull(trace(r.prev,b.j)),total:b.t}:null},3,ends);
-    const inn=corridors(mult=>{const r=search(cand.map(([d,j])=>[j,d]),mult,-2);let bg=null;GATES.forEach(gi=>{if(isFinite(r.dist[gi])&&(bg===null||r.dist[gi]<r.dist[bg]))bg=gi});return bg===null?null:{path:pull(trace(r.prev,bg)),total:r.dist[bg]}},3,ends);
-    return out.length&&inn.length?{out,inn}:null};
+    const attempt=cand=>{
+     const outward=search(GATES.map(gi=>[gi,gc(JKT,P[gi])]),new Map(cand.map(([d,j])=>[j,d])),JKT,dest);
+     const inward=search(cand.map(([d,j])=>[j,d]),new Map(GATES.map(gi=>[gi,gc(JKT,P[gi])])),dest,JKT);
+     return outward&&inward?{out:[outward],inn:[inward]}:null;
+    };
     let cand=nearest0(dest,4,320);if(!cand.length)cand=nearest0(dest,3,1500);
     let res=cand.length?attempt(cand):null;if(!res)res=attempt(nearest0(dest,3,3500,true));
     if(!res){report.push('NO ROUTE '+city);return}
     const {out,inn}=res;
     O=out.map(c=>[...c.path.map(pt),dest]);I=inn.map(c=>[dest,...c.path.map(pt)]);OG=out.map(c=>keyOf(c.path[0]));IG=inn.map(c=>keyOf(c.path[c.path.length-1]));
   }
-  O=O.map(p=>geometry.simplify(p,edgeOK));I=I.map(p=>geometry.simplify(p,edgeOK));
+    // Preserve regional corridor anchors and bounded airway legs. A clear sky
+  // shortcut is not permission to delete the entire filed waypoint sequence.
+  const shortcut=(p,ends)=>geometry.simplify(p,edgeOK,{...ends,maxLegKm:900,
+    keep:i=>!!N[p[i][2]]&&!/^G_/.test(p[i][2])});
+  O=O.map(p=>fillLongLegs(shortcut(p,{before:JKT})));I=I.map(p=>fillLongLegs(shortcut(p,{after:JKT})));
   for(const p of O.concat(I))for(let j=1;j<p.length;j++)if(!edgeOK(p[j-1],p[j]))throw Error('Excluded route segment: '+city);
   const run=a=>a.reduce((s,p,q)=>q?s+gc(a[q-1],p):s,0),o=O[0],i=I[0],rp=L=>L.map(a=>a.map(p=>[r2(p[0]),r2(p[1]),...(p[2]?[p[2]]:[])]));
   routes[city]={o:rp(O),i:rp(I),og:OG,ig:IG,lo:Math.round(gc(JKT,o[0])+run(o)),li:Math.round(run(i)+gc(i[i.length-1],JKT)),gc:Math.round(direct)}});
@@ -96,12 +132,11 @@ for(const [city,r] of Object.entries(routes))for(const [dir,L] of [['o',r.o],['i
   for(let j=1;j<full.length;j++)if(!exclusion.clear(full[j-1],full[j]))throw Error('Invalid exported route '+city+' '+dir);
 }
 fs.writeFileSync(path.join(__dirname,'routes.json'),JSON.stringify(routes));
-const rows=Object.keys(routes).map(c=>({c,r:routes[c],ratio:Math.max(routes[c].lo,routes[c].li)/Math.max(routes[c].gc,1)})).filter(x=>x.r.gc>=1500).sort((a,b)=>b.ratio-a.ratio);
-{const cnt={};Object.keys(routes).forEach(c=>{routes[c].og.concat(routes[c].ig).forEach(k=>cnt[k]=(cnt[k]||0)+1)});console.log('gate use (route alternatives):',JSON.stringify(cnt))}
-console.log('lattice waypoints:',nodes.filter(x=>x.kind===3).length);console.log('network:',n,'nodes,',ADJ.reduce((s,a)=>s+a.length,0)/2,'edges');
-console.log('routes',Object.keys(routes).length,'of',Object.keys(air).length,report.join(' '));
-console.log('largest detours (route length / great circle):');rows.slice(0,14).forEach(x=>console.log(' ',x.c.padEnd(26),'gc',x.r.gc,'out',x.r.lo,'in',x.r.li,'ratio',x.ratio.toFixed(2)));
-console.log('destinations with alternatives:',Object.keys(routes).filter(c=>routes[c].o.length>1||routes[c].i.length>1).length);
+const quality=require('./audit-routes').auditRoutes(routes,AVOID);
+fs.writeFileSync(path.join(__dirname,'route-quality.json'),JSON.stringify(quality,null,2)+'\n');
+console.log('route quality:',JSON.stringify(quality.summary));
+console.log('largest detours (all directions and variants):');
+quality.routes.slice().sort((a,b)=>b.detourRatio-a.detourRatio).slice(0,14).forEach(r=>console.log(' ',r.city,r.direction,r.variant,'km',r.km,'ratio',r.detourRatio,'max enroute turn',r.maxEnrouteTurnDeg));
 console.log('json bytes',fs.statSync(path.join(__dirname,'routes.json')).size);
 if(process.argv.includes('--embed')){
   const js='/*WORLD_ROUTES:START*/const WORLD_ROUTES='+fs.readFileSync(path.join(__dirname,'routes.json'),'utf8').replace(/,"lo":\d+,"li":\d+,"gc":\d+/g,'')+';/*WORLD_ROUTES:END*/';

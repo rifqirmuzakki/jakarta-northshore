@@ -1,19 +1,42 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{chromium}=require('playwright');
-const {distance,exclusions}=require('../world/geometry'),root=path.resolve(__dirname,'../..'),source=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const {distance,exclusions,turnPenalty,routeScore,simplify}=require('../world/geometry'),root=path.resolve(__dirname,'../..'),source=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const R=JSON.parse(source.match(/const WORLD_ROUTES=(.*?);\/\*WORLD_ROUTES:END/)[1]),data=require('../world/routes.json'),{N}=require('../world/graph'),geo=exclusions(require('../world/avoid.json'));
 assert.equal(geo.clear([26.53,53.96],[26.54,54.85]),false,'Iran crossing missed');
 assert.equal(geo.clear([41.13,29.14],[43.23,27.82]),false,'Black Sea crossing missed');
 assert.equal(exclusions([{n:'thin',b:[100.099,-1,100.101,1],r:[[100.099,-1],[100.101,-1],[100.101,1],[100.099,1]]}]).clear([0,100],[0,100.2]),false,'Thin polygon crossing missed between samples');
+// A reversal must cost more than a right-angle bend, and a straight line nothing.
+assert.equal(turnPenalty([0,0],[0,1],[0,2]),0);
+assert(turnPenalty([0,0],[0,1],[0,0])>turnPenalty([0,0],[0,1],[1,1]));
+// Greedy farthest-visible chooses node 3; heading-aware shortcuts prefer node 2.
+const points=[[0,0],[0.1,0.5],[0,1],[1,1],[1,2]],allowed=new Set(['0:2','0:3','2:4','3:4']);
+const chosen=simplify(points,(a,b)=>allowed.has(points.indexOf(a)+':'+points.indexOf(b)),{before:[0,-1]});
+assert.deepEqual(chosen,[points[0],points[2],points[4]]);
+assert.deepEqual(simplify([[0,0],[0,1],[0,2]],()=>true,{keep:i=>i===1}),[[0,0],[0,1],[0,2]],'Regional anchor erased');
+assert.equal(simplify([[0,0],[0,5],[0,10],[0,15]],()=>true,{maxLegKm:900}).length,4,'Waypoints collapsed to an airport-to-airport arc');
+assert(routeScore([[0,-1],...chosen])<routeScore([[0,-1],points[0],points[3],points[4]]));
+const {auditRoutes}=require('../world/audit-routes');
+const synthetic=auditRoutes({Demo:{o:[[[0,100],[0,101]],[[0,99],[0,98],[0,101]]],i:[[[0,101],[0,100]]]}},[]);
+assert.equal(synthetic.summary.variants,3,'Audit ignored an alternative');
+assert(synthetic.routes.find(r=>r.direction==='out'&&r.variant===1).warnings.includes('enroute-backtracking'));
+const quality=auditRoutes(R,require('../world/avoid.json'));
+assert.equal(quality.summary.excludedVariants,0);assert.equal(quality.summary.backtrackingVariants,0);
+assert.deepEqual(quality,require('../world/route-quality.json'),'Committed quality report is stale');
+for(const city of ['Auckland','Medina','London / New York','Melbourne']){
+ for(const p of R[city].o.concat(R[city].i)){
+  assert(p.filter(x=>x[2]&&!/^G_/.test(x[2])).length>=4,city+' lost airway fixes');
+  for(let i=1;i<p.length;i++)assert(distance(p[i-1],p[i])<1000,city+' has an unconstrained direct leg');
+ }
+}
 let count=0;
 for(const [city,r] of Object.entries(R))for(const dir of ['o','i']){
  assert.equal(r[dir].length,1,city+' manufactured alternatives');assert.deepEqual(r[dir],data[city][dir]);
  for(const p of r[dir]){count++;const P=dir==='o'?[N.JKT,...p]:[...p,N.JKT];for(let i=1;i<P.length;i++)assert(geo.clear(P[i-1],P[i]),`${city} ${dir} crosses exclusion`)}
 }
-assert(data.Melbourne.li/data.Melbourne.gc<1.03);assert(data.Medina.li/data.Medina.gc<1.02);
+assert(data.Melbourne.li/data.Melbourne.gc<1.10);assert(data.Medina.li/data.Medina.gc<1.10);
 (async()=>{const b=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 try{const p=await b.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));
 await p.route('https://northshore.test/**',r=>{const f=path.join(root,new URL(r.request().url()).pathname);if(!fs.existsSync(f)||!fs.statSync(f).isFile())return r.fulfill({status:404,body:''});
- if(f.endsWith('index.html'))return r.fulfill({contentType:'text/html',body:source.replace('window.JN_WORLD={','window.__routingTest={getLegs,routeFor,legPath,ensureSA,sample};window.JN_WORLD={').replace('airGateOf,airRwy,airShortTransition};','airGateOf,airRwy,airShortTransition,airStar,airSid,posAt};')});return r.fulfill({path:f});});
+ if(f.endsWith('index.html'))return r.fulfill({contentType:'text/html',body:source.replace('window.JN_WORLD={','window.__routingTest={getLegs,routeFor,legPath,ensureSA,sample,pathAfter};window.JN_WORLD={').replace('airGateOf,airRwy,airShortTransition,airRouteTransitionPoint};','airGateOf,airRwy,airShortTransition,airRouteTransitionPoint,airStar,airSid,posAt};')});return r.fulfill({path:f});});
 await p.goto('https://northshore.test/index.html?clock=2026-11-07T17:40&incidents=off');
 await p.waitForFunction(()=>window.AIRCORE?.AIR.D?.length&&window.__routingTest);
 const result=await p.evaluate(()=>{
@@ -26,6 +49,18 @@ const result=await p.evaluate(()=>{
   if(dep)check(sid.S[dep.i]>=15000,'Initial climb skipped');
   if(arr)check(star.total-star.S[arr.i]>=23000,'Final approach skipped');
   summary.push({runway:fl+rk,departKm:dep&&Math.round(sid.S[dep.i]/1000),arriveRemainingKm:arr&&Math.round((star.total-star.S[arr.i])/1000)});
+ }
+ // Long-haul flights use the local filed corridor, not a route-length cutoff.
+ for(const fl of ['09','27'])for(const rk of ['N','S']){
+  const target=A.airRouteTransitionPoint('Auckland','out'),sid=A.airSid('S',rk,fl,0),cut=A.airShortTransition(sid,target,'dep');
+  check(cut&&cut.i<sid.iG,'Auckland still forced to outer gate '+fl+rk);
+ }
+ const akl=A.AIR.D.filter(t=>['GA 702','NZ 6181'].includes(t.id));
+ check(akl.length===2,'Auckland proving flights missing');
+ for(const t of akl){check(t.tail?.enroute&&t.iEnd<t.sd.iG,t.id+' does not leave SID early');
+  const cut=t.tE+t.sd.E[t.iEnd]/t.sf,before=A.posAt(t,cut-.01),after=A.posAt(t,cut+.01);
+  check(before&&after&&Math.hypot(after.x-before.x,after.y-before.y)<20,'Long departure transition jumps');
+  const end=A.posAt(t,t.t1-.01);check(end&&end.alt>10000,'Long-haul handoff descends as though landing');
  }
  const departures=A.AIR.D.filter(t=>t.e.d.city==='Bandar Lampung'),arrivals=A.AIR.A.filter(t=>t.e.a.city==='Bandar Lampung');
  check(departures.length>0&&arrivals.length>0,'No TKG live tracks');
