@@ -53,8 +53,8 @@ class Heap{constructor(){this.a=[]}push(k,v){const a=this.a;a.push([k,v]);let i=
 function search(sources,mult,stopAt){
   const dist=new Float64Array(n).fill(Infinity),prev=new Int32Array(n).fill(-1),h=new Heap();
   sources.forEach(([s,d0])=>{if(d0<dist[s]){dist[s]=d0;h.push(d0,s)}});
-  while(h.size){const [d,u]=h.pop();if(d>dist[u])continue;if(u===stopAt)break;
-    for(const v of ADJ[u]){if(nodes[v].kind===2&&v!==stopAt)continue;const c=d+cost(u,v)*mult[v];if(c<dist[v]){dist[v]=c;prev[v]=u;h.push(c,v)}}}
+  while(h.size){const [d,u]=h.pop();if(d>dist[u])continue;if(u===stopAt||(stopAt===-2&&nodes[u].kind===2))break;
+    for(const v of ADJ[u]){if(nodes[v].kind===2&&v!==stopAt&&stopAt!==-2)continue;const c=d+cost(u,v)*mult[v]+(stopAt===-2&&nodes[v].kind===2?gc(JKT,P[v]):0);if(c<dist[v]){dist[v]=c;prev[v]=u;h.push(c,v)}}}
   return {dist,prev}}
 const trace=(prev,t)=>{const p=[t];while(prev[p[0]]>=0)p.unshift(prev[p[0]]);return p};
 /* dense samples along a path, to compare corridors */
@@ -74,28 +74,34 @@ function pull(path){const out=[path[0]];let i=0;
   return out}
 const pt=i=>nodes[i].id?[r2(P[i][0]),r2(P[i][1]),nodes[i].id]:[r2(P[i][0]),r2(P[i][1])];
 function nearest0(p,k,maxD,any){const o=[];for(let j=0;j<n;j++){if(any?nodes[j].kind!==1:nodes[j].kind!==0)continue;const d=gc(P[j],p);if(d<=maxD)o.push([d,j])}o.sort((a,b)=>a[0]-b[0]);return o.slice(0,k)}
+const GATES=Object.values(GATE).map(k=>idx[k]);
 /* ---- routes ---- */
 const routes={},report=[];
 Object.keys(air).forEach(city=>{
-  const [la,lo,side]=air[city],dest=[la,unwrap(lo)],gKey=GATE[side]||'G_NW',g=idx[gKey],direct=gc(JKT,dest);
-  let O,I;
+  const [la,lo,side]=air[city],dest=[la,unwrap(lo)],direct=gc(JKT,dest);
+  let O,I,OG,IG;
+  /* the gate (the fix a SID leaves by, or a STAR starts from) follows the airway: the first gate of the cheapest path. For short and domestic routes: the gate nearest the bearing to the destination. */
+  const bearing=(a,b)=>Math.atan2(Math.sin((b[1]-a[1])*rad)*Math.cos(b[0]*rad),Math.cos(a[0]*rad)*Math.sin(b[0]*rad)-Math.sin(a[0]*rad)*Math.cos(b[0]*rad)*Math.cos((b[1]-a[1])*rad));
+  const nearGate=()=>{let bk=null,bd=9;GATES.forEach(gi=>{let d=Math.abs(bearing(JKT,P[gi])-bearing(JKT,dest));d=Math.min(d,2*Math.PI-d);if(d<bd){bd=d;bk=gi}});return bk};
+  const keyOf=gi=>nodes[gi].key.replace('G_','');
   const eastIndo=dest[1]>115&&dest[1]<142&&dest[0]>-11&&dest[0]<8&&direct<4000;     // eastern Indonesia: domestic, nearly direct
-  if(direct<1500||eastIndo){O=[[[N[gKey][0],N[gKey][1]],dest]];I=[[dest,[N[gKey][0],N[gKey][1]]]]}
+  if(direct<1500||eastIndo){const gi=nearGate();O=[[[P[gi][0],P[gi][1]],dest]];I=[[dest,[P[gi][0],P[gi][1]]]];OG=[keyOf(gi)];IG=[keyOf(gi)]}
   else{
-    const attempt=cand=>{const ends=[P[g],dest];
-    const out=corridors(mult=>{const r=search([[g,0]],mult,-1);let b=null;cand.forEach(([d,j])=>{const t=r.dist[j]+d;if(isFinite(t)&&(!b||t<b.t))b={t,j}});return b?{path:pull(trace(r.prev,b.j)),total:b.t}:null},3,ends);
-    const inn=corridors(mult=>{const r=search(cand.map(([d,j])=>[j,d]),mult,g);return isFinite(r.dist[g])?{path:pull(trace(r.prev,g)),total:r.dist[g]}:null},3,ends);
+    const attempt=cand=>{const ends=[JKT,dest];
+    const out=corridors(mult=>{const r=search(GATES.map(gi=>[gi,gc(JKT,P[gi])]),mult,-1);let b=null;cand.forEach(([d,j])=>{const t=r.dist[j]+d;if(isFinite(t)&&(!b||t<b.t))b={t,j}});return b?{path:pull(trace(r.prev,b.j)),total:b.t}:null},3,ends);
+    const inn=corridors(mult=>{const r=search(cand.map(([d,j])=>[j,d]),mult,-2);let bg=null;GATES.forEach(gi=>{if(isFinite(r.dist[gi])&&(bg===null||r.dist[gi]<r.dist[bg]))bg=gi});return bg===null?null:{path:pull(trace(r.prev,bg)),total:r.dist[bg]}},3,ends);
     return out.length&&inn.length?{out,inn}:null};
     let cand=nearest0(dest,4,320);if(!cand.length)cand=nearest0(dest,3,1500);
     let res=cand.length?attempt(cand):null;if(!res)res=attempt(nearest0(dest,3,3500,true));
     if(!res){report.push('NO ROUTE '+city);return}
     const {out,inn}=res;
-    O=out.map(c=>[...c.path.map(pt),dest]);I=inn.map(c=>[dest,...c.path.map(pt)]);
+    O=out.map(c=>[...c.path.map(pt),dest]);I=inn.map(c=>[dest,...c.path.map(pt)]);OG=out.map(c=>keyOf(c.path[0]));IG=inn.map(c=>keyOf(c.path[c.path.length-1]));
   }
   const run=a=>a.reduce((s,p,q)=>q?s+gc(a[q-1],p):s,0),o=O[0],i=I[0],rp=L=>L.map(a=>a.map(p=>[r2(p[0]),r2(p[1]),...(p[2]?[p[2]]:[])]));
-  routes[city]={o:rp(O),i:rp(I),lo:Math.round(gc(JKT,o[0])+run(o)),li:Math.round(run(i)+gc(i[i.length-1],JKT)),gc:Math.round(direct)}});
+  routes[city]={o:rp(O),i:rp(I),og:OG,ig:IG,lo:Math.round(gc(JKT,o[0])+run(o)),li:Math.round(run(i)+gc(i[i.length-1],JKT)),gc:Math.round(direct)}});
 fs.writeFileSync(path.join(__dirname,'routes.json'),JSON.stringify(routes));
 const rows=Object.keys(routes).map(c=>({c,r:routes[c],ratio:Math.max(routes[c].lo,routes[c].li)/Math.max(routes[c].gc,1)})).filter(x=>x.r.gc>=1500).sort((a,b)=>b.ratio-a.ratio);
+{const cnt={};Object.keys(routes).forEach(c=>{routes[c].og.concat(routes[c].ig).forEach(k=>cnt[k]=(cnt[k]||0)+1)});console.log('gate use (route alternatives):',JSON.stringify(cnt))}
 console.log('lattice waypoints:',nodes.filter(x=>x.kind===3).length);console.log('network:',n,'nodes,',ADJ.reduce((s,a)=>s+a.length,0)/2,'edges');
 console.log('routes',Object.keys(routes).length,'of',Object.keys(air).length,report.join(' '));
 console.log('largest detours (route length / great circle):');rows.slice(0,14).forEach(x=>console.log(' ',x.c.padEnd(26),'gc',x.r.gc,'out',x.r.lo,'in',x.r.li,'ratio',x.ratio.toFixed(2)));
