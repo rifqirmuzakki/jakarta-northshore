@@ -4956,8 +4956,11 @@ window.JN_MAP={focus(id){const e=(C.ENTS||[]).find(x=>(x.a&&x.a.id===id)||(x.d&&
   function track(id){const e=ent(id);if(!e)return false;const ps=pose(id),f=fl(e,id),want=ps&&ps.src==='air'?'air':'gnd';
     if(mode!==want)setMode(want);
     setSel(e,{follow:true,f});if(want==='air'){if(k<2.2||k>12){k=2.5;}}else if(k<3.4)k=3.4;ap();return true}
-  const trailLL=id=>{const e=ent(id);if(!e)return null;const q=A.poseOf(e,T);if(!q)return null;const tr=q.tr,o=[];for(let t=tr.t0;t<T;t+=20){const qq=A.posAtOff(tr,t);if(qq)o.push(A.airLL(qq.x,qq.y))}o.push(A.airLL(q.x,q.y));return o};
-  const depTrackLL=id=>{const e=ent(id);const tr=e&&e.dT&&e.d&&e.d.id===id?e.dT:null;if(!tr)return null;const o=[];for(let t=tr.t0;t<=tr.t1;t+=20){const q=A.posAtOff(tr,t);if(q)o.push(A.airLL(q.x,q.y))}return o};
+  const trailLL=id=>{const e=ent(id);if(!e)return null;const q=A.poseOf(e,T);if(!q||q.tr.id!==id)return null;const tr=q.tr,o=[],end=T+q.off;
+    // poseOf wraps the wall clock onto the track's own day. Sample that same
+    // interval, otherwise a 23:xx departure loses its entire trail at midnight.
+    for(let t=tr.t0;t<end;t+=20){const qq=A.posAtOff(tr,t);if(qq)o.push(A.airLL(qq.x,qq.y))}o.push(A.airLL(q.x,q.y));return o};
+  const depTrackLL=id=>{const e=ent(id);const tr=e&&e.dT&&e.d&&e.d.id===id?e.dT:null;if(!tr)return null;const o=[];for(let t=tr.t0;t<tr.t1;t+=20){const q=A.posAtOff(tr,t);if(q)o.push(A.airLL(q.x,q.y))}const end=A.posAtOff(tr,tr.t1);if(end)o.push(A.airLL(end.x,end.y));return o};
   Object.assign(M,{ent,pose,airPoses,llAt,hdAt,depTrackLL,clear:()=>setSel(null),centre,setView,track,trailLL,time:()=>T,setMode:m=>{if(mode!==m)setMode(m)},selId:()=>{if(!sel)return null;const f=pinF||curFlight(sel,T);return f?f.id:null},ents:()=>C.ENTS});
   Object.defineProperty(M,'mode',{get:()=>mode,configurable:true});
 })();
@@ -7338,9 +7341,12 @@ const nowAbs=()=>{const d=new Date(),p=new Intl.DateTimeFormat('en-GB',{timeZone
   const S=window.SIMCORE;return (S&&S.FLEET?S.FLEET.day:0)*1440+g('hour')*60+g('minute')+g('second')/60};
 const M=()=>window.JN_MAP,smooth=u=>{u=Math.max(0,Math.min(1,u));return u*u*(3-2*u)};
 /* where the airspace tracks take over: an arrival leaves the world map where its air track starts, a departure joins it where its air track ends, so a flight is never in two places */
-function anchor(l,day){const m=M();if(!m||!m.ent||l.d!==day)return;const e=m.ent(l.id);if(!e)return;
+function anchor(l,day){const m=M();if(!m||!m.ent)return;const e=m.ent(l.id);if(!e)return;
+  // The terminal engine wraps the same SID/STAR tracks across midnight.
+  // Anchor adjacent dated World legs to those tracks on their own day too.
+  day=l.d;
   if(l.dir==='in'&&e.aT&&e.a&&e.a.id===l.id){const t=day*1440+e.aT.t0/60;l.hand=m.llAt(e,e.aT.t0+0.05);l.hhd=m.hdAt(e,e.aT.t0+0.05);l.land=Math.max(l.off+2,t);l.air=true;if(e.td!=null)l.eta=day*1440+e.td/60;if(t<=l.off+0.5||!l.hand)l.noWorld=true}
-  else if(l.dir==='out'&&e.dT&&e.d&&e.d.id===l.id){const t=day*1440+e.dT.t1/60,shift=e.takeoff!=null?day*1440+e.takeoff/60-(l.std+14):0;l.hand=m.llAt(e,e.dT.t1-0.05);l.hhd=m.hdAt(e,e.dT.t1-0.05);l.off=t;l.land+=shift;l.eta=l.land+8;l.air=true;if(l.land<=l.off+2||!l.hand)l.noWorld=true}}
+  else if(l.dir==='out'&&e.dT&&e.d&&e.d.id===l.id){const t=day*1440+e.dT.t1/60,shift=e.takeoff!=null?day*1440+e.takeoff/60-(l.std+14):0;l.hand=m.llAt(e,e.dT.t1);l.hhd=m.hdAt(e,e.dT.t1);l.off=t;l.land+=shift;l.eta=l.land+8;l.air=true;if(l.land<=l.off+2||!l.hand)l.noWorld=true}}
 function getLegs(){const S=window.SIMCORE;if(!S||!S.worldLegs)return [];const day=S.FLEET?S.FLEET.day:0,ents=M()&&M().ents?M().ents():null,A=window.AIRCORE&&AIRCORE.AIR;
   if(legs&&legsKey===day&&legsEnts===ents&&legsArrivals===A?.A&&legsDepartures===A?.D){indexWorldInstances();return legs;}
   legs=S.worldLegs().map(l=>{const dep=l.std+14,arr=l.sta-8;return Object.assign(l,{off:dep,land:Math.max(dep+20,arr)})});legsKey=day;legsEnts=ents;
