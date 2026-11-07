@@ -9,7 +9,7 @@ const N={
  SUM_C:[-1.0,102.5],SUM_N:[4.0,97.6],SIN_A:[1.5,104.2],MY_W:[3.2,101.4],MY_N:[6.2,100.3],AND_E:[8.0,97.0],AND_C:[9.5,93.5],BOB_C:[13.0,88.0],BOB_N:[19.0,87.0],IN_E:[17.0,82.0],IN_C:[21.5,78.0],IN_N:[28.0,77.3],
  // Indian Ocean and Arabian Sea
  IO_A:[-5.0,100.0],IO_B:[-1.5,92.5],IO_C:[3.0,85.5],SL_S:[5.3,80.5],ARB_A:[7.5,72.5],ARB_B:[12.0,66.0],ARB_C:[18.0,62.0],OMN_A:[22.0,59.0],
- IN_W:[19.0,73.5],MAL:[4.0,73.5],
+ IN_W:[19.0,73.5],MAL:[4.0,73.5],BOB_S:[8.5,88.5],IN_S:[13.5,79.8],ARB_N:[16.0,68.0],SIO_N:[-9.0,75.0],
  // Gulf, Arabia, Red Sea, Egypt
  UAE:[25.0,55.2],QAT:[25.3,51.6],SAU_E:[26.0,48.5],SAU_C:[24.5,45.5],SAU_W:[24.0,39.0],SAU_N:[28.5,36.5],RS_N:[27.5,34.0],CAI_A:[30.0,31.5],
  // Mediterranean, Turkey, Caucasus
@@ -51,6 +51,8 @@ const CHAINS=[
  ['PHL_S','HI_1','HI_2','HI_3'],['LUZ_N','OKI'],['KYU','HNS'],['HNS','KOR_W'],
  // east: Indonesia, Papua, Pacific, Australia, New Zealand
  ['G_E','JS_E','FLO','BAN','PAP_C','PAP_E','PNG','SOL','VAN'],['BAN','PHL_S'],['G_E','E_1','E_2','DRW_A','AUS_C','AUS_SA'],['AUS_C','AUS_EC','AUS_SE'],['AUS_EC','AUS_EQ','TAS_A','NZ_N'],['AUS_SE','TAS_B','NZ_N'],['AUS_SE','AUS_EQ'],['AUS_SA','AUS_SE'],['E_2','E_3','PNG'],['FLO','E_2'],['PAP_C','E_3'],
- ['G_S','W_AUS_1','W_AUS_2'],['W_AUS_1','AUS_SA']
+ ['G_S','W_AUS_1','W_AUS_2'],['W_AUS_1','AUS_SA'],
+ // cross links so a gate has more than one way out (neighbouring gates are a few miles apart)
+ ['G_NE','N_1'],['G_N','BORN_N'],['G_W','SUM_C'],['G_S','IO_A'],['G_E','E_1'],['G_NW','IO_A']
 ];
 module.exports={N,CHAINS};

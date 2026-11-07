@@ -17,38 +17,47 @@ CHAINS.forEach(ch=>{for(let i=0;i+1<ch.length;i++){const a=ch[i],b=ch[i+1];if(a=
 /* cost of flying a->b: distance, cheaper with the jet stream behind us (eastbound), dearer into it (westbound), strongest around 40 degrees */
 const jet=lat=>Math.max(0,1-Math.abs((Math.abs(lat)-40)/22));
 const cost=(a,b)=>{const A=N[a],B=N[b],len=gc(A,B),mid=(A[0]+B[0])/2,ef=((B[1]-A[1])*Math.cos(mid*rad)*111.2)/Math.max(len,1);return len*(1-0.10*ef*jet(mid))};
-function dijkstra(src,dst){
+function dijkstra(src,dst,pen){
   const dist={},prev={},seen=new Set();Object.keys(adj).forEach(k=>dist[k]=Infinity);dist[src]=0;
   for(;;){let u=null;for(const k in dist)if(!seen.has(k)&&(u===null||dist[k]<dist[u]))u=k;if(u===null||dist[u]===Infinity)return null;if(u===dst)break;seen.add(u);
-    adj[u].forEach(v=>{const c=dist[u]+cost(u,v);if(c<dist[v]){dist[v]=c;prev[v]=u}})}
+    adj[u].forEach(v=>{const c=dist[u]+cost(u,v)*(pen?(pen[u<v?u+'>'+v:v+'>'+u]||1):1);if(c<dist[v]){dist[v]=c;prev[v]=u}})}
   const p=[dst];while(p[0]!==src)p.unshift(prev[p[0]]);return {path:p,cost:dist[dst]}}
+/* up to K genuinely different airways: find the best path, make its legs much dearer, search again, and accept a path only if it shares less than 60% of its waypoints with those already kept; keep those within 40% of the best */
+const pathCost=p=>p.reduce((s,k,i)=>i?s+cost(p[i-1],k):s,0);
+const overlap=(a,b)=>{const A=new Set(a.slice(1)),n=b.slice(1).filter(k=>A.has(k)).length;return n/Math.max(1,Math.min(a.length,b.length)-1)};
+const diverse=(out,path)=>out.every(o=>overlap(o.path,path)<0.6);
+function alternatives(src,dst,K){const pen={},out=[];
+  for(let it=0;it<14&&out.length<K;it++){const r=dijkstra(src,dst,pen);if(!r)break;
+    if(diverse(out,r.path))out.push({path:r.path,cost:pathCost(r.path)});
+    for(let i=1;i<r.path.length;i++){const a=r.path[i-1],b=r.path[i],k=a<b?a+'>'+b:b+'>'+a;pen[k]=(pen[k]||1)*2.2}}
+  out.sort((a,b)=>a.cost-b.cost);return out.filter(o=>o.cost<=out[0].cost*1.4)}
 const nearestNodes=(pt,n)=>Object.keys(adj).map(k=>({k,d:gc(N[k],pt)})).sort((a,b)=>a.d-b.d).slice(0,n);
 const r2=x=>Math.round(x*100)/100;
 const routes={},report=[];
 Object.keys(air).forEach(city=>{
   const [la,lo,side]=air[city],dest=[la,unwrap(lo)],g=GATE[side]||'G_NW',direct=gc(JKT,dest);
-  let o,i;
+  let O,I;
   const eastIndo=dest[1]>115&&dest[1]<142&&dest[0]>-11&&dest[0]<8&&direct<4000;          // eastern Indonesia: domestic, nearly direct
-  if(direct<1500||eastIndo){o=[N[g],dest];i=[dest,N[g]]}
+  if(direct<1500||eastIndo){O=[[N[g],dest]];I=[[dest,N[g]]]}
   else{
     const near=nearestNodes(dest,4)[0].d,cands=nearestNodes(dest,4).filter(c=>c.d<=Math.max(900,near*2.2));
-    let bestO=null,bestI=null;
-    cands.forEach(c=>{
-      const po=dijkstra(g,c.k);if(po){const total=po.cost+c.d;if(!bestO||total<bestO.total)bestO={total,path:po.path,attach:c}}
-      /* inbound: fly the same graph the other way, so the wind term differs */
-      const pi=dijkstra(c.k,g);
-      if(pi){const total=pi.cost+c.d;if(!bestI||total<bestI.total)bestI={total,path:pi.path,attach:c}}});
-    if(!bestO||!bestI){report.push('NO ROUTE '+city);return}
-    o=[...bestO.path.map(k=>N[k]),dest];i=[dest,...bestI.path.map(k=>N[k])];
-    // the inbound path was costed from the attach node towards the gate, so the node list already runs towards Jakarta
+    const pool=(from,to)=>{const all=[];cands.forEach(c=>alternatives(...(from?[g,c.k]:[c.k,g]),3).forEach(a=>all.push({path:a.path,total:a.cost+c.d})));
+      all.sort((a,b)=>a.total-b.total);const keep=[];all.forEach(a=>{if(a.total<=all[0].total*1.4&&diverse(keep,a.path))keep.push(a)});return keep.slice(0,3)};
+    const po=pool(true),pi=pool(false);
+    if(!po.length||!pi.length){report.push('NO ROUTE '+city);return}
+    // inbound paths were costed from the attach node towards the gate, so the node lists already run towards Jakarta
+    O=po.map(a=>[...a.path.map(k=>N[k]),dest]);I=pi.map(a=>[dest,...a.path.map(k=>N[k])]);
   }
   const run=a=>a.reduce((s,p,q)=>q?s+gc(a[q-1],p):s,0);
-  routes[city]={o:o.map(p=>[r2(p[0]),r2(p[1])]),i:i.map(p=>[r2(p[0]),r2(p[1])]),lo:Math.round(gc(JKT,o[0])+run(o)),li:Math.round(run(i)+gc(i[i.length-1],JKT)),gc:Math.round(direct)}});
+  const o=O[0],i=I[0],rp=L=>L.map(a=>a.map(p=>[r2(p[0]),r2(p[1])]));
+  routes[city]={o:rp(O),i:rp(I),lo:Math.round(gc(JKT,o[0])+run(o)),li:Math.round(run(i)+gc(i[i.length-1],JKT)),gc:Math.round(direct)}});
+
 fs.writeFileSync(path.join(__dirname,'routes.json'),JSON.stringify(routes));
 const rows=Object.keys(routes).map(c=>({c,r:routes[c],ratio:Math.max(routes[c].lo,routes[c].li)/Math.max(routes[c].gc,1)})).filter(x=>x.r.gc>=1500).sort((a,b)=>b.ratio-a.ratio);
 console.log('routes',Object.keys(routes).length,'of',Object.keys(air).length,report.join(' '));
 console.log('largest detours (route length / great circle):');rows.slice(0,14).forEach(x=>console.log(' ',x.c.padEnd(26),'gc',x.r.gc,'out',x.r.lo,'in',x.r.li,'ratio',x.ratio.toFixed(2)));
-const diff=rows.filter(x=>JSON.stringify(x.r.o.slice(1,-1))!==JSON.stringify(x.r.i.slice(1,-1).reverse()));
+const diff=rows.filter(x=>JSON.stringify(x.r.o[0].slice(1,-1))!==JSON.stringify(x.r.i[0].slice(1,-1).reverse()));
+console.log('destinations with alternatives:',Object.keys(routes).filter(c=>routes[c].o.length>1||routes[c].i.length>1).length);
 console.log('destinations where the track out and the track back differ:',diff.length,diff.slice(0,10).map(x=>x.c).join(', '));
 if(process.argv.includes('--embed')){
   const js='/*WORLD_ROUTES:START*/const WORLD_ROUTES='+fs.readFileSync(path.join(__dirname,'routes.json'),'utf8').replace(/,"lo":\d+,"li":\d+,"gc":\d+/g,'')+';/*WORLD_ROUTES:END*/';
