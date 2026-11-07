@@ -698,6 +698,7 @@ function v104Sector(city,isArrival){
          codes,names,label:codes.join(' → '),sector1:codes[0]+' → '+codes[1],sector2:codes[1]+' → '+codes[2]};
 }
 function airportCodeForCity(city){
+  for(const a of Object.values(V104_SECTORS)){if(city===a.via)return a.viaCode;if(city===a.final)return a.finalCode}
   const m={
     'Jakarta':'JKT','Port Louis':'MRU','Surabaya':'SUB','Denpasar':'DPS','Medan':'KNO','Makassar':'UPG','Yogyakarta':'YIA','Solo':'SOC',
     'Balikpapan':'BPN','Semarang':'SRG','Palembang':'PLM','Pekanbaru':'PKU','Batam':'BTH','Padang':'PDG',
@@ -4176,9 +4177,14 @@ window.SIMCORE={incidents:{list:incidentsList,level:()=>JN_OPS.level},ops:{inbou
 window.SIMCORE.worldLegs=function(){const day=FLEET?FLEET.day:v176Day,out=[];
   for(let d=day-1;d<=day+1;d++){const dow=((d+3)%7+7)%7+1;
     [[INF_ALL,'in'],[OUTF_ALL,'out']].forEach(([L,dir])=>L.forEach(f=>{if(!flRuns(f,dow)||!effOn(f,d))return;
-      const b=tBlk(null,f.city),dl=d===day?Math.round(f.dly||0):0,t=d*1440+f.t+dl;
-      const std=dir==='out'?t:t-b,sta=dir==='out'?t+b:t;
-      out.push({id:f.id,c:f.c,city:f.city,ac:f.ac,dir,d,std,sta,dly:dl,z:f.zone,cx:d===day&&!!f.cx})}))}
+      const dl=d===day?Math.round(f.dly||0):0,t=d*1440+f.t;
+      const physical=multiItinerary(dir==='out'?f:f.multiOut||f,dir==='out'?d:d-(f.multiShift||0));
+      const boundary=physical?.[dir==='out'?0:3],b=boundary?boundary.sta-boundary.std:tBlk(null,f.city);
+      const scheduledStd=boundary?boundary.std:(dir==='out'?t:t-b);
+      const std=scheduledStd+dl,sta=(boundary?boundary.sta:(dir==='out'?t+b:t))+dl;
+      const stop=V104_SECTORS[f.city]?.via||f.city;
+      out.push({id:f.id,c:f.c,city:f.city,ac:f.ac,dir,d,std,sta,scheduledStd,
+        from:dir==='out'?'Jakarta':stop,to:dir==='out'?stop:'Jakarta',dly:dl,z:f.zone,cx:d===day&&!!f.cx})}))}
   return out};
 /* the aircraft that actually flies this flight on day d: the flight number maps to every aircraft that flew it over the planning window, so the leg itself decides */
 window.SIMCORE.allFlights=()=>({in:INF_ALL,out:OUTF_ALL});   /* every scheduled flight, whatever day it operates (the flight history needs weekly services on days they do not run) */
@@ -6528,7 +6534,7 @@ function status(H,now){
   return['','Away from Jakarta']}
 /* v103: chronological causal simulated timeline per registration.
    Do not generate visible future actuals; do not simulate arrival/departure independently. */
-const TZ_CITY={'Santiago':'America/Santiago','Buenos Aires':'America/Argentina/Buenos_Aires','Sao Paulo':'America/Sao_Paulo','New York':'America/New_York','Lisbon':'Europe/Lisbon','Jakarta':'Asia/Jakarta','Abu Dhabi':'Asia/Dubai','Addis Ababa':'Africa/Addis_Ababa','Adelaide':'Australia/Adelaide','Ambon':'Asia/Jayapura','Amman':'Asia/Amman','Amsterdam':'Europe/Amsterdam','Auckland':'Pacific/Auckland','Bahrain':'Asia/Bahrain','Balikpapan':'Asia/Makassar','Banda Aceh':'Asia/Jakarta','Bandar Lampung':'Asia/Jakarta','Bandar Seri Begawan':'Asia/Brunei','Bangkok':'Asia/Bangkok','Bangkok Don Mueang':'Asia/Bangkok','Banjarmasin':'Asia/Makassar','Banyuwangi':'Asia/Jakarta','Barcelona':'Europe/Madrid','Batam':'Asia/Jakarta','Beijing':'Asia/Shanghai','Beijing Daxing':'Asia/Shanghai','Bengaluru':'Asia/Kolkata','Bengkulu':'Asia/Jakarta','Berau':'Asia/Makassar','Biak':'Asia/Jayapura','Brisbane':'Australia/Brisbane','Brussels':'Europe/Brussels','Busan':'Asia/Seoul','Cairo':'Africa/Cairo','Canberra':'Australia/Sydney','Cebu':'Asia/Manila','Chengdu':'Asia/Shanghai','Chennai':'Asia/Kolkata','Chiang Mai':'Asia/Bangkok','Chicago':'America/Chicago','Chongqing':'Asia/Shanghai','Christchurch':'Pacific/Auckland','Colombo':'Asia/Colombo','Copenhagen':'Europe/Copenhagen','Da Nang':'Asia/Ho_Chi_Minh','Darwin':'Australia/Darwin','Delhi':'Asia/Kolkata','Denpasar':'Asia/Makassar','Dhaka':'Asia/Dhaka','Dili':'Asia/Dili','Doha':'Asia/Qatar','Dubai':'Asia/Dubai','Edinburgh':'Europe/London','Frankfurt':'Europe/Berlin','Fukuoka':'Asia/Tokyo','Geneva':'Europe/Zurich','Gold Coast':'Australia/Brisbane','Gorontalo':'Asia/Makassar','Guangzhou':'Asia/Shanghai','Gunungsitoli':'Asia/Jakarta','Haikou':'Asia/Shanghai','Hangzhou':'Asia/Shanghai','Hanoi':'Asia/Ho_Chi_Minh','Helsinki':'Europe/Helsinki','Ho Chi Minh City':'Asia/Ho_Chi_Minh','Hong Kong':'Asia/Hong_Kong','Honolulu':'Pacific/Honolulu','Hyderabad':'Asia/Kolkata','Istanbul':'Europe/Istanbul','Jambi':'Asia/Jakarta','Jayapura':'Asia/Jayapura','Jeddah':'Asia/Riyadh','Jeju':'Asia/Seoul','Johannesburg':'Africa/Johannesburg','Kathmandu':'Asia/Kathmandu','Kendari':'Asia/Makassar','Kolkata':'Asia/Kolkata','Kota Kinabalu':'Asia/Kuching','Krabi':'Asia/Bangkok','Kuala Lumpur':'Asia/Kuala_Lumpur','Kuching':'Asia/Kuching','Kunming':'Asia/Shanghai','Kupang':'Asia/Makassar','Kuwait City':'Asia/Kuwait','Labuan Bajo':'Asia/Makassar','Langkawi':'Asia/Kuala_Lumpur','Lombok':'Asia/Makassar','London':'Europe/London','London Heathrow':'Europe/London','Los Angeles':'America/Los_Angeles','Macau':'Asia/Macau','Madrid':'Europe/Madrid','Makassar':'Asia/Makassar','Malang':'Asia/Jakarta','Male':'Indian/Maldives','Mamuju':'Asia/Makassar','Manado':'Asia/Makassar','Manchester':'Europe/London','Manila':'Asia/Manila','Manokwari':'Asia/Jayapura','Medan':'Asia/Jakarta','Medina':'Asia/Riyadh','Melbourne':'Australia/Melbourne','Merauke':'Asia/Jayapura','Milan':'Europe/Rome','Mumbai':'Asia/Kolkata','Munich':'Europe/Berlin','Muscat':'Asia/Muscat','Nadi':'Pacific/Fiji','Nagoya':'Asia/Tokyo','Nairobi':'Africa/Nairobi','Nanjing':'Asia/Shanghai','Osaka':'Asia/Tokyo','Osaka Kansai':'Asia/Tokyo','Padang':'Asia/Jakarta','Palangkaraya':'Asia/Jakarta','Palembang':'Asia/Jakarta','Palu':'Asia/Makassar','Pangkal Pinang':'Asia/Jakarta','Pangkalan Bun':'Asia/Jakarta','Paris':'Europe/Paris','Pekanbaru':'Asia/Jakarta','Penang':'Asia/Kuala_Lumpur','Perth':'Australia/Perth','Phuket':'Asia/Bangkok','Pontianak':'Asia/Pontianak','Port Louis':'Indian/Mauritius','Port Moresby':'Pacific/Port_Moresby','Riyadh':'Asia/Riyadh','Rome':'Europe/Rome','Samarinda':'Asia/Makassar','San Francisco':'America/Los_Angeles','Sapporo New Chitose':'Asia/Tokyo','Seattle':'America/Los_Angeles','Semarang':'Asia/Jakarta','Seoul Incheon':'Asia/Seoul','Shanghai':'Asia/Shanghai','Sharjah':'Asia/Dubai','Shenzhen':'Asia/Shanghai','Silangit':'Asia/Jakarta','Singapore':'Asia/Singapore','Singkawang':'Asia/Pontianak','Solo':'Asia/Jakarta','Sorong':'Asia/Jayapura','Stockholm':'Europe/Stockholm','Subang':'Asia/Kuala_Lumpur','Surabaya':'Asia/Jakarta','Sydney':'Australia/Sydney','Taipei':'Asia/Taipei','Tanjung Pandan':'Asia/Jakarta','Tanjung Pinang':'Asia/Jakarta','Tarakan':'Asia/Makassar','Ternate':'Asia/Jayapura','Timika':'Asia/Jayapura','Tokyo Haneda':'Asia/Tokyo','Tokyo Narita':'Asia/Tokyo','Vancouver':'America/Vancouver','Vienna':'Europe/Vienna','Washington':'America/New_York','Wuhan':'Asia/Shanghai',"Xi'an":'Asia/Shanghai','Xiamen':'Asia/Shanghai','Yogyakarta':'Asia/Jakarta','Zurich':'Europe/Zurich'};
+const TZ_CITY={'Boston':'America/New_York','Santiago':'America/Santiago','Buenos Aires':'America/Argentina/Buenos_Aires','Sao Paulo':'America/Sao_Paulo','New York':'America/New_York','Lisbon':'Europe/Lisbon','Jakarta':'Asia/Jakarta','Abu Dhabi':'Asia/Dubai','Addis Ababa':'Africa/Addis_Ababa','Adelaide':'Australia/Adelaide','Ambon':'Asia/Jayapura','Amman':'Asia/Amman','Amsterdam':'Europe/Amsterdam','Auckland':'Pacific/Auckland','Bahrain':'Asia/Bahrain','Balikpapan':'Asia/Makassar','Banda Aceh':'Asia/Jakarta','Bandar Lampung':'Asia/Jakarta','Bandar Seri Begawan':'Asia/Brunei','Bangkok':'Asia/Bangkok','Bangkok Don Mueang':'Asia/Bangkok','Banjarmasin':'Asia/Makassar','Banyuwangi':'Asia/Jakarta','Barcelona':'Europe/Madrid','Batam':'Asia/Jakarta','Beijing':'Asia/Shanghai','Beijing Daxing':'Asia/Shanghai','Bengaluru':'Asia/Kolkata','Bengkulu':'Asia/Jakarta','Berau':'Asia/Makassar','Biak':'Asia/Jayapura','Brisbane':'Australia/Brisbane','Brussels':'Europe/Brussels','Busan':'Asia/Seoul','Cairo':'Africa/Cairo','Canberra':'Australia/Sydney','Cebu':'Asia/Manila','Chengdu':'Asia/Shanghai','Chennai':'Asia/Kolkata','Chiang Mai':'Asia/Bangkok','Chicago':'America/Chicago','Chongqing':'Asia/Shanghai','Christchurch':'Pacific/Auckland','Colombo':'Asia/Colombo','Copenhagen':'Europe/Copenhagen','Da Nang':'Asia/Ho_Chi_Minh','Darwin':'Australia/Darwin','Delhi':'Asia/Kolkata','Denpasar':'Asia/Makassar','Dhaka':'Asia/Dhaka','Dili':'Asia/Dili','Doha':'Asia/Qatar','Dubai':'Asia/Dubai','Edinburgh':'Europe/London','Frankfurt':'Europe/Berlin','Fukuoka':'Asia/Tokyo','Geneva':'Europe/Zurich','Gold Coast':'Australia/Brisbane','Gorontalo':'Asia/Makassar','Guangzhou':'Asia/Shanghai','Gunungsitoli':'Asia/Jakarta','Haikou':'Asia/Shanghai','Hangzhou':'Asia/Shanghai','Hanoi':'Asia/Ho_Chi_Minh','Helsinki':'Europe/Helsinki','Ho Chi Minh City':'Asia/Ho_Chi_Minh','Hong Kong':'Asia/Hong_Kong','Honolulu':'Pacific/Honolulu','Hyderabad':'Asia/Kolkata','Istanbul':'Europe/Istanbul','Jambi':'Asia/Jakarta','Jayapura':'Asia/Jayapura','Jeddah':'Asia/Riyadh','Jeju':'Asia/Seoul','Johannesburg':'Africa/Johannesburg','Kathmandu':'Asia/Kathmandu','Kendari':'Asia/Makassar','Kolkata':'Asia/Kolkata','Kota Kinabalu':'Asia/Kuching','Krabi':'Asia/Bangkok','Kuala Lumpur':'Asia/Kuala_Lumpur','Kuching':'Asia/Kuching','Kunming':'Asia/Shanghai','Kupang':'Asia/Makassar','Kuwait City':'Asia/Kuwait','Labuan Bajo':'Asia/Makassar','Langkawi':'Asia/Kuala_Lumpur','Lombok':'Asia/Makassar','London':'Europe/London','London Heathrow':'Europe/London','Los Angeles':'America/Los_Angeles','Macau':'Asia/Macau','Madrid':'Europe/Madrid','Makassar':'Asia/Makassar','Malang':'Asia/Jakarta','Male':'Indian/Maldives','Mamuju':'Asia/Makassar','Manado':'Asia/Makassar','Manchester':'Europe/London','Manila':'Asia/Manila','Manokwari':'Asia/Jayapura','Medan':'Asia/Jakarta','Medina':'Asia/Riyadh','Melbourne':'Australia/Melbourne','Merauke':'Asia/Jayapura','Milan':'Europe/Rome','Mumbai':'Asia/Kolkata','Munich':'Europe/Berlin','Muscat':'Asia/Muscat','Nadi':'Pacific/Fiji','Nagoya':'Asia/Tokyo','Nairobi':'Africa/Nairobi','Nanjing':'Asia/Shanghai','Osaka':'Asia/Tokyo','Osaka Kansai':'Asia/Tokyo','Padang':'Asia/Jakarta','Palangkaraya':'Asia/Jakarta','Palembang':'Asia/Jakarta','Palu':'Asia/Makassar','Pangkal Pinang':'Asia/Jakarta','Pangkalan Bun':'Asia/Jakarta','Paris':'Europe/Paris','Pekanbaru':'Asia/Jakarta','Penang':'Asia/Kuala_Lumpur','Perth':'Australia/Perth','Phuket':'Asia/Bangkok','Pontianak':'Asia/Pontianak','Port Louis':'Indian/Mauritius','Port Moresby':'Pacific/Port_Moresby','Riyadh':'Asia/Riyadh','Rome':'Europe/Rome','Samarinda':'Asia/Makassar','San Francisco':'America/Los_Angeles','Sapporo New Chitose':'Asia/Tokyo','Seattle':'America/Los_Angeles','Semarang':'Asia/Jakarta','Seoul Incheon':'Asia/Seoul','Shanghai':'Asia/Shanghai','Sharjah':'Asia/Dubai','Shenzhen':'Asia/Shanghai','Silangit':'Asia/Jakarta','Singapore':'Asia/Singapore','Singkawang':'Asia/Pontianak','Solo':'Asia/Jakarta','Sorong':'Asia/Jayapura','Stockholm':'Europe/Stockholm','Subang':'Asia/Kuala_Lumpur','Surabaya':'Asia/Jakarta','Sydney':'Australia/Sydney','Taipei':'Asia/Taipei','Tanjung Pandan':'Asia/Jakarta','Tanjung Pinang':'Asia/Jakarta','Tarakan':'Asia/Makassar','Ternate':'Asia/Jayapura','Timika':'Asia/Jayapura','Tokyo Haneda':'Asia/Tokyo','Tokyo Narita':'Asia/Tokyo','Vancouver':'America/Vancouver','Vienna':'Europe/Vienna','Washington':'America/New_York','Wuhan':'Asia/Shanghai',"Xi'an":'Asia/Shanghai','Xiamen':'Asia/Shanghai','Yogyakarta':'Asia/Jakarta','Zurich':'Europe/Zurich'};
 /* v182: every STD/ATD/STA/ATA is shown in the LOCAL time of the airport it belongs to (departure times at the origin,
    arrival times at the destination), with DST handled by Intl. Internally times stay Jakarta-based minutes since epoch. */
 const TZ_FMT=new Map(),TZ_OFF=new Map();
@@ -6816,10 +6822,16 @@ function flightRowsFallback(meta,id,now,outb){
     v105HistorySectors(item).filter(x=>x.tone!=='untimed').forEach(x=>out.push({r:x,reg:null,ac:meta.ac,today}))}
   return out.sort((a,b)=>historyMoment(b.r)-historyMoment(a.r))}
 /* the times the flight history shows (ATD, ETA, ATA), so the map cards agree with it */
-window.JN_FLIGHT_TIMES=(id,std)=>{try{const c=C(),now=jakMin();let rows=flightRows(id,now);
+window.JN_FLIGHT_TIMES=(id,std,identity={})=>{try{
+  if(!Number.isFinite(std))return null;const c=C(),now=jakMin();let rows=flightRows(id,now);
   if(!rows.length){const AF=c.allFlights?c.allFlights():null,meta=[...(c.OUTF||[]),...(c.INF||[])].find(f=>f.id===id)||(AF?[...AF.out,...AF.in].find(f=>f.id===id):null);if(meta)rows=flightRowsFallback(meta,id,now,!!(c.OUTF||[]).find(x=>x.id===id)||!!(AF&&AF.out.find(x=>x.id===id)))}
-  if(!rows.length)return null;let o=rows[0];if(std!=null)rows.forEach(x=>{if(Math.abs(x.r.l.std-std)<Math.abs(o.r.l.std-std))o=x});
-  return {atd:o.r.atd,ata:o.r.ata,eta:o.r.eta,std:o.r.l.std,sta:o.r.l.sta,st:o.r.st,tone:o.r.tone}}catch(e){return null}};
+  // STD is the scheduled absolute instant, never a nearest-time search.
+  // Missing instances must not borrow another day's or another sector's events.
+  const o=rows.find(x=>Math.abs(x.r.l.std-std)<1e-6&&
+    (identity.day==null||x.r.l.d===identity.day)&&
+    (!identity.from||x.r.l.from===identity.from)&&(!identity.to||x.r.l.to===identity.to));
+  if(!o)return null;
+  return {atd:o.r.atd,ata:o.r.ata,eta:o.r.eta,std:o.r.l.std,sta:o.r.l.sta,day:o.r.l.d,from:o.r.l.from,to:o.r.l.to,st:o.r.st,tone:o.r.tone}}catch(e){return null}};
 function flightLegHtml(o){
   const r=o.r,l=r.l,arr=l.from!=='Jakarta';
   const v104=l.v105Sector?null:v104Sector(arr?l.from:l.to,arr);
@@ -7286,9 +7298,15 @@ const M=()=>window.JN_MAP,smooth=u=>{u=Math.max(0,Math.min(1,u));return u*u*(3-2
 function anchor(l,day){const m=M();if(!m||!m.ent||l.d!==day)return;const e=m.ent(l.id);if(!e)return;
   if(l.dir==='in'&&e.aT&&e.a&&e.a.id===l.id){const t=day*1440+e.aT.t0/60;l.hand=m.llAt(e,e.aT.t0+0.05);l.hhd=m.hdAt(e,e.aT.t0+0.05);l.land=Math.max(l.off+2,t);l.air=true;if(e.td!=null)l.eta=day*1440+e.td/60;if(t<=l.off+0.5||!l.hand)l.noWorld=true}
   else if(l.dir==='out'&&e.dT&&e.d&&e.d.id===l.id){const t=day*1440+e.dT.t1/60,shift=e.takeoff!=null?day*1440+e.takeoff/60-(l.std+14):0;l.hand=m.llAt(e,e.dT.t1-0.05);l.hhd=m.hdAt(e,e.dT.t1-0.05);l.off=t;l.land+=shift;l.eta=l.land+8;l.air=true;if(l.land<=l.off+2||!l.hand)l.noWorld=true}}
-function getLegs(){const S=window.SIMCORE;if(!S||!S.worldLegs)return [];const day=S.FLEET?S.FLEET.day:0,ents=M()&&M().ents?M().ents():null;if(legs&&legsKey===day&&legsEnts===ents)return legs;
+function getLegs(){const S=window.SIMCORE;if(!S||!S.worldLegs)return [];const day=S.FLEET?S.FLEET.day:0,ents=M()&&M().ents?M().ents():null;if(legs&&legsKey===day&&legsEnts===ents){indexWorldInstances();return legs;}
   legs=S.worldLegs().map(l=>{const dep=l.std+14,arr=l.sta-8;return Object.assign(l,{off:dep,land:Math.max(dep+20,arr)})});legsKey=day;legsEnts=ents;
-  byId=new Map();legs.forEach(l=>{anchor(l,day);if(l.d===day)byId.set(l.id,l)});return legs}
+  legs.forEach(l=>anchor(l,day));indexWorldInstances();return legs}
+function indexWorldInstances(){
+  byId=new Map();const now=nowAbs(),distance=l=>Math.max(l.off-now,now-l.land,0);
+  // An inbound still over Europe can belong to tomorrow's Jakarta arrival.
+  // Re-evaluate even when route geometry is cached, as the clock advances.
+  legs.forEach(l=>{const old=byId.get(l.id);if(!old||distance(l)<distance(old))byId.set(l.id,l)});
+}
 /* drawing */
 function fit(){const lon0=-12,lon1=205,y0=my(-46),y1=my(64);view.k=Math.min(W/(lon1-lon0),H/(y1-y0))*0.96;view.cx=(lon0+lon1)/2;view.cy=(y0+y1)/2}
 function size(){dpr=Math.min(2,window.devicePixelRatio||1);W=window.innerWidth;H=window.innerHeight;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.width=W+'px';cv.style.height=H+'px';ctx=cv.getContext('2d');base=null}
@@ -7413,14 +7431,20 @@ function local(absMin,city){try{const z=(window.JN_TZOF&&JN_TZOF(city))||'Asia/J
 const tailCache=new Map();
 function tailFor(l){const k=l.id+'|'+l.d,c=tailCache.get(k),t=performance.now();if(c&&t-c.t<8000)return c.v;let v=null;try{v=SIMCORE.worldTail?SIMCORE.worldTail(l.id,l.d,l.std):null}catch(e){}tailCache.set(k,{t,v});return v}
 const ftCache=new Map();
-function times(id,std){const k=id,c=ftCache.get(k);if(c&&performance.now()-c.t<4000)return c.v;let v=null;try{v=window.JN_FLIGHT_TIMES?JN_FLIGHT_TIMES(id,std):null}catch(e){}ftCache.set(k,{t:performance.now(),v});return v}
+function times(l){const std=l.scheduledStd??l.std,k=[l.id,l.d,std,l.from,l.to].join('|'),c=ftCache.get(k);
+  if(c&&performance.now()-c.t<4000)return c.v;let v=null;
+  try{v=window.JN_FLIGHT_TIMES?JN_FLIGHT_TIMES(l.id,std,{day:l.d,from:l.from,to:l.to}):null}catch(e){}
+  ftCache.set(k,{t:performance.now(),v});return v}
 const codeOf=c=>{try{return typeof airportCodeForCity==='function'?(airportCodeForCity(c)||''):''}catch(e){return ''}};
 function renderCard(){const l=sel;if(!l)return;const now=nowAbs(),m=M(),city=String(l.city||'').split(' / ')[0]||'—';
   const u=l.land>l.off?Math.max(0,Math.min(1,(now-l.off)/(l.land-l.off))):0,r=l.city?routeFor(l):null;
   const ap=pos.find(o=>o.l.id===l.id&&o.air),air=ap&&ap.air,E=est(l,u,r);
-  const live=(now>=l.off&&now<=l.land)||!!air,ft=times(l.id,l.std),reg=tailFor(l);
+  const live=(now>=l.off&&now<=l.land)||!!air,ft=times(l),reg=tailFor(l);
   const jk=l.dir==='out',oC=jk?'Jakarta':city,dC=jk?city:'Jakarta',oK=jk?'JKT':codeOf(city),dK=jk?codeOf(city):'JKT';
-  const eta=ft&&ft.ata!=null?ft.ata:(l.eta!=null?l.eta:(ft&&ft.eta!=null?ft.eta:l.sta)),etaLab=ft&&ft.ata!=null?'ATA':((l.eta!=null||(ft&&ft.eta!=null))?'ETA':'STA'),depAbs=ft&&ft.atd!=null?ft.atd:l.std,depLab=ft&&ft.atd!=null?'ATD':(now>=l.off?'ETD':'STD');
+  const landed=!live&&ft?.ata!=null;
+  const eta=landed?ft.ata:(ft?.ata==null&&ft?.eta!=null?ft.eta:(l.eta??l.sta));
+  const etaLab=landed?'ATA':live?'ETA':(ft?.eta!=null||l.eta!=null?'ETA':'STA');
+  const depAbs=ft?.atd??l.std,depLab=ft?.atd!=null?'ATD':(now>=l.off?'ETD':'STD');
   const remain=Math.max(0,Math.round(eta-now)),alt=air?air.alt:E.alt,gs=air?null:E.gs;
   const done=ft&&ft.ata!=null||(now>l.land&&!air&&!l.air);
   const state=air?(air.ph==='hold'?'Holding':air.kind==='dep'?'Airborne':'On approach'):(live?E.ph:(done?'Landed':(now<l.off?'Scheduled':'Landed')));
@@ -7435,7 +7459,7 @@ function renderCard(){const l=sel;if(!l)return;const now=nowAbs(),m=M(),city=Str
    '<div class="jc-route"><div><b>'+esc(oC)+'</b><span>'+esc(oK||'')+'</span></div><div class="jc-arrow"><i style="width:'+pct+'%"></i><u style="left:'+pct+'%">✈</u></div><div class="r"><b>'+esc(dC)+'</b><span>'+esc(dK||'')+'</span></div></div>'+
    '<div class="jc-now"><span class="jb-s2 '+tone+'"><i></i>'+esc(state)+'</span>'+perf+(l.z?'<span class="jc-tag '+(l.z==='D'?'d':'i')+'">'+(l.z==='D'?'Domestic':'International')+'</span>':'')+'</div>'+
    (live?'<div class="jc-tele" style="margin:10px 16px"><div><small>Altitude</small><b>'+esc(altS)+'</b></div><div><small>Ground speed</small><b>'+(gs?gs+' kt':(air?'—':'—'))+'</b></div><div><small>Heading</small><b>'+String(Math.round(selHd)).padStart(3,'0')+'°</b></div></div>':'')+
-   '<div class="jc-gate"><div><small>'+depLab+' '+esc(oK||oC)+'</small><b>'+lt(depAbs,oC)+'</b></div><div><small>'+etaLab+' '+esc(dK||dC)+'</small><b>'+lt(eta,dC)+'</b></div><div><small>Time to go</small><b>'+(live?Math.floor(remain/60)+'h '+String(remain%60).padStart(2,'0')+'m':'—')+'</b></div></div>'+
+   '<div class="jc-gate"><div><small>'+depLab+' '+esc(oK||oC)+'</small><b>'+lt(depAbs,oC)+'</b></div><div><small>'+etaLab+' '+esc(dK||dC)+'</small><b>'+lt(eta,dC)+'</b></div><div><small>Time to go</small><b>'+(live?(eta>now?Math.floor(remain/60)+'h '+String(remain%60).padStart(2,'0')+'m':'Updating ETA'):'—')+'</b></div></div>'+
    '<div class="jc-foot"><button id="cFol" class="'+(fol?'on':'')+'">'+(fol?'Following aircraft':'Follow aircraft')+'</button></div>';
   const hx=(cardExp?'E':'S')+(cardExp?body:strip);
   card.style.display='block';if(card._wh===hx)return;card._wh=hx;

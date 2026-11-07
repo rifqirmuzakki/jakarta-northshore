@@ -48,6 +48,12 @@ the model reaches Chicago at 23:20 CST that evening, turns for three hours, depa
 and reaches Jakarta at 16:10 WIB on 8 November. The 6 November A350-1000 requirement changes from 49 operating + 2 spare
 aircraft to 54 + 2. The World map still draws the Jakarta-boundary route; onward map geometry is not part of this change.
 
+**Map timing lookup.** The map passes the scheduled absolute departure time, flight-instance day and physical sector
+endpoints to history. Matching is exact; a missing instance returns no history times rather than another day's actuals.
+Timing caches include that identity, and flight selection chooses the active instance even when its Jakarta arrival is tomorrow.
+Airborne cards show ETA; ATA is reserved for a completed flight. Boston uses `America/New_York` (UTC−5 in winter, UTC−4 in summer),
+and physical airport codes come from the multi-stop airport definitions. Run `node tools/tests/map-flight-lookup.cjs` for these regressions.
+
 **Multi-leg regression checks.** Run `node tools/tests/multileg.cjs` with Playwright and Chromium installed
 (`CHROMIUM_PATH` can override `/usr/bin/chromium`). It syntax-checks every embedded script and runs the app from intercepted
 local files. Checks cover six dates, all ten routes after their effective starts, GA10/11 aircraft history and page rendering,
