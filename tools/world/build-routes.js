@@ -11,6 +11,8 @@ const {N,CHAINS}=require('./graph.js');
 const root=path.join(__dirname,'..','..'),htmlPath=path.join(root,'index.html');
 const html=fs.readFileSync(htmlPath,'utf8');
 const air=JSON.parse(/const AIR_CITY=(\{.*?\});/s.exec(html)[1]);
+/* airports added by schedule changes (schedule-changes.js) get routes too, so their flights appear on the World map */
+try{global.window={};require(path.join(root,'schedule-changes.js'));(window.JN_CHANGES_REPO.changes||[]).forEach(c=>(c.airports||[]).forEach(a=>{if(a&&a.city&&!air[a.city])air[a.city]=[+a.lat,+a.lon,a.region||'E']}))}catch(e){}
 const BEACONS=JSON.parse(fs.readFileSync(path.join(__dirname,'beacons.json'),'utf8')),AVOID=JSON.parse(fs.readFileSync(path.join(__dirname,'avoid.json'),'utf8'));
 const unwrap=l=>l<-40?l+360:l;
 const JKT=N.JKT,GATE={W:'G_W',NW:'G_NW',N:'G_N',NE:'G_NE',E:'G_E',S:'G_S'};
