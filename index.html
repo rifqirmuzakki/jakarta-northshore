@@ -7418,15 +7418,6 @@ function ensureSA(l,r){if(l.hand&&l.sA==null){let best=Infinity,atS=0;
     if(d<best){best=d;atS=r.cum[i-1]+t*(r.cum[i]-r.cum[i-1])}}
   l.sA=atS;}return l.sA}
 function pathUpTo(P,s){const o=[];for(let i=0;i<P.lon.length&&P.cum[i]<s;i++)o.push([P.lon[i],P.lat[i]]);const b=at(P,s);o.push([b[0],b[1]]);return o}
-function terminalFuture(l,now){
- const m=M(),e=m&&m.ent&&m.ent(l.id),tr=e&&(l.dir==='out'?e.dT:e.aT),A=window.AIRCORE;
- if(!tr||!A)return [];
- const rel=(now-SIMCORE.FLEET.day*1440)*60,pose=A.posAtOff(tr,rel);if(!pose)return [];
- const start=rel+pose.off,end=tr.t1,points=[],steps=Math.max(1,Math.ceil((end-start)/15));
- for(let i=0;i<=steps;i++){const q=A.posAtOff(tr,start+(end-start)*i/steps);if(q){const p=A.airLL(q.x,q.y);points.push([p[1],p[0]])}}
- return points;
-}
-function pathAfter(P,s){const b=at(P,s),o=[[b[0],b[1]]];for(let i=0;i<P.lon.length;i++)if(P.cum[i]>s)o.push([P.lon[i],P.lat[i]]);return o}
 function draw(){
   if(!on||!ctx)return;
   const now=nowAbs(),L=getLegs(),day=window.SIMCORE&&SIMCORE.FLEET?SIMCORE.FLEET.day:0;pos=[];selLL=null;selAir=false;let n=0,nga=0;
@@ -7449,8 +7440,10 @@ function draw(){
     if(selAir){const m=M(),tl=m&&m.trailLL?airTrailCached(selId,m):null;if(tl)tl.forEach(q=>pts.push([q[1],q[0]]))}
     pts.push(cur);
     ctx.lineJoin='round';ctx.lineCap='round';ctx.lineWidth=2.6;ctx.strokeStyle='#2563eb';ctx.beginPath();pts.forEach((q,i)=>{const x=sx(q[0]),y=sy(my(q[1]));if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke();
-    const terminal=selAir?terminalFuture(l,now):[];
-    const future=selAir?(l.dir==='out'?[cur,...terminal,...pathAfter(P,0)]:[cur,...terminal]):[cur,...pathAfter(P,p*P.len)];
+    // The dashed line is a direct destination bearing, not the filed route.
+    // legPos/legPath still move the aircraft through the actual waypoint sequence.
+    const destination=l.dir==='in'?JKT:[r.lat[r.lat.length-1],r.lon[r.lon.length-1]];
+    const direct=sample([[cur[1],cur[0]],destination]),future=direct.lon.map((lon,i)=>[lon,direct.lat[i]]);
     ctx.setLineDash([7,6]);ctx.lineWidth=1.8;ctx.globalAlpha=.5;ctx.beginPath();future.forEach((q,i)=>{const x=sx(q[0]),y=sy(my(q[1]));if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
     // Show only this flight's filed fixes. Cull labels that would overlap.
     let labelX=-Infinity,labelY=-Infinity;ctx.font='600 10px '+FONT;
@@ -7543,7 +7536,7 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
   else if(v!=='ops'&&on)hide()},true);
 function pathPts(id){getLegs();const l=byId.get(id);if(!l||!l.hand||l.noWorld)return null;const r=l.city?routeFor(l):null;if(!r)return null;
   if(l.dir==='in'){const P=legPath(l,r);return {past:P.lon.map((lo,i)=>[P.lat[i],lo])}}
-  const P=legPath(l,r);return {future:P.lat.map((la,i)=>[la,P.lon[i]])}}
+  const destination=[r.lat[r.lat.length-1],r.lon[r.lon.length-1]],direct=sample([l.hand,destination]);return {future:direct.lat.map((lat,i)=>[lat,direct.lon[i]])}}
 function posOfId(id){const now=nowAbs(),m=M();const a=m&&m.airPoses?m.airPoses().find(q=>q.id===id):null;if(a)return {lat:a.lat,lon:a.lon,active:true,air:true};
   getLegs();const l=byId.get(id);if(!l||l.cx||l.noWorld)return null;const r=l.city?routeFor(l):null;if(!r)return null;const q=legPos(l,now,r);return {lat:q[1],lon:q[0],active:now>=l.off&&now<=l.land,state:now<l.off?'before':(now>l.land?'after':'active'),leg:l}}
 window.JN_WORLD={show,hide,toggle:()=>on?hide():show(),get on(){return on},

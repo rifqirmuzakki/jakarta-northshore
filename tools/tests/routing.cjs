@@ -36,7 +36,7 @@ assert(data.Melbourne.li/data.Melbourne.gc<1.10);assert(data.Medina.li/data.Medi
 (async()=>{const b=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 try{const p=await b.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));
 await p.route('https://northshore.test/**',r=>{const f=path.join(root,new URL(r.request().url()).pathname);if(!fs.existsSync(f)||!fs.statSync(f).isFile())return r.fulfill({status:404,body:''});
- if(f.endsWith('index.html'))return r.fulfill({contentType:'text/html',body:source.replace('window.JN_WORLD={','window.__routingTest={getLegs,routeFor,legPath,ensureSA,sample,pathAfter};window.JN_WORLD={').replace('airGateOf,airRwy,airShortTransition,airRouteTransitionPoint};','airGateOf,airRwy,airShortTransition,airRouteTransitionPoint,airStar,airSid,posAt};')});return r.fulfill({path:f});});
+ if(f.endsWith('index.html'))return r.fulfill({contentType:'text/html',body:source.replace('window.JN_WORLD={','window.__routingTest={getLegs,routeFor,legPath,ensureSA,sample};window.JN_WORLD={').replace('airGateOf,airRwy,airShortTransition,airRouteTransitionPoint};','airGateOf,airRwy,airShortTransition,airRouteTransitionPoint,airStar,airSid,posAt};')});return r.fulfill({path:f});});
 await p.goto('https://northshore.test/index.html?clock=2026-11-07T17:40&incidents=off');
 await p.waitForFunction(()=>window.AIRCORE?.AIR.D?.length&&window.__routingTest);
 const result=await p.evaluate(()=>{
