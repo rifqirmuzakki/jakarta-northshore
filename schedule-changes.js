@@ -550,6 +550,281 @@ window.JN_CHANGES_REPO={
    "set": {
     "time": 880
    }
+  },
+  {
+   "id": "chg_routes2_fukuoka",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-16",
+   "retFrom": "2026-11-16",
+   "note": "New service Fukuoka: GA 694/695 Airbus A330-900 (ISO days 12457)",
+   "createdAt": "2026-11-07T04:50:56.342Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "694",
+      "Fukuoka",
+      120,
+      "T2",
+      "I",
+      "Airbus A330-900",
+      "GA-CHG-FUK-694",
+      "12457"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "695",
+      "Fukuoka",
+      1030,
+      "T2",
+      "I",
+      "Airbus A330-900",
+      "GA-CHG-FUK-694",
+      "12457"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Fukuoka",
+     "code": "FUK",
+     "lat": 33.59,
+     "lon": 130.45,
+     "region": "NE",
+     "tz": "Asia/Tokyo"
+    }
+   ]
+  },
+  {
+   "id": "chg_routes2_sapporo",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-16",
+   "retFrom": "2026-11-16",
+   "note": "New service Sapporo: GA 696/697 Airbus A330-900 (ISO days 1357)",
+   "createdAt": "2026-11-07T04:50:56.342Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "696",
+      "Sapporo",
+      150,
+      "T2",
+      "I",
+      "Airbus A330-900",
+      "GA-CHG-CTS-696",
+      "1357"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "697",
+      "Sapporo",
+      1260,
+      "T2",
+      "I",
+      "Airbus A330-900",
+      "GA-CHG-CTS-696",
+      "1357"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Sapporo",
+     "code": "CTS",
+     "lat": 42.78,
+     "lon": 141.69,
+     "region": "NE",
+     "tz": "Asia/Tokyo"
+    }
+   ]
+  },
+  {
+   "id": "chg_routes2_kaohsiung",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-16",
+   "retFrom": "2026-11-17",
+   "note": "New service Kaohsiung: GA 698/699 Airbus A330-900 (ISO days 257)",
+   "createdAt": "2026-11-07T04:50:56.342Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "698",
+      "Kaohsiung",
+      280,
+      "T2",
+      "I",
+      "Airbus A330-900",
+      "GA-CHG-KHH-698",
+      "257"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "699",
+      "Kaohsiung",
+      1050,
+      "T2",
+      "I",
+      "Airbus A330-900",
+      "GA-CHG-KHH-698",
+      "257"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Kaohsiung",
+     "code": "KHH",
+     "lat": 22.58,
+     "lon": 120.35,
+     "region": "N",
+     "tz": "Asia/Taipei"
+    }
+   ]
+  },
+  {
+   "id": "chg_routes2_macau",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-16",
+   "retFrom": "2026-11-16",
+   "note": "New service Macau: GA 278/279 Airbus A330-900 (ISO days 146)",
+   "createdAt": "2026-11-07T04:50:56.342Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "278",
+      "Macau",
+      240,
+      "T2",
+      "I",
+      "Airbus A330-900",
+      "GA-CHG-MFM-278",
+      "146"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "279",
+      "Macau",
+      960,
+      "T2",
+      "I",
+      "Airbus A330-900",
+      "GA-CHG-MFM-278",
+      "146"
+     ]
+    ]
+   },
+   "airports": []
+  },
+  {
+   "id": "chg_routes2_melsantiago",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-16",
+   "retFrom": "2026-11-17",
+   "note": "New service Melbourne / Santiago: GA 60/61 Boeing 787-9 (daily)",
+   "createdAt": "2026-11-07T04:50:56.342Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "60",
+      "Melbourne / Santiago",
+      680,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-MELSCL-60"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "61",
+      "Melbourne / Santiago",
+      170,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-MELSCL-60"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Melbourne / Santiago",
+     "code": "MEL/SCL",
+     "lat": -37.67,
+     "lon": 144.84,
+     "region": "E",
+     "tz": "Australia/Melbourne"
+    }
+   ]
+  },
+  {
+   "id": "chg_routes2_sydbuenosaires",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-16",
+   "retFrom": "2026-11-17",
+   "note": "New service Sydney / Buenos Aires: GA 62/63 Boeing 787-9 (daily)",
+   "createdAt": "2026-11-07T04:50:56.342Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "62",
+      "Sydney / Buenos Aires",
+      660,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-SYDEZE-62"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "63",
+      "Sydney / Buenos Aires",
+      190,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-SYDEZE-62"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Sydney / Buenos Aires",
+     "code": "SYD/EZE",
+     "lat": -33.95,
+     "lon": 151.18,
+     "region": "E",
+     "tz": "Australia/Sydney"
+    }
+   ]
   }
  ],
  "ops": [
