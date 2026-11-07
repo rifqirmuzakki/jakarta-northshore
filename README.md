@@ -101,4 +101,6 @@ Shows the Jakarta flights that are in the air right now on a world map (Natural 
 
 Position is derived from the timetable (airborne from STD+14 min to STA−8 min), delays of the viewed day included. Tap an aircraft for its card (arrival in local time, time to go, links to flight and aircraft history). Pan, pinch or wheel to zoom; Esc closes the card, then the view.
 
-Regenerate the data: `node tools/world/build-routes.js --embed` (routes, after editing the graph or timetable) and `node tools/world/build-basemap.js <node_modules>` (basemap; needs `world-atlas@2.0.2` and `topojson-client@3.1.0`).
+Between our waypoints, long overland legs hop through real VOR beacons (OurAirports `navaids.csv`, public domain; selected flights show the fix names), as airways join beacons; oceanic legs stay straight. This is inferred from beacon positions, not the published airway database, which is not open. Aircraft fly a speed profile (slow climb and descent, full speed in cruise) and a flight number keeps its airway.
+
+Regenerate the data: `node tools/world/build-routes.js --embed [--navaids navaids.csv]` (routes, after editing the graph or timetable) and `node tools/world/build-basemap.js <node_modules>` (basemap; needs `world-atlas@2.0.2` and `topojson-client@3.1.0`).

@@ -52,7 +52,30 @@ Object.keys(air).forEach(city=>{
   const o=O[0],i=I[0],rp=L=>L.map(a=>a.map(p=>[r2(p[0]),r2(p[1])]));
   routes[city]={o:rp(O),i:rp(I),lo:Math.round(gc(JKT,o[0])+run(o)),li:Math.round(run(i)+gc(i[i.length-1],JKT)),gc:Math.round(direct)}});
 
+
+/* Snap the long overland legs to real VOR fixes (OurAirports navaids, public domain): airways join beacons, so between two of our waypoints the track hops
+   through beacons that lie close to the line. Oceanic legs have no beacons and stay straight, as oceanic tracks do. Optional: --navaids <navaids.csv>. */
+let snapped=0;
+const nvi=process.argv.indexOf('--navaids');
+if(nvi>0){
+  const rows=fs.readFileSync(process.argv[nvi+1],'utf8').split('\n').slice(1),NV=[];
+  rows.forEach(l=>{const c=l.match(/("([^"]*)"|[^,]*)(,|$)/g);if(!c||c.length<20)return;const f=c.map(x=>x.replace(/,$/,'').replace(/^"|"$/g,''));
+    if(!/^(VOR|VOR-DME|VORTAC)$/.test(f[4]))return;const la=+f[6],lo=+f[7];if(!isFinite(la)||!isFinite(lo))return;NV.push({id:f[2],la,lo:unwrap(lo)})});
+  const km=111.2,toXY=(p,o)=>[(p[1]-o[1])*Math.cos(o[0]*rad)*km,(p[0]-o[0])*km];
+  const hop=(a,b)=>{ // beacons from a towards b
+    const out=[];let cur=a,guard=0;
+    while(gc(cur,b)>260&&guard++<40){
+      const L=gc(cur,b);let best=null,bs=1e9;
+      const ux=toXY(b,cur),un=Math.hypot(ux[0],ux[1])||1;
+      NV.forEach(n=>{const q=toXY([n.la,n.lo],cur),al=(q[0]*ux[0]+q[1]*ux[1])/un,cr=Math.abs(q[0]*ux[1]-q[1]*ux[0])/un;
+        if(al<140||al>Math.min(650,L-80)||cr>70)return;const sc=cr*2.2-al;if(sc<bs){bs=sc;best=n}});
+      if(!best)break;out.push([r2(best.la),r2(best.lo),best.id]);cur=[best.la,best.lo]}
+    return out};
+  const refine=path=>{const o=[path[0]];for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i];if(gc(a,b)>450){const h=hop(a,b);snapped+=h.length;h.forEach(x=>o.push(x))}o.push(b)}return o};
+  Object.keys(routes).forEach(c=>{const R=routes[c];R.o=R.o.map(refine);R.i=R.i.map(refine)});
+}
 fs.writeFileSync(path.join(__dirname,'routes.json'),JSON.stringify(routes));
+if(snapped)console.log('real beacons used:',snapped);
 const rows=Object.keys(routes).map(c=>({c,r:routes[c],ratio:Math.max(routes[c].lo,routes[c].li)/Math.max(routes[c].gc,1)})).filter(x=>x.r.gc>=1500).sort((a,b)=>b.ratio-a.ratio);
 console.log('routes',Object.keys(routes).length,'of',Object.keys(air).length,report.join(' '));
 console.log('largest detours (route length / great circle):');rows.slice(0,14).forEach(x=>console.log(' ',x.c.padEnd(26),'gc',x.r.gc,'out',x.r.lo,'in',x.r.li,'ratio',x.ratio.toFixed(2)));
