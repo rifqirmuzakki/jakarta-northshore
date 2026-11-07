@@ -7445,12 +7445,7 @@ function draw(){
     const destination=l.dir==='in'?JKT:[r.lat[r.lat.length-1],r.lon[r.lon.length-1]];
     const direct=sample([[cur[1],cur[0]],destination]),future=direct.lon.map((lon,i)=>[lon,direct.lat[i]]);
     ctx.setLineDash([7,6]);ctx.lineWidth=1.8;ctx.globalAlpha=.5;ctx.beginPath();future.forEach((q,i)=>{const x=sx(q[0]),y=sy(my(q[1]));if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
-    // Show only this flight's filed fixes. Cull labels that would overlap.
-    let labelX=-Infinity,labelY=-Infinity;ctx.font='600 10px '+FONT;
-    for(const fix of r.fix||[]){if(/^G_/.test(fix.id))continue;const x=sx(fix.lon),y=sy(my(fix.lat));if(x<10||x>W-10||y<10||y>H-10)continue;
-      ctx.beginPath();ctx.arc(x,y,2.5,0,7);ctx.fillStyle='#2563eb';ctx.fill();
-      if(view.k>=8&&Math.hypot(x-labelX,y-labelY)>65){ctx.fillStyle='#37556b';ctx.fillText(fix.id,x+5,y-5);labelX=x;labelY=y}
-    }
+
   }}
   const many=pos.length<=70&&view.k>=30;
   if(selId)ctx.globalAlpha=.24;pos.forEach(o=>{if(o.l.id!==selId)marker(o,false,many&&!selId)});ctx.globalAlpha=1;pos.forEach(o=>{if(o.l.id===selId)marker(o,true,true)});
