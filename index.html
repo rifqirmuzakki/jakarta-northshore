@@ -7299,7 +7299,7 @@ const cv=document.createElement('canvas');cv.id='jn-world';cv.setAttribute('role
 const ui=document.createElement('div');ui.id='jn-world-ui';ui.innerHTML='<div id="jnw-count" role="status"></div><div id="jnw-key" role="region" aria-label="Marker key"><span><i style="border-color:#1f63e0"></i>Arriving</span><span><i style="border-color:#e3590d"></i>Departing</span><span><i style="border-color:#a3189f"></i>Holding</span><span><i style="border-color:#e24a4a"></i>Late 15m+</span></div><div class="jnw-btns"><button type="button" id="jnw-ga" aria-pressed="false">GA only</button><button type="button" id="jnw-in" aria-label="Zoom in">+</button><button type="button" id="jnw-out" aria-label="Zoom out">−</button><button type="button" id="jnw-fit" aria-label="Fit the whole network">⌂</button></div>';
 const card=document.getElementById('card');let cardExp=false;
 const cardOn=()=>{card.style.display='block'},cardOff=()=>{if(card._wh){card.style.display='none';card.classList.remove('expanded');document.body.classList.remove('jn-card-expanded');card.innerHTML='';card._wh=null}cardExp=false};
-let on=false,ctx=null,W=0,H=0,dpr=1,base=null,baseKey='',raf=0,lastDraw=0,legs=null,legsKey='',legsEnts=null,sel=null,gaOnly=false,pos=[],fol=false,selLL=null,selAir=false,selHd=0,byId=new Map();
+let on=false,ctx=null,W=0,H=0,dpr=1,base=null,baseKey='',raf=0,lastDraw=0,legs=null,legsKey='',legsEnts=null,legsArrivals=null,legsDepartures=null,sel=null,gaOnly=false,pos=[],fol=false,selLL=null,selAir=false,selHd=0,byId=new Map();
 const view={cx:100,cy:0,k:2};
 const my=lat=>Math.log(Math.tan(Math.PI/4+lat*RAD/2))/RAD;         // mercator y in "degrees"
 const sx=lon=>W/2+(lon-view.cx)*view.k,sy=y=>H/2-(y-view.cy)*view.k;
@@ -7341,9 +7341,11 @@ const M=()=>window.JN_MAP,smooth=u=>{u=Math.max(0,Math.min(1,u));return u*u*(3-2
 function anchor(l,day){const m=M();if(!m||!m.ent||l.d!==day)return;const e=m.ent(l.id);if(!e)return;
   if(l.dir==='in'&&e.aT&&e.a&&e.a.id===l.id){const t=day*1440+e.aT.t0/60;l.hand=m.llAt(e,e.aT.t0+0.05);l.hhd=m.hdAt(e,e.aT.t0+0.05);l.land=Math.max(l.off+2,t);l.air=true;if(e.td!=null)l.eta=day*1440+e.td/60;if(t<=l.off+0.5||!l.hand)l.noWorld=true}
   else if(l.dir==='out'&&e.dT&&e.d&&e.d.id===l.id){const t=day*1440+e.dT.t1/60,shift=e.takeoff!=null?day*1440+e.takeoff/60-(l.std+14):0;l.hand=m.llAt(e,e.dT.t1-0.05);l.hhd=m.hdAt(e,e.dT.t1-0.05);l.off=t;l.land+=shift;l.eta=l.land+8;l.air=true;if(l.land<=l.off+2||!l.hand)l.noWorld=true}}
-function getLegs(){const S=window.SIMCORE;if(!S||!S.worldLegs)return [];const day=S.FLEET?S.FLEET.day:0,ents=M()&&M().ents?M().ents():null;if(legs&&legsKey===day&&legsEnts===ents){indexWorldInstances();return legs;}
+function getLegs(){const S=window.SIMCORE;if(!S||!S.worldLegs)return [];const day=S.FLEET?S.FLEET.day:0,ents=M()&&M().ents?M().ents():null,A=window.AIRCORE&&AIRCORE.AIR;
+  if(legs&&legsKey===day&&legsEnts===ents&&legsArrivals===A?.A&&legsDepartures===A?.D){indexWorldInstances();return legs;}
   legs=S.worldLegs().map(l=>{const dep=l.std+14,arr=l.sta-8;return Object.assign(l,{off:dep,land:Math.max(dep+20,arr)})});legsKey=day;legsEnts=ents;
-  legs.forEach(l=>anchor(l,day));indexWorldInstances();return legs}
+  legsArrivals=A?.A;legsDepartures=A?.D;
+  legs.forEach(l=>anchor(l,day));indexWorldInstances();if(sel)sel=byId.get(sel.id)||sel;return legs}
 function indexWorldInstances(){
   byId=new Map();const now=nowAbs(),distance=l=>Math.max(l.off-now,now-l.land,0);
   // An inbound still over Europe can belong to tomorrow's Jakarta arrival.
@@ -7413,9 +7415,18 @@ function marker(o,isSel,tag){const l=o.l,a=o.air,ring=l.dly>=15?RING.late:(a&&a.
   if(tag){const t=String(l.id).replace(' ','')+(o.alt!=null?' '+(o.alt>=11000?'FL'+String(Math.round(o.alt/100)).padStart(3,'0'):(Math.round(o.alt/100)*100)+"'"):'');ctx.font='700 10px '+FONT;ctx.lineWidth=3;ctx.lineJoin='round';ctx.strokeStyle='#fbfaf6';ctx.strokeText(t,o.x+r+5,o.y+3.5);ctx.fillStyle='#33434b';ctx.fillText(t,o.x+r+5,o.y+3.5)}}
 function airSyn(a,day){return byId.get(a.id)||{id:a.id,c:a.c,city:'',ac:'',dir:a.kind==='dep'?'out':'in',d:day,dly:0,sta:0,std:0,off:0,land:0}}
 let dtc=null;
-function depTrack(id){if(dtc&&dtc.id===id)return dtc.v;const m=M(),t=m&&m.depTrackLL?m.depTrackLL(id):null;const v=t&&t.length>1?t.map(q=>[q[1],q[0]]):[[JKT[1],JKT[0]]];dtc={id,v};return v}
-let atc=null;
-function airTrailCached(id,m){const t=performance.now();if(!atc||atc.id!==id||t-atc.t>1500)atc={id,t,v:m.trailLL(id)};return atc.v}
+function depTrack(id){const m=M(),track=m&&m.ent?m.ent(id)?.dT:null;if(dtc&&dtc.id===id&&dtc.track===track)return dtc.v;const t=m&&m.depTrackLL?m.depTrackLL(id):null;const v=t&&t.length>1?t.map(q=>[q[1],q[0]]):[[JKT[1],JKT[0]]];dtc={id,track,v};return v}
+// Terminal poses own a flight while active, even if its timetable estimate overlaps.
+function activeAirPoses(){const m=M();return [...new Map((m&&m.airPoses?m.airPoses():[]).map(a=>[a.id,a])).values()]}
+function selectedTrail(l,r,cur,air){const P=l.hand?legPath(l,r):r;
+  if(air){const m=M(),trail=m&&m.trailLL?m.trailLL(l.id):null;
+    // An unanchored world route ends at Jakarta, not at the terminal entry.
+    // Only join it when the shared handoff exists; otherwise use the known trail.
+    const pts=l.dir==='in'&&l.hand?pathUpTo(P,P.len):[];
+    if(trail)trail.forEach(q=>pts.push([q[1],q[0]]));pts.push(cur);return pts;}
+  const u=Math.max(0,Math.min(1,(nowAbs()-l.off)/(l.land-l.off))),pts=pathUpTo(P,distFrac(u)*P.len);
+  return [...(l.dir==='out'&&l.hand?depTrack(l.id):[]),...pts,cur];}
+const airState=a=>a.ph==='hold'?'Holding':a.kind==='dep'||a.alt>10000?'Airborne':a.ph==='rwy'?'Landing':'On approach';
 function ensureSA(l,r){if(l.hand&&l.sA==null){let best=Infinity,atS=0;
   for(let i=1;i<r.lon.length;i++){const cl=Math.cos(l.hand[0]*RAD),ax=(r.lon[i-1]-l.hand[1])*cl,ay=r.lat[i-1]-l.hand[0],dx=(r.lon[i]-r.lon[i-1])*cl,dy=r.lat[i]-r.lat[i-1];
     const t=Math.max(0,Math.min(1,-(ax*dx+ay*dy)/(dx*dx+dy*dy||1))),d=(ax+t*dx)**2+(ay+t*dy)**2;
@@ -7425,24 +7436,18 @@ function pathUpTo(P,s){const o=[];for(let i=0;i<P.lon.length&&P.cum[i]<s;i++)o.p
 function draw(){
   if(!on||!ctx)return;
   const now=nowAbs(),L=getLegs(),day=window.SIMCORE&&SIMCORE.FLEET?SIMCORE.FLEET.day:0;pos=[];selLL=null;selAir=false;let n=0,nga=0;
-  const selId=sel&&sel.id;
-  L.forEach(l=>{if(l.cx||l.noWorld||now<l.off||now>l.land)return;const gaMiss=gaOnly&&l.c!=='GA';const r=routeFor(l);if(!r)return;
+  const selId=sel&&sel.id,AP=activeAirPoses(),airIds=new Set(AP.map(a=>a.id));
+  L.forEach(l=>{if(l.cx||l.noWorld||now<l.off||now>l.land||airIds.has(l.id))return;const gaMiss=gaOnly&&l.c!=='GA';const r=routeFor(l);if(!r)return;
     const q=legPos(l,now,r);if(l.id===selId){selLL=q;const qh=legPos(l,now+3,r);selHd=((Math.atan2((qh[0]-q[0])*Math.cos(q[1]*RAD),qh[1]-q[1])/RAD)+360)%360}if(gaMiss)return;
     const x=sx(q[0]),y=sy(my(q[1]));if(x<-20||y<-20||x>W+20||y>H+20)return;
     const q3=legPos(l,now+3,r);
     const ang=Math.atan2(sx(q3[0])-x,-(sy(my(q3[1]))-y));n++;if(l.c==='GA')nga++;pos.push({l,x,y,ang,alt:est(l,q[2],r).alt})});
-  const AP=M()&&M().airPoses?M().airPoses():[];
   AP.forEach(a=>{const leg=airSyn(a,day);if(leg.id===selId){selLL=[a.lon,a.lat,null];selAir=true;selHd=((a.hd%360)+360)%360}if(gaOnly&&a.c!=='GA')return;const x=sx(a.lon),y=sy(my(a.lat));if(x<-20||y<-20||x>W+20||y>H+20)return;n++;if(a.c==='GA')nga++;pos.push({l:leg,x,y,ang:a.hd*RAD,air:a,alt:a.alt})});
   /* follow the selected flight */
   if(fol&&selLL){const ty=my(selLL[1]),dx=selLL[0]-view.cx,dy=ty-view.cy,f=Math.min(1,0.18);if(Math.hypot(dx,dy)*view.k>0.5){view.cx+=dx*f;view.cy+=dy*f}}
   const key=[view.cx,view.cy,view.k,W,H].join('|');if(!base||key!==baseKey)drawBase();
   ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(base,0,0);ctx.scale(dpr,dpr);
-  if(sel&&selLL){const l=sel,r=l.city?routeFor(l):null;if(r){const cur=[selLL[0],selLL[1]],u=Math.max(0,Math.min(1,(now-l.off)/(l.land-l.off))),p=distFrac(u),P=l.hand?legPath(l,r):r;let pts;
-    if(l.dir==='in')pts=selAir?pathUpTo(P,P.len):pathUpTo(P,p*P.len);
-    else if(l.hand)pts=selAir?[]:[...depTrack(selId),...pathUpTo(P,p*P.len)];
-    else pts=pathUpTo(P,p*P.len);
-    if(selAir){const m=M(),tl=m&&m.trailLL?airTrailCached(selId,m):null;if(tl)tl.forEach(q=>pts.push([q[1],q[0]]))}
-    pts.push(cur);
+  if(sel&&selLL){const l=sel,r=l.city?routeFor(l):null;if(r){const cur=[selLL[0],selLL[1]],pts=selectedTrail(l,r,cur,selAir);
     ctx.lineJoin='round';ctx.lineCap='round';ctx.lineWidth=2.6;ctx.strokeStyle='#2563eb';ctx.beginPath();pts.forEach((q,i)=>{const x=sx(q[0]),y=sy(my(q[1]));if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke();
     // The dashed line is a direct destination bearing, not the filed route.
     // legPos/legPath still move the aircraft through the actual waypoint sequence.
@@ -7505,7 +7510,7 @@ function renderCard(){const l=sel;if(!l)return;const now=nowAbs(),m=M(),city=Str
   const depAbs=ft?.atd??l.std,depLab=ft?.atd!=null?'ATD':(now>=l.off?'ETD':'STD');
   const remain=Math.max(0,Math.round(eta-now)),alt=air?air.alt:E.alt,gs=air?null:E.gs;
   const done=ft&&ft.ata!=null||(now>l.land&&!air&&!l.air);
-  const state=air?(air.ph==='hold'?'Holding':air.kind==='dep'?'Airborne':'On approach'):(live?E.ph:(done?'Landed':(now<l.off?'Scheduled':'Landed')));
+  const state=air?airState(air):(live?E.ph:(done?'Landed':(now<l.off?'Scheduled':'Landed')));
   const tone=l.dly>=15?'late':air&&air.ph==='hold'?'warn':air&&air.kind!=='dep'?'blue':live?'ok':(done?'ok':'mute');
   const pct=Math.round(Math.max(0,Math.min(1,(now-l.std)/Math.max(1,l.sta-l.std)))*100);
   const dd=ft&&ft.atd!=null?Math.round(ft.atd-l.std):0,perf=ft&&ft.atd!=null?(dd>5?'<span class="jc-late">Departed +'+dd+' min</span>':'<span class="jc-ok">Departed on time</span>'):(l.dly>=15?'<span class="jc-late">Delayed +'+Math.round(l.dly)+' min</span>':'');
