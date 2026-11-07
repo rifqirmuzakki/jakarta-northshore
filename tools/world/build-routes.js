@@ -8,6 +8,7 @@
 const fs=require('fs'),path=require('path');
 const {N,CHAINS}=require('./graph.js');
 const geometry=require('./geometry.js');
+const TERMINALS=require('./terminal-profiles.json').profiles;
 const root=path.join(__dirname,'..','..'),htmlPath=path.join(root,'index.html');
 const html=fs.readFileSync(htmlPath,'utf8');
 const air=JSON.parse(/const AIR_CITY=(\{.*?\});/s.exec(html)[1]);
@@ -19,6 +20,23 @@ const JKT=N.JKT,GATE={W:'G_W',NW:'G_NW',N:'G_N',NE:'G_NE',E:'G_E',S:'G_S'};
 const rad=Math.PI/180;
 const gc=(a,b)=>{const dl=(a[0]-b[0])*rad,dg=(a[1]-b[1])*rad,x=Math.sin(dl/2)**2+Math.cos(a[0]*rad)*Math.cos(b[0]*rad)*Math.sin(dg/2)**2;return 12742*Math.asin(Math.sqrt(Math.min(1,x)))};
 const r2=x=>Math.round(x*100000)/100000;
+const bearingDeg=(a,b)=>(Math.atan2(Math.sin((b[1]-a[1])*rad)*Math.cos(b[0]*rad),Math.cos(a[0]*rad)*Math.sin(b[0]*rad)-Math.sin(a[0]*rad)*Math.cos(b[0]*rad)*Math.cos((b[1]-a[1])*rad))/rad+360)%360;
+const angle=(a,b)=>Math.abs(((a-b+540)%360)-180);
+function atBearing(p,heading,km){const d=km/6371,h=heading*rad,la=p[0]*rad,lo=p[1]*rad;return [r2(Math.asin(Math.sin(la)*Math.cos(d)+Math.cos(la)*Math.sin(d)*Math.cos(h))/rad),r2((lo+Math.atan2(Math.sin(h)*Math.sin(d)*Math.cos(la),Math.cos(d)-Math.sin(la)*Math.sin(Math.asin(Math.sin(la)*Math.cos(d)+Math.cos(la)*Math.sin(d)*Math.cos(h)))))/rad)]}
+function runwayEnds(city){const p=TERMINALS[city]||TERMINALS[String(city).split(' / ')[0].trim()];if(!p)return [];
+ return p.runways.flatMap(r=>[['le',r.le],['he',r.he]].map(([side,e])=>({runway:r.id,end:e.id,side,point:[e.lat,e.lon],heading:e.heading})));}
+/* Generated terminal legs deliberately remain labelled as simulated geometry.
+   The supplied runway thresholds/headings are factual; these are not published procedures. */
+function terminalLeg(city,dir,route){const ends=runwayEnds(city);if(!ends.length)return null;
+ const course=dir==='out'?bearingDeg(route.at(-2),route.at(-1)):bearingDeg(route[0],route[1]);
+ const end=ends.slice().sort((a,b)=>angle(a.heading,course)-angle(b.heading,course)||a.runway.localeCompare(b.runway))[0];
+ if(dir==='out'){
+  const final=atBearing(end.point,(end.heading+180)%360,28);
+  return {end,points:[[...final,'TERM-ARR-'+end.end],[...end.point,'RWY-'+end.end]]};
+ }
+ const climb=atBearing(end.point,end.heading,18);
+ return {end,points:[[...end.point,'RWY-'+end.end],[...climb,'TERM-DEP-'+end.end]]};
+}
 /* Check geodesic segments against polygon boundaries, not isolated samples. */
 const exclusion=geometry.exclusions(AVOID),bad=(la,lo)=>exclusion.bad([la,lo]);
 const edgeCache=new Map();
@@ -124,9 +142,14 @@ Object.keys(air).forEach(city=>{
   const shortcut=(p,ends)=>geometry.simplify(p,edgeOK,{...ends,maxLegKm:900,
     keep:i=>!!N[p[i][2]]&&!/^G_/.test(p[i][2])});
   O=O.map(p=>fillLongLegs(shortcut(p,{before:JKT})));I=I.map(p=>fillLongLegs(shortcut(p,{after:JKT})));
+  /* Replace the airport-centre endpoint with runway-aligned terminal geometry.
+     World corridors still own the en-route path; only the last/first local leg changes. */
+  const outTerminal=terminalLeg(city,'out',O[0]),inTerminal=terminalLeg(city,'in',I[0]);
+  if(outTerminal)O=O.map(p=>[...p.slice(0,-1),...outTerminal.points]);
+  if(inTerminal)I=I.map(p=>[...inTerminal.points,...p.slice(1)]);
   for(const p of O.concat(I))for(let j=1;j<p.length;j++)if(!edgeOK(p[j-1],p[j]))throw Error('Excluded route segment: '+city);
   const run=a=>a.reduce((s,p,q)=>q?s+gc(a[q-1],p):s,0),o=O[0],i=I[0],rp=L=>L.map(a=>a.map(p=>[r2(p[0]),r2(p[1]),...(p[2]?[p[2]]:[])]));
-  routes[city]={o:rp(O),i:rp(I),og:OG,ig:IG,lo:Math.round(gc(JKT,o[0])+run(o)),li:Math.round(run(i)+gc(i[i.length-1],JKT)),gc:Math.round(direct)}});
+  routes[city]={o:rp(O),i:rp(I),og:OG,ig:IG,terminal:{out:outTerminal&&outTerminal.end,in:inTerminal&&inTerminal.end},lo:Math.round(gc(JKT,o[0])+run(o)),li:Math.round(run(i)+gc(i[i.length-1],JKT)),gc:Math.round(direct)} });
 for(const [city,r] of Object.entries(routes))for(const [dir,L] of [['o',r.o],['i',r.i]])for(const p of L){
   const full=dir==='o'?[JKT,...p]:[...p,JKT];
   for(let j=1;j<full.length;j++)if(!exclusion.clear(full[j-1],full[j]))throw Error('Invalid exported route '+city+' '+dir);

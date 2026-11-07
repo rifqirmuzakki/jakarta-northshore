@@ -10,8 +10,8 @@ function auditRoutes(routes,polygons){
    if(P.some(p=>!Array.isArray(p)||!Number.isFinite(p[0])||!Number.isFinite(p[1])||Math.abs(p[0])>90))throw Error('Invalid coordinate '+city);
    const direct=distance(P[0],P.at(-1)),turns=[],excluded=[];let km=0;
    for(let i=1;i<P.length;i++){km+=distance(P[i-1],P[i]);if(!geo.clear(P[i-1],P[i]))excluded.push(i-1);
-    if(i<P.length-1){const degrees=turnAngle(P[i-1],P[i],P[i+1]),terminal=key==='o'?i===1:i===P.length-2;
-     turns.push({point:points[key==='o'?i-1:i].slice(0,2),degrees:+degrees.toFixed(1),terminal})}}
+     if(i<P.length-1){const point=points[key==='o'?i-1:i],degrees=turnAngle(P[i-1],P[i],P[i+1]),terminal=(key==='o'?i===1:i===P.length-2)||/^TERM-|^RWY-/.test(point[2]||'');
+     turns.push({point:point.slice(0,2),degrees:+degrees.toFixed(1),terminal})}}
    const enroute=turns.filter(t=>!t.terminal),warnings=[];
    if(direct>0&&km/direct>1.15)warnings.push('detour-over-15-percent');
    if(enroute.some(t=>t.degrees>60))warnings.push('sharp-enroute-turn');

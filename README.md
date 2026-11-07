@@ -163,6 +163,8 @@ partial procedures on both runway directions and both parallel runways, live tra
 
 Regenerate the data: `node tools/world/build-routes.js --embed` (routes; reads `beacons.json` and `avoid.json`, which `node tools/world/prep-data.js <navaids.csv> <node_modules>` produces from OurAirports and `world-atlas`) (routes, after editing the graph or timetable) and `node tools/world/build-basemap.js <node_modules>` (basemap; needs `world-atlas@2.0.2` and `topojson-client@3.1.0`).
 
+**Destination runway terminals.** `tools/world/terminal-profiles.json` stores runway-end coordinates and headings for every scheduled destination. Build it from an OurAirports export with `node tools/world/build-terminal-profiles.js <airports.csv> <runways.csv>`, then rerun `node tools/world/build-routes.js --embed`. The route builder chooses the runway end that best matches each corridor's arrival or departure course and adds a 28 km runway-aligned final or 18 km initial climb segment. These terminal legs are simulated connectors, not published SIDs, STARs, or instrument approaches. A small number of source rows omit threshold coordinates; their derived threshold positions are marked `inferredThresholds` in the profile data.
+
 ### One map, three zoom levels (live tracking)
 
 The World, airspace and airport maps now hand over to each other:
