@@ -4084,7 +4084,10 @@ window.SIMCORE.worldLegs=function(){const day=FLEET?FLEET.day:v176Day,out=[];
       const std=dir==='out'?t:t-b,sta=dir==='out'?t+b:t;
       out.push({id:f.id,c:f.c,city:f.city,ac:f.ac,dir,d,std,sta,dly:dl,cx:d===day&&!!f.cx})}))}
   return out};
-window.SIMCORE.worldTail=function(id,d){if(!FLEET||d!==FLEET.day)return null;const s=FLIGHT_TAILS.get(id);return s&&s.size?[...s][0]:null};
+/* the aircraft that actually flies this flight on day d: the flight number maps to every aircraft that flew it over the planning window, so the leg itself decides */
+window.SIMCORE.worldTail=function(id,d,std){const s=FLIGHT_TAILS.get(id);if(!s||!s.size)return null;let best=null;
+  for(const reg of s){const H=tailHistory(reg);if(!H)continue;for(const l of H.legs){if(l.flight===id&&l.d===d){const dd=std==null?0:Math.abs(l.std-std);if(!best||dd<best.dd)best={reg,dd}}}}
+  return best?best.reg:null};
 })();
 </script><script>(function(){
 'use strict';
@@ -7286,6 +7289,8 @@ setInterval(()=>{const m=M();if(on||!m||!m.centre||m.mode!=='air'||document.body
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const hm=m=>{m=((Math.round(m)%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
 function local(absMin,city){try{const z=(window.JN_TZOF&&JN_TZOF(city))||'Asia/Jakarta';return new Intl.DateTimeFormat('en-GB',{timeZone:z,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date((absMin-420)*60000))}catch(e){return hm(absMin)}}
+const tailCache=new Map();
+function tailFor(l){const k=l.id+'|'+l.d,c=tailCache.get(k),t=performance.now();if(c&&t-c.t<8000)return c.v;let v=null;try{v=SIMCORE.worldTail?SIMCORE.worldTail(l.id,l.d,l.std):null}catch(e){}tailCache.set(k,{t,v});return v}
 const ftCache=new Map();
 function times(id,std){const k=id,c=ftCache.get(k);if(c&&performance.now()-c.t<4000)return c.v;let v=null;try{v=window.JN_FLIGHT_TIMES?JN_FLIGHT_TIMES(id,std):null}catch(e){}ftCache.set(k,{t:performance.now(),v});return v}
 const codeOf=c=>{try{return typeof airportCodeForCity==='function'?(airportCodeForCity(c)||''):''}catch(e){return ''}};
@@ -7293,7 +7298,7 @@ function renderCard(){const l=sel;if(!l)return;const S=window.SIMCORE,now=nowAbs
   const u=l.land>l.off?Math.max(0,Math.min(1,(now-l.off)/(l.land-l.off))):0,r=l.city?routeFor(l):null;
   const ap=sel&&pos.find(o=>o.l.id===l.id&&o.air),air=ap&&ap.air,E=est(l,u,r);
   const live=now>=l.off&&now<=l.land||!!air,state=air?(air.ph==='hold'?'Holding':air.kind==='dep'?'Climbing out':'On approach'):(live?E.ph:(now<l.off?'Not yet airborne':'Landed'));
-  let reg=null;try{reg=S.worldTail?S.worldTail(l.id,l.d):null}catch(e){}
+  const reg=tailFor(l);
   const ft=times(l.id,l.std),nm=(typeof NAME!=='undefined'&&NAME[l.c])||l.c,jk=l.dir==='out',oC=jk?'Jakarta':city,dC=jk?city:'Jakarta',oK=jk?'CGK':codeOf(city),dK=jk?codeOf(city):'CGK';
   const alt=air?Math.round(air.alt/100)*100:E.alt,gs=air?null:E.gs,eta=ft&&ft.ata!=null?ft.ata:(l.eta!=null?l.eta:(ft&&ft.eta!=null?ft.eta:l.sta)),etaLab=ft&&ft.ata!=null?'ATA':((l.eta!=null||(ft&&ft.eta!=null))?'ETA':'STA'),depAbs=ft&&ft.atd!=null?ft.atd:l.std,depLab=ft&&ft.atd!=null?'ATD':(now>=l.off?'ETD':'STD'),remain=Math.max(0,Math.round(eta-now));
   const pct=Math.round((air&&!l.noWorld&&false?1:Math.max(0,Math.min(1,(now-l.std)/Math.max(1,l.sta-l.std))))*100);
