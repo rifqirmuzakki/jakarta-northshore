@@ -1,9 +1,24 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{chromium}=require('playwright');
-const {distance,exclusions}=require('../world/geometry'),root=path.resolve(__dirname,'../..'),source=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const {distance,exclusions,turnPenalty,routeScore,simplify}=require('../world/geometry'),root=path.resolve(__dirname,'../..'),source=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const R=JSON.parse(source.match(/const WORLD_ROUTES=(.*?);\/\*WORLD_ROUTES:END/)[1]),data=require('../world/routes.json'),{N}=require('../world/graph'),geo=exclusions(require('../world/avoid.json'));
 assert.equal(geo.clear([26.53,53.96],[26.54,54.85]),false,'Iran crossing missed');
 assert.equal(geo.clear([41.13,29.14],[43.23,27.82]),false,'Black Sea crossing missed');
 assert.equal(exclusions([{n:'thin',b:[100.099,-1,100.101,1],r:[[100.099,-1],[100.101,-1],[100.101,1],[100.099,1]]}]).clear([0,100],[0,100.2]),false,'Thin polygon crossing missed between samples');
+// A reversal must cost more than a right-angle bend, and a straight line nothing.
+assert.equal(turnPenalty([0,0],[0,1],[0,2]),0);
+assert(turnPenalty([0,0],[0,1],[0,0])>turnPenalty([0,0],[0,1],[1,1]));
+// Greedy farthest-visible chooses node 3; heading-aware shortcuts prefer node 2.
+const points=[[0,0],[0.1,0.5],[0,1],[1,1],[1,2]],allowed=new Set(['0:2','0:3','2:4','3:4']);
+const chosen=simplify(points,(a,b)=>allowed.has(points.indexOf(a)+':'+points.indexOf(b)),{before:[0,-1]});
+assert.deepEqual(chosen,[points[0],points[2],points[4]]);
+assert(routeScore([[0,-1],...chosen])<routeScore([[0,-1],points[0],points[3],points[4]]));
+const {auditRoutes}=require('../world/audit-routes');
+const synthetic=auditRoutes({Demo:{o:[[[0,100],[0,101]],[[0,99],[0,98],[0,101]]],i:[[[0,101],[0,100]]]}},[]);
+assert.equal(synthetic.summary.variants,3,'Audit ignored an alternative');
+assert(synthetic.routes.find(r=>r.direction==='out'&&r.variant===1).warnings.includes('enroute-backtracking'));
+const quality=auditRoutes(R,require('../world/avoid.json'));
+assert.equal(quality.summary.excludedVariants,0);assert.equal(quality.summary.backtrackingVariants,0);
+assert.deepEqual(quality,require('../world/route-quality.json'),'Committed quality report is stale');
 let count=0;
 for(const [city,r] of Object.entries(R))for(const dir of ['o','i']){
  assert.equal(r[dir].length,1,city+' manufactured alternatives');assert.deepEqual(r[dir],data[city][dir]);

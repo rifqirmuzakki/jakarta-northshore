@@ -31,9 +31,30 @@ function exclusions(polygons){
  }
  return {bad,clear};
 }
-function simplify(points,clear){
- const out=[points[0]];let i=0;
- while(i<points.length-1){let next=i+1;for(let j=points.length-1;j>i+1;j--)if(clear(points[i],points[j])){next=j;break}out.push(points[next]);i=next}
- return out;
+function bearing(a,b){return Math.atan2(Math.sin((b[1]-a[1])*RAD)*Math.cos(b[0]*RAD),Math.cos(a[0]*RAD)*Math.sin(b[0]*RAD)-Math.sin(a[0]*RAD)*Math.cos(b[0]*RAD)*Math.cos((b[1]-a[1])*RAD))/RAD}
+function turnAngle(a,b,c){
+ if(distance(a,b)<0.001||distance(b,c)<0.001)return 0;
+ const incoming=bearing(b,a)+180,outgoing=bearing(b,c);
+ return Math.abs(((outgoing-incoming+540)%360)-180);
 }
-module.exports={distance,interpolate,exclusions,simplify};
+// Fictional equivalent-km cost: smooth bends are cheap; reversals cost heavily.
+function turnPenalty(a,b,c){const angle=turnAngle(a,b,c);return 40*(angle/45)**2+150*(Math.max(0,angle-90)/90)**2}
+function routeScore(points){let score=0;for(let i=1;i<points.length;i++){score+=distance(points[i-1],points[i]);if(i>1)score+=turnPenalty(points[i-2],points[i-1],points[i])}return score}
+/* Optimise shortcuts over the ordered corridor. State retains the previous
+   segment, so a longer clear jump cannot win by concealing a sharp next turn. */
+function simplify(points,clear,{before,after}={}){
+ const n=points.length;if(n<3)return points.slice();
+ const costs=new Float64Array(n*n).fill(Infinity),parent=new Int32Array(n*n).fill(-1),edges=new Map();
+ const edge=(i,j)=>{const k=i*n+j;if(!edges.has(k))edges.set(k,clear(points[i],points[j])?distance(points[i],points[j]):Infinity);return edges.get(k)};
+ for(let j=1;j<n;j++)costs[j]=edge(0,j)+(before?turnPenalty(before,points[0],points[j]):0);
+ for(let j=1;j<n-1;j++)for(let i=0;i<j;i++){const k=i*n+j;if(!Number.isFinite(costs[k]))continue;
+  for(let next=j+1;next<n;next++){const dest=j*n+next,cost=costs[k]+edge(j,next)+turnPenalty(points[i],points[j],points[next]);
+   if(cost<costs[dest]){costs[dest]=cost;parent[dest]=k}}
+ }
+ let last=-1,best=Infinity;
+ for(let i=0;i<n-1;i++){const k=i*n+n-1,cost=costs[k]+(after?turnPenalty(points[i],points[n-1],after):0);if(cost<best){best=cost;last=k}}
+ if(last<0)throw Error('No clear shortcut path');
+ const indices=[n-1];while(last>=0){indices.unshift(Math.floor(last/n));last=parent[last]}
+ return indices.map(i=>points[i]);
+}
+module.exports={distance,interpolate,exclusions,simplify,bearing,turnAngle,turnPenalty,routeScore};

@@ -1,0 +1,8004 @@
+{
+  "summary": {
+    "destinations": 147,
+    "variants": 294,
+    "excludedVariants": 0,
+    "sharpEnrouteVariants": 0,
+    "backtrackingVariants": 0,
+    "detoursOver15Percent": 2
+  },
+  "routes": [
+    {
+      "city": "Port Louis",
+      "direction": "out",
+      "variant": 0,
+      "km": 5529,
+      "greatCircleKm": 5509.6,
+      "detourRatio": 1.0035,
+      "score": 5546.4,
+      "maxEnrouteTurnDeg": 2.7,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 29.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            -11.5,
+            89.29
+          ],
+          "degrees": 2.7,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Port Louis",
+      "direction": "in",
+      "variant": 0,
+      "km": 5529,
+      "greatCircleKm": 5509.6,
+      "detourRatio": 1.0035,
+      "score": 5546.4,
+      "maxEnrouteTurnDeg": 2.7,
+      "turns": [
+        {
+          "point": [
+            -11.5,
+            89.29
+          ],
+          "degrees": 2.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 29.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Port Moresby",
+      "direction": "out",
+      "variant": 0,
+      "km": 4486.5,
+      "greatCircleKm": 4481.2,
+      "detourRatio": 1.0012,
+      "score": 4490.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 13.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Port Moresby",
+      "direction": "in",
+      "variant": 0,
+      "km": 4486.5,
+      "greatCircleKm": 4481.2,
+      "detourRatio": 1.0012,
+      "score": 4490.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 13.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Dili",
+      "direction": "out",
+      "variant": 0,
+      "km": 2103.6,
+      "greatCircleKm": 2097,
+      "detourRatio": 1.0031,
+      "score": 2108.6,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 15.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Dili",
+      "direction": "in",
+      "variant": 0,
+      "km": 2103.6,
+      "greatCircleKm": 2097,
+      "detourRatio": 1.0031,
+      "score": 2108.6,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 15.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Bangkok / Copenhagen",
+      "direction": "out",
+      "variant": 0,
+      "km": 2303.6,
+      "greatCircleKm": 2298.4,
+      "detourRatio": 1.0023,
+      "score": 2308.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 15.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Bangkok / Copenhagen",
+      "direction": "in",
+      "variant": 0,
+      "km": 2303.6,
+      "greatCircleKm": 2298.4,
+      "detourRatio": 1.0023,
+      "score": 2308.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 15.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Nadi",
+      "direction": "out",
+      "variant": 0,
+      "km": 7783.5,
+      "greatCircleKm": 7768.3,
+      "detourRatio": 1.002,
+      "score": 7792.2,
+      "maxEnrouteTurnDeg": 2.3,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 20.8,
+          "terminal": true
+        },
+        {
+          "point": [
+            -7.5,
+            114.5
+          ],
+          "degrees": 2.3,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Nadi",
+      "direction": "in",
+      "variant": 0,
+      "km": 7783.5,
+      "greatCircleKm": 7768.3,
+      "detourRatio": 1.002,
+      "score": 7792.2,
+      "maxEnrouteTurnDeg": 2.3,
+      "turns": [
+        {
+          "point": [
+            -7.5,
+            114.5
+          ],
+          "degrees": 2.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 20.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Jambi",
+      "direction": "out",
+      "variant": 0,
+      "km": 601.5,
+      "greatCircleKm": 601.2,
+      "detourRatio": 1.0005,
+      "score": 601.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 4.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Jambi",
+      "direction": "in",
+      "variant": 0,
+      "km": 601.5,
+      "greatCircleKm": 601.2,
+      "detourRatio": 1.0005,
+      "score": 601.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 4.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Ternate",
+      "direction": "out",
+      "variant": 0,
+      "km": 2431.1,
+      "greatCircleKm": 2426.8,
+      "detourRatio": 1.0018,
+      "score": 2434.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 12.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Ternate",
+      "direction": "in",
+      "variant": 0,
+      "km": 2431.1,
+      "greatCircleKm": 2426.8,
+      "detourRatio": 1.0018,
+      "score": 2434.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 12.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Pangkalan Bun",
+      "direction": "out",
+      "variant": 0,
+      "km": 675.2,
+      "greatCircleKm": 673.7,
+      "detourRatio": 1.0022,
+      "score": 676.5,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 8.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Pangkalan Bun",
+      "direction": "in",
+      "variant": 0,
+      "km": 675.2,
+      "greatCircleKm": 673.7,
+      "detourRatio": 1.0022,
+      "score": 676.5,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 8.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Brussels",
+      "direction": "out",
+      "variant": 0,
+      "km": 11735.3,
+      "greatCircleKm": 11389.2,
+      "detourRatio": 1.0304,
+      "score": 11765,
+      "maxEnrouteTurnDeg": 30.2,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 30.2,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Brussels",
+      "direction": "in",
+      "variant": 0,
+      "km": 11735.3,
+      "greatCircleKm": 11389.2,
+      "detourRatio": 1.0304,
+      "score": 11765,
+      "maxEnrouteTurnDeg": 30.2,
+      "turns": [
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 30.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Abu Dhabi",
+      "direction": "out",
+      "variant": 0,
+      "km": 6590.7,
+      "greatCircleKm": 6575.3,
+      "detourRatio": 1.0023,
+      "score": 6604.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 26.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Abu Dhabi",
+      "direction": "in",
+      "variant": 0,
+      "km": 6590.7,
+      "greatCircleKm": 6575.3,
+      "detourRatio": 1.0023,
+      "score": 6604.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 26.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Addis Ababa",
+      "direction": "out",
+      "variant": 0,
+      "km": 7706.1,
+      "greatCircleKm": 7705.9,
+      "detourRatio": 1,
+      "score": 7706.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 2.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Addis Ababa",
+      "direction": "in",
+      "variant": 0,
+      "km": 7706.1,
+      "greatCircleKm": 7705.9,
+      "detourRatio": 1,
+      "score": 7706.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 2.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Adelaide",
+      "direction": "out",
+      "variant": 0,
+      "km": 4658.9,
+      "greatCircleKm": 4576.6,
+      "detourRatio": 1.018,
+      "score": 4720.8,
+      "maxEnrouteTurnDeg": 2.1,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 55.9,
+          "terminal": true
+        },
+        {
+          "point": [
+            -29,
+            131.07
+          ],
+          "degrees": 2.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            -34.42,
+            137.89
+          ],
+          "degrees": 0.1,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Adelaide",
+      "direction": "in",
+      "variant": 0,
+      "km": 4658.9,
+      "greatCircleKm": 4576.6,
+      "detourRatio": 1.018,
+      "score": 4720.8,
+      "maxEnrouteTurnDeg": 2.1,
+      "turns": [
+        {
+          "point": [
+            -34.42,
+            137.89
+          ],
+          "degrees": 0.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            -29,
+            131.07
+          ],
+          "degrees": 2.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 55.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Ambon",
+      "direction": "out",
+      "variant": 0,
+      "km": 2389.2,
+      "greatCircleKm": 2389.2,
+      "detourRatio": 1,
+      "score": 2389.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 0.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Ambon",
+      "direction": "in",
+      "variant": 0,
+      "km": 2389.2,
+      "greatCircleKm": 2389.2,
+      "detourRatio": 1,
+      "score": 2389.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 0.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Amman",
+      "direction": "out",
+      "variant": 0,
+      "km": 8581.7,
+      "greatCircleKm": 8569.5,
+      "detourRatio": 1.0014,
+      "score": 8594.2,
+      "maxEnrouteTurnDeg": 0.8,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 25.2,
+          "terminal": true
+        },
+        {
+          "point": [
+            25,
+            55.2
+          ],
+          "degrees": 0.8,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Amman",
+      "direction": "in",
+      "variant": 0,
+      "km": 8581.7,
+      "greatCircleKm": 8569.5,
+      "detourRatio": 1.0014,
+      "score": 8594.2,
+      "maxEnrouteTurnDeg": 0.8,
+      "turns": [
+        {
+          "point": [
+            25,
+            55.2
+          ],
+          "degrees": 0.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 25.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Amsterdam",
+      "direction": "out",
+      "variant": 0,
+      "km": 11779.4,
+      "greatCircleKm": 11354.5,
+      "detourRatio": 1.0374,
+      "score": 11814.1,
+      "maxEnrouteTurnDeg": 34.2,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 34.2,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Amsterdam",
+      "direction": "in",
+      "variant": 0,
+      "km": 11779.4,
+      "greatCircleKm": 11354.5,
+      "detourRatio": 1.0374,
+      "score": 11814.1,
+      "maxEnrouteTurnDeg": 34.2,
+      "turns": [
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 34.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Auckland",
+      "direction": "out",
+      "variant": 0,
+      "km": 7723.4,
+      "greatCircleKm": 7661.1,
+      "detourRatio": 1.0081,
+      "score": 7797.9,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -7.2,
+            106.5
+          ],
+          "degrees": 61.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Auckland",
+      "direction": "in",
+      "variant": 0,
+      "km": 7723.4,
+      "greatCircleKm": 7661.1,
+      "detourRatio": 1.0081,
+      "score": 7797.9,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -7.2,
+            106.5
+          ],
+          "degrees": 61.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Bahrain",
+      "direction": "out",
+      "variant": 0,
+      "km": 7042.3,
+      "greatCircleKm": 7027.2,
+      "detourRatio": 1.0021,
+      "score": 7055.4,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 25.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Bahrain",
+      "direction": "in",
+      "variant": 0,
+      "km": 7042.3,
+      "greatCircleKm": 7027.2,
+      "detourRatio": 1.0021,
+      "score": 7055.4,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 25.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Balikpapan",
+      "direction": "out",
+      "variant": 0,
+      "km": 1264.8,
+      "greatCircleKm": 1256.9,
+      "detourRatio": 1.0063,
+      "score": 1271.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 17.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Balikpapan",
+      "direction": "in",
+      "variant": 0,
+      "km": 1264.8,
+      "greatCircleKm": 1256.9,
+      "detourRatio": 1.0063,
+      "score": 1271.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 17.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Banda Aceh",
+      "direction": "out",
+      "variant": 0,
+      "km": 1802.9,
+      "greatCircleKm": 1798.5,
+      "detourRatio": 1.0024,
+      "score": 1807,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 14.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Banda Aceh",
+      "direction": "in",
+      "variant": 0,
+      "km": 1802.9,
+      "greatCircleKm": 1798.5,
+      "detourRatio": 1.0024,
+      "score": 1807,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 14.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Bandar Lampung",
+      "direction": "out",
+      "variant": 0,
+      "km": 213.3,
+      "greatCircleKm": 191.3,
+      "detourRatio": 1.1148,
+      "score": 269.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 53.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Bandar Lampung",
+      "direction": "in",
+      "variant": 0,
+      "km": 213.3,
+      "greatCircleKm": 191.3,
+      "detourRatio": 1.1148,
+      "score": 269.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 53.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Bandar Seri Begawan",
+      "direction": "out",
+      "variant": 0,
+      "km": 1541.2,
+      "greatCircleKm": 1535.6,
+      "detourRatio": 1.0036,
+      "score": 1545.5,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 14.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Bandar Seri Begawan",
+      "direction": "in",
+      "variant": 0,
+      "km": 1541.2,
+      "greatCircleKm": 1535.6,
+      "detourRatio": 1.0036,
+      "score": 1545.5,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 14.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Bangkok",
+      "direction": "out",
+      "variant": 0,
+      "km": 2303.6,
+      "greatCircleKm": 2298.4,
+      "detourRatio": 1.0023,
+      "score": 2308.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 15.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Bangkok",
+      "direction": "in",
+      "variant": 0,
+      "km": 2303.6,
+      "greatCircleKm": 2298.4,
+      "detourRatio": 1.0023,
+      "score": 2308.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 15.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Bangkok Don Mueang",
+      "direction": "out",
+      "variant": 0,
+      "km": 2331.3,
+      "greatCircleKm": 2326.2,
+      "detourRatio": 1.0022,
+      "score": 2335.9,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 15.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Bangkok Don Mueang",
+      "direction": "in",
+      "variant": 0,
+      "km": 2331.3,
+      "greatCircleKm": 2326.2,
+      "detourRatio": 1.0022,
+      "score": 2335.9,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 15.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Banjarmasin",
+      "direction": "out",
+      "variant": 0,
+      "km": 951.1,
+      "greatCircleKm": 946,
+      "detourRatio": 1.0054,
+      "score": 955.5,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 15,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Banjarmasin",
+      "direction": "in",
+      "variant": 0,
+      "km": 951.1,
+      "greatCircleKm": 946,
+      "detourRatio": 1.0054,
+      "score": 955.5,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 15,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Barcelona / Sao Paulo",
+      "direction": "out",
+      "variant": 0,
+      "km": 11787.1,
+      "greatCircleKm": 11673.5,
+      "detourRatio": 1.0097,
+      "score": 11799.3,
+      "maxEnrouteTurnDeg": 19.6,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 19.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.6,
+            39.5
+          ],
+          "degrees": 11.9,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Barcelona / Sao Paulo",
+      "direction": "in",
+      "variant": 0,
+      "km": 11787.1,
+      "greatCircleKm": 11673.5,
+      "detourRatio": 1.0097,
+      "score": 11799.3,
+      "maxEnrouteTurnDeg": 19.6,
+      "turns": [
+        {
+          "point": [
+            40.6,
+            39.5
+          ],
+          "degrees": 11.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 19.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Batam",
+      "direction": "out",
+      "variant": 0,
+      "km": 857.8,
+      "greatCircleKm": 854.1,
+      "detourRatio": 1.0044,
+      "score": 861.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 14.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Batam",
+      "direction": "in",
+      "variant": 0,
+      "km": 857.8,
+      "greatCircleKm": 854.1,
+      "detourRatio": 1.0044,
+      "score": 861.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 14.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Beijing",
+      "direction": "out",
+      "variant": 0,
+      "km": 5238,
+      "greatCircleKm": 5238,
+      "detourRatio": 1,
+      "score": 5238,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 1.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Beijing",
+      "direction": "in",
+      "variant": 0,
+      "km": 5238,
+      "greatCircleKm": 5238,
+      "detourRatio": 1,
+      "score": 5238,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 1.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Beijing Daxing",
+      "direction": "out",
+      "variant": 0,
+      "km": 5173,
+      "greatCircleKm": 5172.9,
+      "detourRatio": 1,
+      "score": 5173,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 1.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Beijing Daxing",
+      "direction": "in",
+      "variant": 0,
+      "km": 5173,
+      "greatCircleKm": 5172.9,
+      "detourRatio": 1,
+      "score": 5173,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 1.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Bengaluru",
+      "direction": "out",
+      "variant": 0,
+      "km": 3864.4,
+      "greatCircleKm": 3852.6,
+      "detourRatio": 1.0031,
+      "score": 3877.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 25.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Bengaluru",
+      "direction": "in",
+      "variant": 0,
+      "km": 3864.4,
+      "greatCircleKm": 3852.6,
+      "detourRatio": 1.0031,
+      "score": 3877.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 25.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Bengkulu",
+      "direction": "out",
+      "variant": 0,
+      "km": 549.2,
+      "greatCircleKm": 541,
+      "detourRatio": 1.0151,
+      "score": 560.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 23.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Bengkulu",
+      "direction": "in",
+      "variant": 0,
+      "km": 549.2,
+      "greatCircleKm": 541,
+      "detourRatio": 1.0151,
+      "score": 560.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 23.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Biak",
+      "direction": "out",
+      "variant": 0,
+      "km": 3312.9,
+      "greatCircleKm": 3312.7,
+      "detourRatio": 1.0001,
+      "score": 3313,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 2.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Biak",
+      "direction": "in",
+      "variant": 0,
+      "km": 3312.9,
+      "greatCircleKm": 3312.7,
+      "detourRatio": 1.0001,
+      "score": 3313,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 2.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Brisbane",
+      "direction": "out",
+      "variant": 0,
+      "km": 5477.7,
+      "greatCircleKm": 5438,
+      "detourRatio": 1.0073,
+      "score": 5505.3,
+      "maxEnrouteTurnDeg": 1.1,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 37.4,
+          "terminal": true
+        },
+        {
+          "point": [
+            -11.5,
+            117.87
+          ],
+          "degrees": 1.1,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Brisbane",
+      "direction": "in",
+      "variant": 0,
+      "km": 5477.7,
+      "greatCircleKm": 5438,
+      "detourRatio": 1.0073,
+      "score": 5505.3,
+      "maxEnrouteTurnDeg": 1.1,
+      "turns": [
+        {
+          "point": [
+            -11.5,
+            117.87
+          ],
+          "degrees": 1.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 37.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Busan",
+      "direction": "out",
+      "variant": 0,
+      "km": 5156.8,
+      "greatCircleKm": 5151.9,
+      "detourRatio": 1.0009,
+      "score": 5160.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 14.3,
+          "terminal": true
+        },
+        {
+          "point": [
+            16.5,
+            117.36
+          ],
+          "degrees": 0,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Busan",
+      "direction": "in",
+      "variant": 0,
+      "km": 5156.8,
+      "greatCircleKm": 5151.9,
+      "detourRatio": 1.0009,
+      "score": 5160.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            16.5,
+            117.36
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 14.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Cairo",
+      "direction": "out",
+      "variant": 0,
+      "km": 8958.8,
+      "greatCircleKm": 8949,
+      "detourRatio": 1.0011,
+      "score": 8969.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 22.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Cairo",
+      "direction": "in",
+      "variant": 0,
+      "km": 8958.8,
+      "greatCircleKm": 8949,
+      "detourRatio": 1.0011,
+      "score": 8969.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 22.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Canberra",
+      "direction": "out",
+      "variant": 0,
+      "km": 5471.5,
+      "greatCircleKm": 5418.3,
+      "detourRatio": 1.0098,
+      "score": 5534,
+      "maxEnrouteTurnDeg": 1,
+      "turns": [
+        {
+          "point": [
+            -7.2,
+            106.5
+          ],
+          "degrees": 56.2,
+          "terminal": true
+        },
+        {
+          "point": [
+            -30.6,
+            138.43
+          ],
+          "degrees": 1,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Canberra",
+      "direction": "in",
+      "variant": 0,
+      "km": 5471.5,
+      "greatCircleKm": 5418.3,
+      "detourRatio": 1.0098,
+      "score": 5534,
+      "maxEnrouteTurnDeg": 1,
+      "turns": [
+        {
+          "point": [
+            -30.6,
+            138.43
+          ],
+          "degrees": 1,
+          "terminal": false
+        },
+        {
+          "point": [
+            -7.2,
+            106.5
+          ],
+          "degrees": 56.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Cebu",
+      "direction": "out",
+      "variant": 0,
+      "km": 2649.9,
+      "greatCircleKm": 2649.6,
+      "detourRatio": 1.0001,
+      "score": 2650.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 3.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Cebu",
+      "direction": "in",
+      "variant": 0,
+      "km": 2649.9,
+      "greatCircleKm": 2649.6,
+      "detourRatio": 1.0001,
+      "score": 2650.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 3.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Chengdu",
+      "direction": "out",
+      "variant": 0,
+      "km": 4098.1,
+      "greatCircleKm": 4092.2,
+      "detourRatio": 1.0015,
+      "score": 4103.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 15.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Chengdu",
+      "direction": "in",
+      "variant": 0,
+      "km": 4098.1,
+      "greatCircleKm": 4092.2,
+      "detourRatio": 1.0015,
+      "score": 4103.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 15.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Chongqing",
+      "direction": "out",
+      "variant": 0,
+      "km": 3989.7,
+      "greatCircleKm": 3986.3,
+      "detourRatio": 1.0008,
+      "score": 3992.5,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 11.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Chongqing",
+      "direction": "in",
+      "variant": 0,
+      "km": 3989.7,
+      "greatCircleKm": 3986.3,
+      "detourRatio": 1.0008,
+      "score": 3992.5,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 11.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Christchurch",
+      "direction": "out",
+      "variant": 0,
+      "km": 7653.6,
+      "greatCircleKm": 7604,
+      "detourRatio": 1.0065,
+      "score": 7711.6,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -7.2,
+            106.5
+          ],
+          "degrees": 54.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Christchurch",
+      "direction": "in",
+      "variant": 0,
+      "km": 7653.6,
+      "greatCircleKm": 7604,
+      "detourRatio": 1.0065,
+      "score": 7711.6,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -7.2,
+            106.5
+          ],
+          "degrees": 54.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Colombo",
+      "direction": "out",
+      "variant": 0,
+      "km": 3324.7,
+      "greatCircleKm": 3319.2,
+      "detourRatio": 1.0017,
+      "score": 3330.7,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 17.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Colombo",
+      "direction": "in",
+      "variant": 0,
+      "km": 3324.7,
+      "greatCircleKm": 3319.2,
+      "detourRatio": 1.0017,
+      "score": 3330.7,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 17.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Copenhagen",
+      "direction": "out",
+      "variant": 0,
+      "km": 11565.6,
+      "greatCircleKm": 10821.4,
+      "detourRatio": 1.0688,
+      "score": 11634.6,
+      "maxEnrouteTurnDeg": 54.5,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 19.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.57,
+            43.12
+          ],
+          "degrees": 1.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 54.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            42.57,
+            27.52
+          ],
+          "degrees": 8.1,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Copenhagen",
+      "direction": "in",
+      "variant": 0,
+      "km": 11565.6,
+      "greatCircleKm": 10821.4,
+      "detourRatio": 1.0688,
+      "score": 11634.6,
+      "maxEnrouteTurnDeg": 54.5,
+      "turns": [
+        {
+          "point": [
+            42.57,
+            27.52
+          ],
+          "degrees": 8.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 54.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.57,
+            43.12
+          ],
+          "degrees": 1.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 19.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Da Nang",
+      "direction": "out",
+      "variant": 0,
+      "km": 2472.5,
+      "greatCircleKm": 2471,
+      "detourRatio": 1.0006,
+      "score": 2473.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Da Nang",
+      "direction": "in",
+      "variant": 0,
+      "km": 2472.5,
+      "greatCircleKm": 2471,
+      "detourRatio": 1.0006,
+      "score": 2473.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Delhi",
+      "direction": "out",
+      "variant": 0,
+      "km": 4991.7,
+      "greatCircleKm": 4990.5,
+      "detourRatio": 1.0002,
+      "score": 4992.7,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 7.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Delhi",
+      "direction": "in",
+      "variant": 0,
+      "km": 4991.7,
+      "greatCircleKm": 4990.5,
+      "detourRatio": 1.0002,
+      "score": 4992.7,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 7.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Denpasar",
+      "direction": "out",
+      "variant": 0,
+      "km": 1001.9,
+      "greatCircleKm": 982.4,
+      "detourRatio": 1.0198,
+      "score": 1018.6,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 29.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Denpasar",
+      "direction": "in",
+      "variant": 0,
+      "km": 1001.9,
+      "greatCircleKm": 982.4,
+      "detourRatio": 1.0198,
+      "score": 1018.6,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 29.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Dhaka",
+      "direction": "out",
+      "variant": 0,
+      "km": 3771,
+      "greatCircleKm": 3770.7,
+      "detourRatio": 1.0001,
+      "score": 3771.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 3.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Dhaka",
+      "direction": "in",
+      "variant": 0,
+      "km": 3771,
+      "greatCircleKm": 3770.7,
+      "detourRatio": 1.0001,
+      "score": 3771.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 3.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Doha",
+      "direction": "out",
+      "variant": 0,
+      "km": 6909.8,
+      "greatCircleKm": 6893.9,
+      "detourRatio": 1.0023,
+      "score": 6923.5,
+      "maxEnrouteTurnDeg": 0.5,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 26.3,
+          "terminal": true
+        },
+        {
+          "point": [
+            20,
+            64.39
+          ],
+          "degrees": 0.5,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Doha",
+      "direction": "in",
+      "variant": 0,
+      "km": 6909.8,
+      "greatCircleKm": 6893.9,
+      "detourRatio": 1.0023,
+      "score": 6923.5,
+      "maxEnrouteTurnDeg": 0.5,
+      "turns": [
+        {
+          "point": [
+            20,
+            64.39
+          ],
+          "degrees": 0.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 26.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Dubai",
+      "direction": "out",
+      "variant": 0,
+      "km": 6562.1,
+      "greatCircleKm": 6548,
+      "detourRatio": 1.0021,
+      "score": 6574.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 24.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Dubai",
+      "direction": "in",
+      "variant": 0,
+      "km": 6562.1,
+      "greatCircleKm": 6548,
+      "detourRatio": 1.0021,
+      "score": 6574.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 24.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Edinburgh / Chicago",
+      "direction": "out",
+      "variant": 0,
+      "km": 12426.8,
+      "greatCircleKm": 11810,
+      "detourRatio": 1.0522,
+      "score": 12464.1,
+      "maxEnrouteTurnDeg": 35.9,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 35.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            43.15,
+            25.71
+          ],
+          "degrees": 2.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            46.18,
+            21.14
+          ],
+          "degrees": 0.2,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Edinburgh / Chicago",
+      "direction": "in",
+      "variant": 0,
+      "km": 12426.8,
+      "greatCircleKm": 11810,
+      "detourRatio": 1.0522,
+      "score": 12464.1,
+      "maxEnrouteTurnDeg": 35.9,
+      "turns": [
+        {
+          "point": [
+            46.18,
+            21.14
+          ],
+          "degrees": 0.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            43.15,
+            25.71
+          ],
+          "degrees": 2.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 35.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Frankfurt",
+      "direction": "out",
+      "variant": 0,
+      "km": 11431.1,
+      "greatCircleKm": 11107,
+      "detourRatio": 1.0292,
+      "score": 11461.6,
+      "maxEnrouteTurnDeg": 30.9,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 30.9,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Frankfurt",
+      "direction": "in",
+      "variant": 0,
+      "km": 11431.1,
+      "greatCircleKm": 11107,
+      "detourRatio": 1.0292,
+      "score": 11461.6,
+      "maxEnrouteTurnDeg": 30.9,
+      "turns": [
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 30.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Geneva / Washington",
+      "direction": "out",
+      "variant": 0,
+      "km": 11537.3,
+      "greatCircleKm": 11310.1,
+      "detourRatio": 1.0201,
+      "score": 11584.8,
+      "maxEnrouteTurnDeg": 42.1,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 19.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.6,
+            39.5
+          ],
+          "degrees": 12.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            39.5,
+            33
+          ],
+          "degrees": 42.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            42.67,
+            23.81
+          ],
+          "degrees": 0.4,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Geneva / Washington",
+      "direction": "in",
+      "variant": 0,
+      "km": 11537.3,
+      "greatCircleKm": 11310.1,
+      "detourRatio": 1.0201,
+      "score": 11584.8,
+      "maxEnrouteTurnDeg": 42.1,
+      "turns": [
+        {
+          "point": [
+            42.67,
+            23.81
+          ],
+          "degrees": 0.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            39.5,
+            33
+          ],
+          "degrees": 42.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.6,
+            39.5
+          ],
+          "degrees": 12.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 19.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Gold Coast",
+      "direction": "out",
+      "variant": 0,
+      "km": 5541.3,
+      "greatCircleKm": 5499.4,
+      "detourRatio": 1.0076,
+      "score": 5569,
+      "maxEnrouteTurnDeg": 2.2,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 37.4,
+          "terminal": true
+        },
+        {
+          "point": [
+            -11.5,
+            117.87
+          ],
+          "degrees": 2.2,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Gold Coast",
+      "direction": "in",
+      "variant": 0,
+      "km": 5541.3,
+      "greatCircleKm": 5499.4,
+      "detourRatio": 1.0076,
+      "score": 5569,
+      "maxEnrouteTurnDeg": 2.2,
+      "turns": [
+        {
+          "point": [
+            -11.5,
+            117.87
+          ],
+          "degrees": 2.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 37.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Guangzhou",
+      "direction": "out",
+      "variant": 0,
+      "km": 3360.8,
+      "greatCircleKm": 3360.8,
+      "detourRatio": 1,
+      "score": 3360.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 0.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Guangzhou",
+      "direction": "in",
+      "variant": 0,
+      "km": 3360.8,
+      "greatCircleKm": 3360.8,
+      "detourRatio": 1,
+      "score": 3360.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 0.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Haikou",
+      "direction": "out",
+      "variant": 0,
+      "km": 2927.7,
+      "greatCircleKm": 2927.4,
+      "detourRatio": 1.0001,
+      "score": 2927.9,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 3.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Haikou",
+      "direction": "in",
+      "variant": 0,
+      "km": 2927.7,
+      "greatCircleKm": 2927.4,
+      "detourRatio": 1.0001,
+      "score": 2927.9,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 3.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Hangzhou",
+      "direction": "out",
+      "variant": 0,
+      "km": 4302.9,
+      "greatCircleKm": 4301.3,
+      "detourRatio": 1.0004,
+      "score": 4304.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Hangzhou",
+      "direction": "in",
+      "variant": 0,
+      "km": 4302.9,
+      "greatCircleKm": 4301.3,
+      "detourRatio": 1.0004,
+      "score": 4304.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Hanoi",
+      "direction": "out",
+      "variant": 0,
+      "km": 3047.1,
+      "greatCircleKm": 3042.6,
+      "detourRatio": 1.0015,
+      "score": 3050.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 13.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Hanoi",
+      "direction": "in",
+      "variant": 0,
+      "km": 3047.1,
+      "greatCircleKm": 3042.6,
+      "detourRatio": 1.0015,
+      "score": 3050.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 13.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Helsinki",
+      "direction": "out",
+      "variant": 0,
+      "km": 11906.6,
+      "greatCircleKm": 10145.8,
+      "detourRatio": 1.1735,
+      "score": 12012.6,
+      "maxEnrouteTurnDeg": 54.5,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 19.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.57,
+            43.12
+          ],
+          "degrees": 1.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 54.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            42.57,
+            27.52
+          ],
+          "degrees": 4.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            47.99,
+            21.69
+          ],
+          "degrees": 43.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            52.16,
+            22.2
+          ],
+          "degrees": 4.8,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": [
+        "detour-over-15-percent"
+      ]
+    },
+    {
+      "city": "Helsinki",
+      "direction": "in",
+      "variant": 0,
+      "km": 11906.6,
+      "greatCircleKm": 10145.8,
+      "detourRatio": 1.1735,
+      "score": 12012.6,
+      "maxEnrouteTurnDeg": 54.5,
+      "turns": [
+        {
+          "point": [
+            52.16,
+            22.2
+          ],
+          "degrees": 4.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            47.99,
+            21.69
+          ],
+          "degrees": 43.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            42.57,
+            27.52
+          ],
+          "degrees": 4.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 54.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.57,
+            43.12
+          ],
+          "degrees": 1.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 19.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": [
+        "detour-over-15-percent"
+      ]
+    },
+    {
+      "city": "Ho Chi Minh City",
+      "direction": "out",
+      "variant": 0,
+      "km": 1888.3,
+      "greatCircleKm": 1884.8,
+      "detourRatio": 1.0019,
+      "score": 1891.4,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 12.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Ho Chi Minh City",
+      "direction": "in",
+      "variant": 0,
+      "km": 1888.3,
+      "greatCircleKm": 1884.8,
+      "detourRatio": 1.0019,
+      "score": 1891.4,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 12.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Hong Kong",
+      "direction": "out",
+      "variant": 0,
+      "km": 3259.6,
+      "greatCircleKm": 3259.4,
+      "detourRatio": 1,
+      "score": 3259.7,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 2.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Hong Kong",
+      "direction": "in",
+      "variant": 0,
+      "km": 3259.6,
+      "greatCircleKm": 3259.4,
+      "detourRatio": 1,
+      "score": 3259.7,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 2.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Honolulu",
+      "direction": "out",
+      "variant": 0,
+      "km": 10825.5,
+      "greatCircleKm": 10814.4,
+      "detourRatio": 1.001,
+      "score": 10832.9,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 19.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Honolulu",
+      "direction": "in",
+      "variant": 0,
+      "km": 10825.5,
+      "greatCircleKm": 10814.4,
+      "detourRatio": 1.001,
+      "score": 10832.9,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 19.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Hyderabad",
+      "direction": "out",
+      "variant": 0,
+      "km": 4054.5,
+      "greatCircleKm": 4046.2,
+      "detourRatio": 1.002,
+      "score": 4061.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 19.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Hyderabad",
+      "direction": "in",
+      "variant": 0,
+      "km": 4054.5,
+      "greatCircleKm": 4046.2,
+      "detourRatio": 1.002,
+      "score": 4061.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 19.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Istanbul",
+      "direction": "out",
+      "variant": 0,
+      "km": 9569.9,
+      "greatCircleKm": 9459,
+      "detourRatio": 1.0117,
+      "score": 9578.5,
+      "maxEnrouteTurnDeg": 18.3,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.8,
+          "terminal": true
+        },
+        {
+          "point": [
+            9.5,
+            93.5
+          ],
+          "degrees": 0.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            30.19,
+            71.42
+          ],
+          "degrees": 1.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.6,
+            52.5
+          ],
+          "degrees": 18.3,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Istanbul",
+      "direction": "in",
+      "variant": 0,
+      "km": 9569.9,
+      "greatCircleKm": 9459,
+      "detourRatio": 1.0117,
+      "score": 9578.5,
+      "maxEnrouteTurnDeg": 18.3,
+      "turns": [
+        {
+          "point": [
+            40.6,
+            52.5
+          ],
+          "degrees": 18.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            30.19,
+            71.42
+          ],
+          "degrees": 1.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            9.5,
+            93.5
+          ],
+          "degrees": 0.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Jayapura",
+      "direction": "out",
+      "variant": 0,
+      "km": 3774,
+      "greatCircleKm": 3773.9,
+      "detourRatio": 1,
+      "score": 3774.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 1.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Jayapura",
+      "direction": "in",
+      "variant": 0,
+      "km": 3774,
+      "greatCircleKm": 3773.9,
+      "detourRatio": 1,
+      "score": 3774.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 1.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Jeddah",
+      "direction": "out",
+      "variant": 0,
+      "km": 7976.7,
+      "greatCircleKm": 7971.7,
+      "detourRatio": 1.0006,
+      "score": 7981.7,
+      "maxEnrouteTurnDeg": 0.5,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 16,
+          "terminal": true
+        },
+        {
+          "point": [
+            13,
+            64.8
+          ],
+          "degrees": 0.5,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Jeddah",
+      "direction": "in",
+      "variant": 0,
+      "km": 7976.7,
+      "greatCircleKm": 7971.7,
+      "detourRatio": 1.0006,
+      "score": 7981.7,
+      "maxEnrouteTurnDeg": 0.5,
+      "turns": [
+        {
+          "point": [
+            13,
+            64.8
+          ],
+          "degrees": 0.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 16,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Jeju",
+      "direction": "out",
+      "variant": 0,
+      "km": 4882.2,
+      "greatCircleKm": 4878.2,
+      "detourRatio": 1.0008,
+      "score": 4885.6,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 13,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Jeju",
+      "direction": "in",
+      "variant": 0,
+      "km": 4882.2,
+      "greatCircleKm": 4878.2,
+      "detourRatio": 1.0008,
+      "score": 4885.6,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 13,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Johannesburg",
+      "direction": "out",
+      "variant": 0,
+      "km": 8574.9,
+      "greatCircleKm": 8552.7,
+      "detourRatio": 1.0026,
+      "score": 8598.7,
+      "maxEnrouteTurnDeg": 0.5,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 34.7,
+          "terminal": true
+        },
+        {
+          "point": [
+            -25,
+            45
+          ],
+          "degrees": 0.5,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Johannesburg",
+      "direction": "in",
+      "variant": 0,
+      "km": 8574.9,
+      "greatCircleKm": 8552.7,
+      "detourRatio": 1.0026,
+      "score": 8598.7,
+      "maxEnrouteTurnDeg": 0.5,
+      "turns": [
+        {
+          "point": [
+            -25,
+            45
+          ],
+          "degrees": 0.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 34.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kendari",
+      "direction": "out",
+      "variant": 0,
+      "km": 1760.2,
+      "greatCircleKm": 1760.2,
+      "detourRatio": 1,
+      "score": 1760.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 0.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kendari",
+      "direction": "in",
+      "variant": 0,
+      "km": 1760.2,
+      "greatCircleKm": 1760.2,
+      "detourRatio": 1,
+      "score": 1760.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 0.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kota Kinabalu",
+      "direction": "out",
+      "variant": 0,
+      "km": 1703.9,
+      "greatCircleKm": 1699.2,
+      "detourRatio": 1.0027,
+      "score": 1707.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 13.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kota Kinabalu",
+      "direction": "in",
+      "variant": 0,
+      "km": 1703.9,
+      "greatCircleKm": 1699.2,
+      "detourRatio": 1.0027,
+      "score": 1707.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 13.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Krabi",
+      "direction": "out",
+      "variant": 0,
+      "km": 1796.6,
+      "greatCircleKm": 1796.4,
+      "detourRatio": 1.0001,
+      "score": 1796.7,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 2.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Krabi",
+      "direction": "in",
+      "variant": 0,
+      "km": 1796.6,
+      "greatCircleKm": 1796.4,
+      "detourRatio": 1.0001,
+      "score": 1796.7,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 2.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kuala Lumpur",
+      "direction": "out",
+      "variant": 0,
+      "km": 1130.2,
+      "greatCircleKm": 1130.1,
+      "detourRatio": 1.0001,
+      "score": 1130.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kuala Lumpur",
+      "direction": "in",
+      "variant": 0,
+      "km": 1130.2,
+      "greatCircleKm": 1130.1,
+      "detourRatio": 1.0001,
+      "score": 1130.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kuching",
+      "direction": "out",
+      "variant": 0,
+      "km": 946.8,
+      "greatCircleKm": 940.7,
+      "detourRatio": 1.0065,
+      "score": 952.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 17.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kuching",
+      "direction": "in",
+      "variant": 0,
+      "km": 946.8,
+      "greatCircleKm": 940.7,
+      "detourRatio": 1.0065,
+      "score": 952.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 17.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kunming",
+      "direction": "out",
+      "variant": 0,
+      "km": 3504.2,
+      "greatCircleKm": 3496,
+      "detourRatio": 1.0023,
+      "score": 3511.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 18.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kunming",
+      "direction": "in",
+      "variant": 0,
+      "km": 3504.2,
+      "greatCircleKm": 3496,
+      "detourRatio": 1.0023,
+      "score": 3511.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 18.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kupang",
+      "direction": "out",
+      "variant": 0,
+      "km": 1938.2,
+      "greatCircleKm": 1924.9,
+      "detourRatio": 1.0069,
+      "score": 1948.4,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 22.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kupang",
+      "direction": "in",
+      "variant": 0,
+      "km": 1938.2,
+      "greatCircleKm": 1924.9,
+      "detourRatio": 1.0069,
+      "score": 1948.4,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 22.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kuwait City",
+      "direction": "out",
+      "variant": 0,
+      "km": 7418.6,
+      "greatCircleKm": 7394.4,
+      "detourRatio": 1.0033,
+      "score": 7433,
+      "maxEnrouteTurnDeg": 9.6,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 25.2,
+          "terminal": true
+        },
+        {
+          "point": [
+            25,
+            55.2
+          ],
+          "degrees": 9.6,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kuwait City",
+      "direction": "in",
+      "variant": 0,
+      "km": 7418.6,
+      "greatCircleKm": 7394.4,
+      "detourRatio": 1.0033,
+      "score": 7433,
+      "maxEnrouteTurnDeg": 9.6,
+      "turns": [
+        {
+          "point": [
+            25,
+            55.2
+          ],
+          "degrees": 9.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 25.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Langkawi",
+      "direction": "out",
+      "variant": 0,
+      "km": 1584.7,
+      "greatCircleKm": 1584.6,
+      "detourRatio": 1.0001,
+      "score": 1584.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Langkawi",
+      "direction": "in",
+      "variant": 0,
+      "km": 1584.7,
+      "greatCircleKm": 1584.6,
+      "detourRatio": 1.0001,
+      "score": 1584.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Lombok",
+      "direction": "out",
+      "variant": 0,
+      "km": 1116.5,
+      "greatCircleKm": 1100.1,
+      "detourRatio": 1.0149,
+      "score": 1130.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 26.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Lombok",
+      "direction": "in",
+      "variant": 0,
+      "km": 1116.5,
+      "greatCircleKm": 1100.1,
+      "detourRatio": 1.0149,
+      "score": 1130.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 26.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "London",
+      "direction": "out",
+      "variant": 0,
+      "km": 12081.1,
+      "greatCircleKm": 11721.3,
+      "detourRatio": 1.0307,
+      "score": 12109.3,
+      "maxEnrouteTurnDeg": 28.9,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 28.9,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "London",
+      "direction": "in",
+      "variant": 0,
+      "km": 12081.1,
+      "greatCircleKm": 11721.3,
+      "detourRatio": 1.0307,
+      "score": 12109.3,
+      "maxEnrouteTurnDeg": 28.9,
+      "turns": [
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 28.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "London / New York",
+      "direction": "out",
+      "variant": 0,
+      "km": 12081.1,
+      "greatCircleKm": 11721.3,
+      "detourRatio": 1.0307,
+      "score": 12109.3,
+      "maxEnrouteTurnDeg": 28.9,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 28.9,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "London / New York",
+      "direction": "in",
+      "variant": 0,
+      "km": 12081.1,
+      "greatCircleKm": 11721.3,
+      "detourRatio": 1.0307,
+      "score": 12109.3,
+      "maxEnrouteTurnDeg": 28.9,
+      "turns": [
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 28.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "London Heathrow",
+      "direction": "out",
+      "variant": 0,
+      "km": 12081.1,
+      "greatCircleKm": 11721.3,
+      "detourRatio": 1.0307,
+      "score": 12109.3,
+      "maxEnrouteTurnDeg": 28.9,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 28.9,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "London Heathrow",
+      "direction": "in",
+      "variant": 0,
+      "km": 12081.1,
+      "greatCircleKm": 11721.3,
+      "detourRatio": 1.0307,
+      "score": 12109.3,
+      "maxEnrouteTurnDeg": 28.9,
+      "turns": [
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 28.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Los Angeles",
+      "direction": "out",
+      "variant": 0,
+      "km": 14450.3,
+      "greatCircleKm": 14450.3,
+      "detourRatio": 1,
+      "score": 14450.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 0.2,
+          "terminal": true
+        },
+        {
+          "point": [
+            6,
+            121
+          ],
+          "degrees": 0,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Los Angeles",
+      "direction": "in",
+      "variant": 0,
+      "km": 14450.3,
+      "greatCircleKm": 14450.3,
+      "detourRatio": 1,
+      "score": 14450.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            6,
+            121
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 0.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Macau",
+      "direction": "out",
+      "variant": 0,
+      "km": 3234,
+      "greatCircleKm": 3233.9,
+      "detourRatio": 1,
+      "score": 3234.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Macau",
+      "direction": "in",
+      "variant": 0,
+      "km": 3234,
+      "greatCircleKm": 3233.9,
+      "detourRatio": 1,
+      "score": 3234.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Madrid / Lisbon",
+      "direction": "out",
+      "variant": 0,
+      "km": 12238.2,
+      "greatCircleKm": 12155.1,
+      "detourRatio": 1.0068,
+      "score": 12250.3,
+      "maxEnrouteTurnDeg": 6.5,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 23.8,
+          "terminal": true
+        },
+        {
+          "point": [
+            22,
+            59
+          ],
+          "degrees": 1.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            25.3,
+            51.6
+          ],
+          "degrees": 2.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            27.88,
+            45.56
+          ],
+          "degrees": 6.5,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Madrid / Lisbon",
+      "direction": "in",
+      "variant": 0,
+      "km": 12238.2,
+      "greatCircleKm": 12155.1,
+      "detourRatio": 1.0068,
+      "score": 12250.3,
+      "maxEnrouteTurnDeg": 6.5,
+      "turns": [
+        {
+          "point": [
+            27.88,
+            45.56
+          ],
+          "degrees": 6.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            25.3,
+            51.6
+          ],
+          "degrees": 2.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            22,
+            59
+          ],
+          "degrees": 1.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 23.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Makassar",
+      "direction": "out",
+      "variant": 0,
+      "km": 1431.5,
+      "greatCircleKm": 1431.4,
+      "detourRatio": 1.0001,
+      "score": 1431.6,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 2.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Makassar",
+      "direction": "in",
+      "variant": 0,
+      "km": 1431.5,
+      "greatCircleKm": 1431.4,
+      "detourRatio": 1.0001,
+      "score": 1431.6,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 2.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Male",
+      "direction": "out",
+      "variant": 0,
+      "km": 3854.2,
+      "greatCircleKm": 3853.2,
+      "detourRatio": 1.0003,
+      "score": 3855.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 7.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Male",
+      "direction": "in",
+      "variant": 0,
+      "km": 3854.2,
+      "greatCircleKm": 3853.2,
+      "detourRatio": 1.0003,
+      "score": 3855.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 7.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Manado",
+      "direction": "out",
+      "variant": 0,
+      "km": 2209,
+      "greatCircleKm": 2200.8,
+      "detourRatio": 1.0037,
+      "score": 2215.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 17.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Manado",
+      "direction": "in",
+      "variant": 0,
+      "km": 2209,
+      "greatCircleKm": 2200.8,
+      "detourRatio": 1.0037,
+      "score": 2215.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 17.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Manchester / Boston",
+      "direction": "out",
+      "variant": 0,
+      "km": 12261,
+      "greatCircleKm": 11803.8,
+      "detourRatio": 1.0387,
+      "score": 12292.8,
+      "maxEnrouteTurnDeg": 31.9,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 31.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            48.43,
+            14.13
+          ],
+          "degrees": 1.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            50.78,
+            7.59
+          ],
+          "degrees": 0.3,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Manchester / Boston",
+      "direction": "in",
+      "variant": 0,
+      "km": 12261,
+      "greatCircleKm": 11803.8,
+      "detourRatio": 1.0387,
+      "score": 12292.8,
+      "maxEnrouteTurnDeg": 31.9,
+      "turns": [
+        {
+          "point": [
+            50.78,
+            7.59
+          ],
+          "degrees": 0.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            48.43,
+            14.13
+          ],
+          "degrees": 1.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 31.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Manila",
+      "direction": "out",
+      "variant": 0,
+      "km": 2795.8,
+      "greatCircleKm": 2788.4,
+      "detourRatio": 1.0026,
+      "score": 2801.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 16.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Manila",
+      "direction": "in",
+      "variant": 0,
+      "km": 2795.8,
+      "greatCircleKm": 2788.4,
+      "detourRatio": 1.0026,
+      "score": 2801.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 16.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Medan",
+      "direction": "out",
+      "variant": 0,
+      "km": 1389.5,
+      "greatCircleKm": 1388,
+      "detourRatio": 1.0011,
+      "score": 1391,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 8.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Medan",
+      "direction": "in",
+      "variant": 0,
+      "km": 1389.5,
+      "greatCircleKm": 1388,
+      "detourRatio": 1.0011,
+      "score": 1391,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 8.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Medina",
+      "direction": "out",
+      "variant": 0,
+      "km": 8009.1,
+      "greatCircleKm": 8002.2,
+      "detourRatio": 1.0009,
+      "score": 8016.4,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 19.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Medina",
+      "direction": "in",
+      "variant": 0,
+      "km": 8009.1,
+      "greatCircleKm": 8002.2,
+      "detourRatio": 1.0009,
+      "score": 8016.4,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 19.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Melbourne",
+      "direction": "out",
+      "variant": 0,
+      "km": 5254,
+      "greatCircleKm": 5209.5,
+      "detourRatio": 1.0085,
+      "score": 5306.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -7.2,
+            106.5
+          ],
+          "degrees": 51.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Melbourne",
+      "direction": "in",
+      "variant": 0,
+      "km": 5254,
+      "greatCircleKm": 5209.5,
+      "detourRatio": 1.0085,
+      "score": 5306.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -7.2,
+            106.5
+          ],
+          "degrees": 51.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Milan",
+      "direction": "out",
+      "variant": 0,
+      "km": 11326.9,
+      "greatCircleKm": 11111.3,
+      "detourRatio": 1.0194,
+      "score": 11373.3,
+      "maxEnrouteTurnDeg": 41.5,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 19.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.6,
+            39.5
+          ],
+          "degrees": 12.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            39.5,
+            33
+          ],
+          "degrees": 41.5,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Milan",
+      "direction": "in",
+      "variant": 0,
+      "km": 11326.9,
+      "greatCircleKm": 11111.3,
+      "detourRatio": 1.0194,
+      "score": 11373.3,
+      "maxEnrouteTurnDeg": 41.5,
+      "turns": [
+        {
+          "point": [
+            39.5,
+            33
+          ],
+          "degrees": 41.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.6,
+            39.5
+          ],
+          "degrees": 12.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 19.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Mumbai",
+      "direction": "out",
+      "variant": 0,
+      "km": 4653.9,
+      "greatCircleKm": 4643.3,
+      "detourRatio": 1.0023,
+      "score": 4663.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 21.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Mumbai",
+      "direction": "in",
+      "variant": 0,
+      "km": 4653.9,
+      "greatCircleKm": 4643.3,
+      "detourRatio": 1.0023,
+      "score": 4663.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 21.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Muscat",
+      "direction": "out",
+      "variant": 0,
+      "km": 6216.3,
+      "greatCircleKm": 6201.7,
+      "detourRatio": 1.0023,
+      "score": 6229,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 25.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Muscat",
+      "direction": "in",
+      "variant": 0,
+      "km": 6216.3,
+      "greatCircleKm": 6201.7,
+      "detourRatio": 1.0023,
+      "score": 6229,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 25.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Nagoya",
+      "direction": "out",
+      "variant": 0,
+      "km": 5557.1,
+      "greatCircleKm": 5545.9,
+      "detourRatio": 1.002,
+      "score": 5566.4,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 21.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Nagoya",
+      "direction": "in",
+      "variant": 0,
+      "km": 5557.1,
+      "greatCircleKm": 5545.9,
+      "detourRatio": 1.002,
+      "score": 5566.4,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 21.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Nairobi",
+      "direction": "out",
+      "variant": 0,
+      "km": 7752.3,
+      "greatCircleKm": 7751,
+      "detourRatio": 1.0002,
+      "score": 7753.7,
+      "maxEnrouteTurnDeg": 0.1,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 8.3,
+          "terminal": true
+        },
+        {
+          "point": [
+            -4.5,
+            73.3
+          ],
+          "degrees": 0.1,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Nairobi",
+      "direction": "in",
+      "variant": 0,
+      "km": 7752.3,
+      "greatCircleKm": 7751,
+      "detourRatio": 1.0002,
+      "score": 7753.7,
+      "maxEnrouteTurnDeg": 0.1,
+      "turns": [
+        {
+          "point": [
+            -4.5,
+            73.3
+          ],
+          "degrees": 0.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 8.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Nanjing",
+      "direction": "out",
+      "variant": 0,
+      "km": 4406,
+      "greatCircleKm": 4405.4,
+      "detourRatio": 1.0001,
+      "score": 4406.5,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 5.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Nanjing",
+      "direction": "in",
+      "variant": 0,
+      "km": 4406,
+      "greatCircleKm": 4405.4,
+      "detourRatio": 1.0001,
+      "score": 4406.5,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 5.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Osaka",
+      "direction": "out",
+      "variant": 0,
+      "km": 5426.6,
+      "greatCircleKm": 5416.4,
+      "detourRatio": 1.0019,
+      "score": 5435.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 20.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Osaka",
+      "direction": "in",
+      "variant": 0,
+      "km": 5426.6,
+      "greatCircleKm": 5416.4,
+      "detourRatio": 1.0019,
+      "score": 5435.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 20.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Osaka Kansai",
+      "direction": "out",
+      "variant": 0,
+      "km": 5426.6,
+      "greatCircleKm": 5416.4,
+      "detourRatio": 1.0019,
+      "score": 5435.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 20.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Osaka Kansai",
+      "direction": "in",
+      "variant": 0,
+      "km": 5426.6,
+      "greatCircleKm": 5416.4,
+      "detourRatio": 1.0019,
+      "score": 5435.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 20.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Padang",
+      "direction": "out",
+      "variant": 0,
+      "km": 934.2,
+      "greatCircleKm": 923.9,
+      "detourRatio": 1.0111,
+      "score": 944.6,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 23,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Padang",
+      "direction": "in",
+      "variant": 0,
+      "km": 934.2,
+      "greatCircleKm": 923.9,
+      "detourRatio": 1.0111,
+      "score": 944.6,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 23,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Palangkaraya",
+      "direction": "out",
+      "variant": 0,
+      "km": 921.9,
+      "greatCircleKm": 916.3,
+      "detourRatio": 1.0061,
+      "score": 926.7,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 15.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Palangkaraya",
+      "direction": "in",
+      "variant": 0,
+      "km": 921.9,
+      "greatCircleKm": 916.3,
+      "detourRatio": 1.0061,
+      "score": 926.7,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 15.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Palembang",
+      "direction": "out",
+      "variant": 0,
+      "km": 419.8,
+      "greatCircleKm": 419.7,
+      "detourRatio": 1,
+      "score": 419.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 0.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Palembang",
+      "direction": "in",
+      "variant": 0,
+      "km": 419.8,
+      "greatCircleKm": 419.7,
+      "detourRatio": 1,
+      "score": 419.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 0.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Pangkal Pinang",
+      "direction": "out",
+      "variant": 0,
+      "km": 458.6,
+      "greatCircleKm": 445.2,
+      "detourRatio": 1.0301,
+      "score": 475.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 29.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Pangkal Pinang",
+      "direction": "in",
+      "variant": 0,
+      "km": 458.6,
+      "greatCircleKm": 445.2,
+      "detourRatio": 1.0301,
+      "score": 475.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 29.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Paris",
+      "direction": "out",
+      "variant": 0,
+      "km": 11861,
+      "greatCircleKm": 11549,
+      "detourRatio": 1.027,
+      "score": 11911.8,
+      "maxEnrouteTurnDeg": 43.6,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 19.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.6,
+            39.5
+          ],
+          "degrees": 12.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            39.5,
+            33
+          ],
+          "degrees": 43.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            42.5,
+            25
+          ],
+          "degrees": 6.6,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Paris",
+      "direction": "in",
+      "variant": 0,
+      "km": 11861,
+      "greatCircleKm": 11549,
+      "detourRatio": 1.027,
+      "score": 11911.8,
+      "maxEnrouteTurnDeg": 43.6,
+      "turns": [
+        {
+          "point": [
+            42.5,
+            25
+          ],
+          "degrees": 6.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            39.5,
+            33
+          ],
+          "degrees": 43.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.6,
+            39.5
+          ],
+          "degrees": 12.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 19.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Pekanbaru",
+      "direction": "out",
+      "variant": 0,
+      "km": 935.8,
+      "greatCircleKm": 934.2,
+      "detourRatio": 1.0017,
+      "score": 937.4,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Pekanbaru",
+      "direction": "in",
+      "variant": 0,
+      "km": 935.8,
+      "greatCircleKm": 934.2,
+      "detourRatio": 1.0017,
+      "score": 937.4,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Penang",
+      "direction": "out",
+      "variant": 0,
+      "km": 1455,
+      "greatCircleKm": 1455,
+      "detourRatio": 1.0001,
+      "score": 1455.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 1.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Penang",
+      "direction": "in",
+      "variant": 0,
+      "km": 1455,
+      "greatCircleKm": 1455,
+      "detourRatio": 1.0001,
+      "score": 1455.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 1.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Perth",
+      "direction": "out",
+      "variant": 0,
+      "km": 3041,
+      "greatCircleKm": 3028.5,
+      "detourRatio": 1.0041,
+      "score": 3055.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -7.2,
+            106.5
+          ],
+          "degrees": 26.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Perth",
+      "direction": "in",
+      "variant": 0,
+      "km": 3041,
+      "greatCircleKm": 3028.5,
+      "detourRatio": 1.0041,
+      "score": 3055.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -7.2,
+            106.5
+          ],
+          "degrees": 26.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Phuket",
+      "direction": "out",
+      "variant": 0,
+      "km": 1833.7,
+      "greatCircleKm": 1833.7,
+      "detourRatio": 1,
+      "score": 1833.7,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 0.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Phuket",
+      "direction": "in",
+      "variant": 0,
+      "km": 1833.7,
+      "greatCircleKm": 1833.7,
+      "detourRatio": 1,
+      "score": 1833.7,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 0.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Pontianak",
+      "direction": "out",
+      "variant": 0,
+      "km": 736.7,
+      "greatCircleKm": 731.2,
+      "detourRatio": 1.0075,
+      "score": 742.4,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 16.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Pontianak",
+      "direction": "in",
+      "variant": 0,
+      "km": 736.7,
+      "greatCircleKm": 731.2,
+      "detourRatio": 1.0075,
+      "score": 742.4,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 16.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Riyadh",
+      "direction": "out",
+      "variant": 0,
+      "km": 7351.5,
+      "greatCircleKm": 7342.7,
+      "detourRatio": 1.0012,
+      "score": 7360.9,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 21.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Riyadh",
+      "direction": "in",
+      "variant": 0,
+      "km": 7351.5,
+      "greatCircleKm": 7342.7,
+      "detourRatio": 1.0012,
+      "score": 7360.9,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 21.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Rome",
+      "direction": "out",
+      "variant": 0,
+      "km": 10934.8,
+      "greatCircleKm": 10826.4,
+      "detourRatio": 1.01,
+      "score": 10944.3,
+      "maxEnrouteTurnDeg": 18.1,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            41,
+            39.8
+          ],
+          "degrees": 7.8,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Rome",
+      "direction": "in",
+      "variant": 0,
+      "km": 10934.8,
+      "greatCircleKm": 10826.4,
+      "detourRatio": 1.01,
+      "score": 10944.3,
+      "maxEnrouteTurnDeg": 18.1,
+      "turns": [
+        {
+          "point": [
+            41,
+            39.8
+          ],
+          "degrees": 7.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "San Francisco",
+      "direction": "out",
+      "variant": 0,
+      "km": 13961,
+      "greatCircleKm": 13960.8,
+      "detourRatio": 1,
+      "score": 13961.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 2.4,
+          "terminal": true
+        },
+        {
+          "point": [
+            16.5,
+            131.96
+          ],
+          "degrees": 0,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "San Francisco",
+      "direction": "in",
+      "variant": 0,
+      "km": 13961,
+      "greatCircleKm": 13960.8,
+      "detourRatio": 1,
+      "score": 13961.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            16.5,
+            131.96
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 2.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Semarang",
+      "direction": "out",
+      "variant": 0,
+      "km": 438.3,
+      "greatCircleKm": 420.3,
+      "detourRatio": 1.0427,
+      "score": 460.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 33.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Semarang",
+      "direction": "in",
+      "variant": 0,
+      "km": 438.3,
+      "greatCircleKm": 420.3,
+      "detourRatio": 1.0427,
+      "score": 460.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 33.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Seoul Incheon",
+      "direction": "out",
+      "variant": 0,
+      "km": 5265.8,
+      "greatCircleKm": 5263.3,
+      "detourRatio": 1.0005,
+      "score": 5267.9,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 10.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Seoul Incheon",
+      "direction": "in",
+      "variant": 0,
+      "km": 5265.8,
+      "greatCircleKm": 5263.3,
+      "detourRatio": 1.0005,
+      "score": 5267.9,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 10.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Shanghai",
+      "direction": "out",
+      "variant": 0,
+      "km": 4447.8,
+      "greatCircleKm": 4445.7,
+      "detourRatio": 1.0005,
+      "score": 4449.4,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 9.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Shanghai",
+      "direction": "in",
+      "variant": 0,
+      "km": 4447.8,
+      "greatCircleKm": 4445.7,
+      "detourRatio": 1.0005,
+      "score": 4449.4,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 9.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Sharjah",
+      "direction": "out",
+      "variant": 0,
+      "km": 6551.1,
+      "greatCircleKm": 6537.2,
+      "detourRatio": 1.0021,
+      "score": 6563.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 24.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Sharjah",
+      "direction": "in",
+      "variant": 0,
+      "km": 6551.1,
+      "greatCircleKm": 6537.2,
+      "detourRatio": 1.0021,
+      "score": 6563.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 24.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Shenzhen",
+      "direction": "out",
+      "variant": 0,
+      "km": 3292.4,
+      "greatCircleKm": 3292.3,
+      "detourRatio": 1,
+      "score": 3292.5,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 2.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Shenzhen",
+      "direction": "in",
+      "variant": 0,
+      "km": 3292.4,
+      "greatCircleKm": 3292.3,
+      "detourRatio": 1,
+      "score": 3292.5,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 2.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Singapore",
+      "direction": "out",
+      "variant": 0,
+      "km": 887.6,
+      "greatCircleKm": 884,
+      "detourRatio": 1.004,
+      "score": 891.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 13.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Singapore",
+      "direction": "in",
+      "variant": 0,
+      "km": 887.6,
+      "greatCircleKm": 884,
+      "detourRatio": 1.004,
+      "score": 891.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 13.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Singkawang",
+      "direction": "out",
+      "variant": 0,
+      "km": 825.2,
+      "greatCircleKm": 823.7,
+      "detourRatio": 1.0017,
+      "score": 826.6,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 8.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Singkawang",
+      "direction": "in",
+      "variant": 0,
+      "km": 825.2,
+      "greatCircleKm": 823.7,
+      "detourRatio": 1.0017,
+      "score": 826.6,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 8.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Solo",
+      "direction": "out",
+      "variant": 0,
+      "km": 506.2,
+      "greatCircleKm": 478.3,
+      "detourRatio": 1.0583,
+      "score": 537.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 39.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Solo",
+      "direction": "in",
+      "variant": 0,
+      "km": 506.2,
+      "greatCircleKm": 478.3,
+      "detourRatio": 1.0583,
+      "score": 537.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 39.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Sorong",
+      "direction": "out",
+      "variant": 0,
+      "km": 2794.8,
+      "greatCircleKm": 2794,
+      "detourRatio": 1.0003,
+      "score": 2795.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 5.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Sorong",
+      "direction": "in",
+      "variant": 0,
+      "km": 2794.8,
+      "greatCircleKm": 2794,
+      "detourRatio": 1.0003,
+      "score": 2795.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 5.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Stockholm",
+      "direction": "out",
+      "variant": 0,
+      "km": 11844.5,
+      "greatCircleKm": 10524.8,
+      "detourRatio": 1.1254,
+      "score": 11923,
+      "maxEnrouteTurnDeg": 54.5,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 19.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.57,
+            43.12
+          ],
+          "degrees": 1.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 54.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            42.57,
+            27.52
+          ],
+          "degrees": 4.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            47.99,
+            21.69
+          ],
+          "degrees": 20.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            50.65,
+            20.25
+          ],
+          "degrees": 9.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            54.2,
+            19.15
+          ],
+          "degrees": 4.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            57.66,
+            18.35
+          ],
+          "degrees": 1.5,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Stockholm",
+      "direction": "in",
+      "variant": 0,
+      "km": 11844.5,
+      "greatCircleKm": 10524.8,
+      "detourRatio": 1.1254,
+      "score": 11923,
+      "maxEnrouteTurnDeg": 54.5,
+      "turns": [
+        {
+          "point": [
+            57.66,
+            18.35
+          ],
+          "degrees": 1.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            54.2,
+            19.15
+          ],
+          "degrees": 4.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            50.65,
+            20.25
+          ],
+          "degrees": 9.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            47.99,
+            21.69
+          ],
+          "degrees": 20.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            42.57,
+            27.52
+          ],
+          "degrees": 4.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 54.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.57,
+            43.12
+          ],
+          "degrees": 1.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 19.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Subang",
+      "direction": "out",
+      "variant": 0,
+      "km": 1175.7,
+      "greatCircleKm": 1175.6,
+      "detourRatio": 1.0001,
+      "score": 1175.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 2.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Subang",
+      "direction": "in",
+      "variant": 0,
+      "km": 1175.7,
+      "greatCircleKm": 1175.6,
+      "detourRatio": 1.0001,
+      "score": 1175.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 2.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Surabaya",
+      "direction": "out",
+      "variant": 0,
+      "km": 703.4,
+      "greatCircleKm": 691,
+      "detourRatio": 1.018,
+      "score": 715.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 24.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Surabaya",
+      "direction": "in",
+      "variant": 0,
+      "km": 703.4,
+      "greatCircleKm": 691,
+      "detourRatio": 1.018,
+      "score": 715.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 24.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Sydney",
+      "direction": "out",
+      "variant": 0,
+      "km": 5576.3,
+      "greatCircleKm": 5518.7,
+      "detourRatio": 1.0104,
+      "score": 5645.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -7.2,
+            106.5
+          ],
+          "degrees": 59,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Sydney",
+      "direction": "in",
+      "variant": 0,
+      "km": 5576.3,
+      "greatCircleKm": 5518.7,
+      "detourRatio": 1.0104,
+      "score": 5645.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -7.2,
+            106.5
+          ],
+          "degrees": 59,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Taipei",
+      "direction": "out",
+      "variant": 0,
+      "km": 3815.5,
+      "greatCircleKm": 3811.6,
+      "detourRatio": 1.001,
+      "score": 3818.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 12.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Taipei",
+      "direction": "in",
+      "variant": 0,
+      "km": 3815.5,
+      "greatCircleKm": 3811.6,
+      "detourRatio": 1.001,
+      "score": 3818.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 12.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Tanjung Pandan",
+      "direction": "out",
+      "variant": 0,
+      "km": 392.5,
+      "greatCircleKm": 391.5,
+      "detourRatio": 1.0026,
+      "score": 393.9,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 8.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Tanjung Pandan",
+      "direction": "in",
+      "variant": 0,
+      "km": 392.5,
+      "greatCircleKm": 391.5,
+      "detourRatio": 1.0026,
+      "score": 393.9,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 8.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Tarakan",
+      "direction": "out",
+      "variant": 0,
+      "km": 1604.4,
+      "greatCircleKm": 1604.4,
+      "detourRatio": 1,
+      "score": 1604.4,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 0.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Tarakan",
+      "direction": "in",
+      "variant": 0,
+      "km": 1604.4,
+      "greatCircleKm": 1604.4,
+      "detourRatio": 1,
+      "score": 1604.4,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 0.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Timika",
+      "direction": "out",
+      "variant": 0,
+      "km": 3351.8,
+      "greatCircleKm": 3351.2,
+      "detourRatio": 1.0002,
+      "score": 3352.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 4.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Timika",
+      "direction": "in",
+      "variant": 0,
+      "km": 3351.8,
+      "greatCircleKm": 3351.2,
+      "detourRatio": 1.0002,
+      "score": 3352.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 4.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Tokyo Haneda",
+      "direction": "out",
+      "variant": 0,
+      "km": 5791.1,
+      "greatCircleKm": 5783.9,
+      "detourRatio": 1.0012,
+      "score": 5796.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 15.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Tokyo Haneda",
+      "direction": "in",
+      "variant": 0,
+      "km": 5791.1,
+      "greatCircleKm": 5783.9,
+      "detourRatio": 1.0012,
+      "score": 5796.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 15.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Tokyo Haneda / Vancouver",
+      "direction": "out",
+      "variant": 0,
+      "km": 5791.1,
+      "greatCircleKm": 5783.9,
+      "detourRatio": 1.0012,
+      "score": 5796.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 15.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Tokyo Haneda / Vancouver",
+      "direction": "in",
+      "variant": 0,
+      "km": 5791.1,
+      "greatCircleKm": 5783.9,
+      "detourRatio": 1.0012,
+      "score": 5796.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 15.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Tokyo Narita",
+      "direction": "out",
+      "variant": 0,
+      "km": 5846.7,
+      "greatCircleKm": 5839.8,
+      "detourRatio": 1.0012,
+      "score": 5851.5,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 15.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Tokyo Narita",
+      "direction": "in",
+      "variant": 0,
+      "km": 5846.7,
+      "greatCircleKm": 5839.8,
+      "detourRatio": 1.0012,
+      "score": 5851.5,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 15.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Vienna",
+      "direction": "out",
+      "variant": 0,
+      "km": 10819.7,
+      "greatCircleKm": 10521.2,
+      "detourRatio": 1.0284,
+      "score": 10855.3,
+      "maxEnrouteTurnDeg": 34.8,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 34.8,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Vienna",
+      "direction": "in",
+      "variant": 0,
+      "km": 10819.7,
+      "greatCircleKm": 10521.2,
+      "detourRatio": 1.0284,
+      "score": 10855.3,
+      "maxEnrouteTurnDeg": 34.8,
+      "turns": [
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 34.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Wuhan",
+      "direction": "out",
+      "variant": 0,
+      "km": 4182.2,
+      "greatCircleKm": 4182.1,
+      "detourRatio": 1,
+      "score": 4182.2,
+      "maxEnrouteTurnDeg": 0.1,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 0.7,
+          "terminal": true
+        },
+        {
+          "point": [
+            3.5,
+            108.5
+          ],
+          "degrees": 0.1,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Wuhan",
+      "direction": "in",
+      "variant": 0,
+      "km": 4182.2,
+      "greatCircleKm": 4182.1,
+      "detourRatio": 1,
+      "score": 4182.2,
+      "maxEnrouteTurnDeg": 0.1,
+      "turns": [
+        {
+          "point": [
+            3.5,
+            108.5
+          ],
+          "degrees": 0.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 0.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Xi'an",
+      "direction": "out",
+      "variant": 0,
+      "km": 4519.6,
+      "greatCircleKm": 4517.6,
+      "detourRatio": 1.0004,
+      "score": 4521.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 9.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Xi'an",
+      "direction": "in",
+      "variant": 0,
+      "km": 4519.6,
+      "greatCircleKm": 4517.6,
+      "detourRatio": 1.0004,
+      "score": 4521.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 9.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Xiamen",
+      "direction": "out",
+      "variant": 0,
+      "km": 3631.3,
+      "greatCircleKm": 3629.6,
+      "detourRatio": 1.0005,
+      "score": 3632.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 8.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Xiamen",
+      "direction": "in",
+      "variant": 0,
+      "km": 3631.3,
+      "greatCircleKm": 3629.6,
+      "detourRatio": 1.0005,
+      "score": 3632.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 8.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Yogyakarta",
+      "direction": "out",
+      "variant": 0,
+      "km": 475.4,
+      "greatCircleKm": 423.7,
+      "detourRatio": 1.1221,
+      "score": 535.7,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 55.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Yogyakarta",
+      "direction": "in",
+      "variant": 0,
+      "km": 475.4,
+      "greatCircleKm": 423.7,
+      "detourRatio": 1.1221,
+      "score": 535.7,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 55.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Zurich",
+      "direction": "out",
+      "variant": 0,
+      "km": 11330.3,
+      "greatCircleKm": 11118.6,
+      "detourRatio": 1.019,
+      "score": 11351.8,
+      "maxEnrouteTurnDeg": 22.3,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 22.3,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Zurich",
+      "direction": "in",
+      "variant": 0,
+      "km": 11330.3,
+      "greatCircleKm": 11118.6,
+      "detourRatio": 1.019,
+      "score": 11351.8,
+      "maxEnrouteTurnDeg": 22.3,
+      "turns": [
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 22.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 12.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 18.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Wellington",
+      "direction": "out",
+      "variant": 0,
+      "km": 7794.5,
+      "greatCircleKm": 7740.4,
+      "detourRatio": 1.007,
+      "score": 7858.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -7.2,
+            106.5
+          ],
+          "degrees": 56.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Wellington",
+      "direction": "in",
+      "variant": 0,
+      "km": 7794.5,
+      "greatCircleKm": 7740.4,
+      "detourRatio": 1.007,
+      "score": 7858.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -7.2,
+            106.5
+          ],
+          "degrees": 56.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "AlUla",
+      "direction": "out",
+      "variant": 0,
+      "km": 8220.9,
+      "greatCircleKm": 8212.9,
+      "detourRatio": 1.001,
+      "score": 8229.4,
+      "maxEnrouteTurnDeg": 0.2,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 20.7,
+          "terminal": true
+        },
+        {
+          "point": [
+            18,
+            62
+          ],
+          "degrees": 0.2,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "AlUla",
+      "direction": "in",
+      "variant": 0,
+      "km": 8220.9,
+      "greatCircleKm": 8212.9,
+      "detourRatio": 1.001,
+      "score": 8229.4,
+      "maxEnrouteTurnDeg": 0.2,
+      "turns": [
+        {
+          "point": [
+            18,
+            62
+          ],
+          "degrees": 0.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 20.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Baku",
+      "direction": "out",
+      "variant": 0,
+      "km": 7782.3,
+      "greatCircleKm": 7750.1,
+      "detourRatio": 1.0042,
+      "score": 7788.6,
+      "maxEnrouteTurnDeg": 15.2,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 15.2,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Baku",
+      "direction": "in",
+      "variant": 0,
+      "km": 7782.3,
+      "greatCircleKm": 7750.1,
+      "detourRatio": 1.0042,
+      "score": 7788.6,
+      "maxEnrouteTurnDeg": 15.2,
+      "turns": [
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 15.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Ankara",
+      "direction": "out",
+      "variant": 0,
+      "km": 9220.1,
+      "greatCircleKm": 9081,
+      "detourRatio": 1.0153,
+      "score": 9230.6,
+      "maxEnrouteTurnDeg": 20.9,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 20.9,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Ankara",
+      "direction": "in",
+      "variant": 0,
+      "km": 9220.1,
+      "greatCircleKm": 9081,
+      "detourRatio": 1.0153,
+      "score": 9230.6,
+      "maxEnrouteTurnDeg": 20.9,
+      "turns": [
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 20.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 9.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Marrakech",
+      "direction": "out",
+      "variant": 0,
+      "km": 12707.3,
+      "greatCircleKm": 12697.6,
+      "detourRatio": 1.0008,
+      "score": 12717.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 22.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Marrakech",
+      "direction": "in",
+      "variant": 0,
+      "km": 12707.3,
+      "greatCircleKm": 12697.6,
+      "detourRatio": 1.0008,
+      "score": 12717.3,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 22.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Casablanca",
+      "direction": "out",
+      "variant": 0,
+      "km": 12639.4,
+      "greatCircleKm": 12627.8,
+      "detourRatio": 1.0009,
+      "score": 12650.5,
+      "maxEnrouteTurnDeg": 0.7,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 23.8,
+          "terminal": true
+        },
+        {
+          "point": [
+            22,
+            59
+          ],
+          "degrees": 0.7,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Casablanca",
+      "direction": "in",
+      "variant": 0,
+      "km": 12639.4,
+      "greatCircleKm": 12627.8,
+      "detourRatio": 1.0009,
+      "score": 12650.5,
+      "maxEnrouteTurnDeg": 0.7,
+      "turns": [
+        {
+          "point": [
+            22,
+            59
+          ],
+          "degrees": 0.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 23.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Fukuoka",
+      "direction": "out",
+      "variant": 0,
+      "km": 5085.1,
+      "greatCircleKm": 5078.2,
+      "detourRatio": 1.0014,
+      "score": 5090.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 17,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Fukuoka",
+      "direction": "in",
+      "variant": 0,
+      "km": 5085.1,
+      "greatCircleKm": 5078.2,
+      "detourRatio": 1.0014,
+      "score": 5090.8,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 17,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Sapporo",
+      "direction": "out",
+      "variant": 0,
+      "km": 6494.1,
+      "greatCircleKm": 6485.8,
+      "detourRatio": 1.0013,
+      "score": 6500.9,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 18.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            33.22,
+            131.7
+          ],
+          "degrees": 0,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Sapporo",
+      "direction": "in",
+      "variant": 0,
+      "km": 6494.1,
+      "greatCircleKm": 6485.8,
+      "detourRatio": 1.0013,
+      "score": 6500.9,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            33.22,
+            131.7
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 18.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kaohsiung",
+      "direction": "out",
+      "variant": 0,
+      "km": 3527.3,
+      "greatCircleKm": 3522.8,
+      "detourRatio": 1.0013,
+      "score": 3531,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 13.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kaohsiung",
+      "direction": "in",
+      "variant": 0,
+      "km": 3527.3,
+      "greatCircleKm": 3522.8,
+      "detourRatio": 1.0013,
+      "score": 3531,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 13.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Melbourne / Santiago",
+      "direction": "out",
+      "variant": 0,
+      "km": 5254,
+      "greatCircleKm": 5209.5,
+      "detourRatio": 1.0085,
+      "score": 5306.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -7.2,
+            106.5
+          ],
+          "degrees": 51.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Melbourne / Santiago",
+      "direction": "in",
+      "variant": 0,
+      "km": 5254,
+      "greatCircleKm": 5209.5,
+      "detourRatio": 1.0085,
+      "score": 5306.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -7.2,
+            106.5
+          ],
+          "degrees": 51.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Sydney / Buenos Aires",
+      "direction": "out",
+      "variant": 0,
+      "km": 5576.3,
+      "greatCircleKm": 5518.7,
+      "detourRatio": 1.0104,
+      "score": 5645.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -7.2,
+            106.5
+          ],
+          "degrees": 59,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Sydney / Buenos Aires",
+      "direction": "in",
+      "variant": 0,
+      "km": 5576.3,
+      "greatCircleKm": 5518.7,
+      "detourRatio": 1.0104,
+      "score": 5645.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -7.2,
+            106.5
+          ],
+          "degrees": 59,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    }
+  ]
+}

@@ -132,14 +132,14 @@ Record shapes: timetable `{id, v:1, scope:'timetable', kind:'add'|'amend'|'cance
 
 Shows Jakarta flights on a world map (Natural Earth basemap, public domain), all airlines with Garuda highlighted.
 Routes are fictional corridors, not published airways. The generator uses the beacon/waypoint network in `tools/world`,
-chooses one shortest corridor per direction, and removes intermediate points when a direct shortcut clears the configured
+chooses one corridor per direction using distance plus sharp-turn and backtracking penalties, and removes intermediate points when a direct shortcut clears the configured
 exclusions. It does not manufacture alternatives, assign detours by flight number, apply a pretend wind discount, or shift
 inbound/outbound paths sideways. Multi-stop destinations are still drawn to their Jakarta-boundary stop.
 
 `tools/world/geometry.js` checks geodesic edges in short segments against exclusion polygon boundaries, including endpoint
 checks. Every exported route is validated after rounding. These are the model's fixed fictional exclusions, not current NOTAMs.
 For comparison, the revised Melbourne–Jakarta route is about 5,254 km instead of QF39's previous 6,152 km alternative;
-Medina–Jakarta is about 8,024 km instead of GA969's 8,637 km alternative. Northern Europe retains diversions around excluded areas.
+Medina–Jakarta is about 8,009 km instead of GA969's 8,637 km alternative. Northern Europe retains diversions around excluded areas.
 
 Nearby services (up to 600 km) can leave a SID or join a STAR inside the outer gate. The transition is selected from the actual
 runway-specific procedure geometry to reduce total distance, with a forward-facing connector and clearance around the airport.
@@ -151,7 +151,15 @@ an endpoint, project onto the actual route, and use bounded curve handles to avo
 Position is derived from the timetable and the terminal simulation. Tap an aircraft for local arrival time, remaining time,
 and flight/aircraft history. Aircraft use a simulated climb/cruise/descent speed profile.
 
-Run `node tools/tests/routing.cjs` to validate all generated corridors, the former missed Iran/Black Sea crossings, TKG
+Route search retains the incoming segment as part of its state, so it can compare arrival headings before choosing the next
+sector. Shortcut selection uses the same distance/turn cost instead of greedily taking the farthest visible point. Turn costs
+are fictional equivalent-distance preferences, not fuel or wind calculations. `tools/world/route-quality.json` records physical
+length, great-circle ratio, turn-aware score, enroute/terminal bends and exclusion checks for every direction and variant.
+Run `node tools/world/audit-routes.js` to print a fresh report. Detours over 15% are review flags; Helsinki's diversion remains
+because of the configured exclusions. Terminal-gate turns are distinguished from enroute doglegs because actual SID/STAR
+geometry, including TKG's partial transitions, replaces that boundary connector in the simulator.
+
+Run `node tools/tests/routing.cjs` to validate turn penalties, non-greedy shortcuts, coverage of every alternative, report freshness, all generated corridors, the former missed Iran/Black Sea crossings, TKG
 partial procedures on both runway directions and both parallel runways, live track joins, and World handoff geometry.
 
 Regenerate the data: `node tools/world/build-routes.js --embed` (routes; reads `beacons.json` and `avoid.json`, which `node tools/world/prep-data.js <navaids.csv> <node_modules>` produces from OurAirports and `world-atlas`) (routes, after editing the graph or timetable) and `node tools/world/build-basemap.js <node_modules>` (basemap; needs `world-atlas@2.0.2` and `topojson-client@3.1.0`).
