@@ -4792,7 +4792,8 @@ window.JN_MAP={focus(id){const e=(C.ENTS||[]).find(x=>(x.a&&x.a.id===id)||(x.d&&
   function track(id){const e=ent(id);if(!e)return false;const ps=pose(id),f=fl(e,id),want=ps&&ps.src==='air'?'air':'gnd';
     if(mode!==want)setMode(want);
     setSel(e,{follow:true,f});if(want==='air'){if(k<2.2||k>12){k=2.5;}}else if(k<3.4)k=3.4;ap();return true}
-  Object.assign(M,{ent,pose,airPoses,llAt,centre,setView,track,time:()=>T,setMode:m=>{if(mode!==m)setMode(m)},selId:()=>{if(!sel)return null;const f=pinF||curFlight(sel,T);return f?f.id:null},ents:()=>C.ENTS});
+  const trailLL=id=>{const e=ent(id);if(!e)return null;const q=A.poseOf(e,T);if(!q)return null;const tr=q.tr,o=[];for(let t=tr.t0;t<T;t+=20){const qq=A.posAtOff(tr,t);if(qq)o.push(A.airLL(qq.x,qq.y))}o.push(A.airLL(q.x,q.y));return o};
+  Object.assign(M,{ent,pose,airPoses,llAt,centre,setView,track,trailLL,time:()=>T,setMode:m=>{if(mode!==m)setMode(m)},selId:()=>{if(!sel)return null;const f=pinF||curFlight(sel,T);return f?f.id:null},ents:()=>C.ENTS});
   Object.defineProperty(M,'mode',{get:()=>mode,configurable:true});
 })();
 let cardTick=0,selTick=0;
@@ -4823,6 +4824,20 @@ $('card').addEventListener('touchend',e=>{const g=cardTouch;cardTouch=null;if(!g
   if(!vertical||$('card').scrollTop!==g.sc)return;
   if(!flightExpanded&&dy<-48){flightExpanded=true;renderCard()}
   else if(flightExpanded&&dy>90&&g.head&&g.sc===0){flightExpanded=false;renderCard()}},{passive:true});
+/* the part of the journey outside the airspace map's own track: from the origin along the route for an arrival, straight on to the destination for a departure.
+   Clipped to the map frame so far-away points do not reach the renderer. */
+function clipFrame(pts){const R=1.45e6,C0=AC,inn=p=>Math.hypot(p[0]-C0[0],p[1]-C0[1])<=R;let d='',pen=false,prev=null;
+  const edge=(a,b)=>{let lo=0,hi=1;for(let i=0;i<14;i++){const m=(lo+hi)/2,q=[a[0]+(b[0]-a[0])*m,a[1]+(b[1]-a[1])*m];if(inn(q))lo=m;else hi=m}return [a[0]+(b[0]-a[0])*lo,a[1]+(b[1]-a[1])*lo]};
+  const f=p=>p[0].toFixed(0)+','+p[1].toFixed(0);
+  pts.forEach(p=>{const ins=inn(p);
+    if(prev){const pin=inn(prev);if(pin&&!ins){d+=(pen?'L':'M')+f(edge(prev,p));pen=false}else if(!pin&&ins){d+='M'+f(edge(p,prev));pen=true;d+='L'+f(p);prev=p;return}}
+    if(ins){d+=(pen?'L':'M')+f(p);pen=true}else pen=false;prev=p});
+  return d}
+function worldPart(q){try{const W=window.JN_WORLD;if(!W||!W.pathPts)return '';const f=q.tr.kind==='dep'?sel.d:sel.a;if(!f)return '';const pp=W.pathPts(f.id);if(!pp)return '';const k=q.tr.kind==='dep'?'dep':'arr';
+  const dd=pts=>clipFrame(pts.map(p=>A.airXY(p[0],p[1])));let o='';
+  if(pp.past&&pp.past.length>1){const d=dd(pp.past);if(d)o+='<path class="a-sel past '+k+'" d="'+d+'"/>'}
+  if(pp.future&&pp.future.length>1){const d=dd(pp.future);if(d)o+='<path class="a-sel fut '+k+'" d="'+d+'"/>'}
+  return o}catch(e){return ''}}
 function updateSel(now){
   if(!sel)return;
   /* v49: Do not rebuild card on live animation frames; gesture/close must remain responsive. */
@@ -4834,7 +4849,7 @@ function updateSel(now){
       if(past&&fut){const lp=C.pose(sel,T);if(lp)fut='M'+lp.x.toFixed(0)+','+lp.y.toFixed(0)+fut.slice(1)}
       trL.innerHTML='<path class="trp" d="'+past+'"/><path class="trf" d="'+fut+'"/>';
     }
-    if(mode==='air'){const q=A.poseOf(sel,T);$('aSel').innerHTML=q?A.routeSVG(q.tr,q):''}
+    if(mode==='air'){const q=A.poseOf(sel,T);$('aSel').innerHTML=q?A.routeSVG(q.tr,q)+worldPart(q):''}
   }
 }
 /* click */
@@ -7214,6 +7229,8 @@ function marker(o,isSel,tag){const l=o.l,a=o.air,ring=l.dly>=15?RING.late:(a&&a.
   if(isSel){ctx.beginPath();ctx.arc(o.x,o.y,r+5,0,7);ctx.lineWidth=1.8;ctx.strokeStyle='#33434b';ctx.stroke()}
   if(tag){const t=String(l.id).replace(' ','')+(o.alt!=null?' '+(o.alt>=11000?'FL'+String(Math.round(o.alt/100)).padStart(3,'0'):(Math.round(o.alt/100)*100)+"'"):'');ctx.font='700 10px '+FONT;ctx.lineWidth=3;ctx.lineJoin='round';ctx.strokeStyle='#fbfaf6';ctx.strokeText(t,o.x+r+5,o.y+3.5);ctx.fillStyle='#33434b';ctx.fillText(t,o.x+r+5,o.y+3.5)}}
 function airSyn(a,day){return byId.get(a.id)||{id:a.id,c:a.c,city:'',ac:'',dir:a.kind==='dep'?'out':'in',d:day,dly:0,sta:0,std:0,off:0,land:0}}
+let atc=null;
+function airTrailCached(id,m){const t=performance.now();if(!atc||atc.id!==id||t-atc.t>1500)atc={id,t,v:m.trailLL(id)};return atc.v}
 function ensureSA(l,r){if(l.hand&&l.sA==null)l.sA=sAtDist(r,gcd(JKT,l.hand),l.dir==='in');return l.sA}
 function routeUpTo(l,r,sEnd,sStart){const o=[warpAt(l,r,sStart)];for(let i=0;i<r.lon.length;i++){if(r.cum[i]>sStart&&r.cum[i]<sEnd)o.push(warpAt(l,r,r.cum[i]))}o.push(warpAt(l,r,sEnd));return o}
 function draw(){
@@ -7233,8 +7250,9 @@ function draw(){
   ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(base,0,0);ctx.scale(dpr,dpr);
   if(sel&&selLL){const l=sel,r=l.city?routeFor(l):null;if(r){const cur=[selLL[0],selLL[1]],u=Math.max(0,Math.min(1,(now-l.off)/(l.land-l.off))),p=distFrac(u),sA=l.hand?ensureSA(l,r):null;let pts;
     if(l.dir==='in'){const to=selAir?sA:(sA!=null?p*sA:p*r.len);pts=routeUpTo(l,r,to,0)}
-    else if(l.hand){pts=selAir?[]:[[l.hand[1],l.hand[0]],...routeUpTo(l,r,sA+(r.len-sA)*p,sA)];pts.unshift([JKT[1],JKT[0]])}
+    else if(l.hand){pts=selAir?[]:[[l.hand[1],l.hand[0]],...routeUpTo(l,r,sA+(r.len-sA)*p,sA)];if(!selAir)pts.unshift([JKT[1],JKT[0]])}
     else pts=routeUpTo(l,r,p*r.len,0);
+    if(selAir){const m=M(),tl=m&&m.trailLL?airTrailCached(selId,m):null;if(tl)tl.forEach(q=>pts.push([q[1],q[0]]))}
     pts.push(cur);
     ctx.lineJoin='round';ctx.lineCap='round';ctx.lineWidth=2.6;ctx.strokeStyle='#2563eb';ctx.beginPath();pts.forEach((q,i)=>{const x=sx(q[0]),y=sy(my(q[1]));if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke();
     const dest=l.dir==='in'?[JKT[0],JKT[1]]:[r.lat[r.lat.length-1],r.lon[r.lon.length-1]],arc=sample([[cur[1],cur[0]],dest]);
@@ -7301,11 +7319,14 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&on&&!document.getEl
 /* the ground map's own selection or the nav should leave the world view */
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#ops-v16 [data-view]');if(!b)return;const v=b.dataset.view;if(v==='world'){on?hide():show();requestAnimationFrame(()=>document.querySelectorAll('#ops-v16 button').forEach(x=>{if(x.dataset.view==='world'){x.classList.toggle('active',on);x.setAttribute('aria-pressed',String(on))}else if(on&&x.dataset.view==='map')x.classList.remove('active')}))}
   else if(v!=='ops'&&on)hide()},true);
+function pathPts(id){getLegs();const l=byId.get(id);if(!l||!l.hand||l.noWorld)return null;const r=l.city?routeFor(l):null;if(!r)return null;const sA=ensureSA(l,r);
+  if(l.dir==='in')return {past:routeUpTo(l,r,sA,0).map(q=>[q[1],q[0]])};
+  const dest=[r.lat[r.lat.length-1],r.lon[r.lon.length-1]],arc=sample([l.hand,dest]);return {future:arc.lat.map((la,i)=>[la,arc.lon[i]])}}
 function posOfId(id){const now=nowAbs(),m=M();const a=m&&m.airPoses?m.airPoses().find(q=>q.id===id):null;if(a)return {lat:a.lat,lon:a.lon,active:true,air:true};
   getLegs();const l=byId.get(id);if(!l||l.cx||l.noWorld)return null;const r=l.city?routeFor(l):null;if(!r)return null;const q=legPos(l,now,r);return {lat:q[1],lon:q[0],active:now>=l.off&&now<=l.land,state:now<l.off?'before':(now>l.land?'after':'active'),leg:l}}
 window.JN_WORLD={show,hide,toggle:()=>on?hide():show(),get on(){return on},
   select:(id,o)=>{getLegs();const l=byId.get(id);if(!l)return false;sel=l;fol=!!(o&&o.follow);card.hidden=false;redraw();return true},
-  selId:()=>sel?sel.id:null,follow:b=>{fol=!!b;redraw()},get following(){return fol},legOf:id=>{getLegs();return byId.get(id)||null},posOf:posOfId,getView,setView:setViewLL,
+  selId:()=>sel?sel.id:null,follow:b=>{fol=!!b;redraw()},get following(){return fol},legOf:id=>{getLegs();return byId.get(id)||null},posOf:posOfId,pathPts,getView,setView:setViewLL,
   stage:()=>{const v=getView();return v}};
 })();</script>
 <script id="jn-track">(function(){'use strict';
