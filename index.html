@@ -4274,7 +4274,9 @@ function airStar(gk,rwk,fl,vr){
   const F=airFin(rwk,fl);if(!F)return AIR.stars[key]=null;
   const G=AIR.G[gk],ax=[-F.dx,-F.dy],nw=airV(0,-1),rel=p=>{const x=p[0]-F.x,y=p[1]-F.y;return [x*ax[0]+y*ax[1],x*nw[0]+y*nw[1]]},wld=(u,v)=>[F.x+ax[0]*u+nw[0]*v,F.y+ax[1]*u+nw[1]*v];
   const [mu,mv]=rel(G.M),VV=vr>=2?(vr===2?[39000,13500]:[28500,9500]):[33000,11000],A=[VV[0],0],Vb=VV[1],B0=A[0]+Vb/Math.tan(40*Math.PI/180);
-  let s=rwk==='N'?1:-1;if(Math.abs(mv)>9000)s=Math.sign(mv);
+  /* Keep the STAR north of the airport/shore: pick the northern base leg in
+     world coordinates instead of mirroring it for the parallel runway. */
+  const s=wld(B0,Vb)[1]<=wld(B0,-Vb)[1]?1:-1;
   const B=[B0,s*Vb],W=[G.X,G.G,G.M],names=['',G.n,G.mn];
   const needB=!(Math.abs(mv)<4000&&mu>A[0]+12000),dirOk=mu>A[0]+3000&&Math.abs(mv)<=1.6*(mu-A[0]);
   if((vr===1&&(!needB||!dirOk))||(vr>=2&&!needB))return AIR.stars[key]=airStar(gk,rwk,fl,0);
@@ -4339,6 +4341,7 @@ const airDist=c=>{const q=airCity(c);if(!q)return 1e7;const p=airXY(q[0],q[1]);r
 const airAltC=d=>Math.max(18000,Math.min(36000,16000+0.03*d));
 const airVcl=a=>95+a*0.0042;
 const airIdxS=(R,s)=>{let lo=0,hi=R.n-1;while(lo<hi){const m=(lo+hi)>>1;if(R.S[m]>=s)hi=m;else lo=m+1}return lo};
+const AIR_TERMINAL_MIN=100000; // retain runway-specific SID/STAR for at least 100 km
 
 /* Procedure transitions follow the local filed corridor for every distance.
    Nearby flights use their airport; long flights use a point on the first/last
@@ -4359,7 +4362,8 @@ function airRouteTransitionPoint(city,dir){
 }
 function airShortTransition(R,airport,kind,maxIndex){
   if(!airport)return null;
-  const dep=kind==='dep',first=dep?airIdxS(R,15000):R.iG0,last=dep?R.iG:Math.min(maxIndex??R.n-2,airIdxS(R,R.total-23000));
+  const dep=kind==='dep',first=dep?airIdxS(R,AIR_TERMINAL_MIN):R.iG0,last=dep?R.iG:Math.min(maxIndex??R.n-2,airIdxS(R,Math.max(0,R.total-AIR_TERMINAL_MIN)));
+  if(first>last)return null;
   let best=null;
   for(let i=first;i<=last;i+=4){
     const P=[R.X[i],R.Y[i]],dx=R.X[Math.min(i+1,R.n-1)]-R.X[Math.max(0,i-1)],dy=R.Y[Math.min(i+1,R.n-1)]-R.Y[Math.max(0,i-1)];
@@ -4385,7 +4389,7 @@ function buildTracks(){
   E.forEach(e=>{
     e.aT=null;e.dT=null;
     if(e.a&&e.td!=null){
-      const f=e.a,city=f.city,gk=airGateByRoute(city,f.id,'in'),fl=e.dirA===9?'09':'27',hA=airH(f.id);
+      const f=e.a,city=f.city,routeGate=airGateByRoute(city,f.id,'in'),gk=routeGate==='S'?'W':routeGate,fl=e.dirA===9?'09':'27',hA=airH(f.id);
       const rwk=e.rwA===1?'S':'N',st=airStar(gk,rwk,fl,!e._busyA&&e._densA<=14&&hA%10<8?1:(e._busyA&&hA%5<3?2+(hA>>>3)%2:0));if(!st)return;
       const loop=airLoop(gk),D0=e.delay,k=D0>=AIR.HMIN?Math.max(1,Math.round(D0/loop.lap)):0;
       const tS0=e.tF,tTD=e.td,tEx=tS0-(st.eT-st.eM),tEn=tEx-k*loop.lap,tAtG=tEn-(st.eM-st.E[st.iG0]);
