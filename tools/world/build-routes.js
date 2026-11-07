@@ -29,14 +29,18 @@ const nodes=[];   // {la,lo,id,kind}  kind 0 beacon, 1 waypoint, 2 gate
 const idx={};
 Object.keys(N).forEach(k=>{if(k==='JKT')return;idx[k]=nodes.length;nodes.push({la:N[k][0],lo:N[k][1],id:null,kind:/^G_/.test(k)?2:1,key:k})});
 BEACONS.forEach(b=>{if(bad(b[1],b[2]))return;nodes.push({la:b[1],lo:b[2],id:b[0],kind:0})});
+/* Real beacons are sparse over deserts and open sea, so a path there would follow coasts and zigzag. Fill every gap with an unnamed waypoint on a 3.5 degree grid
+   (kind 3); paths are pulled straight across runs of them afterwards, so those stretches come out as the great circle between the real beacons either side. */
+{const have=[];BEACONS.forEach(b=>{if(!bad(b[1],b[2]))have.push([b[1],b[2]])});
+ for(let la=-50;la<=70;la+=3.5)for(let lo=-25;lo<=250;lo+=3.5/Math.max(0.35,Math.cos(la*rad))){if(bad(la,lo))continue;let near=false;for(const q of have){if(Math.abs(q[0]-la)<2.6&&gc(q,[la,lo])<280){near=true;break}}if(!near)nodes.push({la,lo:Math.round(lo*100)/100,id:null,kind:3})}}
 const n=nodes.length,adj=Array.from({length:n},()=>new Set());
 const link=(a,b)=>{if(a===b)return;adj[a].add(b);adj[b].add(a)};
 CHAINS.forEach(ch=>{for(let i=0;i+1<ch.length;i++){const a=ch[i],b=ch[i+1];if(a==='JKT'||b==='JKT')continue;if(!(a in idx)||!(b in idx))throw Error('unknown node in chain: '+a+' '+b);link(idx[a],idx[b])}});
 const P=nodes.map(x=>[x.la,x.lo]);
 const nearest=(i,k,maxD,filter)=>{const out=[];for(let j=0;j<n;j++){if(j===i||(filter&&!filter(j)))continue;const d=gc(P[i],P[j]);if(d<=maxD)out.push([d,j])}out.sort((a,b)=>a[0]-b[0]);return out.slice(0,k)};
 nodes.forEach((x,i)=>{
-  if(x.kind===0){nearest(i,9,650,j=>nodes[j].kind===0).forEach(([d,j])=>{if(!adj[i].has(j)&&edgeOK(P[i],P[j]))link(i,j)})}
-  else if(x.kind===1){nearest(i,4,1300,j=>nodes[j].kind===0).forEach(([d,j])=>{if(edgeOK(P[i],P[j]))link(i,j)})}
+  if(x.kind===0||x.kind===3){nearest(i,9,650,j=>nodes[j].kind===0||nodes[j].kind===3).forEach(([d,j])=>{if(!adj[i].has(j)&&edgeOK(P[i],P[j]))link(i,j)})}
+  else if(x.kind===1){nearest(i,4,1300,j=>nodes[j].kind===0||nodes[j].kind===3).forEach(([d,j])=>{if(edgeOK(P[i],P[j]))link(i,j)})}
   else{nearest(i,4,450,j=>nodes[j].kind===0).forEach(([d,j])=>{if(edgeOK(P[i],P[j]))link(i,j)})}});
 const ADJ=adj.map(s=>[...s]);
 /* ---- costs and search ---- */
@@ -64,6 +68,10 @@ function corridors(find,K,endsNear){const mult=new Float32Array(n).fill(1),keep=
     for(let j=0;j<n;j++){if(nodes[j].kind===2)continue;let near=false;for(let s=0;s<D.length;s+=2){if(Math.abs(P[j][0]-D[s][0])<1.6&&gc(P[j],D[s])<150){near=true;break}}
       if(near&&endsNear.every(e=>gc(P[j],e)>350))mult[j]*=3.2}}
   keep.sort((a,b)=>a.total-b.total);return keep.filter(k=>k.total<=keep[0].total*1.25)}
+/* string pulling: between two real nodes, drop the unnamed lattice waypoints when the direct line stays clear of the airspace we avoid */
+function pull(path){const out=[path[0]];let i=0;
+  while(i<path.length-1){let best=i+1;for(let k=i+2;k<path.length;k++){if(nodes[path[k-1]].kind!==3)break;if(edgeOK(P[path[i]],P[path[k]]))best=k}out.push(path[best]);i=best}
+  return out}
 const pt=i=>nodes[i].id?[r2(P[i][0]),r2(P[i][1]),nodes[i].id]:[r2(P[i][0]),r2(P[i][1])];
 function nearest0(p,k,maxD,any){const o=[];for(let j=0;j<n;j++){if(any?nodes[j].kind!==1:nodes[j].kind!==0)continue;const d=gc(P[j],p);if(d<=maxD)o.push([d,j])}o.sort((a,b)=>a[0]-b[0]);return o.slice(0,k)}
 /* ---- routes ---- */
@@ -75,8 +83,8 @@ Object.keys(air).forEach(city=>{
   if(direct<1500||eastIndo){O=[[[N[gKey][0],N[gKey][1]],dest]];I=[[dest,[N[gKey][0],N[gKey][1]]]]}
   else{
     const attempt=cand=>{const ends=[P[g],dest];
-    const out=corridors(mult=>{const r=search([[g,0]],mult,-1);let b=null;cand.forEach(([d,j])=>{const t=r.dist[j]+d;if(isFinite(t)&&(!b||t<b.t))b={t,j}});return b?{path:trace(r.prev,b.j),total:b.t}:null},3,ends);
-    const inn=corridors(mult=>{const r=search(cand.map(([d,j])=>[j,d]),mult,g);return isFinite(r.dist[g])?{path:trace(r.prev,g),total:r.dist[g]}:null},3,ends);
+    const out=corridors(mult=>{const r=search([[g,0]],mult,-1);let b=null;cand.forEach(([d,j])=>{const t=r.dist[j]+d;if(isFinite(t)&&(!b||t<b.t))b={t,j}});return b?{path:pull(trace(r.prev,b.j)),total:b.t}:null},3,ends);
+    const inn=corridors(mult=>{const r=search(cand.map(([d,j])=>[j,d]),mult,g);return isFinite(r.dist[g])?{path:pull(trace(r.prev,g)),total:r.dist[g]}:null},3,ends);
     return out.length&&inn.length?{out,inn}:null};
     let cand=nearest0(dest,4,320);if(!cand.length)cand=nearest0(dest,3,1500);
     let res=cand.length?attempt(cand):null;if(!res)res=attempt(nearest0(dest,3,3500,true));
@@ -88,7 +96,7 @@ Object.keys(air).forEach(city=>{
   routes[city]={o:rp(O),i:rp(I),lo:Math.round(gc(JKT,o[0])+run(o)),li:Math.round(run(i)+gc(i[i.length-1],JKT)),gc:Math.round(direct)}});
 fs.writeFileSync(path.join(__dirname,'routes.json'),JSON.stringify(routes));
 const rows=Object.keys(routes).map(c=>({c,r:routes[c],ratio:Math.max(routes[c].lo,routes[c].li)/Math.max(routes[c].gc,1)})).filter(x=>x.r.gc>=1500).sort((a,b)=>b.ratio-a.ratio);
-console.log('network:',n,'nodes,',ADJ.reduce((s,a)=>s+a.length,0)/2,'edges');
+console.log('lattice waypoints:',nodes.filter(x=>x.kind===3).length);console.log('network:',n,'nodes,',ADJ.reduce((s,a)=>s+a.length,0)/2,'edges');
 console.log('routes',Object.keys(routes).length,'of',Object.keys(air).length,report.join(' '));
 console.log('largest detours (route length / great circle):');rows.slice(0,14).forEach(x=>console.log(' ',x.c.padEnd(26),'gc',x.r.gc,'out',x.r.lo,'in',x.r.li,'ratio',x.ratio.toFixed(2)));
 console.log('destinations with alternatives:',Object.keys(routes).filter(c=>routes[c].o.length>1||routes[c].i.length>1).length);
