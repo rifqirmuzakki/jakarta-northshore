@@ -6690,6 +6690,11 @@ function flightRowsFallback(meta,id,now,outb){
     const item=legRow(l,now,today,null,profile);
     v105HistorySectors(item).filter(x=>x.tone!=='untimed').forEach(x=>out.push({r:x,reg:null,ac:meta.ac,today}))}
   return out.sort((a,b)=>b.r.l.std-a.r.l.std)}
+/* the times the flight history shows (ATD, ETA, ATA), so the map cards agree with it */
+window.JN_FLIGHT_TIMES=(id,std)=>{try{const c=C(),now=jakMin();let rows=flightRows(id,now);
+  if(!rows.length){const meta=[...(c.OUTF||[]),...(c.INF||[])].find(f=>f.id===id);if(meta)rows=flightRowsFallback(meta,id,now,!!(c.OUTF||[]).find(x=>x.id===id))}
+  if(!rows.length)return null;let o=rows[0];if(std!=null)rows.forEach(x=>{if(Math.abs(x.r.l.std-std)<Math.abs(o.r.l.std-std))o=x});
+  return {atd:o.r.atd,ata:o.r.ata,eta:o.r.eta,std:o.r.l.std,sta:o.r.l.sta,st:o.r.st,tone:o.r.tone}}catch(e){return null}};
 function flightLegHtml(o){
   const r=o.r,l=r.l,arr=l.from!=='Jakarta';
   const v104=l.v105Sector?null:v104Sector(arr?l.from:l.to,arr);
@@ -7073,7 +7078,7 @@ html body #card .airline-logo.sm{width:28px!important;height:28px!important;bord
 #jn-world[hidden],#jn-world-ui[hidden]{display:none}
 #jn-world-ui{position:fixed;z-index:13;left:16px;bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font:12px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 #jnw-count{background:#13232df0;color:#fff;border-radius:10px;padding:8px 12px;font-weight:600}
-.jnw-btns{display:flex;gap:6px}.jnw-btns button{min-width:36px;height:36px;border:1px solid #3a5160;background:#13232df0;color:#fff;border-radius:10px;font:600 13px inherit;cursor:pointer;padding:0 10px}
+.jnw-btns{display:flex;gap:6px}.jnw-btns button{min-width:36px;height:36px;border:1px solid #3a5160;background:#13232df0;color:#fff;border-radius:10px;cursor:pointer;padding:0 10px}
 .jnw-btns button.on,.jnw-btns button[aria-pressed=true]{background:#0f6b8a}.jnw-btns button:focus-visible,.jnw-x:focus-visible,#jn-world-card a:focus-visible{outline:3px solid #fbbf24;outline-offset:2px}
 #jn-world-card{position:fixed;z-index:14;right:16px;bottom:16px;width:min(340px,calc(100vw - 32px));background:#fff;color:#0f1b26;border-radius:14px;box-shadow:0 10px 36px #0004;padding:14px 16px;font:13px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 #jn-world-card[hidden]{display:none}.jnw-h{display:flex;flex-direction:column;gap:2px;padding-right:28px}.jnw-h b{font-size:17px}.jnw-h span{color:#4a5d6b}.jnw-r{margin:6px 0 8px;font-weight:600}
@@ -7085,10 +7090,17 @@ html body #card .airline-logo.sm{width:28px!important;height:28px!important;bord
 #jn-world-card .jnw-route{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:6px;align-items:center;margin:10px 0 8px}#jn-world-card .jnw-route b{display:block;font-size:14px}#jn-world-card .jnw-route span{color:#566a78;font-size:11px}#jn-world-card .jnw-route .r{text-align:right}
 #jn-world-card .jnw-arrow{position:relative;height:4px;border-radius:2px;background:#dbe5ec}#jn-world-card .jnw-arrow i{position:absolute;left:0;top:0;height:100%;background:#0f6b8a;border-radius:2px}#jn-world-card .jnw-arrow u{position:absolute;top:-9px;transform:translateX(-50%);text-decoration:none;font-size:13px;color:#0f6b8a}
 #jn-world-card .jnw-now{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 2px}.jnw-pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;background:#e8eef3;color:#27404f;font-size:11px;font-weight:600;padding:3px 9px}.jnw-pill i{width:7px;height:7px;border-radius:50%;background:#8aa0ae}.jnw-pill.live i{background:#1f9d57}.jnw-pill.late{background:#fdf0d5;color:#8a5a00}.jnw-pill.dim{background:transparent;border:1px solid #cdd8e0;color:#566a78}
-#jn-world-card .jnw-g.two{grid-template-columns:1fr 1fr;margin-top:0}.jnw-fol{margin-left:auto;border:1px solid #0f6b8a;background:#fff;color:#0f6b8a;border-radius:9px;font:600 12px inherit;padding:6px 12px;cursor:pointer}.jnw-fol.on{background:#0f6b8a;color:#fff}.jnw-fol:focus-visible{outline:3px solid #fbbf24;outline-offset:2px}
+#jn-world-card .jnw-g.two{grid-template-columns:1fr 1fr;margin-top:0}.jnw-fol{margin-left:auto;border:1px solid #0f6b8a;background:#fff;color:#0f6b8a;border-radius:9px;padding:6px 12px;cursor:pointer}.jnw-fol.on{background:#0f6b8a;color:#fff}.jnw-fol:focus-visible{outline:3px solid #fbbf24;outline-offset:2px}
 html body #v74-ac .jn-trk{border:1px solid #0f6b8a!important;background:#fff!important;color:#0f6b8a!important;border-radius:999px;font-size:11px!important;font-weight:600;padding:3px 10px;cursor:pointer;margin-left:6px}html body #v74-ac .jn-trk:hover{background:#0f6b8a!important;color:#fff!important}
 #card #cWorld{margin-left:8px;border:1px solid #5b6c7b;background:transparent;color:inherit;border-radius:9px;padding:8px 12px;font-size:12px;cursor:pointer}
 #jn-world-card .airline-logo{flex:none}
+#jn-world-card,#jn-world-ui,#jn-world-card button,#jn-world-ui button{font-family:var(--jn-font,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif)}
+#jn-world-card{background:var(--jn-bg,#f3f6f9);color:var(--jn-ink,#132536);border:1px solid var(--jn-edge,#e1e8ef);border-radius:var(--jn-radius,14px)}
+#jn-world-card .jnw-top b,#jn-world-card .jnw-route b{font-weight:600;letter-spacing:-.035em}
+#jn-world-card .jnw-top span,#jn-world-card .jnw-g small,#jn-world-card .jnw-route span{color:var(--jn-muted,#617486)}
+#jn-world-card .jnw-g b{font-family:var(--jn-mono,monospace);font-weight:500;font-variant-numeric:tabular-nums;font-size:13px}
+#jn-world-card .jnw-pill{font-family:var(--jn-font)}
+.jnw-btns button,.jnw-fol{font-size:12.5px;font-weight:600}
 #jnw-key{display:flex;gap:10px;background:#fffffff2;color:#27404f;border-radius:10px;padding:7px 11px;font-size:11px;font-weight:600}#jnw-key span{display:inline-flex;align-items:center;gap:5px}#jnw-key i{width:11px;height:11px;border-radius:50%;border:3px solid;box-sizing:border-box;background:#fff}@media(max-width:700px){#jnw-key{display:none}}
 body.jn-world #v9-tools,body.jn-world #v70-kpi,body.jn-world #hud,body.jn-world #card,body.jn-world #board,body.jn-world #v16-map-key,body.jn-world #runway-panel{display:none!important}
 @media(max-width:700px){#jn-world-ui{bottom:auto;top:12px;left:12px;max-width:calc(100vw - 80px)}#jn-world-card{bottom:84px;right:12px}}
@@ -7098,6 +7110,7 @@ body.jn-world #v9-tools,body.jn-world #v70-kpi,body.jn-world #hud,body.jn-world 
 <script id="jn-world-view">(function(){'use strict';
 /* World view: the Jakarta flights that are in the air right now, on a world map, along typical routings (see tools/world). Canvas, no dependencies. */
 const RAD=Math.PI/180,JKT=[-6.13,106.66];
+const FONT=(()=>{try{return getComputedStyle(document.documentElement).getPropertyValue('--jn-font').trim()||'-apple-system,Helvetica,sans-serif'}catch(e){return '-apple-system,Helvetica,sans-serif'}})();
 const cv=document.createElement('canvas');cv.id='jn-world';cv.setAttribute('role','region');cv.setAttribute('aria-label','World map of flights to and from Jakarta that are in the air now');
 const ui=document.createElement('div');ui.id='jn-world-ui';ui.innerHTML='<div id="jnw-count" role="status"></div><div id="jnw-key" role="region" aria-label="Marker key"><span><i style="border-color:#1f63e0"></i>Arriving</span><span><i style="border-color:#e3590d"></i>Departing</span><span><i style="border-color:#a3189f"></i>Holding</span><span><i style="border-color:#e24a4a"></i>Late 15m+</span></div><div class="jnw-btns"><button type="button" id="jnw-ga" aria-pressed="false">GA only</button><button type="button" id="jnw-in" aria-label="Zoom in">+</button><button type="button" id="jnw-out" aria-label="Zoom out">−</button><button type="button" id="jnw-fit" aria-label="Fit the whole network">⌂</button></div>';
 const card=document.createElement('div');card.id='jn-world-card';card.hidden=true;card.setAttribute('role','region');card.setAttribute('aria-label','Selected flight');
@@ -7163,8 +7176,8 @@ function drawBase(){
   // Jakarta and destinations
   c.fillStyle='#18394d';Object.keys(WORLD_ROUTES).forEach(city=>{const R=WORLD_ROUTES[city],p=R.o[0][R.o[0].length-1];c.beginPath();c.arc(sx(p[1]),sy(my(p[0])),1.8,0,7);c.fill()});
   c.beginPath();c.arc(sx(JKT[1]),sy(my(JKT[0])),5,0,7);c.fillStyle='#c0392b';c.fill();c.lineWidth=2;c.strokeStyle='#fff';c.stroke();
-  c.fillStyle='#0f1b26';c.font='600 12px -apple-system,Helvetica,sans-serif';c.fillText('Jakarta',sx(JKT[1])+9,sy(my(JKT[0]))+4);
-  {c.fillStyle='#37556b';c.font='11px -apple-system,Helvetica,sans-serif';const minD=view.k>=16?0:view.k>=11?900:view.k>=8?2500:view.k>=4?4500:1e9;Object.keys(WORLD_ROUTES).forEach(city=>{const R=WORLD_ROUTES[city],p=R.o[0][R.o[0].length-1];if(gcd(JKT,p)<minD||Math.hypot(p[1]-JKT[1],p[0]-JKT[0])<2)return;c.fillText(city.split(' / ')[0],sx(p[1])+4,sy(my(p[0]))-3)})}
+  c.fillStyle='#0f1b26';c.font='600 12px '+FONT;c.fillText('Jakarta',sx(JKT[1])+9,sy(my(JKT[0]))+4);
+  {c.fillStyle='#37556b';c.font='11px '+FONT;const minD=view.k>=16?0:view.k>=11?900:view.k>=8?2500:view.k>=4?4500:1e9;Object.keys(WORLD_ROUTES).forEach(city=>{const R=WORLD_ROUTES[city],p=R.o[0][R.o[0].length-1];if(gcd(JKT,p)<minD||Math.hypot(p[1]-JKT[1],p[0]-JKT[0])<2)return;c.fillText(city.split(' / ')[0],sx(p[1])+4,sy(my(p[0]))-3)})}
   base=b;baseKey=[view.cx,view.cy,view.k,W,H].join('|')}
 function status(l,now){return now<l.off?0:(now>l.land?2:1)}
 /* position along the route, joined to the airspace track at the handoff point */
@@ -7172,13 +7185,12 @@ function sAtDist(r,D,fromEnd){const n=r.lon.length,dj=i=>gcd(JKT,[r.lat[i],r.lon
   if(fromEnd){for(let i=n-1;i>0;i--){const d=dj(i-1);if(d>=D){const d2=dj(i),t=(D-d2)/Math.max(1e-6,d-d2);return r.cum[i]+(r.cum[i-1]-r.cum[i])*Math.max(0,Math.min(1,t))}}return 0}
   for(let i=1;i<n;i++){const d=dj(i);if(d>=D){const d0=dj(i-1),t=(D-d0)/Math.max(1e-6,d-d0);return r.cum[i-1]+(r.cum[i]-r.cum[i-1])*Math.max(0,Math.min(1,t))}}return r.len}
 const routeFor=l=>routeOf(l.city,l.dir,altOf(l.id,l.d,nAlt(l.city,l.dir),l.dir));
-function legPos(l,now,r){const u=Math.max(0,Math.min(1,(now-l.off)/(l.land-l.off))),p=distFrac(u);let s,w=0,sA;
-  if(l.hand){if(l.sA==null)l.sA=sAtDist(r,gcd(JKT,l.hand),l.dir==='in');sA=l.sA;
-    if(l.dir==='in'){s=p*sA;w=smooth(u)}else{s=sA+(r.len-sA)*p;w=1-smooth(u)}}
-  else s=p*r.len;
-  const pt=at(r,s);let lon=pt[0],lat=pt[1];
-  if(w>0){const e=at(r,sA);lon+=(l.hand[1]-e[0])*w;lat+=(l.hand[0]-e[1])*w}
-  return [lon,lat,u]}
+function warpDelta(l,r){if(l._dr!==r){const e=at(r,ensureSA(l,r));l._d=[l.hand[1]-e[0],l.hand[0]-e[1]];l._dr=r}return l._d}
+function warpAt(l,r,s){const pt=at(r,s);if(!l.hand)return [pt[0],pt[1]];const sA=ensureSA(l,r),D=warpDelta(l,r),
+    w=l.dir==='in'?smooth(s/Math.max(1,sA)):1-smooth((s-sA)/Math.max(1,r.len-sA));return [pt[0]+D[0]*w,pt[1]+D[1]*w]}
+function legPos(l,now,r){const u=Math.max(0,Math.min(1,(now-l.off)/(l.land-l.off))),p=distFrac(u);let s;
+  if(l.hand){const sA=ensureSA(l,r);s=l.dir==='in'?p*sA:sA+(r.len-sA)*p}else s=p*r.len;
+  const q=warpAt(l,r,s);return [q[0],q[1],u]}
 const cruiseFt=len=>len<700?22000:len<1800?31000:len<4500?36000:39000;
 function est(l,u,r){const len=r?r.len:1500,cr=cruiseFt(len),cl=Math.min(1,u/0.14),ds=Math.min(1,(1-u)/0.14),f=Math.min(cl,ds);
   return {alt:Math.round(cr*Math.pow(f,0.8)/100)*100,gs:Math.round((len<700?330:455)*Math.min(0.42+0.58*cl,0.38+0.62*ds)),ph:u<0.14?'Climbing':u>0.86?'Descending':'Cruising'}}
@@ -7189,11 +7201,10 @@ function logoOf(code){let o=logos.get(code);if(!o){o={img:new Image(),ready:fals
 function sprite(code,ring,r){const key=code+'|'+ring+'|'+r+'|'+dpr;let s=sprites.get(key);if(s)return s;
   const R=Math.ceil(r+3),c=document.createElement('canvas');c.width=c.height=Math.ceil(R*2*dpr);const x=c.getContext('2d');x.scale(dpr,dpr);x.translate(R,R);
   const b=(typeof AIRLINE_BRAND!=='undefined'&&AIRLINE_BRAND[code])||['#30343A','#fff'],lr=r*0.82;
-  x.beginPath();x.arc(0,0,r*0.9,0,7);x.fillStyle='#fff';x.fill();
-  x.beginPath();x.arc(0,0,lr,0,7);x.fillStyle=b[0];x.fill();
+  x.beginPath();x.arc(0,0,r*0.9,0,7);x.fillStyle='#fff';x.fill();x.lineWidth=.5;x.strokeStyle='rgba(0,0,0,.25)';x.stroke();
   const lg=logoOf(code);
   if(lg.ready){x.save();x.beginPath();x.arc(0,0,lr,0,7);x.clip();x.drawImage(lg.img,-lr,-lr,lr*2,lr*2);x.restore()}
-  else if(r>=6){x.fillStyle=b[1]||'#fff';x.font='800 '+(lr*0.95).toFixed(1)+'px Arial,sans-serif';x.textAlign='center';x.fillText(code,0,lr*0.36)}
+  else{x.beginPath();x.arc(0,0,lr,0,7);x.fillStyle=b[0];x.fill();if(r>=6){x.fillStyle=b[1]||'#fff';x.font='800 '+(lr*0.95).toFixed(1)+'px Arial,sans-serif';x.textAlign='center';x.fillText(code,0,lr*0.36)}}
   x.beginPath();x.arc(0,0,r,0,7);x.lineWidth=r>=6?2.2:1.7;x.strokeStyle=ring;x.stroke();
   s={c,R};sprites.set(key,s);return s}
 const markerR=()=>view.k<8?4.8:view.k<24?6.4:7.6;
@@ -7201,10 +7212,10 @@ function marker(o,isSel,tag){const l=o.l,a=o.air,ring=l.dly>=15?RING.late:(a&&a.
   ctx.drawImage(s.c,o.x-s.R,o.y-s.R,s.R*2,s.R*2);
   const q=r/7.6;ctx.save();ctx.translate(o.x,o.y);ctx.rotate(o.ang);ctx.beginPath();ctx.moveTo(0,-13.2*q);ctx.lineTo(3.6*q,-8.2*q);ctx.lineTo(-3.6*q,-8.2*q);ctx.closePath();ctx.fillStyle=ring;ctx.fill();ctx.restore();
   if(isSel){ctx.beginPath();ctx.arc(o.x,o.y,r+5,0,7);ctx.lineWidth=1.8;ctx.strokeStyle='#33434b';ctx.stroke()}
-  if(tag){const t=String(l.id).replace(' ','')+(o.alt!=null?' '+(o.alt>=11000?'FL'+String(Math.round(o.alt/100)).padStart(3,'0'):(Math.round(o.alt/100)*100)+"'"):'');ctx.font='700 10px -apple-system,Helvetica,sans-serif';ctx.lineWidth=3;ctx.lineJoin='round';ctx.strokeStyle='#fbfaf6';ctx.strokeText(t,o.x+r+5,o.y+3.5);ctx.fillStyle='#33434b';ctx.fillText(t,o.x+r+5,o.y+3.5)}}
+  if(tag){const t=String(l.id).replace(' ','')+(o.alt!=null?' '+(o.alt>=11000?'FL'+String(Math.round(o.alt/100)).padStart(3,'0'):(Math.round(o.alt/100)*100)+"'"):'');ctx.font='700 10px '+FONT;ctx.lineWidth=3;ctx.lineJoin='round';ctx.strokeStyle='#fbfaf6';ctx.strokeText(t,o.x+r+5,o.y+3.5);ctx.fillStyle='#33434b';ctx.fillText(t,o.x+r+5,o.y+3.5)}}
 function airSyn(a,day){return byId.get(a.id)||{id:a.id,c:a.c,city:'',ac:'',dir:a.kind==='dep'?'out':'in',d:day,dly:0,sta:0,std:0,off:0,land:0}}
 function ensureSA(l,r){if(l.hand&&l.sA==null)l.sA=sAtDist(r,gcd(JKT,l.hand),l.dir==='in');return l.sA}
-function routeUpTo(r,sEnd,sStart){const o=[],a=at(r,sStart);o.push([a[0],a[1]]);for(let i=0;i<r.lon.length;i++){if(r.cum[i]>sStart&&r.cum[i]<sEnd)o.push([r.lon[i],r.lat[i]])}const b=at(r,sEnd);o.push([b[0],b[1]]);return o}
+function routeUpTo(l,r,sEnd,sStart){const o=[warpAt(l,r,sStart)];for(let i=0;i<r.lon.length;i++){if(r.cum[i]>sStart&&r.cum[i]<sEnd)o.push(warpAt(l,r,r.cum[i]))}o.push(warpAt(l,r,sEnd));return o}
 function draw(){
   if(!on||!ctx)return;
   const now=nowAbs(),L=getLegs(),day=window.SIMCORE&&SIMCORE.FLEET?SIMCORE.FLEET.day:0;pos=[];selLL=null;selAir=false;let n=0,nga=0;
@@ -7221,9 +7232,9 @@ function draw(){
   const key=[view.cx,view.cy,view.k,W,H].join('|');if(!base||key!==baseKey)drawBase();
   ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(base,0,0);ctx.scale(dpr,dpr);
   if(sel&&selLL){const l=sel,r=l.city?routeFor(l):null;if(r){const cur=[selLL[0],selLL[1]],u=Math.max(0,Math.min(1,(now-l.off)/(l.land-l.off))),p=distFrac(u),sA=l.hand?ensureSA(l,r):null;let pts;
-    if(l.dir==='in'){const to=selAir?sA:(sA!=null?p*sA:p*r.len);pts=routeUpTo(r,to,0)}
-    else if(l.hand){pts=selAir?[]:[[l.hand[1],l.hand[0]],...routeUpTo(r,sA+(r.len-sA)*p,sA)];pts.unshift([JKT[1],JKT[0]])}
-    else pts=routeUpTo(r,p*r.len,0);
+    if(l.dir==='in'){const to=selAir?sA:(sA!=null?p*sA:p*r.len);pts=routeUpTo(l,r,to,0)}
+    else if(l.hand){pts=selAir?[]:[[l.hand[1],l.hand[0]],...routeUpTo(l,r,sA+(r.len-sA)*p,sA)];pts.unshift([JKT[1],JKT[0]])}
+    else pts=routeUpTo(l,r,p*r.len,0);
     pts.push(cur);
     ctx.lineJoin='round';ctx.lineCap='round';ctx.lineWidth=2.6;ctx.strokeStyle='#2563eb';ctx.beginPath();pts.forEach((q,i)=>{const x=sx(q[0]),y=sy(my(q[1]));if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke();
     const dest=l.dir==='in'?[JKT[0],JKT[1]]:[r.lat[r.lat.length-1],r.lon[r.lon.length-1]],arc=sample([[cur[1],cur[0]],dest]);
@@ -7257,14 +7268,16 @@ setInterval(()=>{const m=M();if(on||!m||!m.centre||m.mode!=='air'||document.body
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const hm=m=>{m=((Math.round(m)%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
 function local(absMin,city){try{const z=(window.JN_TZOF&&JN_TZOF(city))||'Asia/Jakarta';return new Intl.DateTimeFormat('en-GB',{timeZone:z,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date((absMin-420)*60000))}catch(e){return hm(absMin)}}
+const ftCache=new Map();
+function times(id,std){const k=id,c=ftCache.get(k);if(c&&performance.now()-c.t<4000)return c.v;let v=null;try{v=window.JN_FLIGHT_TIMES?JN_FLIGHT_TIMES(id,std):null}catch(e){}ftCache.set(k,{t:performance.now(),v});return v}
 const codeOf=c=>{try{return typeof airportCodeForCity==='function'?(airportCodeForCity(c)||''):''}catch(e){return ''}};
 function renderCard(){const l=sel;if(!l)return;const S=window.SIMCORE,now=nowAbs(),m=M(),city=String(l.city||'').split(' / ')[0]||'—';
   const u=l.land>l.off?Math.max(0,Math.min(1,(now-l.off)/(l.land-l.off))):0,r=l.city?routeFor(l):null;
   const ap=sel&&pos.find(o=>o.l.id===l.id&&o.air),air=ap&&ap.air,E=est(l,u,r);
   const live=now>=l.off&&now<=l.land||!!air,state=air?(air.ph==='hold'?'Holding':air.kind==='dep'?'Climbing out':'On approach'):(live?E.ph:(now<l.off?'Not yet airborne':'Landed'));
   let reg=null;try{reg=S.worldTail?S.worldTail(l.id,l.d):null}catch(e){}
-  const nm=(typeof NAME!=='undefined'&&NAME[l.c])||l.c,jk=l.dir==='out',oC=jk?'Jakarta':city,dC=jk?city:'Jakarta',oK=jk?'CGK':codeOf(city),dK=jk?codeOf(city):'CGK';
-  const alt=air?Math.round(air.alt/100)*100:E.alt,gs=air?null:E.gs,eta=l.eta!=null?l.eta:l.sta,remain=Math.max(0,Math.round(eta-now));
+  const ft=times(l.id,l.std),nm=(typeof NAME!=='undefined'&&NAME[l.c])||l.c,jk=l.dir==='out',oC=jk?'Jakarta':city,dC=jk?city:'Jakarta',oK=jk?'CGK':codeOf(city),dK=jk?codeOf(city):'CGK';
+  const alt=air?Math.round(air.alt/100)*100:E.alt,gs=air?null:E.gs,eta=ft&&ft.ata!=null?ft.ata:(l.eta!=null?l.eta:(ft&&ft.eta!=null?ft.eta:l.sta)),etaLab=ft&&ft.ata!=null?'ATA':((l.eta!=null||(ft&&ft.eta!=null))?'ETA':'STA'),depAbs=ft&&ft.atd!=null?ft.atd:l.std,depLab=ft&&ft.atd!=null?'ATD':(now>=l.off?'ETD':'STD'),remain=Math.max(0,Math.round(eta-now));
   const pct=Math.round((air&&!l.noWorld&&false?1:Math.max(0,Math.min(1,(now-l.std)/Math.max(1,l.sta-l.std))))*100);
   const logo=typeof airlineLogo==='function'?airlineLogo(l.c,'sm'):'';
   const lt=(abs,c)=>local(abs,c);
@@ -7273,7 +7286,7 @@ function renderCard(){const l=sel;if(!l)return;const S=window.SIMCORE,now=nowAbs
    '<div class="jnw-route"><div><b>'+esc(oC)+'</b><span>'+esc(oK||'')+'</span></div><div class="jnw-arrow" aria-hidden="true"><i style="width:'+pct+'%"></i><u style="left:'+pct+'%">✈</u></div><div class="r"><b>'+esc(dC)+'</b><span>'+esc(dK||'')+'</span></div></div>'+
    '<div class="jnw-now"><span class="jnw-pill'+(live?' live':'')+'"><i></i>'+esc(state)+'</span>'+(l.dly>=15?'<span class="jnw-pill late">Delayed +'+Math.round(l.dly)+' min</span>':'')+'<span class="jnw-pill dim">'+(l.c==='GA'?'Garuda':esc(l.c))+'</span></div>'+
    '<div class="jnw-g"><div><small>Altitude</small><b>'+(live?(alt>=10000?'FL'+String(Math.round(alt/100)).padStart(3,'0'):alt.toLocaleString('en')+' ft'):'—')+'</b></div><div><small>Ground speed</small><b>'+(live&&gs?gs+' kt':'—')+'</b></div><div><small>Time to go</small><b>'+(live?Math.floor(remain/60)+'h '+String(remain%60).padStart(2,'0')+'m':'—')+'</b></div></div>'+
-   '<div class="jnw-g two"><div><small>STD '+esc(oK||oC)+' · local</small><b>'+lt(l.std,oC)+'</b></div><div><small>'+(l.eta!=null?'ETA':'STA')+' '+esc(dK||dC)+' · local</small><b>'+lt(eta,dC)+'</b></div></div>'+
+   '<div class="jnw-g two"><div><small>'+depLab+' '+esc(oK||oC)+' · local</small><b>'+lt(depAbs,oC)+'</b></div><div><small>'+etaLab+' '+esc(dK||dC)+' · local</small><b>'+lt(eta,dC)+'</b></div></div>'+
    '<div class="jnw-l"><a href="#/flight/'+esc(String(l.id).replace(' ',''))+'">Flight history ›</a>'+(reg?'<a href="#/aircraft/'+esc(reg)+'">'+esc(reg)+' ›</a>':'')+'<button type="button" class="jnw-fol'+(fol?' on':'')+'" aria-pressed="'+fol+'">'+(fol?'Following':'Follow')+'</button></div>';
   if(card._h===hx)return;card._h=hx;card.innerHTML=hx;   /* only rebuild when something changed, so the logo is not reloaded every frame */
   const x=card.querySelector('.jnw-x');if(x)x.onclick=()=>{sel=null;fol=false;card.hidden=true;redraw()};
