@@ -28,7 +28,7 @@ const slerp=geometry.interpolate;
 /* ---- nodes ---- */
 const nodes=[];   // {la,lo,id,kind}  kind 0 beacon, 1 waypoint, 2 gate
 const idx={};
-Object.keys(N).forEach(k=>{if(k==='JKT')return;idx[k]=nodes.length;nodes.push({la:N[k][0],lo:N[k][1],id:null,kind:/^G_/.test(k)?2:1,key:k})});
+Object.keys(N).forEach(k=>{if(k==='JKT')return;idx[k]=nodes.length;nodes.push({la:N[k][0],lo:N[k][1],id:k,kind:/^G_/.test(k)?2:1,key:k})});
 BEACONS.forEach(b=>{if(bad(b[1],b[2]))return;nodes.push({la:b[1],lo:b[2],id:b[0],kind:0})});
 /* Real beacons are sparse over deserts and open sea, so a path there would follow coasts and zigzag. Fill every gap with an unnamed waypoint on a 3.5 degree grid
    (kind 3); paths are pulled straight across runs of them afterwards, so those stretches come out as the great circle between the real beacons either side. */
@@ -71,9 +71,31 @@ function search(sources,targets,startPoint,endPoint){
  const path=[];for(let id=best.id;id>=0;id=states[id].parent)path.unshift(states[id].node);
  return {path,total:best.total};
 }
-const pt=i=>nodes[i].id?[r2(P[i][0]),r2(P[i][1]),nodes[i].id]:[r2(P[i][0]),r2(P[i][1])];
+const pt=i=>[r2(P[i][0]),r2(P[i][1]),nodes[i].id||('FIC'+String(i).padStart(4,'0'))];
 function nearest0(p,k,maxD,any){const o=[];for(let j=0;j<n;j++){if(any?nodes[j].kind!==1:nodes[j].kind!==0)continue;const d=gc(P[j],p);if(d<=maxD&&edgeOK(p,P[j]))o.push([d,j])}o.sort((a,b)=>a[0]-b[0]);return o.slice(0,k)}
 const GATES=Object.values(GATE).map(k=>idx[k]);
+/* Long curated ocean/continental legs still need a filed fix sequence. Use a
+   nearby real beacon when it stays close to the corridor and clears the same
+   exclusions; otherwise keep an explicitly fictional coordinate fix. */
+function fillLongLegs(path){
+ const out=[path[0]];
+ for(let i=1;i<path.length;i++){
+  const a=path[i-1],b=path[i],km=gc(a,b),steps=Math.ceil(km/800);
+  for(let k=1;k<steps;k++){
+   const q=geometry.interpolate(a,b,k/steps),previous=out[out.length-1],before=out[out.length-2],after=path[i+1];
+   let best=null,bestDistance=80;
+   for(const [id,la,lo] of BEACONS){const p=[la,lo,id],d=gc(q,p);if(d>=bestDistance)continue;
+    if(gc(previous,p)+gc(p,b)>(gc(previous,q)+gc(q,b))*1.025)continue;
+    if(geometry.turnAngle(previous,p,b)>30||(before&&geometry.turnAngle(before,previous,p)>60)||(after&&geometry.turnAngle(p,b,after)>60))continue;
+    if(!edgeOK(previous,p)||!edgeOK(p,b))continue;best=p;bestDistance=d;
+   }
+   out.push(best||[r2(q[0]),r2(q[1]),'FIC'+r2(q[0]).toFixed(2)+'/'+r2(q[1]).toFixed(2)]);
+  }
+  out.push(b);
+ }
+ return out;
+}
+
 /* ---- routes ---- */
 const routes={},report=[];
 Object.keys(air).forEach(city=>{
@@ -97,7 +119,11 @@ Object.keys(air).forEach(city=>{
     const {out,inn}=res;
     O=out.map(c=>[...c.path.map(pt),dest]);I=inn.map(c=>[dest,...c.path.map(pt)]);OG=out.map(c=>keyOf(c.path[0]));IG=inn.map(c=>keyOf(c.path[c.path.length-1]));
   }
-  O=O.map(p=>geometry.simplify(p,edgeOK,{before:JKT}));I=I.map(p=>geometry.simplify(p,edgeOK,{after:JKT}));
+    // Preserve regional corridor anchors and bounded airway legs. A clear sky
+  // shortcut is not permission to delete the entire filed waypoint sequence.
+  const shortcut=(p,ends)=>geometry.simplify(p,edgeOK,{...ends,maxLegKm:900,
+    keep:i=>!!N[p[i][2]]&&!/^G_/.test(p[i][2])});
+  O=O.map(p=>fillLongLegs(shortcut(p,{before:JKT})));I=I.map(p=>fillLongLegs(shortcut(p,{after:JKT})));
   for(const p of O.concat(I))for(let j=1;j<p.length;j++)if(!edgeOK(p[j-1],p[j]))throw Error('Excluded route segment: '+city);
   const run=a=>a.reduce((s,p,q)=>q?s+gc(a[q-1],p):s,0),o=O[0],i=I[0],rp=L=>L.map(a=>a.map(p=>[r2(p[0]),r2(p[1]),...(p[2]?[p[2]]:[])]));
   routes[city]={o:rp(O),i:rp(I),og:OG,ig:IG,lo:Math.round(gc(JKT,o[0])+run(o)),li:Math.round(run(i)+gc(i[i.length-1],JKT)),gc:Math.round(direct)}});

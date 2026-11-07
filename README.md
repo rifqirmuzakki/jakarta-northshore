@@ -132,16 +132,15 @@ Record shapes: timetable `{id, v:1, scope:'timetable', kind:'add'|'amend'|'cance
 
 Shows Jakarta flights on a world map (Natural Earth basemap, public domain), all airlines with Garuda highlighted.
 Routes are fictional corridors, not published airways. The generator uses the beacon/waypoint network in `tools/world`,
-chooses one corridor per direction using distance plus sharp-turn and backtracking penalties, and removes intermediate points when a direct shortcut clears the configured
-exclusions. It does not manufacture alternatives, assign detours by flight number, apply a pretend wind discount, or shift
+chooses one corridor per direction using distance plus sharp-turn and backtracking penalties, and removes redundant points while preserving regional anchors and bounded waypoint legs. Shortcuts must clear the configured exclusions. It does not manufacture alternatives, assign detours by flight number, apply a pretend wind discount, or shift
 inbound/outbound paths sideways. Multi-stop destinations are still drawn to their Jakarta-boundary stop.
 
 `tools/world/geometry.js` checks geodesic edges in short segments against exclusion polygon boundaries, including endpoint
 checks. Every exported route is validated after rounding. These are the model's fixed fictional exclusions, not current NOTAMs.
-For comparison, the revised Melbourne–Jakarta route is about 5,254 km instead of QF39's previous 6,152 km alternative;
-Medina–Jakarta is about 8,009 km instead of GA969's 8,637 km alternative. Northern Europe retains diversions around excluded areas.
+For comparison, the revised Melbourne–Jakarta route is about 5,418 km instead of QF39's previous 6,152 km alternative;
+Medina–Jakarta is about 8,406 km instead of GA969's 8,637 km alternative. Northern Europe retains diversions around excluded areas.
 
-Nearby services (up to 600 km) can leave a SID or join a STAR inside the outer gate. The transition is selected from the actual
+Flights can leave a SID or join a STAR inside the outer gate when corridor geometry permits. Nearby services use their airport as the connector target; long services use a local point on the filed corridor, so Auckland flights are eligible too. The transition is selected from the actual
 runway-specific procedure geometry to reduce total distance, with a forward-facing connector and clearance around the airport.
 Initial climb and final approach remain intact; a required hold retains its metering fix. For TKG, the four runway/procedure
 combinations tested leave the SID after about 15–23 km and join the STAR with about 36–49 km remaining, rather than visiting
@@ -152,7 +151,7 @@ Position is derived from the timetable and the terminal simulation. Tap an aircr
 and flight/aircraft history. Aircraft use a simulated climb/cruise/descent speed profile.
 
 Route search retains the incoming segment as part of its state, so it can compare arrival headings before choosing the next
-sector. Shortcut selection uses the same distance/turn cost instead of greedily taking the farthest visible point. Turn costs
+sector. Shortcut selection uses the same distance/turn cost instead of greedily taking the farthest visible point. Regional anchors remain mandatory, and shortcuts span at most 900 km. Long curated legs are filled at roughly 800 km intervals with nearby beacons where suitable, otherwise fictional coordinate fixes (`FIC`); these labels are not a claim of published real airways. Turn costs
 are fictional equivalent-distance preferences, not fuel or wind calculations. `tools/world/route-quality.json` records physical
 length, great-circle ratio, turn-aware score, enroute/terminal bends and exclusion checks for every direction and variant.
 Run `node tools/world/audit-routes.js` to print a fresh report. Detours over 15% are review flags; Helsinki's diversion remains
@@ -170,10 +169,10 @@ The World, airspace and airport maps now hand over to each other:
 - **Zoom handoff.** Zoom the World view in over Jakarta (about 1 km per pixel) and the airspace map takes over at the same spot; zoom out of the airspace map and the World view returns. Ground and airspace already share one coordinate frame; the World view joins it through latitude/longitude.
 - **One position per flight.** Arrivals leave the World map where their airspace track starts, and departures join it where their airspace track ends, so a flight is never in two places. The World view also draws the airspace-phase flights, at the positions the airspace map uses.
 - **Track live.** Pick a flight on the flight board, press "Track live" on a live leg of the flight or aircraft history pages, or use "On world map" on the airport flight card. The map that suits the flight is chosen (world while it is far away, airspace in the terminal area, airport on the ground), the camera follows it, and the view changes as the flight passes from one to the next. Dragging the map stops the following; the card's Follow button resumes it.
-- **Like Flightradar24, no airways on the map.** The World view draws only the selected flight: its flown trail as a solid line and the rest as a faded dashed line straight to the destination. The aircraft still move along the typical routing underneath.
+- **Selected filed route.** The World view draws the selected flight's flown trail solid and its remaining waypoint sequence dashed, including the remaining terminal procedure. Selected-route fixes appear as dots, with labels when zoom and spacing permit; other flights' routes stay hidden.
 - **One marker.** The World view uses the airspace map's marker: the airline badge in a ring coloured by phase (arriving blue, departing orange, holding purple, 15+ min late red) with a heading pointer, and the same `GA45 FL390` tag. The airport map keeps the same airline badge on its aircraft, with its own ground-state ring colours (taxiing, pushback, holding, under tow, late).
 - **Whole journey in the airspace map.** A selected arrival in the airspace map also shows its trail back to the origin along the World route; a departure shows its remaining dashed path towards the destination. In the World view the trail of a flight in the terminal area follows the airspace map's own flown path instead of a straight segment.
-- **Gates follow the corridor.** The route generator selects the Jakarta gate for the default corridor, shared by World and terminal maps. Nearby flights may use an interior SID/STAR transition when geometry permits; their route is not forced through that outer gate. The old per-city side in `AIR_CITY` remains a fallback.
+- **Gates follow the corridor.** The route generator selects the Jakarta gate for the default corridor, shared by World and terminal maps. Flights may use an interior SID/STAR transition when geometry permits; their route is not forced through that outer gate. The old per-city side in `AIR_CITY` remains a fallback.
 - **One flight card.** The World view uses the same flight card as the airport and airspace maps (compact strip, tap to expand): airline, aircraft and registration, route progress, status, altitude, ground speed, heading, ATD / ETA in local time (as on the history pages), time to go, and links to the flight and aircraft history. Altitude and ground speed are estimates from the flight profile while the flight is on the World map. Jakarta is always JKT.
 - **Selected flight stands out.** Selecting a flight fades every other aircraft on all three maps.
 - **No corner at the handoff.** The world route joins the airspace track with a smooth curve that arrives along the airspace track's own heading, so the trail is one continuous line in both views.

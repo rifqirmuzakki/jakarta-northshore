@@ -42,10 +42,13 @@ function turnPenalty(a,b,c){const angle=turnAngle(a,b,c);return 40*(angle/45)**2
 function routeScore(points){let score=0;for(let i=1;i<points.length;i++){score+=distance(points[i-1],points[i]);if(i>1)score+=turnPenalty(points[i-2],points[i-1],points[i])}return score}
 /* Optimise shortcuts over the ordered corridor. State retains the previous
    segment, so a longer clear jump cannot win by concealing a sharp next turn. */
-function simplify(points,clear,{before,after}={}){
+function simplify(points,clear,{before,after,maxLegKm=Infinity,keep=()=>false}={}){
  const n=points.length;if(n<3)return points.slice();
  const costs=new Float64Array(n*n).fill(Infinity),parent=new Int32Array(n*n).fill(-1),edges=new Map();
- const edge=(i,j)=>{const k=i*n+j;if(!edges.has(k))edges.set(k,clear(points[i],points[j])?distance(points[i],points[j]):Infinity);return edges.get(k)};
+ const edge=(i,j)=>{const k=i*n+j;if(!edges.has(k)){
+  const km=distance(points[i],points[j]),skipsAnchor=points.some((_,v)=>v>i&&v<j&&keep(v));
+  edges.set(k,!skipsAnchor&&(j===i+1||km<=maxLegKm)&&clear(points[i],points[j])?km:Infinity);
+ }return edges.get(k)};
  for(let j=1;j<n;j++)costs[j]=edge(0,j)+(before?turnPenalty(before,points[0],points[j]):0);
  for(let j=1;j<n-1;j++)for(let i=0;i<j;i++){const k=i*n+j;if(!Number.isFinite(costs[k]))continue;
   for(let next=j+1;next<n;next++){const dest=j*n+next,cost=costs[k]+edge(j,next)+turnPenalty(points[i],points[j],points[next]);
