@@ -28,10 +28,32 @@ that lands on a later weekday needs its return flight's operating days shifted a
 `schedule-changes.js` (Taipei GA 938/939, Amsterdam GA 44/45, Wellington GA 56/57, AlUla GA 52/53, Baku GA 54/55, Ankara GA 46/47, Marrakech GA 48/49,
 Casablanca GA 50/51), from 2026-11-07.
 
-**Multi-leg history.** Aircraft and flight history split every listed two-sector service into its physical sectors. The Jakarta-boundary
-sector retains the published timetable and simulated actuals; the onward sector receives a published stop allowance, a sector block time,
-and matching simulated take-off and touchdown times. Each time is displayed in the local time of its airport. This is a history display
-model for now: the fleet allocator and World map still plan and draw the Jakarta-boundary sector only.
+**Multi-leg timing and allocation.** All ten intermediate-stop services use the same physical model in `index.html`:
+`V104_SECTORS` defines the airports, `V186_MULTILEG` defines the flight pairs, four sector block times and three stop times,
+and `multiItinerary(outbound, day)` expands the rotation in absolute Jakarta-based minutes. The outbound timetable supplies
+its Jakarta departure, operating weekdays and effective dates. Every later milestone is the previous arrival plus the defined
+stop and next sector block; inbound Jakarta times, weekdays and first operating dates are derived from that chain. The old
+independent inbound clock and `retFrom` are superseded for these services. IANA airport zones convert each event to its local
+date/time, including DST and date-line crossings.
+
+The allocator reserves the complete Jakarta → intermediate → final → intermediate → Jakarta itinerary on one aircraft.
+Daily departures form a pipeline; today's inbound belongs to an earlier outbound and its original registration. Jakarta
+arrivals and departures remain separate ground movements. Aircraft history, flight history and operational delay propagation
+consume these physical sectors directly; completed sectors do not inherit a boundary flight's LIVE status.
+
+Timing inputs are fictional schedule assumptions: existing first-sector block estimates and onward blocks/stops are now explicit;
+return blocks are symmetric. The final-airport turn is 180 minutes, except Lisbon at 120 minutes. Change those minute values to
+retime the whole rotation; there is no fixed return-day offset. For GA10 departing Jakarta on 6 November 2026 at 11:30 WIB,
+the model reaches Chicago at 23:20 CST that evening, turns for three hours, departs as GA11 at 02:20 CST on 7 November,
+and reaches Jakarta at 16:10 WIB on 8 November. The 6 November A350-1000 requirement changes from 49 operating + 2 spare
+aircraft to 54 + 2. The World map still draws the Jakarta-boundary route; onward map geometry is not part of this change.
+
+**Multi-leg regression checks.** Run `node tools/tests/multileg.cjs` with Playwright and Chromium installed
+(`CHROMIUM_PATH` can override `/usr/bin/chromium`). It syntax-checks every embedded script and runs the app from intercepted
+local files. Checks cover six dates, all ten routes after their effective starts, GA10/11 aircraft history and page rendering,
+physical sector/turn continuity, simulated actuals/status, ground registrations, derived return days, weekday patterns, DST,
+input retiming and delay propagation. In the managed workspace Chromium requires execution outside the sandbox because
+crashpad's socket setup is denied inside it.
 
 **Operations log** (hub > Log). A timeline of everything on the viewed day: incidents as they became known, controller decisions, and your own decisions,
 each linked to the incident it answers, with the outcome (the flight's delay and its next departure now). Filter by incidents / controller / you; routine
