@@ -3689,6 +3689,7 @@ function tailsCompute(){
         if(taken.has(t)||t.loc!==f.city)return;
         const last=t.seq[t.seq.length-1];if(!last||!last.d||last.d.pid!==f.pid||last.d.city!==f.city)return;
         if(!v111SameType(last.d,f)&&last.d.ac!==f.ac)return;
+        if(last.d.t+tBlk(null,last.d.city)+60>f.t-tBlk(f.city,null)+1440)return;      // the outbound must have reached the outstation (and turned) before the return leaves
         taken.add(t);(t.nextArr||(t.nextArr=[])).push({kind:'a',a:f,d:null});
         let m=FLIGHT_TAILS.get(f.id);if(!m)FLIGHT_TAILS.set(f.id,m=new Set());m.add(t.reg)})})})
   }catch(err){console.error('returning aircraft:',err)}
