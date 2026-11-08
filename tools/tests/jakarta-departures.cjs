@@ -27,7 +27,10 @@ try{const page=await browser.newPage(),errors=[];page.on('pageerror',e=>errors.p
    paths.push({id:'STAR/'+[gate,runway,flow,variant].join('/'),points});
    if(Math.hypot(R.X[R.n-1]-R.F.x,R.Y[R.n-1]-R.F.y)>1e-6)issues.push('Final-approach anchor moved');
   }
-  for(const tr of A.AIR.A)if(tr.hs)connectors.push({id:'STAR entry/'+tr.id,points:[A.airLL(...tr.hs.O),A.airLL(...tr.hs.J)]});
+  for(const tr of A.AIR.A)if(tr.hs){const P=tr.hs.path,points=[A.airLL(...tr.hs.O)];
+   if(P)for(let i=Math.max(0,P.n-80);i<P.n;i++)points.push(A.airLL(P.X[i],P.Y[i]));else points.push(A.airLL(...tr.hs.J));
+   connectors.push({id:'STAR entry/'+tr.id,points});
+  }
   for(const tr of A.AIR.D){const points=[];for(let t=tr.t0;t<tr.t1;t+=10){const q=A.posAtOff(tr,t);if(q)points.push(A.airLL(q.x,q.y))}const q=A.posAtOff(tr,tr.t1);if(q)points.push(A.airLL(q.x,q.y));paths.push({id:tr.id,points});}
   if(A.airDepartureClear(A.airXY(-5.9,106.85),A.airXY(-6.5,106.85)))issues.push('Direct Jakarta crossing allowed');
   if(!A.airDepartureClear(A.airXY(-5.9,106.5),A.airXY(-6.5,106.5)))issues.push('Western bypass blocked');

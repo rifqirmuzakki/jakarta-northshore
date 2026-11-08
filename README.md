@@ -205,3 +205,11 @@ All five services use the Boeing 787-9 and Jakarta Terminal 2. Operating days be
 Times in the table are WIB. These are 18 round trips per week; existing Austrian and Finnair services remain. New airport records include IANA time zones and OurAirports runway profiles, and all five destinations have World corridors. An unused 737-800 registration reserve block is reassigned to 787-9 expansion; existing aircraft registrations are preserved. Weekly departures remain present on the ground even when their previous-day inbound does not operate on the viewed day.
 
 Run `node tools/tests/europe-expansion.cjs` to check launch dates, all seven operating days, exact weekly totals, next-day returns on the same physical aircraft, two-hour outstation turns, stable fleet sizing and preservation of existing registrations.
+
+### Arrival turn and final-approach model
+
+Arrival connectors curve into the STAR along its heading. STARs pass the holding fix exactly, with matching entry/exit tangents and speed; holding-level changes are spread over time. Turn speeds are limited using a 25° coordinated-bank model and 0.5 m/s² acceleration/deceleration. Holding turns use the lower of standard rate or the same bank limit. The existing 72 m/s minimum approach speed is retained in the checked procedure set.
+
+The STAR ends at the start of the runway simulation's final approach, approximately 6 km before the runway. Its last 13 km blend smoothly into that final segment's actual altitude and glide slope, rather than descending to zero and jumping back up at the handoff. The runway simulation still owns touchdown timing. Selected routes split at the current aircraft position, including curved connectors, holding loops and the remaining final approach.
+
+Run `node tools/tests/approach-dynamics.cjs` for all 96 STAR variants, live arrival phase continuity, connector bank/speed bounds, QZ815's sampled turn/descent rates and selected-route endpoints. Set `APPROACH_CLOCK=2026-11-16T08:33` to check the expanded timetable. These are kinematic simulator checks, not a real-world aircraft-separation or flight-safety certification.
