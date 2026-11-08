@@ -1,4 +1,4 @@
-# Jakarta departure avoidance
+# Jakarta procedure avoidance
 
 `jakarta-boundary.geojson` contains the Jakarta Special Capital Region feature
 from geoBoundaries gbOpen IDN ADM1 (2017 boundary data, December 2023 build).
@@ -14,12 +14,12 @@ See also https://www.openstreetmap.org/copyright and the upstream metadata in
 `jakarta-boundary-metadata.json`.
 
 The simulator uses a conservative rectangle enclosing these polygons, with
-several kilometres of margin. Departure paths route around it. Turning fixes
+several kilometres of margin. Departure and arrival paths route around it. Turning fixes
 sit a further 10 km outside that rectangle so rounded SID bends retain
-clearance. Early SID exit connectors must also clear the rectangle. Initial
-runway alignment remains intact. This is a fictional routing preference for
+clearance. Early SID exit and STAR entry connectors must also clear the rectangle. Initial
+runway alignment and final approach remain intact. This is a fictional routing preference for
 the simulator, not a claim of published SIDs or an official no-fly zone.
 
-Run `node tools/tests/jakarta-departures.cjs` to check all 72 SID combinations,
-the live departure tracks and candidate early-exit connectors against the
+Run `node tools/tests/jakarta-departures.cjs` to check all 72 SID and 96 STAR combinations,
+the live departure tracks and arrival/departure connectors against the
 source polygons, independently of the runtime rectangle check.

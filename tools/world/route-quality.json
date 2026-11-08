@@ -1,7 +1,7 @@
 {
   "summary": {
-    "destinations": 147,
-    "variants": 294,
+    "destinations": 169,
+    "variants": 338,
     "excludedVariants": 0,
     "sharpEnrouteVariants": 1,
     "backtrackingVariants": 0,
@@ -974,8 +974,8 @@
         },
         {
           "point": [
-            -1.45705,
-            121.05599
+            -1.45611,
+            121.05699
           ],
           "degrees": 4.4,
           "terminal": false
@@ -1012,8 +1012,8 @@
         },
         {
           "point": [
-            -1.45705,
-            121.05599
+            -1.45611,
+            121.05699
           ],
           "degrees": 3.6,
           "terminal": false
@@ -26879,6 +26879,3322 @@
       "warnings": []
     },
     {
+      "city": "Fukuoka",
+      "direction": "out",
+      "variant": 0,
+      "km": 5318,
+      "greatCircleKm": 5077.2,
+      "detourRatio": 1.0474,
+      "score": 5377.8,
+      "maxEnrouteTurnDeg": 43.6,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 4.7,
+          "terminal": true
+        },
+        {
+          "point": [
+            0,
+            107.5
+          ],
+          "degrees": 9.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            3.5,
+            108.5
+          ],
+          "degrees": 10.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            7.00323,
+            110.23685
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            10.5,
+            112
+          ],
+          "degrees": 13.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            13.51424,
+            114.64626
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            16.5,
+            117.36
+          ],
+          "degrees": 10.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            19.5,
+            121.5
+          ],
+          "degrees": 16.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            23.02826,
+            124.42204
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            26.5,
+            127.5
+          ],
+          "degrees": 5.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            31.5,
+            131.5
+          ],
+          "degrees": 43.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            31.88,
+            131.44
+          ],
+          "degrees": 17.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            33.35748,
+            130.60373
+          ],
+          "degrees": 3.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Fukuoka",
+      "direction": "in",
+      "variant": 0,
+      "km": 5320.4,
+      "greatCircleKm": 5078.3,
+      "detourRatio": 1.0477,
+      "score": 5380.4,
+      "maxEnrouteTurnDeg": 43.6,
+      "turns": [
+        {
+          "point": [
+            33.45525,
+            130.53721
+          ],
+          "degrees": 3.6,
+          "terminal": true
+        },
+        {
+          "point": [
+            31.88,
+            131.44
+          ],
+          "degrees": 17.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            31.5,
+            131.5
+          ],
+          "degrees": 43.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            26.5,
+            127.5
+          ],
+          "degrees": 5.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            23.02826,
+            124.42204
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            19.5,
+            121.5
+          ],
+          "degrees": 16.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            16.5,
+            117.36
+          ],
+          "degrees": 10.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            13.51424,
+            114.64626
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            10.5,
+            112
+          ],
+          "degrees": 13.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            7.00323,
+            110.23685
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            3.5,
+            108.5
+          ],
+          "degrees": 10.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            0,
+            107.5
+          ],
+          "degrees": 9.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 4.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Sapporo New Chitose",
+      "direction": "out",
+      "variant": 0,
+      "km": 6620.4,
+      "greatCircleKm": 6484.5,
+      "detourRatio": 1.021,
+      "score": 6677,
+      "maxEnrouteTurnDeg": 16.2,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 4.7,
+          "terminal": true
+        },
+        {
+          "point": [
+            0,
+            107.5
+          ],
+          "degrees": 9.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            3.5,
+            108.5
+          ],
+          "degrees": 10.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            7.00323,
+            110.23685
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            10.5,
+            112
+          ],
+          "degrees": 13.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            13.51424,
+            114.64626
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            16.5,
+            117.36
+          ],
+          "degrees": 10.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            19.5,
+            121.5
+          ],
+          "degrees": 16.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            23.02826,
+            124.42204
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            26.5,
+            127.5
+          ],
+          "degrees": 5.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            31.5,
+            131.5
+          ],
+          "degrees": 2.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            36.4,
+            136.4
+          ],
+          "degrees": 10.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            39.61756,
+            138.9242
+          ],
+          "degrees": 2.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            42.51166,
+            141.73462
+          ],
+          "degrees": 44.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Sapporo New Chitose",
+      "direction": "in",
+      "variant": 0,
+      "km": 6619.8,
+      "greatCircleKm": 6486.4,
+      "detourRatio": 1.0206,
+      "score": 6674.1,
+      "maxEnrouteTurnDeg": 16.2,
+      "turns": [
+        {
+          "point": [
+            42.62772,
+            141.71482
+          ],
+          "degrees": 42.8,
+          "terminal": true
+        },
+        {
+          "point": [
+            39.61756,
+            138.9242
+          ],
+          "degrees": 1.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            36.4,
+            136.4
+          ],
+          "degrees": 10.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            31.5,
+            131.5
+          ],
+          "degrees": 2.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            26.5,
+            127.5
+          ],
+          "degrees": 5.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            23.02826,
+            124.42204
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            19.5,
+            121.5
+          ],
+          "degrees": 16.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            16.5,
+            117.36
+          ],
+          "degrees": 10.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            13.51424,
+            114.64626
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            10.5,
+            112
+          ],
+          "degrees": 13.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            7.00323,
+            110.23685
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            3.5,
+            108.5
+          ],
+          "degrees": 10.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            0,
+            107.5
+          ],
+          "degrees": 9.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 4.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Chiang Mai",
+      "direction": "out",
+      "variant": 0,
+      "km": 2971.9,
+      "greatCircleKm": 2892.6,
+      "detourRatio": 1.0274,
+      "score": 2992.6,
+      "maxEnrouteTurnDeg": 26.4,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 10.3,
+          "terminal": true
+        },
+        {
+          "point": [
+            -1,
+            102.5
+          ],
+          "degrees": 26.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            3.2,
+            101.4
+          ],
+          "degrees": 2.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            9.55,
+            100.06
+          ],
+          "degrees": 9.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            12.63,
+            99.95
+          ],
+          "degrees": 7.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            18.50123,
+            98.96285
+          ],
+          "degrees": 9.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Chiang Mai",
+      "direction": "in",
+      "variant": 0,
+      "km": 2975.2,
+      "greatCircleKm": 2895.9,
+      "detourRatio": 1.0274,
+      "score": 2995.7,
+      "maxEnrouteTurnDeg": 26.4,
+      "turns": [
+        {
+          "point": [
+            18.62188,
+            98.96292
+          ],
+          "degrees": 9.2,
+          "terminal": true
+        },
+        {
+          "point": [
+            12.63,
+            99.95
+          ],
+          "degrees": 6.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            9.55,
+            100.06
+          ],
+          "degrees": 9.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            3.2,
+            101.4
+          ],
+          "degrees": 2.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            -1,
+            102.5
+          ],
+          "degrees": 26.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 10.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Chennai",
+      "direction": "out",
+      "variant": 0,
+      "km": 3818.3,
+      "greatCircleKm": 3616.2,
+      "detourRatio": 1.0559,
+      "score": 3854,
+      "maxEnrouteTurnDeg": 14.8,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 0.2,
+          "terminal": true
+        },
+        {
+          "point": [
+            -5,
+            100
+          ],
+          "degrees": 14.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            -3.25696,
+            96.24348
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -1.5,
+            92.5
+          ],
+          "degrees": 11.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            2.5,
+            87.11
+          ],
+          "degrees": 13,
+          "terminal": false
+        },
+        {
+          "point": [
+            6,
+            84.1
+          ],
+          "degrees": 12.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            9.50253,
+            82.15554
+          ],
+          "degrees": 2.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            12.87122,
+            80.40842
+          ],
+          "degrees": 33.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Chennai",
+      "direction": "in",
+      "variant": 0,
+      "km": 3818.3,
+      "greatCircleKm": 3618.2,
+      "detourRatio": 1.0553,
+      "score": 3852.8,
+      "maxEnrouteTurnDeg": 14.8,
+      "turns": [
+        {
+          "point": [
+            12.92338,
+            80.31106
+          ],
+          "degrees": 32.9,
+          "terminal": true
+        },
+        {
+          "point": [
+            9.50253,
+            82.15554
+          ],
+          "degrees": 1.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            6,
+            84.1
+          ],
+          "degrees": 12.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            2.5,
+            87.11
+          ],
+          "degrees": 13,
+          "terminal": false
+        },
+        {
+          "point": [
+            -1.5,
+            92.5
+          ],
+          "degrees": 11.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            -3.25696,
+            96.24348
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5,
+            100
+          ],
+          "degrees": 14.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            105.55
+          ],
+          "degrees": 0.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kolkata",
+      "direction": "out",
+      "variant": 0,
+      "km": 3847.6,
+      "greatCircleKm": 3763.2,
+      "detourRatio": 1.0224,
+      "score": 3890.8,
+      "maxEnrouteTurnDeg": 23.7,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 10.3,
+          "terminal": true
+        },
+        {
+          "point": [
+            -1,
+            102.5
+          ],
+          "degrees": 3.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            4,
+            97.6
+          ],
+          "degrees": 8.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            9.5,
+            93.5
+          ],
+          "degrees": 23.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            16.5,
+            91.81
+          ],
+          "degrees": 14.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            22.38977,
+            88.41553
+          ],
+          "degrees": 35.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kolkata",
+      "direction": "in",
+      "variant": 0,
+      "km": 3847.7,
+      "greatCircleKm": 3765,
+      "detourRatio": 1.022,
+      "score": 3890,
+      "maxEnrouteTurnDeg": 23.7,
+      "turns": [
+        {
+          "point": [
+            22.50071,
+            88.42819
+          ],
+          "degrees": 34.6,
+          "terminal": true
+        },
+        {
+          "point": [
+            16.5,
+            91.81
+          ],
+          "degrees": 14,
+          "terminal": false
+        },
+        {
+          "point": [
+            9.5,
+            93.5
+          ],
+          "degrees": 23.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            4,
+            97.6
+          ],
+          "degrees": 8.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            -1,
+            102.5
+          ],
+          "degrees": 3.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 10.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kathmandu",
+      "direction": "out",
+      "variant": 0,
+      "km": 4513.4,
+      "greatCircleKm": 4401.7,
+      "detourRatio": 1.0254,
+      "score": 4609.7,
+      "maxEnrouteTurnDeg": 17.9,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 10.3,
+          "terminal": true
+        },
+        {
+          "point": [
+            -1,
+            102.5
+          ],
+          "degrees": 3.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            4,
+            97.6
+          ],
+          "degrees": 8.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            9.5,
+            93.5
+          ],
+          "degrees": 17.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            11.65,
+            92.75
+          ],
+          "degrees": 8.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            16.5,
+            91.81
+          ],
+          "degrees": 9.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            20,
+            90.46
+          ],
+          "degrees": 0.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            23.18,
+            89.16
+          ],
+          "degrees": 17.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            27.45029,
+            85.2471
+          ],
+          "degrees": 62.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Kathmandu",
+      "direction": "in",
+      "variant": 0,
+      "km": 4509.6,
+      "greatCircleKm": 4403.5,
+      "detourRatio": 1.0241,
+      "score": 4602.5,
+      "maxEnrouteTurnDeg": 17.9,
+      "turns": [
+        {
+          "point": [
+            27.55929,
+            85.2964
+          ],
+          "degrees": 61.4,
+          "terminal": true
+        },
+        {
+          "point": [
+            23.18,
+            89.16
+          ],
+          "degrees": 16.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            20,
+            90.46
+          ],
+          "degrees": 0.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            16.5,
+            91.81
+          ],
+          "degrees": 9.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            11.65,
+            92.75
+          ],
+          "degrees": 8.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            9.5,
+            93.5
+          ],
+          "degrees": 17.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            4,
+            97.6
+          ],
+          "degrees": 8.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            -1,
+            102.5
+          ],
+          "degrees": 3.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 10.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Munich",
+      "direction": "out",
+      "variant": 0,
+      "km": 11299,
+      "greatCircleKm": 10873.7,
+      "detourRatio": 1.0391,
+      "score": 11385.1,
+      "maxEnrouteTurnDeg": 35.9,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 10.3,
+          "terminal": true
+        },
+        {
+          "point": [
+            -1,
+            102.5
+          ],
+          "degrees": 3.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            4,
+            97.6
+          ],
+          "degrees": 8.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            9.5,
+            93.5
+          ],
+          "degrees": 19.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            13,
+            88
+          ],
+          "degrees": 2.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            17,
+            82
+          ],
+          "degrees": 16.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            21.5,
+            78
+          ],
+          "degrees": 13.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            25.04989,
+            75.95091
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            28.57,
+            73.78
+          ],
+          "degrees": 6.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            31.91,
+            70.89
+          ],
+          "degrees": 0.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            34.5,
+            68.5
+          ],
+          "degrees": 20.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            36.4253,
+            64.35121
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 1,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.6,
+            52.5
+          ],
+          "degrees": 17.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.57,
+            43.12
+          ],
+          "degrees": 14.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            41,
+            39.8
+          ],
+          "degrees": 5.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            41.06881,
+            34.55602
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 13.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 35.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            43.15,
+            25.71
+          ],
+          "degrees": 0.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            46.68,
+            19.68
+          ],
+          "degrees": 2.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            47,
+            19
+          ],
+          "degrees": 16,
+          "terminal": false
+        },
+        {
+          "point": [
+            48,
+            14
+          ],
+          "degrees": 4.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            48.39523,
+            12.19793
+          ],
+          "degrees": 23.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Munich",
+      "direction": "in",
+      "variant": 0,
+      "km": 11301.8,
+      "greatCircleKm": 10877.6,
+      "detourRatio": 1.039,
+      "score": 11385.8,
+      "maxEnrouteTurnDeg": 35.9,
+      "turns": [
+        {
+          "point": [
+            48.38115,
+            12.00971
+          ],
+          "degrees": 21.7,
+          "terminal": true
+        },
+        {
+          "point": [
+            48,
+            14
+          ],
+          "degrees": 2.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            47,
+            19
+          ],
+          "degrees": 16,
+          "terminal": false
+        },
+        {
+          "point": [
+            46.68,
+            19.68
+          ],
+          "degrees": 2.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            43.15,
+            25.71
+          ],
+          "degrees": 0.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 35.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 13.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            41.06881,
+            34.55602
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            41,
+            39.8
+          ],
+          "degrees": 5.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.57,
+            43.12
+          ],
+          "degrees": 14.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.6,
+            52.5
+          ],
+          "degrees": 17.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 1,
+          "terminal": false
+        },
+        {
+          "point": [
+            36.4253,
+            64.35121
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            34.5,
+            68.5
+          ],
+          "degrees": 20.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            31.91,
+            70.89
+          ],
+          "degrees": 0.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            28.57,
+            73.78
+          ],
+          "degrees": 6.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            25.04989,
+            75.95091
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            21.5,
+            78
+          ],
+          "degrees": 13.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            17,
+            82
+          ],
+          "degrees": 16.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            13,
+            88
+          ],
+          "degrees": 2.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            9.5,
+            93.5
+          ],
+          "degrees": 19.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            4,
+            97.6
+          ],
+          "degrees": 8.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            -1,
+            102.5
+          ],
+          "degrees": 3.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 10.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Seattle",
+      "direction": "out",
+      "variant": 0,
+      "km": 13908.3,
+      "greatCircleKm": 13491.1,
+      "detourRatio": 1.0309,
+      "score": 14104.3,
+      "maxEnrouteTurnDeg": 27.9,
+      "turns": [
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 4.7,
+          "terminal": true
+        },
+        {
+          "point": [
+            0,
+            107.5
+          ],
+          "degrees": 9.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            3.5,
+            108.5
+          ],
+          "degrees": 10.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            7.00323,
+            110.23685
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            10.5,
+            112
+          ],
+          "degrees": 13.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            13.51424,
+            114.64626
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            16.5,
+            117.36
+          ],
+          "degrees": 10.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            19.5,
+            121.5
+          ],
+          "degrees": 16.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            23.02826,
+            124.42204
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            26.5,
+            127.5
+          ],
+          "degrees": 5.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            31.5,
+            131.5
+          ],
+          "degrees": 17.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            35,
+            137.5
+          ],
+          "degrees": 4.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            37.28305,
+            143.01179
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            39.29529,
+            148.84702
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            41,
+            155
+          ],
+          "degrees": 18.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            44.04257,
+            161.04398
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            46.73348,
+            167.70186
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            49,
+            175
+          ],
+          "degrees": 27.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            48,
+            184.23
+          ],
+          "degrees": 14.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            48,
+            189.46
+          ],
+          "degrees": 3.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            48,
+            194.69
+          ],
+          "degrees": 3.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            48,
+            199.92
+          ],
+          "degrees": 3.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            48,
+            205.15
+          ],
+          "degrees": 3.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            48,
+            210.38
+          ],
+          "degrees": 3.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            48,
+            215.61
+          ],
+          "degrees": 5.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            48,
+            226.07
+          ],
+          "degrees": 4.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            47.87196,
+            231.91137
+          ],
+          "degrees": 3.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            47.71561,
+            -122.311
+          ],
+          "degrees": 85.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Seattle",
+      "direction": "in",
+      "variant": 0,
+      "km": 13899.4,
+      "greatCircleKm": 13492.4,
+      "detourRatio": 1.0302,
+      "score": 14089.6,
+      "maxEnrouteTurnDeg": 27.9,
+      "turns": [
+        {
+          "point": [
+            47.59988,
+            -122.311
+          ],
+          "degrees": 83.9,
+          "terminal": true
+        },
+        {
+          "point": [
+            47.87196,
+            231.91137
+          ],
+          "degrees": 2.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            48,
+            226.07
+          ],
+          "degrees": 4.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            48,
+            215.61
+          ],
+          "degrees": 5.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            48,
+            210.38
+          ],
+          "degrees": 3.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            48,
+            205.15
+          ],
+          "degrees": 3.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            48,
+            199.92
+          ],
+          "degrees": 3.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            48,
+            194.69
+          ],
+          "degrees": 3.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            48,
+            189.46
+          ],
+          "degrees": 3.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            48,
+            184.23
+          ],
+          "degrees": 14.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            49,
+            175
+          ],
+          "degrees": 27.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            46.73348,
+            167.70186
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            44.04257,
+            161.04398
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            41,
+            155
+          ],
+          "degrees": 18.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            39.29529,
+            148.84702
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            37.28305,
+            143.01179
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            35,
+            137.5
+          ],
+          "degrees": 4.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            31.5,
+            131.5
+          ],
+          "degrees": 17.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            26.5,
+            127.5
+          ],
+          "degrees": 5.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            23.02826,
+            124.42204
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            19.5,
+            121.5
+          ],
+          "degrees": 16.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            16.5,
+            117.36
+          ],
+          "degrees": 10.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            13.51424,
+            114.64626
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            10.5,
+            112
+          ],
+          "degrees": 13.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            7.00323,
+            110.23685
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            3.5,
+            108.5
+          ],
+          "degrees": 10.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            0,
+            107.5
+          ],
+          "degrees": 9.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.7,
+            106.95
+          ],
+          "degrees": 4.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Malang",
+      "direction": "out",
+      "variant": 0,
+      "km": 728,
+      "greatCircleKm": 696.8,
+      "detourRatio": 1.0447,
+      "score": 802.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 28.4,
+          "terminal": true
+        },
+        {
+          "point": [
+            -7.67399,
+            112.65053
+          ],
+          "degrees": 54.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Malang",
+      "direction": "in",
+      "variant": 0,
+      "km": 725,
+      "greatCircleKm": 697.8,
+      "detourRatio": 1.039,
+      "score": 798.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -7.77857,
+            112.67648
+          ],
+          "degrees": 53.2,
+          "terminal": true
+        },
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 29.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Palu",
+      "direction": "out",
+      "variant": 0,
+      "km": 1616,
+      "greatCircleKm": 1580.2,
+      "detourRatio": 1.0227,
+      "score": 1783.9,
+      "maxEnrouteTurnDeg": 1.5,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 15.1,
+          "terminal": true
+        },
+        {
+          "point": [
+            -3.44,
+            114.73
+          ],
+          "degrees": 1.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            -1.15635,
+            120.01805
+          ],
+          "degrees": 90.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Palu",
+      "direction": "in",
+      "variant": 0,
+      "km": 1605.9,
+      "greatCircleKm": 1580.1,
+      "detourRatio": 1.0164,
+      "score": 1770,
+      "maxEnrouteTurnDeg": 2.6,
+      "turns": [
+        {
+          "point": [
+            -1.05743,
+            119.97288
+          ],
+          "degrees": 89.9,
+          "terminal": true
+        },
+        {
+          "point": [
+            -3.44,
+            114.73
+          ],
+          "degrees": 2.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 15.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Gorontalo",
+      "direction": "out",
+      "variant": 0,
+      "km": 1959.7,
+      "greatCircleKm": 1947.1,
+      "detourRatio": 1.0065,
+      "score": 1987.8,
+      "maxEnrouteTurnDeg": 1.6,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 17.8,
+          "terminal": true
+        },
+        {
+          "point": [
+            -3.77593,
+            113.20366
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -1.57499,
+            118.03293
+          ],
+          "degrees": 1.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            0.66928,
+            122.58805
+          ],
+          "degrees": 33.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Gorontalo",
+      "direction": "in",
+      "variant": 0,
+      "km": 1960.2,
+      "greatCircleKm": 1949.3,
+      "detourRatio": 1.0056,
+      "score": 1987.4,
+      "maxEnrouteTurnDeg": 0.9,
+      "turns": [
+        {
+          "point": [
+            0.65547,
+            122.69961
+          ],
+          "degrees": 32.5,
+          "terminal": true
+        },
+        {
+          "point": [
+            -1.57499,
+            118.03293
+          ],
+          "degrees": 0.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            -3.77593,
+            113.20366
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 17.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Labuan Bajo",
+      "direction": "out",
+      "variant": 0,
+      "km": 1510.5,
+      "greatCircleKm": 1482,
+      "detourRatio": 1.0192,
+      "score": 1622.3,
+      "maxEnrouteTurnDeg": 2.4,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 19.4,
+          "terminal": true
+        },
+        {
+          "point": [
+            -7.25471,
+            114.10347
+          ],
+          "degrees": 2.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            -8.23106,
+            119.85259
+          ],
+          "degrees": 72.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Labuan Bajo",
+      "direction": "in",
+      "variant": 0,
+      "km": 1504,
+      "greatCircleKm": 1482.5,
+      "detourRatio": 1.0145,
+      "score": 1613,
+      "maxEnrouteTurnDeg": 1.4,
+      "turns": [
+        {
+          "point": [
+            -8.33259,
+            119.86723
+          ],
+          "degrees": 71.7,
+          "terminal": true
+        },
+        {
+          "point": [
+            -7.25471,
+            114.10347
+          ],
+          "degrees": 1.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 19.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Manokwari",
+      "direction": "out",
+      "variant": 0,
+      "km": 3118,
+      "greatCircleKm": 3093.7,
+      "detourRatio": 1.0078,
+      "score": 3252.9,
+      "maxEnrouteTurnDeg": 2.3,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 4,
+          "terminal": true
+        },
+        {
+          "point": [
+            -4.75919,
+            114.80346
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -3.50855,
+            121.23411
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -2.21399,
+            127.6473
+          ],
+          "degrees": 2.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            -1.15255,
+            134.05779
+          ],
+          "degrees": 82.5,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Manokwari",
+      "direction": "in",
+      "variant": 0,
+      "km": 3109.7,
+      "greatCircleKm": 3094.1,
+      "detourRatio": 1.005,
+      "score": 3241.5,
+      "maxEnrouteTurnDeg": 1.3,
+      "turns": [
+        {
+          "point": [
+            -1.04455,
+            134.05465
+          ],
+          "degrees": 81.6,
+          "terminal": true
+        },
+        {
+          "point": [
+            -2.21399,
+            127.6473
+          ],
+          "degrees": 1.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            -3.50855,
+            121.23411
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.75919,
+            114.80346
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Mamuju",
+      "direction": "out",
+      "variant": 0,
+      "km": 1430.8,
+      "greatCircleKm": 1425.7,
+      "detourRatio": 1.0036,
+      "score": 1443.7,
+      "maxEnrouteTurnDeg": 1.1,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 10.9,
+          "terminal": true
+        },
+        {
+          "point": [
+            -4.28519,
+            113.7034
+          ],
+          "degrees": 1.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            -2.75468,
+            118.82857
+          ],
+          "degrees": 23.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Mamuju",
+      "direction": "in",
+      "variant": 0,
+      "km": 1430.9,
+      "greatCircleKm": 1426.6,
+      "detourRatio": 1.003,
+      "score": 1443.5,
+      "maxEnrouteTurnDeg": 0.7,
+      "turns": [
+        {
+          "point": [
+            -2.69125,
+            118.90427
+          ],
+          "degrees": 22.8,
+          "terminal": true
+        },
+        {
+          "point": [
+            -4.28519,
+            113.7034
+          ],
+          "degrees": 0.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 10.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Berau",
+      "direction": "out",
+      "variant": 0,
+      "km": 1516,
+      "greatCircleKm": 1509.2,
+      "detourRatio": 1.0045,
+      "score": 1548.8,
+      "maxEnrouteTurnDeg": 1.6,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 3.3,
+          "terminal": true
+        },
+        {
+          "point": [
+            -1.42708,
+            112.72344
+          ],
+          "degrees": 1.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            1.90477,
+            117.3709
+          ],
+          "degrees": 40.6,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Berau",
+      "direction": "in",
+      "variant": 0,
+      "km": 1514.7,
+      "greatCircleKm": 1510.3,
+      "detourRatio": 1.0029,
+      "score": 1546.4,
+      "maxEnrouteTurnDeg": 1,
+      "turns": [
+        {
+          "point": [
+            2.00448,
+            117.39536
+          ],
+          "degrees": 39.9,
+          "terminal": true
+        },
+        {
+          "point": [
+            -1.42708,
+            112.72344
+          ],
+          "degrees": 1,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 3.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Banyuwangi",
+      "direction": "out",
+      "variant": 0,
+      "km": 902.3,
+      "greatCircleKm": 880.5,
+      "detourRatio": 1.0247,
+      "score": 938.6,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 29.4,
+          "terminal": true
+        },
+        {
+          "point": [
+            -8.34911,
+            114.08242
+          ],
+          "degrees": 31.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Banyuwangi",
+      "direction": "in",
+      "variant": 0,
+      "km": 902,
+      "greatCircleKm": 881.8,
+      "detourRatio": 1.023,
+      "score": 937.1,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -8.33365,
+            114.18428
+          ],
+          "degrees": 30.7,
+          "terminal": true
+        },
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 28.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Silangit",
+      "direction": "out",
+      "variant": 0,
+      "km": 1273.9,
+      "greatCircleKm": 1262.4,
+      "detourRatio": 1.0091,
+      "score": 1317.7,
+      "maxEnrouteTurnDeg": 2.1,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 13.2,
+          "terminal": true
+        },
+        {
+          "point": [
+            -1.34763,
+            102.46585
+          ],
+          "degrees": 2.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            2.24619,
+            99.25066
+          ],
+          "degrees": 45.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Silangit",
+      "direction": "in",
+      "variant": 0,
+      "km": 1272.6,
+      "greatCircleKm": 1264,
+      "detourRatio": 1.0068,
+      "score": 1314.7,
+      "maxEnrouteTurnDeg": 1.2,
+      "turns": [
+        {
+          "point": [
+            2.2516,
+            99.14038
+          ],
+          "degrees": 44.2,
+          "terminal": true
+        },
+        {
+          "point": [
+            -1.34763,
+            102.46585
+          ],
+          "degrees": 1.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 13.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Gunungsitoli",
+      "direction": "out",
+      "variant": 0,
+      "km": 1298.3,
+      "greatCircleKm": 1282.7,
+      "detourRatio": 1.0122,
+      "score": 1334.2,
+      "maxEnrouteTurnDeg": 1.7,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 22.7,
+          "terminal": true
+        },
+        {
+          "point": [
+            -1.8967,
+            101.82006
+          ],
+          "degrees": 1.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            1.15602,
+            97.96246
+          ],
+          "degrees": 36,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Gunungsitoli",
+      "direction": "in",
+      "variant": 0,
+      "km": 1297.5,
+      "greatCircleKm": 1283.7,
+      "detourRatio": 1.0107,
+      "score": 1332.5,
+      "maxEnrouteTurnDeg": 1,
+      "turns": [
+        {
+          "point": [
+            1.16012,
+            97.86038
+          ],
+          "degrees": 35.4,
+          "terminal": true
+        },
+        {
+          "point": [
+            -1.8967,
+            101.82006
+          ],
+          "degrees": 1,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 22.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Merauke",
+      "direction": "out",
+      "variant": 0,
+      "km": 3753.6,
+      "greatCircleKm": 3731.1,
+      "detourRatio": 1.006,
+      "score": 3854.1,
+      "maxEnrouteTurnDeg": 2.2,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 12.8,
+          "terminal": true
+        },
+        {
+          "point": [
+            -6.64225,
+            114.73237
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -7.25268,
+            121.13162
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -7.77346,
+            127.54694
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -8.19784,
+            133.97669
+          ],
+          "degrees": 2.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            -8.27519,
+            140.33064
+          ],
+          "degrees": 70.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Merauke",
+      "direction": "in",
+      "variant": 0,
+      "km": 3747.6,
+      "greatCircleKm": 3731.7,
+      "detourRatio": 1.0043,
+      "score": 3845.6,
+      "maxEnrouteTurnDeg": 1.3,
+      "turns": [
+        {
+          "point": [
+            -8.37568,
+            140.36612
+          ],
+          "degrees": 69.3,
+          "terminal": true
+        },
+        {
+          "point": [
+            -8.19784,
+            133.97669
+          ],
+          "degrees": 1.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            -7.77346,
+            127.54694
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -7.25268,
+            121.13162
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -6.64225,
+            114.73237
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 12.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Samarinda",
+      "direction": "out",
+      "variant": 0,
+      "km": 1345.7,
+      "greatCircleKm": 1337,
+      "detourRatio": 1.0065,
+      "score": 1368.3,
+      "maxEnrouteTurnDeg": 1.4,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 14,
+          "terminal": true
+        },
+        {
+          "point": [
+            -2.69542,
+            112.63669
+          ],
+          "degrees": 1.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            -0.59022,
+            117.10172
+          ],
+          "degrees": 30.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Samarinda",
+      "direction": "in",
+      "variant": 0,
+      "km": 1346.5,
+      "greatCircleKm": 1339.2,
+      "detourRatio": 1.0055,
+      "score": 1368.3,
+      "maxEnrouteTurnDeg": 0.8,
+      "turns": [
+        {
+          "point": [
+            -0.50113,
+            117.16616
+          ],
+          "degrees": 30.1,
+          "terminal": true
+        },
+        {
+          "point": [
+            -2.69542,
+            112.63669
+          ],
+          "degrees": 0.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 14,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Tanjung Pinang",
+      "direction": "out",
+      "variant": 0,
+      "km": 837.2,
+      "greatCircleKm": 818.5,
+      "detourRatio": 1.0228,
+      "score": 910.2,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 15.2,
+          "terminal": true
+        },
+        {
+          "point": [
+            0.73302,
+            104.35461
+          ],
+          "degrees": 58.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Tanjung Pinang",
+      "direction": "in",
+      "variant": 0,
+      "km": 833.5,
+      "greatCircleKm": 819.5,
+      "detourRatio": 1.0171,
+      "score": 904.9,
+      "maxEnrouteTurnDeg": 0,
+      "turns": [
+        {
+          "point": [
+            0.81078,
+            104.42718
+          ],
+          "degrees": 58,
+          "terminal": true
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 16.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Darwin",
+      "direction": "out",
+      "variant": 0,
+      "km": 2821.4,
+      "greatCircleKm": 2745.3,
+      "detourRatio": 1.0277,
+      "score": 2883,
+      "maxEnrouteTurnDeg": 38.7,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 20.8,
+          "terminal": true
+        },
+        {
+          "point": [
+            -7.5,
+            114.5
+          ],
+          "degrees": 0.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            -8.52,
+            118.69
+          ],
+          "degrees": 13.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            -8.5,
+            122
+          ],
+          "degrees": 15.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            -9.5,
+            126
+          ],
+          "degrees": 14.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            -12,
+            130.8
+          ],
+          "degrees": 38.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            -12.15699,
+            130.871
+          ],
+          "degrees": 23.9,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Darwin",
+      "direction": "in",
+      "variant": 0,
+      "km": 2822.3,
+      "greatCircleKm": 2745.6,
+      "detourRatio": 1.0279,
+      "score": 2892.4,
+      "maxEnrouteTurnDeg": 47.6,
+      "turns": [
+        {
+          "point": [
+            -12.26072,
+            130.871
+          ],
+          "degrees": 14.9,
+          "terminal": true
+        },
+        {
+          "point": [
+            -12,
+            130.8
+          ],
+          "degrees": 47.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            -9.5,
+            126
+          ],
+          "degrees": 14.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            -8.5,
+            122
+          ],
+          "degrees": 15.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            -8.52,
+            118.69
+          ],
+          "degrees": 13.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            -7.5,
+            114.5
+          ],
+          "degrees": 0.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 20.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Cairns",
+      "direction": "out",
+      "variant": 0,
+      "km": 4602.6,
+      "greatCircleKm": 4412.7,
+      "detourRatio": 1.043,
+      "score": 4642.2,
+      "maxEnrouteTurnDeg": 24.3,
+      "turns": [
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 20.8,
+          "terminal": true
+        },
+        {
+          "point": [
+            -7.5,
+            114.5
+          ],
+          "degrees": 0.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            -8.52,
+            118.69
+          ],
+          "degrees": 13.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            -8.5,
+            122
+          ],
+          "degrees": 15.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            -9.5,
+            126
+          ],
+          "degrees": 9.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            -9.77957,
+            130.49662
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -10,
+            135
+          ],
+          "degrees": 17.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            -11.5,
+            139.3
+          ],
+          "degrees": 5.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            -12.67,
+            141.92
+          ],
+          "degrees": 24.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            -16.64991,
+            145.60864
+          ],
+          "degrees": 11.4,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Cairns",
+      "direction": "in",
+      "variant": 0,
+      "km": 4605.5,
+      "greatCircleKm": 4414.6,
+      "detourRatio": 1.0432,
+      "score": 4645.2,
+      "maxEnrouteTurnDeg": 24.6,
+      "turns": [
+        {
+          "point": [
+            -16.75353,
+            145.66893
+          ],
+          "degrees": 11.1,
+          "terminal": true
+        },
+        {
+          "point": [
+            -12.67,
+            141.92
+          ],
+          "degrees": 24.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            -11.5,
+            139.3
+          ],
+          "degrees": 5.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            -10,
+            135
+          ],
+          "degrees": 17.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            -9.77957,
+            130.49662
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -9.5,
+            126
+          ],
+          "degrees": 9.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            -8.5,
+            122
+          ],
+          "degrees": 15.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            -8.52,
+            118.69
+          ],
+          "degrees": 13.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            -7.5,
+            114.5
+          ],
+          "degrees": 0.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5.95,
+            108.35
+          ],
+          "degrees": 20.8,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
       "city": "Wellington",
       "direction": "out",
       "variant": 0,
@@ -28960,242 +32276,6 @@
             105.55
           ],
           "degrees": 0.2,
-          "terminal": true
-        }
-      ],
-      "excludedSegments": [],
-      "warnings": []
-    },
-    {
-      "city": "Fukuoka",
-      "direction": "out",
-      "variant": 0,
-      "km": 5318,
-      "greatCircleKm": 5077.2,
-      "detourRatio": 1.0474,
-      "score": 5377.8,
-      "maxEnrouteTurnDeg": 43.6,
-      "turns": [
-        {
-          "point": [
-            -4.7,
-            106.95
-          ],
-          "degrees": 4.7,
-          "terminal": true
-        },
-        {
-          "point": [
-            0,
-            107.5
-          ],
-          "degrees": 9.3,
-          "terminal": false
-        },
-        {
-          "point": [
-            3.5,
-            108.5
-          ],
-          "degrees": 10.2,
-          "terminal": false
-        },
-        {
-          "point": [
-            7.00323,
-            110.23685
-          ],
-          "degrees": 0,
-          "terminal": false
-        },
-        {
-          "point": [
-            10.5,
-            112
-          ],
-          "degrees": 13.8,
-          "terminal": false
-        },
-        {
-          "point": [
-            13.51424,
-            114.64626
-          ],
-          "degrees": 0,
-          "terminal": false
-        },
-        {
-          "point": [
-            16.5,
-            117.36
-          ],
-          "degrees": 10.4,
-          "terminal": false
-        },
-        {
-          "point": [
-            19.5,
-            121.5
-          ],
-          "degrees": 16.2,
-          "terminal": false
-        },
-        {
-          "point": [
-            23.02826,
-            124.42204
-          ],
-          "degrees": 0,
-          "terminal": false
-        },
-        {
-          "point": [
-            26.5,
-            127.5
-          ],
-          "degrees": 5.5,
-          "terminal": false
-        },
-        {
-          "point": [
-            31.5,
-            131.5
-          ],
-          "degrees": 43.6,
-          "terminal": false
-        },
-        {
-          "point": [
-            31.88,
-            131.44
-          ],
-          "degrees": 17.6,
-          "terminal": false
-        },
-        {
-          "point": [
-            33.35748,
-            130.60373
-          ],
-          "degrees": 3.9,
-          "terminal": true
-        }
-      ],
-      "excludedSegments": [],
-      "warnings": []
-    },
-    {
-      "city": "Fukuoka",
-      "direction": "in",
-      "variant": 0,
-      "km": 5320.4,
-      "greatCircleKm": 5078.3,
-      "detourRatio": 1.0477,
-      "score": 5380.4,
-      "maxEnrouteTurnDeg": 43.6,
-      "turns": [
-        {
-          "point": [
-            33.45525,
-            130.53721
-          ],
-          "degrees": 3.6,
-          "terminal": true
-        },
-        {
-          "point": [
-            31.88,
-            131.44
-          ],
-          "degrees": 17.8,
-          "terminal": false
-        },
-        {
-          "point": [
-            31.5,
-            131.5
-          ],
-          "degrees": 43.6,
-          "terminal": false
-        },
-        {
-          "point": [
-            26.5,
-            127.5
-          ],
-          "degrees": 5.5,
-          "terminal": false
-        },
-        {
-          "point": [
-            23.02826,
-            124.42204
-          ],
-          "degrees": 0,
-          "terminal": false
-        },
-        {
-          "point": [
-            19.5,
-            121.5
-          ],
-          "degrees": 16.2,
-          "terminal": false
-        },
-        {
-          "point": [
-            16.5,
-            117.36
-          ],
-          "degrees": 10.4,
-          "terminal": false
-        },
-        {
-          "point": [
-            13.51424,
-            114.64626
-          ],
-          "degrees": 0,
-          "terminal": false
-        },
-        {
-          "point": [
-            10.5,
-            112
-          ],
-          "degrees": 13.8,
-          "terminal": false
-        },
-        {
-          "point": [
-            7.00323,
-            110.23685
-          ],
-          "degrees": 0,
-          "terminal": false
-        },
-        {
-          "point": [
-            3.5,
-            108.5
-          ],
-          "degrees": 10.2,
-          "terminal": false
-        },
-        {
-          "point": [
-            0,
-            107.5
-          ],
-          "degrees": 9.3,
-          "terminal": false
-        },
-        {
-          "point": [
-            -4.7,
-            106.95
-          ],
-          "degrees": 4.7,
           "terminal": true
         }
       ],
