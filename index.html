@@ -7020,6 +7020,7 @@ function flightRowsFallback(meta,id,now,outb){
   const ent=(c.ENTS||[]).find(e=>(outb?e.d:e.a)&&(outb?e.d:e.a).id===id)||null;
   for(let d=today-14;d<=today;d++){
     const dow=((d+3)%7+7)%7+1;if(meta.days&&!String(meta.days).includes(String(dow)))continue;
+    {const e=window.JN_EFF&&window.JN_EFF.get(id);if(e&&((e.from!=null&&d<e.from)||(e.to!=null&&d>e.to)))continue}      // a service has no history before it starts (or after it ends)
     const base=d*1440;
     const l=outb?{d,kind:'d',flight:id,from:'Jakarta',to:meta.city,std:base+meta.t,sta:base+meta.t+blk,ent:d===today?ent:null,generated:false}
                 :{d,kind:'a',flight:id,from:meta.city,to:'Jakarta',std:base+meta.t-blk,sta:base+meta.t,ent:d===today?ent:null,generated:false};
