@@ -3679,6 +3679,20 @@ function tailsCompute(){
       t.seq.sort((p,q)=>p.S-q.S);const last=t.seq[t.seq.length-1];t.rdy=last?last.E:t.dayStartRdy;t.loc=last?last.dest:t.dayStartLoc;
       if(t.seq.length){t.hist.set(d,t.seq.slice());
         for(const v of t.seq){const add=f=>{if(f){let m=FLIGHT_TAILS.get(f.id);if(!m)FLIGHT_TAILS.set(f.id,m=new Set());m.add(t.reg)}};if(v.kind!=='pre')add(v.a);if(v.kind!=='ovn')add(v.d);if(v.kind==='multi')add(v.returnFlight)}}}))}
+  /* Aircraft that are away from Jakarta and fly back tomorrow: the aircraft sitting at that city now (it flew the paired outbound) is the one that returns. This follows the same location rule the allocator uses, so it never invents a different aircraft. */
+  F.forEach(fl=>fl.tails.forEach(t=>{t.nextArr=null}));
+  try{const d=idx+1,dow=tDow(d),taken=new Set();
+    INF_ALL.forEach(f=>{
+      if(!TAIL_CARR.has(f.c)||!f.pid||!flRuns(f,dow)||!effOn(f,d)||JN_OPS.cancelledOn(d,f.id))return;
+      if(!(f.t-tBlk(f.city,null)<0))return;                       // it must already be airborne before midnight
+      F.forEach(x=>{if(x.c!==f.c)return;x.tails.forEach(t=>{
+        if(taken.has(t)||t.loc!==f.city)return;
+        const last=t.seq[t.seq.length-1];if(!last||!last.d||last.d.pid!==f.pid||last.d.city!==f.city)return;
+        if(!v111SameType(last.d,f)&&last.d.ac!==f.ac)return;
+        if(last.d.t+tBlk(null,last.d.city)+60>f.t-tBlk(f.city,null)+1440)return;      // the outbound must have reached the outstation (and turned) before the return leaves
+        taken.add(t);(t.nextArr||(t.nextArr=[])).push({kind:'a',a:f,d:null});
+        let m=FLIGHT_TAILS.get(f.id);if(!m)FLIGHT_TAILS.set(f.id,m=new Set());m.add(t.reg)})})})
+  }catch(err){console.error('returning aircraft:',err)}
   // Today's ground arrival belongs to the earlier outbound rotation, on its
   // original physical aircraft. This projection never enters the allocator.
   F.forEach(fl=>fl.tails.forEach(t=>{
@@ -4062,6 +4076,7 @@ function tailHistory(reg){
         legs.push({d,kind:'d',flight:v.d.id,from:'Jakarta',to:v.d.city,std:base+v.d.t,sta:base+v.d.t+tBlk(null,v.d.city),ent:entD,generated:false,cx:JN_OPS.cancelledOn(d,v.d.id)})}
     });
   }
+  (tail.nextArr||[]).forEach(v=>{const b=tBlk(v.a.city,null),d=today+1;legs.push({d,kind:'a',flight:v.a.id,from:v.a.city,to:'Jakarta',std:d*1440+v.a.t-b,sta:d*1440+v.a.t,ent:null,generated:false,cx:JN_OPS.cancelledOn(d,v.a.id)})});   // already airborne, lands tomorrow
   legs.sort((a,b)=>a.std-b.std);
   // Match each outbound sector to its next scheduled inbound at the same
   // outstation on this registration, including overnight stays. The return
@@ -7018,12 +7033,13 @@ function flightRowsFallback(meta,id,now,outb){
   if(V104_SECTORS[meta.city])return []; // physical services must come from their allocated outbound
   const c=C(),today=c.FLEET.day,blkOf=window.__DB&&window.__DB().tBlk,blk=blkOf?blkOf(null,meta.city):120,out=[],profile=historyLoadProfile();
   const ent=(c.ENTS||[]).find(e=>(outb?e.d:e.a)&&(outb?e.d:e.a).id===id)||null;
-  for(let d=today-14;d<=today;d++){
+  for(let d=today-14;d<=today+1;d++){      // tomorrow's arrival may already be in the air (long-haul inbound that left today)
     const dow=((d+3)%7+7)%7+1;if(meta.days&&!String(meta.days).includes(String(dow)))continue;
     {const e=window.JN_EFF&&window.JN_EFF.get(id);if(e&&((e.from!=null&&d<e.from)||(e.to!=null&&d>e.to)))continue}      // a service has no history before it starts (or after it ends)
     const base=d*1440;
     const l=outb?{d,kind:'d',flight:id,from:'Jakarta',to:meta.city,std:base+meta.t,sta:base+meta.t+blk,ent:d===today?ent:null,generated:false}
                 :{d,kind:'a',flight:id,from:meta.city,to:'Jakarta',std:base+meta.t-blk,sta:base+meta.t,ent:d===today?ent:null,generated:false};
+    if(d>today&&!(l.std<=today*1440+now))continue;
     const item=legRow(l,now,today,null,profile);
     v105HistorySectors(item).filter(x=>x.tone!=='untimed').forEach(x=>out.push({r:x,reg:null,ac:meta.ac,today}))}
   return out.sort((a,b)=>historyMoment(b.r)-historyMoment(a.r))}
@@ -7052,7 +7068,7 @@ function flightLegHtml(o){
   const cell=(lab,val,cls)=>'<div class="v181-c'+(cls?' '+cls:'')+'"><small>'+lab+'</small><b>'+val+'</b></div>';
   return '<section class="v81-leg v100-leg v181-leg">'+
     '<div class="v81-leghead"><span class="v81-dot '+statusClass+'"></span><span class="v81-date">'+esc(dayLabel)+'</span>'+pill+(r.tone==='live'?'<button type="button" class="jn-trk" data-jn-track="'+esc(lastFlight)+'">⌖ Track live</button>':'')+disPill(l,r)+
-      (o.reg?'<a class="v181-reg v73-regl" href="#/aircraft/'+esc(o.reg)+'">'+esc(o.reg)+' · '+esc(typeCodeOf(o.ac))+' ›</a>':'<span class="v181-reg v181-untracked">'+esc(typeCodeOf(o.ac))+' · registration not tracked</span>')+'</div>'+
+      (o.reg?'<a class="v181-reg v73-regl" href="#/aircraft/'+esc(o.reg)+'">'+esc(o.reg)+' · '+esc(typeCodeOf(o.ac))+' ›</a>':'<span class="v181-reg v181-untracked">'+esc(typeCodeOf(o.ac))+(l.d>o.today?' · registration assigned on the day it lands':' · registration not tracked')+'</span>')+'</div>'+
     '<div class="v81-route"><div class="v81-line"><i>↗</i><b>'+esc(fromLabel)+'</b><span class="v81-code">'+esc(fromCode)+'</span><span class="v182-off">'+esc(tzLabel(l.from,l.std))+'</span></div>'+
       '<div class="v81-line"><i>↘</i><b>'+esc(toLabel)+'</b><span class="v81-code">'+esc(toCode)+'</span><span class="v182-off">'+esc(tzLabel(l.to,l.sta))+'</span></div></div>'+
     '<div class="v181-grid">'+
