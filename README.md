@@ -130,7 +130,7 @@ Record shapes: timetable `{id, v:1, scope:'timetable', kind:'add'|'amend'|'cance
 
 ### Swap the aircraft on any departure
 
-Operations hub > "Swap the aircraft on a departure" puts a different aircraft on any flight that has not left Jakarta yet, with or without an incident. Pick the departure, then choose an aircraft: the best few are suggested (aircraft of the same type on the ground in time), and any other can be chosen from the list. It records the same aircraft-swap decision as the incident flows, so it shows in the log, can be undone from "My changes and events", and the other flight takes the aircraft you replaced.
+Operations hub > "Swap the aircraft on a departure" puts a different aircraft on any flight that has not left Jakarta yet, with or without an incident. Pick the departure, then choose an aircraft: the best few are suggested (aircraft of the same type on the ground in time), and any other can be chosen from the list. It records the same aircraft-swap decision as the incident flows, so it shows in the log, can be undone from "My changes and events", and the other flight takes the aircraft you replaced. Swaps work on the aircraft that is really on the ground (not the planned pairing), so a departure whose aircraft arrived on a different flight after the day's random swaps can still be swapped; the swap is recorded against the two departures and applied on top of those random swaps.
 
 Aircraft-out-of-service incidents are actionable whenever the aircraft flies out of Jakarta again the same day, including long stays; where there is nothing to decide, the incident now says why (no tracked aircraft, or the aircraft does not fly out again today).
 

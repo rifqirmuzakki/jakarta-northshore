@@ -1617,7 +1617,7 @@ function drawConsequences(f,min){
     const at=C.dayNum(C.viewDs)===C.dayNum(C.jakToday())?new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date()):'00:00';
     const now=new Date().toISOString();let ev=[{id:uid('op_'),v:1,scope:'ops',kind:'delay',date:C.viewDs,at,flight:f.id,minutes:min,cause:st.cause||'other',note:(st.note||'').trim(),createdAt:now}];
     if(st.opt==='cx'&&f.next)ev=[{id:uid('op_'),v:1,scope:'ops',kind:'cancelflt',date:C.viewDs,at,flights:[f.id,f.next.id],cause:st.cause||'other',note:'Cancelled '+f.id+' and '+f.next.id,createdAt:now}];
-    if(st.opt&&(st.opt[0]==='s'||st.opt[0]==='p')){const o=(st.opt[0]==='s'?opts:allOpts)[+st.opt.slice(1)];if(o)ev.push({id:uid('op_'),v:1,scope:'ops',kind:'swap',date:C.viewDs,at,arrivals:o.arrivals,cause:st.cause||'other',note:'Recovery: '+o.tails.join(' ↔ '),createdAt:now})}
+    if(st.opt&&(st.opt[0]==='s'||st.opt[0]==='p')){const o=(st.opt[0]==='s'?opts:allOpts)[+st.opt.slice(1)];if(o)ev.push({id:uid('op_'),v:1,scope:'ops',kind:'swap',date:C.viewDs,at,arrivals:o.arrivals,departures:o.departures,atMin:o.atMin,cause:st.cause||'other',note:'Recovery: '+o.tails.join(' ↔ '),createdAt:now})}
     if(st.inc){ev=ev.filter(x=>x.kind!=='delay');ev.forEach(x=>x.resolves=st.inc.id);if(!ev.length)ev.push(ackDecision(st.inc,'Waited, the delay plays out'))}
     stashPending([f.id,f.next&&f.next.id,...((st.opt&&(st.opt[0]==='s'||st.opt[0]==='p'))?[((st.opt[0]==='s'?opts:allOpts)[+st.opt.slice(1)]||{other:{}}).other.next]:[])]);
     ev.forEach(e=>C.addOp(e));try{sessionStorage.setItem('jn-op-toast',(st.inc?'Decision recorded: ':'Recorded: ')+(min?f.id+' +'+durTxt(min)+' ('+causeLabel(st.cause)+')':f.id)+(ev.some(x=>x.kind==='swap')?' · aircraft swapped':'')+(ev.some(x=>x.kind==='cancelflt')?' · '+f.id+' and '+f.next.id+' cancelled':''))}catch(x){}
@@ -1626,7 +1626,7 @@ function drawConsequences(f,min){
 function drawPlanned(){waitReady(()=>{
   const O=window.SIMCORE.ops,vdn=C.dayNum(C.viewDs),today=C.dayNum(C.jakToday()),nowM=vdn===today?wibMin():(vdn>today?-1:99999),q=(st.q||'').toLowerCase();
   const dl=id=>{const f=(window.SIMCORE.OUTF||[]).find(y=>y.id===id);return f?Math.max(0,Math.round(f.dly||0)):0};   // a delayed flight has not left until its estimated time
-  const all=O.inbound().filter(x=>x.unit&&x.swap&&x.next&&x.next.t+dl(x.next.id)>nowM).sort((p,r)=>(p.next.t+dl(p.next.id))-(r.next.t+dl(r.next.id)));
+  const all=O.inbound().filter(x=>x.unit&&x.next&&x.next.t+dl(x.next.id)>nowM).sort((p,r)=>(p.next.t+dl(p.next.id))-(r.next.t+dl(r.next.id)));
   const list=all.filter(x=>!q||(x.next.id+' '+x.next.city+' '+x.tail+' '+x.id).toLowerCase().includes(q)).slice(0,40);
   if(!st.sel){
     $('#op-body').innerHTML=`<div class="op-pad"><div class="op-step">Step 1 of 2 · Which departure?</div><p class="op-lead">Flights leaving Jakarta on ${html(longDate(C.viewDs))} that have not left yet, with a tracked aircraft. You can change the aircraft on any of them, whether or not anything has gone wrong.</p>
@@ -1658,7 +1658,7 @@ function drawPlannedCons(f){
   $('#op-save').onclick=()=>{if(!sel)return;
     const at=C.dayNum(C.viewDs)===C.dayNum(C.jakToday())?new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date()):'00:00';
     stashPending([f.next.id,sel.other.next]);
-    C.addOp({id:uid('op_'),v:1,scope:'ops',kind:'swap',date:C.viewDs,at,arrivals:sel.arrivals,cause:'other',note:'Planned swap: '+sel.tails.join(' ↔ '),createdAt:new Date().toISOString()});
+    C.addOp({id:uid('op_'),v:1,scope:'ops',kind:'swap',date:C.viewDs,at,arrivals:sel.arrivals,departures:sel.departures,atMin:sel.atMin,cause:'other',note:'Planned swap: '+sel.tails.join(' ↔ '),createdAt:new Date().toISOString()});
     try{sessionStorage.setItem('jn-op-toast','Recorded: '+sel.tails[1]+' now flies '+f.next.id+', '+sel.tails[0]+' flies '+sel.other.next)}catch(e){}
     $('#op-msg').textContent='Recorded. Reloading…';setTimeout(()=>location.reload(),300)}}
 /* ================= AN AIRCRAFT IS OUT OF SERVICE ================= */
@@ -1716,7 +1716,7 @@ function saveAog(f,fromMin,untilMin,o){
   let ev=[mk({kind:'aog',tail:f.tail,arrival:f.id,fromMin,untilMin,note:(st.note||'').trim()})];
   if(o&&st.opt==='cx')ev.push(mk({kind:'cancelflt',flights:[f.next.id],note:'Cancelled '+f.next.id}));
   else if(o&&st.opt==='spare')ev.push(mk({kind:'spare',arrival:f.id,untilMin,note:'Recovery: spare '+(o.spare&&o.spare.reg)+' replaces '+f.tail}));
-  else if(o&&st.opt&&(st.opt[0]==='s'||st.opt[0]==='p')){const x=(st.opt[0]==='s'?o.swaps:o.allSwaps)[+st.opt.slice(1)];if(x)ev.push(mk({kind:'swap',arrivals:x.arrivals,note:'Recovery: '+x.tails.join(' ↔ ')}))}
+  else if(o&&st.opt&&(st.opt[0]==='s'||st.opt[0]==='p')){const x=(st.opt[0]==='s'?o.swaps:o.allSwaps)[+st.opt.slice(1)];if(x)ev.push(mk({kind:'swap',arrivals:x.arrivals,departures:x.departures,atMin:x.atMin,note:'Recovery: '+x.tails.join(' ↔ ')}))}
   if(st.inc){ev=ev.filter(x=>x.kind!=='aog');ev.forEach(x=>x.resolves=st.inc.id);if(!ev.length)ev.push(ackDecision(st.inc,'Waited for the repair'))}
   stashPending([f.next.id,...((st.opt&&(st.opt[0]==='s'||st.opt[0]==='p'))?[((st.opt[0]==='s'?o.swaps:o.allSwaps)[+st.opt.slice(1)]||{other:{}}).other.next]:[])]);
   ev.forEach(e=>C.addOp(e));try{sessionStorage.setItem('jn-op-toast',(st.inc?'Decision recorded: ':'Recorded: ')+f.tail+' out of service until '+hm(untilMin)+(st.opt?(st.opt==='spare'?' · spare brought in':(st.opt==='cx'?' · '+f.next.id+' cancelled':' · aircraft swapped')):''))}catch(x){}
@@ -3539,8 +3539,8 @@ function tPlan(){
     if(u.t==='ov')(ovByFleet.get(u.fkey)||ovByFleet.set(u.fkey,[]).get(u.fkey)).push(u)});
   groups.forEach(g=>{for(let x=0;x<g.length;x++)for(let y=x+1;y<g.length;y++){const u=g[x],w=g[y];
     if(rollCrossOK(u.a,w.d,u.t)&&rollCrossOK(w.a,u.d,u.t)){u.cand.push(w.i);w.cand.push(u.i)}}});
-  const unitByArr=new Map();units.forEach(u=>unitByArr.set(u.a.id,u));
-  return T_PLAN={planV,F,K2C,units,ovByFleet,unitByArr}}
+  const unitByArr=new Map(),unitByDep=new Map();units.forEach(u=>{unitByArr.set(u.a.id,u);if(u.t==='r')unitByDep.set(u.d.id,u)});
+  return T_PLAN={planV,F,K2C,units,ovByFleet,unitByArr,unitByDep}}
 const rollSlot=(m,d)=>m.base+(((d-m.w)%m.k)+m.k)%m.k;
 function tRoll(idx){
   if(T_ROLL&&T_ROLL.idx===idx)return T_ROLL;
@@ -3556,6 +3556,7 @@ function tRoll(idx){
     const evs=[],used=new Set();
     /* operational swaps (recovery decisions) come first and reserve their turns for the day */
     for(const o of (window.JN_OPS?JN_OPS.swapsOn(d):[])){
+      if(Array.isArray(o.departures))continue;
       const u=P.unitByArr.get(o.arrivals[0]),w=P.unitByArr.get(o.arrivals[1]);
       if(!u||!w||u.fkey!==w.fkey||u.t!==w.t||used.has(u.i)||used.has(w.i))continue;
       const A=rollSlot(K2C.get(u.v.k116),d),B=rollSlot(K2C.get(w.v.k116),d);if(A===B)continue;
@@ -3582,6 +3583,16 @@ function tRoll(idx){
       const lam=fl.min*ROLL_MX_PER_SLOT;let n=Math.floor(lam);if((imix(d,fl.min,3)%1000)/1000<lam-n)n++;
       for(let m=0;m<n;m++){const u=ovs[imix(d,m+1,4+fl.min)%ovs.length];if(used.has(u.i)||!runs(u,d))continue;
         used.add(u.i);evs.push({k:'mx',key:fl.key,sA:rollSlot(K2C.get(u.v.k116),d),tau:Math.min(1439,u.a.t+1),u:u.i,dur:1+imix(d,m+1,9)%3})}});
+    /* swaps keyed by departure: the two aircraft that would fly those departures exchange them. They are applied after every other event of the day that touches the same lines, so they compose on top of the random swaps */
+    for(const o of (window.JN_OPS?JN_OPS.swapsOn(d):[])){
+      if(!Array.isArray(o.departures)||o.departures.length!==2)continue;
+      const u=P.unitByDep.get(o.departures[0]),w=P.unitByDep.get(o.departures[1]);
+      if(!u||!w||u===w||u.fkey!==w.fkey)continue;
+      const A=rollSlot(K2C.get(u.v.k116),d),B=rollSlot(K2C.get(w.v.k116),d);if(A===B)continue;
+      let tau=o.atMin>0?+o.atMin:Math.max(u.a.t,w.a.t)+1;
+      const dm=Math.min(u.d.t,w.d.t);evs.forEach(e=>{if(e.key===u.fkey&&e.tau<dm&&(e.sA===A||e.sA===B||e.sB===A||e.sB===B))tau=Math.max(tau,e.tau+1)});
+      if(!(u.d.t>tau&&w.d.t>tau))continue;
+      evs.push({k:'swap',key:u.fkey,sA:A,sB:B,tau,u:u.i,w:w.i,ops:true,late:true})}
     evs.sort((x,y)=>x.tau-y.tau||x.u-y.u);
     const rec=d>=first,hold0=rec?new Map():null,idle0=rec?new Map():null;
     if(rec){hold.forEach((hs,k)=>hold0.set(k,hs.slice()));idle.forEach((a,k)=>idle0.set(k,a.map(z=>({t:z.t,rel:z.rel}))))}
@@ -3967,45 +3978,49 @@ function opsKnockOn(flightId,minutes){
   const legs=opsChain(opsLegsAfter(t,day),l=>JN_OPS.delayFor(l.day,l.f.id)+(l.day===day&&l.f.id===flightId?+minutes:0));
   return {tail:t.reg,legs:opsLegList(legs,day,t.reg),...opsMeasure(legs,day)}}
 function opsSwapOptions(flightId,minutes){
-  const day=T_COMPUTED,P=tPlan(),u1=P.unitByArr.get(flightId),t1=opsTailOf(flightId);
-  if(!t1||!u1||u1.t!=='r')return {supported:false,reason:'Aircraft swap is offered for inbound flights that turn straight into a departure at Jakarta.'};
+  /* live legs, not the plan: whatever aircraft is really on the ground after this arrival can swap with any other aircraft of the same type that is also between an arrival and a departure today */
+  const day=T_COMPUTED,P=tPlan(),t1=opsTailOf(flightId);
+  if(!t1)return {supported:false,reason:'No tracked aircraft for '+flightId+' on this date.'};
   const inj1=l=>JN_OPS.delayFor(l.day,l.f.id)+(l.day===day&&l.f.id===flightId?+minutes:0);
-  const L1=opsLegsAfter(t1,day),i1=L1.findIndex(l=>l.f===u1.a),j1=L1.findIndex(l=>l.f===u1.d);
-  if(i1<0||j1<0||j1!==i1+1)return {supported:false,reason:'This arrival does not turn directly into a departure on the same aircraft.'};
+  const L1=opsLegsAfter(t1,day),i1=L1.findIndex(l=>l.day===day&&l.k==='a'&&l.f.id===flightId),j1=i1+1;
+  if(i1<0||!L1[j1]||L1[j1].k!=='d'||L1[j1].day!==day||L1[j1].multi||L1[i1].multi)return {supported:false,reason:'This arrival does not turn directly into a departure on the same aircraft.'};
+  const a1=L1[i1].f,d1=L1[j1].f;
+  if(!P.unitByDep.get(d1.id))return {supported:false,reason:d1.id+' is not a scheduled turnaround that can be reassigned.'};
   const wait=opsChain(L1.map(l=>({...l})),inj1);const waitM=opsMeasure(wait,day);
   const dow=tDow(day),runs=f=>flRuns(f,dow),opts=[],all=[],seen=new Set();
-  const V=T_LASTV||[];
-  P.units.forEach(u2=>{
-    if(u2===u1||u2.t!=='r'||u2.fkey!==u1.fkey||!runs(u2.a)||!runs(u2.d)||seen.has(u2.i))return;
-    const a1=u1.a,d1=u1.d,a2=u2.a,d2=u2.d;
-    if(d2.c!==a1.c||!v111SameType(d2,a1)||!v111SameType(d1,a2))return;
-    /* any aircraft of the same type that is on the ground and ready in time can take over; terminals follow the flight (the aircraft is towed) */
-    const tau=Math.min(1439,Math.max(a1.t,a2.t)+1);if(!(d1.t>tau&&d2.t>tau))return;                       // both aircraft must have landed before either leaves
-    const t2=opsTailOf(a2.id);if(!t2||t2===t1)return;
-    const L2=opsLegsAfter(t2,day),i2=L2.findIndex(l=>l.f===a2),j2=L2.findIndex(l=>l.f===d2);
-    if(i2<0||j2!==i2+1)return;
-    const N1=[...L1.slice(0,i1+1),...L2.slice(j2)].map(l=>({...l})),N2=[...L2.slice(0,i2+1),...L1.slice(j1)].map(l=>({...l}));
-    const c1=opsChain(N1,inj1),c2=opsChain(N2,inj1);
-    const base2=opsMeasure(opsChain(L2.map(l=>({...l})),inj1),day),m1=opsMeasure(c1,day),m2=opsMeasure(c2,day);
-    const total=m1.total+m2.total,saved=waitM.total+base2.total-total;
-    seen.add(u2.i);
-    const tk=(c,reg)=>c.filter(l=>l.k==='d'&&l.day===day&&(l.f===d1||l.f===d2)).map(l=>({flight:l.f.id,city:l.f.city,sched:l.f.t,delay:Math.round(l.dly),tail:reg}));
-    const takes=[...tk(c2,t2.reg),...tk(c1,t1.reg)],ready=!takes.some(t=>t.delay>=5&&t.flight===d1.id);          // the aircraft put on D1 is there in time
-    const o={arrivals:[a1.id,a2.id],tails:[t1.reg,t2.reg],other:{arrival:a2.id,next:d2.id,city:d2.city,sched:d2.t},ready,saved:Math.round(saved),total:Math.round(total),
-      takes,affected:m1.n+m2.n};
-    all.push(o);if(saved>0)opts.push(o)});
+  const fl=t1.fleet;
+  fl.tails.forEach(t2=>{
+    if(t2===t1)return;
+    const L2=opsLegsAfter(t2,day);
+    for(let i2=0;i2+1<L2.length;i2++){
+      const j2=i2+1,x=L2[i2],y=L2[j2];
+      if(x.k!=='a'||y.k!=='d'||x.day!==day||y.day!==day||x.multi||y.multi||x.cx||y.cx)continue;
+      const a2=x.f,d2=y.f;if(a2===a1||d2===d1||!P.unitByDep.get(d2.id)||seen.has(d2.id))continue;
+      if(!runs(a2)||!runs(d2))continue;
+      if(d2.c!==a1.c||!v111SameType(d2,a1)||!v111SameType(d1,a2))continue;
+      const tau=Math.min(1439,Math.max(a1.t,a2.t)+1);if(!(d1.t>tau&&d2.t>tau))continue;                  // both aircraft must have landed before either leaves
+      const N1=[...L1.slice(0,i1+1),...L2.slice(j2)].map(l=>({...l})),N2=[...L2.slice(0,i2+1),...L1.slice(j1)].map(l=>({...l}));
+      const c1=opsChain(N1,inj1),c2=opsChain(N2,inj1);
+      const base2=opsMeasure(opsChain(L2.map(l=>({...l})),inj1),day),m1=opsMeasure(c1,day),m2=opsMeasure(c2,day);
+      const total=m1.total+m2.total,saved=waitM.total+base2.total-total;
+      seen.add(d2.id);
+      const tk=(c,reg)=>c.filter(l=>l.k==='d'&&l.day===day&&(l.f===d1||l.f===d2)).map(l=>({flight:l.f.id,city:l.f.city,sched:l.f.t,delay:Math.round(l.dly),tail:reg}));
+      const takes=[...tk(c2,t2.reg),...tk(c1,t1.reg)],ready=!takes.some(t=>t.delay>=5&&t.flight===d1.id);
+      const o={arrivals:[a1.id,a2.id],departures:[d1.id,d2.id],atMin:tau,tails:[t1.reg,t2.reg],other:{arrival:a2.id,next:d2.id,city:d2.city,sched:d2.t},ready,saved:Math.round(saved),total:Math.round(total),
+        takes,affected:m1.n+m2.n};
+      all.push(o);if(saved>0)opts.push(o)}});
   opts.sort((p,q)=>q.saved-p.saved||p.affected-q.affected);
   all.sort((p,q)=>q.saved-p.saved||p.other.sched-q.other.sched);
-  return {supported:true,tail:t1.reg,next:{id:u1.d.id,city:u1.d.city,sched:u1.d.t},wait:{total:Math.round(waitM.total),n:waitM.n,legs:opsLegList(wait,day,t1.reg)},options:opts.slice(0,5),all:all.slice(0,80)}}
+  return {supported:true,tail:t1.reg,next:{id:d1.id,city:d1.city,sched:d1.t},wait:{total:Math.round(waitM.total),n:waitM.n,legs:opsLegList(wait,day,t1.reg)},options:opts.slice(0,5),all:all.slice(0,80)}}
 /* aircraft out of service: it cannot leave before it is repaired. Equivalent to the aircraft only being ready at untilMin. */
 function opsAogOptions(arrivalId,fromMin,untilMin){
-  const day=T_COMPUTED,P=tPlan(),u1=P.unitByArr.get(arrivalId),t1=opsTailOf(arrivalId);
-  if(!t1||!u1||u1.t!=='r')return {supported:false,reason:'This aircraft is not on the ground at Jakarta between an arrival and a departure on this date.'};
-  const a1=u1.a,lv=opsInbound().find(x=>x.id===arrivalId),d1=(lv&&lv.next)?{id:lv.next.id,city:lv.next.city,t:lv.next.t}:u1.d;   // the aircraft's real next departure
+  const day=T_COMPUTED,P=tPlan(),t1=opsTailOf(arrivalId),lv=opsInbound().find(x=>x.id===arrivalId);
+  if(!t1||!lv||!lv.unit||!lv.next)return {supported:false,reason:'This aircraft is not on the ground at Jakarta between an arrival and a departure on this date.'};
+  const a1={id:arrivalId,t:lv.t},d1={id:lv.next.id,city:lv.next.city,t:lv.next.t};   // the aircraft's real next departure
   if(fromMin>d1.t)return {supported:true,noEffect:true,tail:t1.reg,next:{id:d1.id,city:d1.city,sched:d1.t},reason:'Its next departure ('+d1.id+') leaves before the aircraft becomes unserviceable, so nothing changes today.'};
   const M=Math.max(0,untilMin-(a1.t+opsTurn(a1)));
   const ko=opsKnockOn(arrivalId,M),sw=opsSwapOptions(arrivalId,M);
-  const rec=tRoll(day).days.get(day),fl=P.F.get(u1.fkey),idle=(rec&&rec.idle0&&rec.idle0.get(u1.fkey))||[];
+  const rec=tRoll(day).days.get(day),fl=t1.fleet,idle=(rec&&rec.idle0&&rec.idle0.get(fl.key))||[];
   const free=idle.find(z=>z.rel<=day),spare=free&&fl&&fl.tails[free.t]?{reg:fl.tails[free.t].reg}:null;
   const legs=(ko.legs||[]).filter(l=>l.kind==='d');
   return {supported:true,tail:t1.reg,next:{id:d1.id,city:d1.city,sched:d1.t},M,wait:{legs,total:legs.reduce((a,l)=>a+l.delay,0)},
@@ -4245,6 +4260,7 @@ window.SIMCORE.worldLegs=function(){const day=FLEET?FLEET.day:v176Day,out=[];
         from:dir==='out'?'Jakarta':stop,to:dir==='out'?stop:'Jakarta',dly:dl,z:f.zone,cx:d===day&&!!f.cx})}))}
   return out};
 /* the aircraft that actually flies this flight on day d: the flight number maps to every aircraft that flew it over the planning window, so the leg itself decides */
+
 window.SIMCORE.allFlights=()=>({in:INF_ALL,out:OUTF_ALL});   /* every scheduled flight, whatever day it operates (the flight history needs weekly services on days they do not run) */
 window.SIMCORE.worldTail=function(id,d,std){const s=FLIGHT_TAILS.get(id);if(!s||!s.size)return null;let best=null;
   for(const reg of s){const H=tailHistory(reg);if(!H)continue;for(const l of H.legs){if(l.flight===id&&l.d===d){const dd=std==null?0:Math.abs(l.std-std);if(!best||dd<best.dd)best={reg,dd}}}}
