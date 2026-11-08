@@ -7442,13 +7442,41 @@ body.jn-world #v9-tools,body.jn-world #v70-kpi,body.jn-world #hud,body.jn-world 
 const RAD=Math.PI/180,JKT=[-6.13,106.66];
 const FONT=(()=>{try{return getComputedStyle(document.documentElement).getPropertyValue('--jn-font').trim()||'-apple-system,Helvetica,sans-serif'}catch(e){return '-apple-system,Helvetica,sans-serif'}})();
 const cv=document.createElement('canvas');cv.id='jn-world';cv.setAttribute('role','region');cv.setAttribute('aria-label','World map of flights to and from Jakarta that are in the air now');
-const ui=document.createElement('div');ui.id='jn-world-ui';ui.innerHTML='<div id="jnw-count" role="status"></div><div id="jnw-key" role="region" aria-label="Marker key"><span><i style="border-color:#1f63e0"></i>Arriving</span><span><i style="border-color:#e3590d"></i>Departing</span><span><i style="border-color:#a3189f"></i>Holding</span><span><i style="border-color:#e24a4a"></i>Late 15m+</span></div><div class="jnw-btns"><button type="button" id="jnw-ga" aria-pressed="false">GA only</button><button type="button" id="jnw-in" aria-label="Zoom in">+</button><button type="button" id="jnw-out" aria-label="Zoom out">−</button><button type="button" id="jnw-fit" aria-label="Fit the whole network">⌂</button></div>';
+const ui=document.createElement('div');ui.id='jn-world-ui';ui.innerHTML='<div id="jnw-count" role="status"></div><div id="jnw-key" role="region" aria-label="Marker key"><span><i style="border-color:#1f63e0"></i>Arriving</span><span><i style="border-color:#e3590d"></i>Departing</span><span><i style="border-color:#a3189f"></i>Holding</span><span><i style="border-color:#e24a4a"></i>Late 15m+</span></div><div class="jnw-btns"><button type="button" id="jnw-ga" aria-pressed="false">GA only</button><button type="button" id="jnw-in" aria-label="Zoom in">+</button><button type="button" id="jnw-out" aria-label="Zoom out">−</button><button type="button" id="jnw-fit" aria-label="Fit the whole network">⌂</button><button type="button" id="jnw-globe" aria-pressed="false">Globe</button></div>';
 const card=document.getElementById('card');let cardExp=false;
 const cardOn=()=>{card.style.display='block'},cardOff=()=>{if(card._wh){card.style.display='none';card.classList.remove('expanded');document.body.classList.remove('jn-card-expanded');card.innerHTML='';card._wh=null}cardExp=false};
 let on=false,ctx=null,W=0,H=0,dpr=1,base=null,baseKey='',raf=0,lastDraw=0,legs=null,legsKey='',legsEnts=null,legsArrivals=null,legsDepartures=null,sel=null,gaOnly=false,pos=[],fol=false,selLL=null,selAir=false,selHd=0,byId=new Map();
 const view={cx:100,cy:0,k:2};
 const my=lat=>Math.log(Math.tan(Math.PI/4+lat*RAD/2))/RAD;         // mercator y in "degrees"
 const sx=lon=>W/2+(lon-view.cx)*view.k,sy=y=>H/2-(y-view.cy)*view.k;
+/* Globe mode: orthographic projection centred on gv.lon / gv.lat, radius gv.R pixels. PJ gives screen x, y, whether the point faces us, and its cosine to the centre. */
+let gm=false;try{gm=localStorage.getItem('jn-world-globe')==='1'}catch(e){}
+const gv={lon:105,lat:-5,R:300},EARTH=6371000,kq=()=>gm?gv.R*RAD:view.k;       // kq: pixels per degree at the centre, on either projection
+function PJ(lon,lat){if(!gm)return [sx(lon),sy(my(lat)),1,1];
+  const l=(lon-gv.lon)*RAD,p=lat*RAD,p0=gv.lat*RAD,cp=Math.cos(p),cl=Math.cos(l),cc=Math.sin(p0)*Math.sin(p)+Math.cos(p0)*cp*cl;
+  return [W/2+gv.R*cp*Math.sin(l),H/2-gv.R*(Math.cos(p0)*Math.sin(p)-Math.sin(p0)*cp*cl),cc>=0?1:0,cc]}
+const horizon=(p0,p1,lo0,la0,lo1,la1)=>{const t=p0[3]/(p0[3]-p1[3]);return PJ(lo0+(lo1-lo0)*t,la0+(la1-la0)*t)};
+/* one polyline (or ring) onto the path; on the globe it is cut where it passes behind the horizon */
+function trace(c,n,lonAt,latAt,close){
+  if(!gm){for(let i=0;i<n;i++){const x=sx(lonAt(i)),y=sy(my(latAt(i)));if(i===0)c.moveTo(x,y);else c.lineTo(x,y)}if(close)c.closePath();return}
+  let pen=false,prev=null,pl=0,pa=0;
+  for(let i=0;i<n;i++){const lo=lonAt(i),la=latAt(i),p=PJ(lo,la);
+    if(p[2]){if(!pen){if(prev&&!prev[2]){const h=horizon(prev,p,pl,pa,lo,la);c.moveTo(h[0],h[1]);c.lineTo(p[0],p[1])}else c.moveTo(p[0],p[1]);pen=true}else c.lineTo(p[0],p[1])}
+    else if(pen){const h=horizon(prev,p,pl,pa,lo,la);c.lineTo(h[0],h[1]);pen=false}
+    prev=p;pl=lo;pa=la}}
+/* a filled ring on the globe: the part facing us, closed along the rim where it passes behind the horizon */
+function ringGlobe(c,r){const n=r.length/2,P=new Array(n);let s=-1;
+  for(let i=0;i<n;i++){P[i]=PJ(r[2*i],r[2*i+1]);if(s<0&&P[i][2])s=i}
+  if(s<0)return;
+  const R0=gv.R,ang=(x,y)=>Math.atan2(y-H/2,x-W/2);let exitAng=null,prev=P[s],pl=r[2*s],pa=r[2*s+1];
+  const arc=(a0,a1)=>{let d=a1-a0;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;const st=Math.max(1,Math.ceil(Math.abs(d)/0.1));for(let k=1;k<=st;k++){const a=a0+d*k/st;c.lineTo(W/2+R0*Math.cos(a),H/2+R0*Math.sin(a))}};
+  c.moveTo(prev[0],prev[1]);
+  for(let k=1;k<=n;k++){const i=(s+k)%n,p=P[i],lo=r[2*i],la=r[2*i+1];
+    if(prev[2]&&p[2])c.lineTo(p[0],p[1]);
+    else if(prev[2]&&!p[2]){const h=horizon(prev,p,pl,pa,lo,la);c.lineTo(h[0],h[1]);exitAng=ang(h[0],h[1])}
+    else if(!prev[2]&&p[2]){const h=horizon(prev,p,pl,pa,lo,la);if(exitAng!==null)arc(exitAng,ang(h[0],h[1]));c.lineTo(h[0],h[1]);c.lineTo(p[0],p[1]);exitAng=null}
+    prev=p;pl=lo;pa=la}
+  c.closePath()}
 /* basemap */
 let land=null,borders=null;
 function decode(){if(land)return;const q=WORLD_MAP.q;const dec=a=>{const o=new Float32Array(a.length);let x=0,y=0;for(let i=0;i<a.length;i+=2){if(i===0){x=a[0];y=a[1]}else{x+=a[i];y+=a[i+1]}o[i]=x/q;o[i+1]=y/q}return o};
@@ -7502,20 +7530,31 @@ function indexWorldInstances(){
   legs.forEach(l=>{const old=byId.get(l.id);if(!old||distance(l)<distance(old))byId.set(l.id,l)});
 }
 /* drawing */
-function fit(){const lon0=-12,lon1=205,y0=my(-46),y1=my(64);view.k=Math.min(W/(lon1-lon0),H/(y1-y0))*0.96;view.cx=(lon0+lon1)/2;view.cy=(y0+y1)/2}
+function fit(){if(gm){gv.lon=105;gv.lat=-5;gv.R=Math.min(W,H)*0.46;return}const lon0=-12,lon1=205,y0=my(-46),y1=my(64);view.k=Math.min(W/(lon1-lon0),H/(y1-y0))*0.96;view.cx=(lon0+lon1)/2;view.cy=(y0+y1)/2}
 function size(){dpr=Math.min(2,window.devicePixelRatio||1);W=window.innerWidth;H=window.innerHeight;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.width=W+'px';cv.style.height=H+'px';ctx=cv.getContext('2d');base=null}
 function drawBase(){
   decode();const b=document.createElement('canvas');b.width=cv.width;b.height=cv.height;const c=b.getContext('2d');c.scale(dpr,dpr);
-  c.fillStyle='#cfdfe8';c.fillRect(0,0,W,H);
-  c.fillStyle='#eeeae1';c.strokeStyle='#9db3c0';c.lineWidth=0.8;c.beginPath();
-  land.forEach(r=>{for(let i=0;i<r.length;i+=2){const x=sx(r[i]),y=sy(my(r[i+1]));if(i===0)c.moveTo(x,y);else c.lineTo(x,y)}c.closePath()});c.fill('evenodd');c.stroke();
-  c.strokeStyle='#c7c0ae';c.lineWidth=0.6;c.beginPath();borders.forEach(r=>{for(let i=0;i<r.length;i+=2){const x=sx(r[i]),y=sy(my(r[i+1]));if(i===0)c.moveTo(x,y);else c.lineTo(x,y)}});c.stroke();
+  if(gm){
+    c.fillStyle='#0d1a24';c.fillRect(0,0,W,H);
+    const gl=c.createRadialGradient(W/2,H/2,gv.R*0.985,W/2,H/2,gv.R*1.09);gl.addColorStop(0,'rgba(125,185,235,.5)');gl.addColorStop(1,'rgba(125,185,235,0)');c.fillStyle=gl;c.beginPath();c.arc(W/2,H/2,gv.R*1.09,0,7);c.fill();
+    c.save();c.beginPath();c.arc(W/2,H/2,gv.R,0,7);c.clip();
+    const og=c.createRadialGradient(W/2-gv.R*0.35,H/2-gv.R*0.35,gv.R*0.05,W/2,H/2,gv.R*1.05);og.addColorStop(0,'#dbe9f0');og.addColorStop(1,'#a9c4d4');c.fillStyle=og;c.fillRect(0,0,W,H);
+    c.strokeStyle='rgba(60,100,130,.16)';c.lineWidth=0.7;c.beginPath();
+    for(let lo=-180;lo<=360;lo+=30){const L=[];for(let la=-84;la<=84;la+=6)L.push(la);trace(c,L.length,i=>lo,i=>L[i],false)}
+    for(let la=-60;la<=60;la+=30){const L=[];for(let lo=-180;lo<=540;lo+=6)L.push(lo);trace(c,L.length,i=>L[i],i=>la,false)}
+    c.stroke();
+  }else{c.fillStyle='#cfdfe8';c.fillRect(0,0,W,H)}
+  c.fillStyle='#eeeae1';c.strokeStyle=gm?'#8fa9b8':'#9db3c0';c.lineWidth=0.8;c.beginPath();
+  land.forEach(r=>{if(gm)ringGlobe(c,r);else trace(c,r.length/2,i=>r[2*i],i=>r[2*i+1],true)});c.fill('evenodd');c.stroke();
+  c.strokeStyle='#c7c0ae';c.lineWidth=0.6;c.beginPath();borders.forEach(r=>trace(c,r.length/2,i=>r[2*i],i=>r[2*i+1],false));c.stroke();
   // Jakarta and destinations
-  c.fillStyle='#18394d';Object.keys(WORLD_ROUTES).forEach(city=>{const R=WORLD_ROUTES[city],p=R.o[0][R.o[0].length-1];c.beginPath();c.arc(sx(p[1]),sy(my(p[0])),1.8,0,7);c.fill()});
-  c.beginPath();c.arc(sx(JKT[1]),sy(my(JKT[0])),5,0,7);c.fillStyle='#c0392b';c.fill();c.lineWidth=2;c.strokeStyle='#fff';c.stroke();
-  c.fillStyle='#0f1b26';c.font='600 12px '+FONT;c.fillText('Jakarta',sx(JKT[1])+9,sy(my(JKT[0]))+4);
-  {c.fillStyle='#37556b';c.font='11px '+FONT;const minD=view.k>=16?0:view.k>=11?900:view.k>=8?2500:view.k>=4?4500:1e9;Object.keys(WORLD_ROUTES).forEach(city=>{const R=WORLD_ROUTES[city],p=R.o[0][R.o[0].length-1];if(gcd(JKT,p)<minD||Math.hypot(p[1]-JKT[1],p[0]-JKT[0])<2)return;c.fillText(city.split(' / ')[0],sx(p[1])+4,sy(my(p[0]))-3)})}
-  base=b;baseKey=[view.cx,view.cy,view.k,W,H].join('|')}
+  c.fillStyle='#18394d';Object.keys(WORLD_ROUTES).forEach(city=>{const R=WORLD_ROUTES[city],p=R.o[0][R.o[0].length-1],q=PJ(p[1],p[0]);if(!q[2])return;c.beginPath();c.arc(q[0],q[1],1.8,0,7);c.fill()});
+  const jp=PJ(JKT[1],JKT[0]);
+  if(jp[2]){c.beginPath();c.arc(jp[0],jp[1],5,0,7);c.fillStyle='#c0392b';c.fill();c.lineWidth=2;c.strokeStyle='#fff';c.stroke();
+    c.fillStyle='#0f1b26';c.font='600 12px '+FONT;c.fillText('Jakarta',jp[0]+9,jp[1]+4)}
+  {c.fillStyle='#37556b';c.font='11px '+FONT;const k=kq(),minD=k>=16?0:k>=11?900:k>=8?2500:k>=4?4500:1e9;Object.keys(WORLD_ROUTES).forEach(city=>{const R=WORLD_ROUTES[city],p=R.o[0][R.o[0].length-1];if(gcd(JKT,p)<minD||Math.hypot(p[1]-JKT[1],p[0]-JKT[0])<2)return;const q=PJ(p[1],p[0]);if(!q[2])return;c.fillText(city.split(' / ')[0],q[0]+4,q[1]-3)})}
+  if(gm){c.restore();c.strokeStyle='rgba(180,215,240,.55)';c.lineWidth=1.2;c.beginPath();c.arc(W/2,H/2,gv.R,0,7);c.stroke()}
+  base=b;baseKey=viewKey()}
 function status(l,now){return now<l.off?0:(now>l.land?2:1)}
 /* position along the route, joined to the airspace track at the handoff point */
 function sAtDist(r,D,fromEnd){const n=r.lon.length,dj=i=>gcd(JKT,[r.lat[i],r.lon[i]]);
@@ -7562,7 +7601,8 @@ function sprite(code,ring,r){const key=code+'|'+ring+'|'+r+'|'+dpr;let s=sprites
   else{x.beginPath();x.arc(0,0,lr,0,7);x.fillStyle=b[0];x.fill();if(r>=6){x.fillStyle=b[1]||'#fff';x.font='800 '+(lr*0.95).toFixed(1)+'px Arial,sans-serif';x.textAlign='center';x.fillText(code,0,lr*0.36)}}
   x.beginPath();x.arc(0,0,r,0,7);x.lineWidth=r>=6?2.2:1.7;x.strokeStyle=ring;x.stroke();
   s={c,R};sprites.set(key,s);return s}
-const markerR=()=>view.k<8?4.8:view.k<24?6.4:7.6;
+const markerR=()=>kq()<8?4.8:kq()<24?6.4:7.6;
+const viewKey=()=>[gm?'g':'f',gm?gv.lon:view.cx,gm?gv.lat:view.cy,gm?gv.R:view.k,W,H].join('|');
 function marker(o,isSel,tag){const l=o.l,a=o.air,ring=l.dly>=15?RING.late:(a&&a.ph==='hold'?RING.hold:((a?a.kind==='dep':l.dir==='out')?RING.dep:RING.arr)),r=markerR()*(isSel?1.2:1),s=sprite(String(l.c||'').toUpperCase(),ring,r);
   ctx.drawImage(s.c,o.x-s.R,o.y-s.R,s.R*2,s.R*2);
   const q=r/7.6;ctx.save();ctx.translate(o.x,o.y);ctx.rotate(o.ang);ctx.beginPath();ctx.moveTo(0,-13.2*q);ctx.lineTo(3.6*q,-8.2*q);ctx.lineTo(-3.6*q,-8.2*q);ctx.closePath();ctx.fillStyle=ring;ctx.fill();ctx.restore();
@@ -7595,24 +7635,25 @@ function draw(){
   const selId=sel&&sel.id,AP=activeAirPoses(),airIds=new Set(AP.map(a=>a.id));
   L.forEach(l=>{if(l.cx||l.noWorld||now<l.off||now>l.land||airIds.has(l.id))return;const gaMiss=gaOnly&&l.c!=='GA';const r=routeFor(l);if(!r)return;
     const q=legPos(l,now,r);if(l.id===selId){selLL=q;const qh=legPos(l,now+3,r);selHd=((Math.atan2((qh[0]-q[0])*Math.cos(q[1]*RAD),qh[1]-q[1])/RAD)+360)%360}if(gaMiss)return;
-    const x=sx(q[0]),y=sy(my(q[1]));if(x<-20||y<-20||x>W+20||y>H+20)return;
-    const q3=legPos(l,now+3,r);
-    const ang=Math.atan2(sx(q3[0])-x,-(sy(my(q3[1]))-y));n++;if(l.c==='GA')nga++;pos.push({l,x,y,ang,alt:est(l,q[2],r).alt})});
-  AP.forEach(a=>{const leg=airSyn(a,day);if(leg.id===selId){selLL=[a.lon,a.lat,null];selAir=true;selHd=((a.hd%360)+360)%360}if(gaOnly&&a.c!=='GA')return;const x=sx(a.lon),y=sy(my(a.lat));if(x<-20||y<-20||x>W+20||y>H+20)return;n++;if(a.c==='GA')nga++;pos.push({l:leg,x,y,ang:a.hd*RAD,air:a,alt:a.alt})});
+    const pj=PJ(q[0],q[1]);if(!pj[2])return;const x=pj[0],y=pj[1];if(x<-20||y<-20||x>W+20||y>H+20)return;
+    const q3=legPos(l,now+3,r),p3=PJ(q3[0],q3[1]);
+    const ang=Math.atan2(p3[0]-x,-(p3[1]-y));n++;if(l.c==='GA')nga++;pos.push({l,x,y,ang,alt:est(l,q[2],r).alt})});
+  AP.forEach(a=>{const leg=airSyn(a,day);if(leg.id===selId){selLL=[a.lon,a.lat,null];selAir=true;selHd=((a.hd%360)+360)%360}if(gaOnly&&a.c!=='GA')return;const pj=PJ(a.lon,a.lat);if(!pj[2])return;const x=pj[0],y=pj[1];if(x<-20||y<-20||x>W+20||y>H+20)return;n++;if(a.c==='GA')nga++;pos.push({l:leg,x,y,ang:a.hd*RAD,air:a,alt:a.alt})});
   /* follow the selected flight */
-  if(fol&&selLL){const ty=my(selLL[1]),dx=selLL[0]-view.cx,dy=ty-view.cy,f=Math.min(1,0.18);if(Math.hypot(dx,dy)*view.k>0.5){view.cx+=dx*f;view.cy+=dy*f}}
-  const key=[view.cx,view.cy,view.k,W,H].join('|');if(!base||key!==baseKey)drawBase();
+  if(fol&&selLL){if(gm){let dl=selLL[0]-gv.lon;dl=((dl+540)%360)-180;const dla=Math.max(-80,Math.min(80,selLL[1]))-gv.lat;if(Math.hypot(dl,dla)*gv.R*RAD>0.5){gv.lon+=dl*0.18;gv.lat+=dla*0.18}}
+    else{const ty=my(selLL[1]),dx=selLL[0]-view.cx,dy=ty-view.cy,f=Math.min(1,0.18);if(Math.hypot(dx,dy)*view.k>0.5){view.cx+=dx*f;view.cy+=dy*f}}}
+  const key=viewKey();if(!base||key!==baseKey)drawBase();
   ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(base,0,0);ctx.scale(dpr,dpr);
   if(sel&&selLL){const l=sel,r=l.city?routeFor(l):null;if(r||selAir){const cur=[selLL[0],selLL[1]],pts=selectedTrail(l,r,cur,selAir);
-    ctx.lineJoin='round';ctx.lineCap='round';ctx.lineWidth=2.6;ctx.strokeStyle='#2563eb';ctx.beginPath();pts.forEach((q,i)=>{const x=sx(q[0]),y=sy(my(q[1]));if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke();
+    ctx.lineJoin='round';ctx.lineCap='round';ctx.lineWidth=2.6;ctx.strokeStyle='#2563eb';ctx.beginPath();trace(ctx,pts.length,i=>pts[i][0],i=>pts[i][1],false);ctx.stroke();
     // The dashed line is a direct destination bearing, not the filed route.
     // legPos/legPath still move the aircraft through the actual waypoint sequence.
     const fallback=typeof AIR_CITY!=='undefined'&&AIR_CITY[l.city],destination=l.dir==='in'?JKT:r?[r.lat[r.lat.length-1],r.lon[r.lon.length-1]]:fallback&&fallback.slice(0,2);
     const direct=destination?sample([[cur[1],cur[0]],destination]):null,future=direct?direct.lon.map((lon,i)=>[lon,direct.lat[i]]):[];
-    ctx.setLineDash([7,6]);ctx.lineWidth=1.8;ctx.globalAlpha=.5;ctx.beginPath();future.forEach((q,i)=>{const x=sx(q[0]),y=sy(my(q[1]));if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
+    ctx.setLineDash([7,6]);ctx.lineWidth=1.8;ctx.globalAlpha=.5;ctx.beginPath();trace(ctx,future.length,i=>future[i][0],i=>future[i][1],false);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
 
   }}
-  const many=pos.length<=70&&view.k>=30;
+  const many=pos.length<=70&&kq()>=30;
   if(selId)ctx.globalAlpha=.24;pos.forEach(o=>{if(o.l.id!==selId)marker(o,false,many&&!selId)});ctx.globalAlpha=1;pos.forEach(o=>{if(o.l.id===selId)marker(o,true,true)});
   document.getElementById('jnw-count').textContent=n+' aircraft in the air'+(nga?' · '+nga+' Garuda':'')+(gaOnly?' (GA only)':'');
   if(sel)renderCard();lastDraw=performance.now()}
@@ -7620,20 +7661,28 @@ function loop(){if(!on)return;if(performance.now()-lastDraw>(fol&&sel?40:400)||d
 let dirty=false;const redraw=()=>{dirty=true};
 /* interaction */
 const P=new Map();let drag=null,pinch=null;
-cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);P.set(e.pointerId,[e.clientX,e.clientY]);if(P.size===1)drag={x:e.clientX,y:e.clientY,cx:view.cx,cy:view.cy,moved:false};else{drag=null;const a=[...P.values()];pinch={d:Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]),k:view.k}}});
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);P.set(e.pointerId,[e.clientX,e.clientY]);if(P.size===1)drag={x:e.clientX,y:e.clientY,cx:view.cx,cy:view.cy,glon:gv.lon,glat:gv.lat,moved:false};else{drag=null;const a=[...P.values()];pinch={d:Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]),k:gm?gv.R:view.k}}});
 cv.addEventListener('pointermove',e=>{if(!P.has(e.pointerId))return;P.set(e.pointerId,[e.clientX,e.clientY]);
-  if(pinch&&P.size>=2){const a=[...P.values()],d=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);zoomAt((a[0][0]+a[1][0])/2,(a[0][1]+a[1][1])/2,pinch.k*d/pinch.d/view.k);return}
-  if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>5){drag.moved=true;stopFollow()}view.cx=drag.cx-dx/view.k;view.cy=drag.cy+dy/view.k;redraw()}});
+  if(pinch&&P.size>=2){const a=[...P.values()],d=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);zoomAt((a[0][0]+a[1][0])/2,(a[0][1]+a[1][1])/2,pinch.k*d/pinch.d/(gm?gv.R:view.k));return}
+  if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>5){drag.moved=true;stopFollow()}
+    if(gm){const k=180/Math.PI/gv.R;gv.lon=drag.glon-dx*k/Math.max(0.25,Math.cos(drag.glat*RAD));gv.lat=Math.max(-82,Math.min(82,drag.glat+dy*k))}
+    else{view.cx=drag.cx-dx/view.k;view.cy=drag.cy+dy/view.k}redraw()}});
 const up=e=>{const wasTap=drag&&!drag.moved&&P.size===1;P.delete(e.pointerId);if(P.size<2)pinch=null;if(wasTap)tap(e.clientX,e.clientY);if(!P.size)drag=null};
 cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
 cv.addEventListener('wheel',e=>{e.preventDefault();zoomAt(e.clientX,e.clientY,Math.exp(-e.deltaY*0.0015))},{passive:false});
-function zoomAt(px,py,f){const nk=Math.max(1.2,Math.min(KMAX,view.k*f));f=nk/view.k;const lon=view.cx+(px-W/2)/view.k,y=view.cy-(py-H/2)/view.k;view.k=nk;view.cx=lon-(px-W/2)/view.k;view.cy=y+(py-H/2)/view.k;redraw();if(f>1&&nk>=KEDGE)toAirspace()}
+function zoomAt(px,py,f){if(gm){const nR=Math.max(Math.min(W,H)*0.28,Math.min(EARTH/700,gv.R*f));f=nR/gv.R;gv.R=nR;redraw();if(f>1&&EARTH/gv.R<=1000)toAirspace();return}const nk=Math.max(1.2,Math.min(KMAX,view.k*f));f=nk/view.k;const lon=view.cx+(px-W/2)/view.k,y=view.cy-(py-H/2)/view.k;view.k=nk;view.cx=lon-(px-W/2)/view.k;view.cy=y+(py-H/2)/view.k;redraw();if(f>1&&nk>=KEDGE)toAirspace()}
 function tap(x,y){let best=null,bd=26;pos.forEach(o=>{const d=Math.hypot(o.x-x,o.y-y);if(d<bd){bd=d;best=o}});sel=best?best.l:null;fol=false;try{M().clear()}catch(e){}if(sel){cardOn();renderCard()}else cardOff();redraw()}
+/* flat map or globe: the view centre carries over; zoomed all the way out it refits */
+function setGlobe(on2){const v=getView(),far=v.mpp>14000;gm=!!on2;try{localStorage.setItem('jn-world-globe',gm?'1':'0')}catch(e){}
+  if(far)fit();else setViewLL(v.lat,v.lon,v.mpp);
+  if(far){const lat=Math.max(-82,Math.min(82,v.lat));if(gm){gv.lon=v.lon;gv.lat=lat}else{view.cx=v.lon;view.cy=my(Math.max(-60,Math.min(70,lat)))}}
+  syncGlobeBtn();base=null;redraw()}
+function syncGlobeBtn(){const b=ui.querySelector('#jnw-globe');if(b){b.textContent=gm?'Flat map':'Globe';b.setAttribute('aria-pressed',String(gm));b.classList.toggle('on',gm)}}
 function stopFollow(){if(fol){fol=false;redraw();if(sel){card._wh=null;renderCard()}}}
 /* the zoom handoff: past about 1 km per pixel over Jakarta the airspace map takes over, and zooming out of it brings the world back */
 const KMAX=150,KEDGE=112,HANDOFF_KM=850,mppOf=()=>111320*Math.cos(JKT[0]*RAD)/view.k;
-const getView=()=>{const lat=(2*Math.atan(Math.exp(view.cy*RAD))-Math.PI/2)/RAD;return {lat,lon:view.cx,mpp:111320*Math.cos(lat*RAD)/view.k}};
-const setViewLL=(lat,lon,mpp)=>{view.cx=lon;view.cy=my(lat);if(mpp)view.k=Math.max(1.2,Math.min(KMAX,111320*Math.cos(lat*RAD)/mpp));redraw()};
+const getView=()=>{if(gm)return {lat:gv.lat,lon:gv.lon,mpp:EARTH/gv.R};const lat=(2*Math.atan(Math.exp(view.cy*RAD))-Math.PI/2)/RAD;return {lat,lon:view.cx,mpp:111320*Math.cos(lat*RAD)/view.k}};
+const setViewLL=(lat,lon,mpp)=>{if(gm){gv.lon=lon;gv.lat=Math.max(-82,Math.min(82,lat));if(mpp)gv.R=Math.max(Math.min(W,H)*0.28,Math.min(EARTH/700,EARTH/mpp));redraw();return}view.cx=lon;view.cy=my(lat);if(mpp)view.k=Math.max(1.2,Math.min(KMAX,111320*Math.cos(lat*RAD)/mpp));redraw()};
 function toAirspace(){const v=getView(),m=M();if(gcd([v.lat,v.lon],JKT)>900||!m||!m.setView)return;const tracked=sel&&sel.id,position=tracked&&posOfId(tracked);
   /* Do not trade a selected long-haul aircraft for an empty local map. The
      terminal view becomes useful only once that aircraft is actually local. */
@@ -7688,9 +7737,9 @@ function renderCard(){const l=sel;if(!l)return;const now=nowAbs(),m=M(),city=Str
     const f=card.querySelector('#cFol');if(f)f.onclick=()=>{fol=!fol;card._wh=null;redraw()}}
   else{card.innerHTML=strip;const s=card.querySelector('.v7-strip'),open=()=>{cardExp=true;card._wh=null;renderCard()};s.onclick=open;s.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}}}}
 /* show / hide */
-function show(o){if(on)return;on=true;if(!cv.parentNode){document.body.append(cv,ui);ui.querySelector('#jnw-in').onclick=()=>zoomAt(W/2,H/2,1.5);ui.querySelector('#jnw-out').onclick=()=>zoomAt(W/2,H/2,1/1.5);ui.querySelector('#jnw-fit').onclick=()=>{fit();redraw()};
+function show(o){if(on)return;on=true;if(!cv.parentNode){document.body.append(cv,ui);ui.querySelector('#jnw-in').onclick=()=>zoomAt(W/2,H/2,1.5);ui.querySelector('#jnw-out').onclick=()=>zoomAt(W/2,H/2,1/1.5);ui.querySelector('#jnw-fit').onclick=()=>{fit();redraw()};ui.querySelector('#jnw-globe').onclick=()=>setGlobe(!gm);
     ui.querySelector('#jnw-ga').onclick=e=>{gaOnly=!gaOnly;e.currentTarget.setAttribute('aria-pressed',String(gaOnly));e.currentTarget.classList.toggle('on',gaOnly);redraw()}}
-  document.body.classList.add('jn-world');cv.hidden=false;ui.hidden=false;size();if(!(o&&o.keepView))fit();document.dispatchEvent(new CustomEvent('jn-world',{detail:true}));draw();raf=requestAnimationFrame(loop)}
+  document.body.classList.add('jn-world');cv.hidden=false;ui.hidden=false;size();syncGlobeBtn();if(!(o&&o.keepView))fit();document.dispatchEvent(new CustomEvent('jn-world',{detail:true}));draw();raf=requestAnimationFrame(loop)}
 function hide(o){if(!on)return;on=false;cancelAnimationFrame(raf);document.body.classList.remove('jn-world');cv.hidden=true;ui.hidden=true;
   if(!(o&&o.preserveSelection)){cardOff();sel=null;fol=false}document.dispatchEvent(new CustomEvent('jn-world',{detail:false}))}
 window.addEventListener('resize',()=>{if(on){size();redraw()}});
