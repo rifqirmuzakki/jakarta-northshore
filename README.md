@@ -189,3 +189,19 @@ Run `node tools/tests/flight-telemetry.cjs` to check climb/descent continuity at
 Southern arrivals retain the gate used by their filed World corridor, with the STAR and entry connector routed clear of the Jakarta envelope rather than substituting a western gate. The boundary test also covers 96 STAR variants and live entry connectors. Route generation includes literal additions and corrections to the live airport table, covering Samarinda and every scheduled destination. When a custom airport has no generated World route, its known terminal trail still draws.
 
 Run `node tools/tests/arrival-trails-controls.cjs` for destination coverage, GA552's runway trail and missing-route fallback, QF1000/GA725 corridor handoffs, unresolved historical-event labels, and mobile tracking-button layout and actions. Past departures whose scheduled arrival has passed but whose inferred timeline remains unresolved show “Historical timing unavailable,” with blank event times, rather than an indefinite awaiting-departure state; explicit cancellations and recorded events retain their own status.
+
+### Garuda European expansion — 9 November 2026
+
+All five services use the Boeing 787-9 and Jakarta Terminal 2. Operating days below refer to departures from Jakarta; the paired inbound arrives in Jakarta the next day, after a planned two-hour outstation turn in the simulator's block-time model.
+
+| Destination | Flights | Weekly returns | Jakarta departure days | JKT departure | JKT arrival next day |
+| --- | --- | --- | --- | --- | --- |
+| Vienna (VIE) | GA64 / GA65 | 4 | Mon, Wed, Fri, Sun | 00:20 | 04:40 |
+| Athens (ATH) | GA66 / GA67 | 3 | Tue, Thu, Sat | 00:45 | 03:25 |
+| Oslo (OSL) | GA68 / GA69 | 3 | Tue, Thu, Sat | 00:35 | 05:55 |
+| Helsinki (HEL) | GA70 / GA71 | 4 | Mon, Wed, Fri, Sun | 00:55 | 04:25 |
+| Prague (PRG) | GA72 / GA73 | 4 | Mon, Wed, Fri, Sun | 01:10 | 06:00 |
+
+Times in the table are WIB. These are 18 round trips per week; existing Austrian and Finnair services remain. New airport records include IANA time zones and OurAirports runway profiles, and all five destinations have World corridors. An unused 737-800 registration reserve block is reassigned to 787-9 expansion; existing aircraft registrations are preserved. Weekly departures remain present on the ground even when their previous-day inbound does not operate on the viewed day.
+
+Run `node tools/tests/europe-expansion.cjs` to check launch dates, all seven operating days, exact weekly totals, next-day returns on the same physical aircraft, two-hour outstation turns, stable fleet sizing and preservation of existing registrations.

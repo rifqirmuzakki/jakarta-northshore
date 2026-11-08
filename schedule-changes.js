@@ -825,6 +825,246 @@ window.JN_CHANGES_REPO={
      "tz": "Australia/Sydney"
     }
    ]
+  },
+  {
+   "id": "chg_europe_b789_vie",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-09",
+   "retFrom": "2026-11-10",
+   "note": "Garuda Vienna: GA 64/65, Boeing 787-9, 4x weekly; outbound ISO days 1357, next-day JKT arrivals 1246; 120 min outstation turn.",
+   "createdAt": "2026-11-08T00:00:00.000Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "64",
+      "Vienna",
+      20,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-VIE-64",
+      "1357"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "65",
+      "Vienna",
+      280,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-VIE-64",
+      "1246"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Vienna",
+     "code": "VIE",
+     "lat": 48.110298,
+     "lon": 16.5697,
+     "region": "NW",
+     "tz": "Europe/Vienna"
+    }
+   ]
+  },
+  {
+   "id": "chg_europe_b789_ath",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-09",
+   "retFrom": "2026-11-10",
+   "note": "Garuda Athens: GA 66/67, Boeing 787-9, 3x weekly; outbound ISO days 246, next-day JKT arrivals 357; 120 min outstation turn.",
+   "createdAt": "2026-11-08T00:00:00.000Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "66",
+      "Athens",
+      45,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-ATH-66",
+      "246"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "67",
+      "Athens",
+      205,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-ATH-66",
+      "357"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Athens",
+     "code": "ATH",
+     "lat": 37.936401,
+     "lon": 23.9445,
+     "region": "NW",
+     "tz": "Europe/Athens"
+    }
+   ]
+  },
+  {
+   "id": "chg_europe_b789_osl",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-09",
+   "retFrom": "2026-11-10",
+   "note": "Garuda Oslo: GA 68/69, Boeing 787-9, 3x weekly; outbound ISO days 246, next-day JKT arrivals 357; 120 min outstation turn.",
+   "createdAt": "2026-11-08T00:00:00.000Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "68",
+      "Oslo",
+      35,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-OSL-68",
+      "246"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "69",
+      "Oslo",
+      355,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-OSL-68",
+      "357"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Oslo",
+     "code": "OSL",
+     "lat": 60.193901,
+     "lon": 11.1004,
+     "region": "NW",
+     "tz": "Europe/Oslo"
+    }
+   ]
+  },
+  {
+   "id": "chg_europe_b789_hel",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-09",
+   "retFrom": "2026-11-10",
+   "note": "Garuda Helsinki: GA 70/71, Boeing 787-9, 4x weekly; outbound ISO days 1357, next-day JKT arrivals 1246; 120 min outstation turn.",
+   "createdAt": "2026-11-08T00:00:00.000Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "70",
+      "Helsinki",
+      55,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-HEL-70",
+      "1357"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "71",
+      "Helsinki",
+      265,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-HEL-70",
+      "1246"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Helsinki",
+     "code": "HEL",
+     "lat": 60.318363,
+     "lon": 24.963341,
+     "region": "NW",
+     "tz": "Europe/Helsinki"
+    }
+   ]
+  },
+  {
+   "id": "chg_europe_b789_prg",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-09",
+   "retFrom": "2026-11-10",
+   "note": "Garuda Prague: GA 72/73, Boeing 787-9, 4x weekly; outbound ISO days 1357, next-day JKT arrivals 1246; 120 min outstation turn.",
+   "createdAt": "2026-11-08T00:00:00.000Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "72",
+      "Prague",
+      70,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-PRG-72",
+      "1357"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "73",
+      "Prague",
+      360,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-PRG-72",
+      "1246"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Prague",
+     "code": "PRG",
+     "lat": 50.100874,
+     "lon": 14.259911,
+     "region": "NW",
+     "tz": "Europe/Prague"
+    }
+   ]
   }
  ],
  "ops": [
