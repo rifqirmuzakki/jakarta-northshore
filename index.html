@@ -7665,7 +7665,7 @@ function selectedTrail(l,r,cur,air){const P=r&&(l.hand?legPath(l,r):r);
   return [...(l.dir==='out'&&l.hand?depTrack(l.id):[]),...pts,cur];}
 const airState=a=>a.ph==='hold'?'Holding':a.kind==='dep'||a.alt>10000?'Airborne':a.ph==='rwy'?'Landing':'On approach';
 function ensureSA(l,r){if(l.hand&&l.sA==null){let best=Infinity,atS=0;
-  for(let i=1;i<r.lon.length;i++){const cl=Math.cos(l.hand[0]*RAD),ax=(r.lon[i-1]-l.hand[1])*cl,ay=r.lat[i-1]-l.hand[0],dx=(r.lon[i]-r.lon[i-1])*cl,dy=r.lat[i]-r.lat[i-1];
+  for(let i=1;i<r.lon.length;i++){const cl=Math.cos(l.hand[0]*RAD),ax=(((r.lon[i-1]-l.hand[1]+540)%360+360)%360-180)*cl,ay=r.lat[i-1]-l.hand[0],dx=(r.lon[i]-r.lon[i-1])*cl,dy=r.lat[i]-r.lat[i-1];
     const t=Math.max(0,Math.min(1,-(ax*dx+ay*dy)/(dx*dx+dy*dy||1))),d=(ax+t*dx)**2+(ay+t*dy)**2;
     if(d<best){best=d;atS=r.cum[i-1]+t*(r.cum[i]-r.cum[i-1])}}
   l.sA=atS;}return l.sA}
