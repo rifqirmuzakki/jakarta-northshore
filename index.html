@@ -3681,17 +3681,24 @@ function tailsCompute(){
         for(const v of t.seq){const add=f=>{if(f){let m=FLIGHT_TAILS.get(f.id);if(!m)FLIGHT_TAILS.set(f.id,m=new Set());m.add(t.reg)}};if(v.kind!=='pre')add(v.a);if(v.kind!=='ovn')add(v.d);if(v.kind==='multi')add(v.returnFlight)}}}))}
   /* Aircraft that are away from Jakarta and fly back tomorrow: the aircraft sitting at that city now (it flew the paired outbound) is the one that returns. This follows the same location rule the allocator uses, so it never invents a different aircraft. */
   F.forEach(fl=>fl.tails.forEach(t=>{t.nextArr=null}));
-  try{const d=idx+1,dow=tDow(d),taken=new Set();
+  try{const d=idx+1,dow=tDow(d),taken=new Set(),back=[];
     INF_ALL.forEach(f=>{
-      if(!TAIL_CARR.has(f.c)||!f.pid||!flRuns(f,dow)||!effOn(f,d)||JN_OPS.cancelledOn(d,f.id))return;
+      if(!TAIL_CARR.has(f.c)||!flRuns(f,dow)||!effOn(f,d)||JN_OPS.cancelledOn(d,f.id))return;
       if(!(f.t-tBlk(f.city,null)<0))return;                       // it must already be airborne before midnight
-      F.forEach(x=>{if(x.c!==f.c)return;x.tails.forEach(t=>{
-        if(taken.has(t)||t.loc!==f.city)return;
-        const last=t.seq[t.seq.length-1];if(!last||!last.d||last.d.pid!==f.pid||last.d.city!==f.city)return;
-        if(!v111SameType(last.d,f)&&last.d.ac!==f.ac)return;
-        if(last.d.t+tBlk(null,last.d.city)+60>f.t-tBlk(f.city,null)+1440)return;      // the outbound must have reached the outstation (and turned) before the return leaves
-        taken.add(t);(t.nextArr||(t.nextArr=[])).push({kind:'a',a:f,d:null});
-        let m=FLIGHT_TAILS.get(f.id);if(!m)FLIGHT_TAILS.set(f.id,m=new Set());m.add(t.reg)})})})
+      back.push({f,dep:f.t-tBlk(f.city,null)+1440})});
+    back.sort((p,q)=>p.dep-q.dep);
+    /* aircraft now at an outstation, with the time they got there */
+    const away=[];F.forEach(x=>x.tails.forEach(t=>{
+      for(let q=idx;q>=idx-3;q--){const sq=t.hist.get(q);if(!sq||!sq.length)continue;const last=sq[sq.length-1];
+        if(last&&last.d&&last.kind!=='ovn'&&t.loc===last.d.city&&last.d.city!=='Jakarta')away.push({t,d:last.d,arr:(q-idx)*1440+last.d.t+tBlk(null,last.d.city)});
+        break}}));
+    away.sort((p,q)=>p.arr-q.arr);
+    back.forEach(({f,dep})=>{
+      const ok=a=>!taken.has(a.t)&&a.t.fleet.c===f.c&&a.d.city===f.city&&(v111SameType(a.d,f)||a.d.ac===f.ac)&&a.arr+60<=dep;   // reached the outstation and turned before the return leaves
+      const pick=away.find(a=>ok(a)&&f.pid&&a.d.pid===f.pid)||away.find(ok);
+      if(!pick)return;
+      taken.add(pick.t);(pick.t.nextArr||(pick.t.nextArr=[])).push({kind:'a',a:f,d:null});
+      let m=FLIGHT_TAILS.get(f.id);if(!m)FLIGHT_TAILS.set(f.id,m=new Set());m.add(pick.t.reg)})
   }catch(err){console.error('returning aircraft:',err)}
   // Today's ground arrival belongs to the earlier outbound rotation, on its
   // original physical aircraft. This projection never enters the allocator.
