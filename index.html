@@ -4298,15 +4298,42 @@ function airStar(gk,rwk,fl,vr){
   R.vr=vr||0;R.iM=iM;R.iG0=iG0;R.eM=R.E[iM];R.eT=R.E[R.n-1];R.gk=gk;R.rwk=rwk;R.fl=fl;R.name=G.n+' '+(fl==='27'?1:2)+airRwy(rwk,fl).slice(-1);R.rwy=airRwy(rwk,fl);R.F=F;R.wp=W.map((p,i)=>({p,n:names[i]}));
   return AIR.stars[key]=R;
 }
-/* ---- SID: runway end -> (turn, via the sea if more than ~135 deg) -> gate fix -> airway ---- */
+/* Conservative mainland Jakarta envelope, including the coastal polygons in
+   tools/world/jakarta-boundary.geojson (geoBoundaries IDN ADM1), with a buffer.
+   This is a simulation routing constraint, not a published airspace restriction. */
+const AIR_JAKARTA={west:106.63,east:107.03,north:-6.02,south:-6.43};
+const airJakartaBox=()=>{const a=airXY(AIR_JAKARTA.north,AIR_JAKARTA.west),b=airXY(AIR_JAKARTA.south,AIR_JAKARTA.east);return {left:a[0],top:a[1],right:b[0],bottom:b[1]}};
+function airDepartureClear(a,b){const r=airJakartaBox(),dx=b[0]-a[0],dy=b[1]-a[1];let lo=0,hi=1;
+  for(const [p,q] of [[-dx,a[0]-r.left],[dx,r.right-a[0]],[-dy,a[1]-r.top],[dy,r.bottom-a[1]]]){
+    if(Math.abs(p)<1e-9){if(q<0)return true;continue}const t=q/p;if(p<0)lo=Math.max(lo,t);else hi=Math.min(hi,t);if(lo>hi)return true;
+  }return false;
+}
+function airDepartureDetour(a,b){if(airDepartureClear(a,b))return [b];
+  // Keep the turning fixes outside the envelope by more than the SID turn
+  // radius, so smoothing a bend cannot cut back into Jakarta.
+  const r=airJakartaBox(),pad=10000,P=[a,[r.left-pad,r.top-pad],[r.right+pad,r.top-pad],[r.left-pad,r.bottom+pad],[r.right+pad,r.bottom+pad],b];
+  const D=P.map(()=>Infinity),prev=P.map(()=>-1),seen=new Set();D[0]=0;
+  for(let k=0;k<P.length;k++){let u=-1;for(let i=0;i<P.length;i++)if(!seen.has(i)&&(u<0||D[i]<D[u]))u=i;if(u<0||!Number.isFinite(D[u]))break;seen.add(u);
+    for(let v=0;v<P.length;v++){if(v===u||!airDepartureClear(P[u],P[v]))continue;const d=D[u]+Math.hypot(P[v][0]-P[u][0],P[v][1]-P[u][1]);if(d<D[v]){D[v]=d;prev[v]=u}}}
+  if(!Number.isFinite(D[P.length-1]))throw new Error('No Jakarta-clear departure connector');
+  const out=[];for(let i=P.length-1;i>0;i=prev[i])out.push(P[i]);return out.reverse();
+}
+function airDeparturePath(W){const out=[W[0]];for(let i=1;i<W.length;i++)out.push(...airDepartureDetour(W[i-1],W[i]));
+  for(const radius of [7500,4000,1000,0]){const P=radius?airRound(out,radius):out;if(P.every((p,i)=>!i||airDepartureClear(P[i-1],p)))return P;}
+  throw new Error('Departure path crosses Jakarta');
+}
+/* ---- SID: runway end -> Jakarta-clear turn -> gate fix -> airway ---- */
 function airSid(gk,rwk,fl,vr){
   const key=gk+rwk+fl+(vr?'#'+vr:'');if(key in AIR.sids)return AIR.sids[key];
   const E=airDend(rwk,fl);if(!E)return AIR.sids[key]=null;
   const G=AIR.G[gk],h=[E.dx,E.dy],d1=[9000,5000,14500][vr||0],X1=[E.x+h[0]*d1,E.y+h[1]*d1],tm=[G.M[0]-X1[0],G.M[1]-X1[1]];
   const dl=Math.atan2(h[0]*tm[1]-h[1]*tm[0],h[0]*tm[0]+h[1]*tm[1]),W=[[E.x,E.y],X1];
-  if(Math.abs(dl)>2.36){const nw=airV(0,-1),X2=[X1[0]+h[0]*5000+nw[0]*15000,X1[1]+h[1]*5000+nw[1]*15000],X3=[X2[0]-h[0]*14000,X2[1]-h[1]*14000];W.push(X2,X3)}
+  // A Jakarta bypass already supplies the necessary turn. Do not add an
+  // offshore reversal first, which would send eastbound departures around
+  // the long western side instead of taking the clear eastern corridor.
+  if(Math.abs(dl)>2.36&&airDepartureClear(X1,G.M)){const nw=airV(0,-1),X2=[X1[0]+h[0]*5000+nw[0]*15000,X1[1]+h[1]*5000+nw[1]*15000],X3=[X2[0]-h[0]*14000,X2[1]-h[1]*14000];W.push(X2,X3)}
   const rt=[-G.u[1]*3000,G.u[0]*3000];W.push([G.M[0]+rt[0],G.M[1]+rt[1]],[G.G[0]+rt[0],G.G[1]+rt[1]],[G.X[0]+rt[0],G.X[1]+rt[1]]);
-  const R=airRes(airRound(W,7500),250);
+  const R=airRes(airDeparturePath(W),250);
   R.alt=new Float64Array(R.n);R.v=new Float64Array(R.n);R.E=new Float64Array(R.n);
   const SP=[[0,90],[3000,110],[10000,135],[18000,165],[26000,200],[34000,225]];
   for(let i=0;i<R.n;i++){R.alt[i]=Math.min(34000,700+R.S[i]*.082/.3048);R.v[i]=airInterp(SP,R.alt[i]);if(i)R.E[i]=R.E[i-1]+(R.S[i]-R.S[i-1])/((R.v[i]+R.v[i-1])/2)}
@@ -4372,6 +4399,7 @@ function airShortTransition(R,airport,kind,maxIndex){
     const P=[R.X[i],R.Y[i]],dx=R.X[Math.min(i+1,R.n-1)]-R.X[Math.max(0,i-1)],dy=R.Y[Math.min(i+1,R.n-1)]-R.Y[Math.max(0,i-1)];
     const cx=dep?airport[0]-P[0]:P[0]-airport[0],cy=dep?airport[1]-P[1]:P[1]-airport[1],len=Math.hypot(cx,cy);
     if(len<10000)continue;
+    if(dep&&!airDepartureClear(P,airport))continue;
     const alignment=(dx*cx+dy*cy)/(Math.hypot(dx,dy)*len||1);if(alignment<Math.cos(Math.PI/4))continue;
     const x=airport[0]-AIR_C[0],y=airport[1]-AIR_C[1],vx=P[0]-airport[0],vy=P[1]-airport[1],t=Math.max(0,Math.min(1,-(x*vx+y*vy)/(vx*vx+vy*vy||1)));
     if(Math.hypot(x+t*vx,y+t*vy)<18000)continue;
