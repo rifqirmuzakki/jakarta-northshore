@@ -1065,6 +1065,44 @@ window.JN_CHANGES_REPO={
      "tz": "Europe/Prague"
     }
    ]
+  },
+  {
+   "id": "chg_sin_ga901_arrival_20261108",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "amend",
+   "from": "2026-11-08",
+   "note": "User timetable update: GA901 Singapore–Jakarta scheduled arrival 13:25 WIB.",
+   "createdAt": "2026-11-08T00:00:00.000Z",
+   "targets": [
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "901"
+    }
+   ],
+   "set": {
+    "time": 805
+   }
+  },
+  {
+   "id": "chg_sin_ga903_arrival_20261108",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "amend",
+   "from": "2026-11-08",
+   "note": "User timetable update: GA903 Singapore–Jakarta scheduled arrival 11:55 WIB.",
+   "createdAt": "2026-11-08T00:00:00.000Z",
+   "targets": [
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "903"
+    }
+   ],
+   "set": {
+    "time": 715
+   }
   }
  ],
  "ops": [
