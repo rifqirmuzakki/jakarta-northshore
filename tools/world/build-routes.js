@@ -12,6 +12,9 @@ const TERMINALS=require('./terminal-profiles.json').profiles;
 const root=path.join(__dirname,'..','..'),htmlPath=path.join(root,'index.html');
 const html=fs.readFileSync(htmlPath,'utf8');
 const air=JSON.parse(/const AIR_CITY=(\{.*?\});/s.exec(html)[1]);
+// The live airport table also has literal additions/corrections after its
+// initial declaration. Include them so routes cover the same destinations.
+for(const m of html.matchAll(/AIR_CITY\[["']([^"']+)["']\]\s*=\s*\[\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*["']([^"']+)["']\s*\]/g))air[m[1]]=[+m[2],+m[3],m[4]];
 /* airports added by schedule changes (schedule-changes.js) get routes too, so their flights appear on the World map */
 try{global.window={};require(path.join(root,'schedule-changes.js'));(window.JN_CHANGES_REPO.changes||[]).forEach(c=>(c.airports||[]).forEach(a=>{if(a&&a.city&&!air[a.city])air[a.city]=[+a.lat,+a.lon,a.region||'E']}))}catch(e){}
 const BEACONS=JSON.parse(fs.readFileSync(path.join(__dirname,'beacons.json'),'utf8')),AVOID=JSON.parse(fs.readFileSync(path.join(__dirname,'avoid.json'),'utf8'));

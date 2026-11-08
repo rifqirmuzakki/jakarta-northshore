@@ -7,7 +7,7 @@ const {exclusions}=require('../world/geometry'),polygons=boundary.geometry.coord
 try{const page=await browser.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('https://northshore.test/**',route=>{const file=path.join(root,new URL(route.request().url()).pathname);
   if(!fs.existsSync(file)||!fs.statSync(file).isFile())return route.fulfill({status:404,body:''});
-  if(file.endsWith('index.html'))return route.fulfill({contentType:'text/html',body:source.replace('airGateOf,airRwy,airShortTransition,airRouteTransitionPoint};','airGateOf,airRwy,airShortTransition,airRouteTransitionPoint,airSid,airDepartureClear,AIR_JAKARTA};')});
+  if(file.endsWith('index.html'))return route.fulfill({contentType:'text/html',body:source.replace('airGateOf,airRwy,airShortTransition,airRouteTransitionPoint};','airGateOf,airRwy,airShortTransition,airRouteTransitionPoint,airSid,airStar,airDepartureClear,AIR_JAKARTA};')});
   return route.fulfill({path:file});});
  await page.goto('https://northshore.test/index.html?clock=2026-11-10T06:45&incidents=off');
  await page.waitForFunction(()=>window.AIRCORE?.AIR.D?.length);
@@ -22,6 +22,12 @@ try{const page=await browser.newPage(),errors=[];page.on('pageerror',e=>errors.p
     const q=A.airShortTransition(R,A.airXY(...target),'dep');if(q)connectors.push({id:[gate,runway,flow,variant,target].join('/'),points:[A.airLL(...q.P),target]});
    }
   }
+  for(const gate of Object.keys(A.AIR.G))for(const runway of ['N','S'])for(const flow of ['09','27'])for(const variant of [0,1,2,3]){
+   const R=A.airStar(gate,runway,flow,variant),points=Array.from(R.X,(x,i)=>A.airLL(x,R.Y[i]));
+   paths.push({id:'STAR/'+[gate,runway,flow,variant].join('/'),points});
+   if(Math.hypot(R.X[R.n-1]-R.F.x,R.Y[R.n-1]-R.F.y)>1e-6)issues.push('Final-approach anchor moved');
+  }
+  for(const tr of A.AIR.A)if(tr.hs)connectors.push({id:'STAR entry/'+tr.id,points:[A.airLL(...tr.hs.O),A.airLL(...tr.hs.J)]});
   for(const tr of A.AIR.D){const points=[];for(let t=tr.t0;t<tr.t1;t+=10){const q=A.posAtOff(tr,t);if(q)points.push(A.airLL(q.x,q.y))}const q=A.posAtOff(tr,tr.t1);if(q)points.push(A.airLL(q.x,q.y));paths.push({id:tr.id,points});}
   if(A.airDepartureClear(A.airXY(-5.9,106.85),A.airXY(-6.5,106.85)))issues.push('Direct Jakarta crossing allowed');
   if(!A.airDepartureClear(A.airXY(-5.9,106.5),A.airXY(-6.5,106.5)))issues.push('Western bypass blocked');
@@ -32,5 +38,5 @@ try{const page=await browser.newPage(),errors=[];page.on('pageerror',e=>errors.p
  const crossings=[];for(const route of [...result.paths,...result.connectors])for(let i=1;i<route.points.length;i++)if(!geo.clear(route.points[i-1],route.points[i])){crossings.push(route.id);break}
  assert.deepEqual(crossings,[],'Departure SID or connector crosses Jakarta');
  fs.writeFileSync('/tmp/jakarta-departure-paths.json',JSON.stringify(result));
- console.log('PASS: 72 SID variants, '+(result.paths.length-72)+' live departure tracks and '+result.connectors.length+' shortcuts avoid Jakarta boundary; runway anchors retained');
+ console.log('PASS: 72 SID variants, 96 STAR variants, '+(result.paths.length-168)+' live departure tracks and '+result.connectors.length+' connectors avoid Jakarta boundary; runway/final anchors retained');
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});
