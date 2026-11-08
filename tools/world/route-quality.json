@@ -1,7 +1,7 @@
 {
   "summary": {
-    "destinations": 169,
-    "variants": 338,
+    "destinations": 172,
+    "variants": 344,
     "excludedVariants": 0,
     "sharpEnrouteVariants": 1,
     "backtrackingVariants": 0,
@@ -33092,6 +33092,1098 @@
             106.5
           ],
           "degrees": 37.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Athens",
+      "direction": "out",
+      "variant": 0,
+      "km": 10185.2,
+      "greatCircleKm": 9792.5,
+      "detourRatio": 1.0401,
+      "score": 10273,
+      "maxEnrouteTurnDeg": 21.6,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 10.3,
+          "terminal": true
+        },
+        {
+          "point": [
+            -1,
+            102.5
+          ],
+          "degrees": 3.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            4,
+            97.6
+          ],
+          "degrees": 8.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            9.5,
+            93.5
+          ],
+          "degrees": 19.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            13,
+            88
+          ],
+          "degrees": 2.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            17,
+            82
+          ],
+          "degrees": 16.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            21.5,
+            78
+          ],
+          "degrees": 13.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            25.04989,
+            75.95091
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            28.57,
+            73.78
+          ],
+          "degrees": 6.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            31.91,
+            70.89
+          ],
+          "degrees": 0.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            34.5,
+            68.5
+          ],
+          "degrees": 20.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            36.4253,
+            64.35121
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 1,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.6,
+            52.5
+          ],
+          "degrees": 21.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.15,
+            44.37
+          ],
+          "degrees": 5.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            39.79,
+            36.89
+          ],
+          "degrees": 1.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            39.15935,
+            31.89845
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.32,
+            27.01
+          ],
+          "degrees": 10.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.15051,
+            24.13592
+          ],
+          "degrees": 48.1,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Athens",
+      "direction": "in",
+      "variant": 0,
+      "km": 10184.6,
+      "greatCircleKm": 9794.2,
+      "detourRatio": 1.0399,
+      "score": 10267.4,
+      "maxEnrouteTurnDeg": 21.6,
+      "turns": [
+        {
+          "point": [
+            38.0509,
+            24.04177
+          ],
+          "degrees": 45.8,
+          "terminal": true
+        },
+        {
+          "point": [
+            38.32,
+            27.01
+          ],
+          "degrees": 8.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            39.15935,
+            31.89845
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            39.79,
+            36.89
+          ],
+          "degrees": 1.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.15,
+            44.37
+          ],
+          "degrees": 5.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.6,
+            52.5
+          ],
+          "degrees": 21.6,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 1,
+          "terminal": false
+        },
+        {
+          "point": [
+            36.4253,
+            64.35121
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            34.5,
+            68.5
+          ],
+          "degrees": 20.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            31.91,
+            70.89
+          ],
+          "degrees": 0.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            28.57,
+            73.78
+          ],
+          "degrees": 6.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            25.04989,
+            75.95091
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            21.5,
+            78
+          ],
+          "degrees": 13.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            17,
+            82
+          ],
+          "degrees": 16.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            13,
+            88
+          ],
+          "degrees": 2.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            9.5,
+            93.5
+          ],
+          "degrees": 19.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            4,
+            97.6
+          ],
+          "degrees": 8.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            -1,
+            102.5
+          ],
+          "degrees": 3.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 10.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Oslo",
+      "direction": "out",
+      "variant": 0,
+      "km": 12184.8,
+      "greatCircleKm": 10907.4,
+      "detourRatio": 1.1171,
+      "score": 12339.3,
+      "maxEnrouteTurnDeg": 55.9,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 10.3,
+          "terminal": true
+        },
+        {
+          "point": [
+            -1,
+            102.5
+          ],
+          "degrees": 3.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            4,
+            97.6
+          ],
+          "degrees": 8.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            9.5,
+            93.5
+          ],
+          "degrees": 19.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            13,
+            88
+          ],
+          "degrees": 2.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            17,
+            82
+          ],
+          "degrees": 16.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            21.5,
+            78
+          ],
+          "degrees": 13.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            25.04989,
+            75.95091
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            28.57,
+            73.78
+          ],
+          "degrees": 6.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            31.91,
+            70.89
+          ],
+          "degrees": 0.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            34.5,
+            68.5
+          ],
+          "degrees": 20.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            36.4253,
+            64.35121
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 1,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.6,
+            52.5
+          ],
+          "degrees": 17.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.57,
+            43.12
+          ],
+          "degrees": 14.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            41,
+            39.8
+          ],
+          "degrees": 5.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            41.06881,
+            34.55602
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 55.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            42.57,
+            27.52
+          ],
+          "degrees": 4.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            47.99,
+            21.69
+          ],
+          "degrees": 16,
+          "terminal": false
+        },
+        {
+          "point": [
+            54.21,
+            17.07
+          ],
+          "degrees": 0.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            59.94287,
+            10.93512
+          ],
+          "degrees": 48.7,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Oslo",
+      "direction": "in",
+      "variant": 0,
+      "km": 12183.8,
+      "greatCircleKm": 10906.3,
+      "detourRatio": 1.1171,
+      "score": 12336.8,
+      "maxEnrouteTurnDeg": 55.9,
+      "turns": [
+        {
+          "point": [
+            60.06046,
+            11.0023
+          ],
+          "degrees": 47.9,
+          "terminal": true
+        },
+        {
+          "point": [
+            54.21,
+            17.07
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            47.99,
+            21.69
+          ],
+          "degrees": 16,
+          "terminal": false
+        },
+        {
+          "point": [
+            42.57,
+            27.52
+          ],
+          "degrees": 4.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 55.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            41.06881,
+            34.55602
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            41,
+            39.8
+          ],
+          "degrees": 5.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.57,
+            43.12
+          ],
+          "degrees": 14.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.6,
+            52.5
+          ],
+          "degrees": 17.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 1,
+          "terminal": false
+        },
+        {
+          "point": [
+            36.4253,
+            64.35121
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            34.5,
+            68.5
+          ],
+          "degrees": 20.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            31.91,
+            70.89
+          ],
+          "degrees": 0.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            28.57,
+            73.78
+          ],
+          "degrees": 6.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            25.04989,
+            75.95091
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            21.5,
+            78
+          ],
+          "degrees": 13.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            17,
+            82
+          ],
+          "degrees": 16.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            13,
+            88
+          ],
+          "degrees": 2.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            9.5,
+            93.5
+          ],
+          "degrees": 19.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            4,
+            97.6
+          ],
+          "degrees": 8.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            -1,
+            102.5
+          ],
+          "degrees": 3.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 10.3,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Prague",
+      "direction": "out",
+      "variant": 0,
+      "km": 11222.9,
+      "greatCircleKm": 10699.4,
+      "detourRatio": 1.0489,
+      "score": 11292.5,
+      "maxEnrouteTurnDeg": 35.9,
+      "turns": [
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 10.3,
+          "terminal": true
+        },
+        {
+          "point": [
+            -1,
+            102.5
+          ],
+          "degrees": 3.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            4,
+            97.6
+          ],
+          "degrees": 8.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            9.5,
+            93.5
+          ],
+          "degrees": 19.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            13,
+            88
+          ],
+          "degrees": 2.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            17,
+            82
+          ],
+          "degrees": 16.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            21.5,
+            78
+          ],
+          "degrees": 13.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            25.04989,
+            75.95091
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            28.57,
+            73.78
+          ],
+          "degrees": 6.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            31.91,
+            70.89
+          ],
+          "degrees": 0.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            34.5,
+            68.5
+          ],
+          "degrees": 20.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            36.4253,
+            64.35121
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 1,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.6,
+            52.5
+          ],
+          "degrees": 17.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.57,
+            43.12
+          ],
+          "degrees": 14.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            41,
+            39.8
+          ],
+          "degrees": 5.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            41.06881,
+            34.55602
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 13.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 35.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            43.15,
+            25.71
+          ],
+          "degrees": 3.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            47.45,
+            19.25
+          ],
+          "degrees": 0.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            49.93854,
+            14.59416
+          ],
+          "degrees": 0,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Prague",
+      "direction": "in",
+      "variant": 0,
+      "km": 11226.2,
+      "greatCircleKm": 10702.1,
+      "detourRatio": 1.049,
+      "score": 11295.8,
+      "maxEnrouteTurnDeg": 35.9,
+      "turns": [
+        {
+          "point": [
+            50.01041,
+            14.44657
+          ],
+          "degrees": 0,
+          "terminal": true
+        },
+        {
+          "point": [
+            47.45,
+            19.25
+          ],
+          "degrees": 0.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            43.15,
+            25.71
+          ],
+          "degrees": 3.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.96,
+            28.81
+          ],
+          "degrees": 35.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.9,
+            29.32
+          ],
+          "degrees": 13.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            41.06881,
+            34.55602
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            41,
+            39.8
+          ],
+          "degrees": 5.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.57,
+            43.12
+          ],
+          "degrees": 14.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.6,
+            52.5
+          ],
+          "degrees": 17.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            38.2,
+            60
+          ],
+          "degrees": 1,
+          "terminal": false
+        },
+        {
+          "point": [
+            36.4253,
+            64.35121
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            34.5,
+            68.5
+          ],
+          "degrees": 20.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            31.91,
+            70.89
+          ],
+          "degrees": 0.5,
+          "terminal": false
+        },
+        {
+          "point": [
+            28.57,
+            73.78
+          ],
+          "degrees": 6.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            25.04989,
+            75.95091
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            21.5,
+            78
+          ],
+          "degrees": 13.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            17,
+            82
+          ],
+          "degrees": 16.8,
+          "terminal": false
+        },
+        {
+          "point": [
+            13,
+            88
+          ],
+          "degrees": 2.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            9.5,
+            93.5
+          ],
+          "degrees": 19.7,
+          "terminal": false
+        },
+        {
+          "point": [
+            4,
+            97.6
+          ],
+          "degrees": 8.2,
+          "terminal": false
+        },
+        {
+          "point": [
+            -1,
+            102.5
+          ],
+          "degrees": 3.4,
+          "terminal": false
+        },
+        {
+          "point": [
+            -4.95,
+            105.95
+          ],
+          "degrees": 10.3,
           "terminal": true
         }
       ],

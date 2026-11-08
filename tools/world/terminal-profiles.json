@@ -1,6 +1,6 @@
 {
   "source": "OurAirports airports.csv + runways.csv",
-  "generatedAt": "2026-11-07T14:03:24.304Z",
+  "generatedAt": "2026-11-08T01:15:10.429Z",
   "profiles": {
     "Port Louis": {
       "airport": {
@@ -7266,6 +7266,138 @@
             "lat": -33.971099853515625,
             "lon": 151.19400024414062,
             "heading": 348
+          }
+        }
+      ]
+    },
+    "Athens": {
+      "airport": {
+        "ident": "LGAV",
+        "iata": "ATH",
+        "name": "Athens Eleftherios Venizelos International Airport",
+        "lat": 37.936401,
+        "lon": 23.9445,
+        "matchKm": 0
+      },
+      "runways": [
+        {
+          "id": "03R/21L",
+          "lengthFt": 13123,
+          "le": {
+            "id": "03R",
+            "lat": 37.923500061035156,
+            "lon": 23.943300247192383,
+            "heading": 36.6
+          },
+          "he": {
+            "id": "21L",
+            "lat": 37.95240020751953,
+            "lon": 23.970399856567383,
+            "heading": 216.6
+          }
+        },
+        {
+          "id": "03L/21R",
+          "lengthFt": 12467,
+          "le": {
+            "id": "03L",
+            "lat": 37.92100143432617,
+            "lon": 23.919200897216797,
+            "heading": 36.6
+          },
+          "he": {
+            "id": "21R",
+            "lat": 37.94850158691406,
+            "lon": 23.94499969482422,
+            "heading": 216.6
+          }
+        }
+      ]
+    },
+    "Oslo": {
+      "airport": {
+        "ident": "ENGM",
+        "iata": "OSL",
+        "name": "Oslo-Gardermoen International Airport",
+        "lat": 60.193901,
+        "lon": 11.1004,
+        "matchKm": 0
+      },
+      "runways": [
+        {
+          "id": "01L/19R",
+          "lengthFt": 11811,
+          "le": {
+            "id": "01L",
+            "lat": 60.185001373291016,
+            "lon": 11.073699951171875,
+            "heading": 16
+          },
+          "he": {
+            "id": "19R",
+            "lat": 60.21609878540039,
+            "lon": 11.091699600219727,
+            "heading": 196
+          }
+        },
+        {
+          "id": "01R/19L",
+          "lengthFt": 9678,
+          "le": {
+            "id": "01R",
+            "lat": 60.17580032348633,
+            "lon": 11.107799530029297,
+            "heading": 16
+          },
+          "he": {
+            "id": "19L",
+            "lat": 60.20119857788086,
+            "lon": 11.1225004196167,
+            "heading": 196
+          }
+        }
+      ]
+    },
+    "Prague": {
+      "airport": {
+        "ident": "LKPR",
+        "iata": "PRG",
+        "name": "Václav Havel Airport Prague",
+        "lat": 50.100874,
+        "lon": 14.259911,
+        "matchKm": 0
+      },
+      "runways": [
+        {
+          "id": "06/24",
+          "lengthFt": 12189,
+          "le": {
+            "id": "06",
+            "lat": 50.10179901123047,
+            "lon": 14.226300239562988,
+            "heading": 65
+          },
+          "he": {
+            "id": "24",
+            "lat": 50.11600112915039,
+            "lon": 14.27340030670166,
+            "heading": 245
+          }
+        },
+        {
+          "id": "12/30",
+          "lengthFt": 10663,
+          "le": {
+            "id": "12",
+            "lat": 50.108001708984375,
+            "lon": 14.245400428771973,
+            "heading": 127
+          },
+          "he": {
+            "id": "30",
+            "lat": 50.09049987792969,
+            "lon": 14.281700134277344,
+            "heading": 307
           }
         }
       ]
