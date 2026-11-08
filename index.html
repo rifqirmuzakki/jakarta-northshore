@@ -1203,7 +1203,7 @@ function registerAirport(a){
   (window.JN_TZ_EXTRA=window.JN_TZ_EXTRA||{})[a.city]=a.tz||'Asia/Jakarta'}
 function applySet(r,set){
   if(set.time!=null)r[3]=+set.time;if(set.terminal)r[4]=set.terminal;if(set.zone)r[5]=set.zone;
-  if(set.aircraft)r[6]=set.aircraft;if(set.city)r[2]=set.city;
+  if(set.aircraft){if(set.time==null){const original=window.JN_EQUIPMENT_BASELINES||(window.JN_EQUIPMENT_BASELINES=new WeakMap());if(!original.has(r))original.set(r,r[6])}r[6]=set.aircraft}if(set.city)r[2]=set.city;
   if('days' in set){if(set.days)r[8]=String(set.days);else r.length=Math.min(r.length,8)}}
 /* legacy full-timetable edit (v155 Flight Manager) is honoured as the baseline so nothing saved earlier is lost */
 const BASE={IN:FLD.IN.map(r=>r.slice()),OUT:FLD.OUT.map(r=>r.slice())};
@@ -2542,6 +2542,8 @@ const V118_RETIME=Object.freeze({"IN|GA 735": {"pid": "GA-RT-212", "city": "Sydn
 const V118_EQUIP=Object.freeze({"IN|8B 156": {"pid": "8B-IN-0000", "from": "Airbus A321", "to": "Airbus A320"}, "IN|8B 152": {"pid": "8B-IN-0231", "from": "Airbus A320", "to": "Airbus A321"}, "OUT|GA 420": {"pid": "GA-RT-001", "from": "Airbus A330-900", "to": "Boeing 737-800"}, "OUT|GA 788": {"pid": "GA-RT-901", "from": "Boeing 787-9", "to": "Airbus A330-900"}, "IN|GA 419": {"pid": "GA-RT-088", "from": "Boeing 737-800", "to": "Boeing 777-300ER"}});
 function v79Key(r,out){return (out?'OUT':'IN')+'|'+r[0]+' '+r[1]}
 function mkFl(r,out){const key=v79Key(r,out),eq118=V118_EQUIP[key],ac=(eq118&&eq118.pid===r[7]&&eq118.from===r[6])?eq118.to:r[6],D=rdrDim(ac),approval=V79_APPROVED_FICTIONAL[key];
+  // Equipment-only amendments retain the original model for timetable approvals.
+  const approvalAc=window.JN_EQUIPMENT_BASELINES?.get(r)||ac;
   const old=scheduled5(r[3]);
   const routeCode=({Brisbane:'BNE',Amman:'AMM',Bangkok:'BKK','Bandar Seri Begawan':'BWN','Kota Kinabalu':'BKI',Shanghai:'PVG',Beijing:'PEK',Pekanbaru:'PKU','Banda Aceh':'BTJ',Tarakan:'TRK',Biak:'BIK'}[r[2]]||'');
   const route=(out?'CGK-':'')+routeCode+(out?'':'-CGK');
@@ -2551,19 +2553,19 @@ function mkFl(r,out){const key=v79Key(r,out),eq118=V118_EQUIP[key],ac=(eq118&&eq
   // Entry must match the exact direction, operating carrier, flight number,
   // destination, aircraft model, and original (5-minute) time. A stale
   // approval cannot accidentally affect another frequency.
-  const validSpecific=specific&&specific.city===r[2]&&specific.ac===ac&&specific.old===old&&specific.pid===r[7]&&
+  const validSpecific=specific&&specific.city===r[2]&&specific.ac===approvalAc&&specific.old===old&&specific.pid===r[7]&&
     Number.isFinite(specific.newTime)&&Number.isFinite(specific.maxShift)&&
     Math.abs(scheduled5(specific.newTime)-old)<=Math.min(600,Math.abs(specific.maxShift))&&
     scheduled5(specific.newTime)>=0&&scheduled5(specific.newTime)<1440;
   const v94=V94_COORDINATED.get(key);
   const v94Valid=!V91_LOCKED.has(key)&&!validSpecific&&!oldValid&&!!v94&&
-    v94.pid===r[7]&&v94.city===r[2]&&v94.ac===ac&&v94.old===old&&
+    v94.pid===r[7]&&v94.city===r[2]&&v94.ac===approvalAc&&v94.old===old&&
     Number.isInteger(v94.newTime)&&v94.newTime>=0&&v94.newTime<1440&&v94.newTime%5===0;
   const v96=V96_FIVE_HOUR.get(key);
   const v96Valid=!V91_LOCKED.has(key)&&!validSpecific&&!oldValid&&!v94Valid&&!!v96&&
-    v96.pid===r[7]&&v96.city===r[2]&&v96.ac===ac&&v96.old===old&&
+    v96.pid===r[7]&&v96.city===r[2]&&v96.ac===approvalAc&&v96.old===old&&
     Number.isInteger(v96.newTime)&&v96.newTime>=0&&v96.newTime<1440&&v96.newTime%5===0;
-  const v118=V118_RETIME[key],v118Valid=!!v118&&v118.pid===r[7]&&v118.city===r[2]&&v118.ac===ac&&v118.old===old&&Number.isInteger(v118.newTime)&&v118.newTime>=0&&v118.newTime<1440&&v118.newTime%5===0;
+  const v118=V118_RETIME[key],v118Valid=!!v118&&v118.pid===r[7]&&v118.city===r[2]&&v118.ac===approvalAc&&v118.old===old&&Number.isInteger(v118.newTime)&&v118.newTime>=0&&v118.newTime<1440&&v118.newTime%5===0;
   const change0=validSpecific?scheduled5(specific.newTime):(oldValid?scheduled5(prev):(v94Valid?v94.newTime:(v96Valid?v96.newTime:null)));
   const change=v118Valid?v118.newTime:change0;
   return{c:r[0],num:r[1],id:r[0]+' '+r[1],city:r[2],t:change==null?old:change,term:r[4],zone:r[5],ac,pid:r[7],days:r[8]||null,w:rdrWide(ac),L:D.L,sp:D.sp,out,
@@ -3288,6 +3290,8 @@ const V128_GA_SERIES=Object.freeze({
   'Airbus A330-800':['GL'],
   'Boeing 777-300ER':['GI','GS'],
   'Airbus A350-1000':['GP','GL','GH','GK'],
+  // Standard A359 uses the retired 777 registration blocks.
+  'Airbus A350-900':['GS','GI'],
   // GE was an unused 737-800 reserve block (indices 225+). Reassign it to
   // 787-9 expansion without changing any existing aircraft registrations.
   'Boeing 787-9':['GV','GJ','GE'],
@@ -6840,7 +6844,7 @@ function render(H){
     if(/A321neo/i.test(ac))return 'A21N';
     if(/A320/i.test(ac))return 'A320';
     if(/A321/i.test(ac))return 'A321';
-    if(/A350-?1000/i.test(ac))return 'A35K';
+    if(/A350-?1000/i.test(ac))return 'A35K';if(/A350-?900/i.test(ac))return 'A359';
     if(/777-?3/i.test(ac))return 'B773';
     if(/787-?9/i.test(ac))return 'B789';
     if(/787-?8/i.test(ac))return 'B788';
@@ -6935,7 +6939,7 @@ const typeCodeOf=ac=>{
   if(/737-?8/i.test(ac))return 'B738';if(/737-?9/i.test(ac))return 'B739';if(/737 MAX 8/i.test(ac))return 'B38M';
   if(/A330-?3/i.test(ac))return 'A333';if(/A330-?9/i.test(ac))return 'A339';if(/A320neo/i.test(ac))return 'A20N';
   if(/A321neo/i.test(ac))return 'A21N';if(/A320/i.test(ac))return 'A320';if(/A321/i.test(ac))return 'A321';
-  if(/A350-?1000/i.test(ac))return 'A35K';if(/777-?3/i.test(ac))return 'B773';if(/787-?9/i.test(ac))return 'B789';
+  if(/A350-?1000/i.test(ac))return 'A35K';if(/A350-?900/i.test(ac))return 'A359';if(/777-?3/i.test(ac))return 'B773';if(/787-?9/i.test(ac))return 'B789';
   if(/787-?8/i.test(ac))return 'B788';return String(ac).replace(/[^A-Za-z0-9]/g,'').slice(0,4).toUpperCase()||'—'};
 /* v181: Flightradar24-style flight history. Rows come from exactly the same per-aircraft chain as the aircraft page
    (same ATD/ATA/status), so a flight and its aircraft always agree. */

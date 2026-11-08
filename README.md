@@ -213,3 +213,9 @@ Arrival connectors curve into the STAR along its heading. STARs pass the holding
 The STAR ends at the start of the runway simulation's final approach, approximately 6 km before the runway. Its last 13 km blend smoothly into that final segment's actual altitude and glide slope, rather than descending to zero and jumping back up at the handoff. The runway simulation still owns touchdown timing. Selected routes split at the current aircraft position, including curved connectors, holding loops and the remaining final approach.
 
 Run `node tools/tests/approach-dynamics.cjs` for all 96 STAR variants, live arrival phase continuity, connector bank/speed bounds, QZ815's sampled turn/descent rates and selected-route endpoints. Set `APPROACH_CLOCK=2026-11-16T08:33` to check the expanded timetable. These are kinematic simulator checks, not a real-world aircraft-separation or flight-safety certification.
+
+### Standard A350-900 allocation (8 November 2026)
+
+The dated equipment amendment transfers 20 Garuda service pairs from A35K to standard A359. GA904/905 and GA906/907 Singapore retain A35K. Flight times and operating days are preserved, including existing approved retimings. A359 registrations use the retired 777 GS/GI blocks; aircraft and flight histories display A359.
+
+Run `node tools/tests/a359-reallocation.cjs` to check the effective-date boundary, schedule preservation, unique registrations and fleet allocation (27 A35K + 31 A359 including reserves).

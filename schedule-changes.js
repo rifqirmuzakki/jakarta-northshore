@@ -1103,6 +1103,220 @@ window.JN_CHANGES_REPO={
    "set": {
     "time": 715
    }
+  },
+  {
+   "id": "chg_ga_a359_reallocation_20261108",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "amend",
+   "from": "2026-11-08",
+   "note": "Standard A350-900 replaces A350-1000 on 20 service pairs; Singapore GA904/905 and GA906/907 retain A350-1000. Times and frequencies unchanged.",
+   "createdAt": "2026-11-08T03:00:00.000Z",
+   "targets": [
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "4"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "6"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "8"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "10"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "14"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "22"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "24"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "26"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "30"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "34"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "36"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "44"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "712"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "734"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "930"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "830"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "832"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "798"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "800"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "310"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "5"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "7"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "9"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "11"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "15"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "23"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "25"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "27"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "31"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "35"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "37"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "45"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "713"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "735"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "931"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "833"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "837"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "799"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "803"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "321"
+    }
+   ],
+   "set": {
+    "aircraft": "Airbus A350-900"
+   }
   }
  ],
  "ops": [
