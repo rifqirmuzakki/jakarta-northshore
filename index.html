@@ -3679,6 +3679,19 @@ function tailsCompute(){
       t.seq.sort((p,q)=>p.S-q.S);const last=t.seq[t.seq.length-1];t.rdy=last?last.E:t.dayStartRdy;t.loc=last?last.dest:t.dayStartLoc;
       if(t.seq.length){t.hist.set(d,t.seq.slice());
         for(const v of t.seq){const add=f=>{if(f){let m=FLIGHT_TAILS.get(f.id);if(!m)FLIGHT_TAILS.set(f.id,m=new Set());m.add(t.reg)}};if(v.kind!=='pre')add(v.a);if(v.kind!=='ovn')add(v.d);if(v.kind==='multi')add(v.returnFlight)}}}))}
+  /* Aircraft that are away from Jakarta and fly back tomorrow: the aircraft sitting at that city now (it flew the paired outbound) is the one that returns. This follows the same location rule the allocator uses, so it never invents a different aircraft. */
+  F.forEach(fl=>fl.tails.forEach(t=>{t.nextArr=null}));
+  try{const d=idx+1,dow=tDow(d),taken=new Set();
+    INF_ALL.forEach(f=>{
+      if(!TAIL_CARR.has(f.c)||!f.pid||!flRuns(f,dow)||!effOn(f,d)||JN_OPS.cancelledOn(d,f.id))return;
+      if(!(f.t-tBlk(f.city,null)<0))return;                       // it must already be airborne before midnight
+      F.forEach(x=>{if(x.c!==f.c)return;x.tails.forEach(t=>{
+        if(taken.has(t)||t.loc!==f.city)return;
+        const last=t.seq[t.seq.length-1];if(!last||!last.d||last.d.pid!==f.pid||last.d.city!==f.city)return;
+        if(!v111SameType(last.d,f)&&last.d.ac!==f.ac)return;
+        taken.add(t);(t.nextArr||(t.nextArr=[])).push({kind:'a',a:f,d:null});
+        let m=FLIGHT_TAILS.get(f.id);if(!m)FLIGHT_TAILS.set(f.id,m=new Set());m.add(t.reg)})})})
+  }catch(err){console.error('returning aircraft:',err)}
   // Today's ground arrival belongs to the earlier outbound rotation, on its
   // original physical aircraft. This projection never enters the allocator.
   F.forEach(fl=>fl.tails.forEach(t=>{
@@ -4062,6 +4075,7 @@ function tailHistory(reg){
         legs.push({d,kind:'d',flight:v.d.id,from:'Jakarta',to:v.d.city,std:base+v.d.t,sta:base+v.d.t+tBlk(null,v.d.city),ent:entD,generated:false,cx:JN_OPS.cancelledOn(d,v.d.id)})}
     });
   }
+  (tail.nextArr||[]).forEach(v=>{const b=tBlk(v.a.city,null),d=today+1;legs.push({d,kind:'a',flight:v.a.id,from:v.a.city,to:'Jakarta',std:d*1440+v.a.t-b,sta:d*1440+v.a.t,ent:null,generated:false,cx:JN_OPS.cancelledOn(d,v.a.id)})});   // already airborne, lands tomorrow
   legs.sort((a,b)=>a.std-b.std);
   // Match each outbound sector to its next scheduled inbound at the same
   // outstation on this registration, including overnight stays. The return
