@@ -566,7 +566,7 @@ window.JN_CHANGES_REPO={
       "GA",
       "694",
       "Fukuoka",
-      120,
+      115,
       "T2",
       "I",
       "Airbus A330-900",
@@ -579,7 +579,7 @@ window.JN_CHANGES_REPO={
       "GA",
       "695",
       "Fukuoka",
-      1030,
+      1025,
       "T2",
       "I",
       "Airbus A330-900",
@@ -614,7 +614,7 @@ window.JN_CHANGES_REPO={
       "GA",
       "696",
       "Sapporo",
-      150,
+      145,
       "T2",
       "I",
       "Airbus A330-900",
@@ -627,7 +627,7 @@ window.JN_CHANGES_REPO={
       "GA",
       "697",
       "Sapporo",
-      1260,
+      1270,
       "T2",
       "I",
       "Airbus A330-900",
@@ -662,7 +662,7 @@ window.JN_CHANGES_REPO={
       "GA",
       "698",
       "Kaohsiung",
-      280,
+      260,
       "T2",
       "I",
       "Airbus A330-900",
@@ -675,7 +675,7 @@ window.JN_CHANGES_REPO={
       "GA",
       "699",
       "Kaohsiung",
-      1050,
+      1035,
       "T2",
       "I",
       "Airbus A330-900",
@@ -710,7 +710,7 @@ window.JN_CHANGES_REPO={
       "GA",
       "278",
       "Macau",
-      240,
+      215,
       "T2",
       "I",
       "Airbus A330-900",
@@ -723,7 +723,7 @@ window.JN_CHANGES_REPO={
       "GA",
       "279",
       "Macau",
-      960,
+      945,
       "T2",
       "I",
       "Airbus A330-900",
@@ -749,7 +749,7 @@ window.JN_CHANGES_REPO={
       "GA",
       "60",
       "Melbourne / Santiago",
-      680,
+      700,
       "T2",
       "I",
       "Boeing 787-9",
@@ -761,7 +761,7 @@ window.JN_CHANGES_REPO={
       "GA",
       "61",
       "Melbourne / Santiago",
-      170,
+      160,
       "T2",
       "I",
       "Boeing 787-9",
@@ -795,7 +795,7 @@ window.JN_CHANGES_REPO={
       "GA",
       "62",
       "Sydney / Buenos Aires",
-      660,
+      645,
       "T2",
       "I",
       "Boeing 787-9",
@@ -807,7 +807,7 @@ window.JN_CHANGES_REPO={
       "GA",
       "63",
       "Sydney / Buenos Aires",
-      190,
+      215,
       "T2",
       "I",
       "Boeing 787-9",
@@ -1317,6 +1317,416 @@ window.JN_CHANGES_REPO={
    "set": {
     "aircraft": "Airbus A350-900"
    }
+  },
+  {
+   "id": "chg_routes3_cdg2",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-23",
+   "retFrom": "2026-11-24",
+   "note": "New service Paris: GA 76/77 Airbus A350-900 (daily)",
+   "createdAt": "2026-11-08T03:40:33.650Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "76",
+      "Paris",
+      695,
+      "T2",
+      "I",
+      "Airbus A350-900",
+      "GA-CHG-CDG2-76"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "77",
+      "Paris",
+      1120,
+      "T2",
+      "I",
+      "Airbus A350-900",
+      "GA-CHG-CDG2-76"
+     ]
+    ]
+   },
+   "airports": []
+  },
+  {
+   "id": "chg_routes3_fra2",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-23",
+   "retFrom": "2026-11-25",
+   "note": "New service Frankfurt: GA 78/79 Airbus A350-900 (ISO days 246)",
+   "createdAt": "2026-11-08T03:40:33.650Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "78",
+      "Frankfurt",
+      795,
+      "T2",
+      "I",
+      "Airbus A350-900",
+      "GA-CHG-FRA2-78",
+      "246"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "79",
+      "Frankfurt",
+      1155,
+      "T2",
+      "I",
+      "Airbus A350-900",
+      "GA-CHG-FRA2-78",
+      "357"
+     ]
+    ]
+   },
+   "airports": []
+  },
+  {
+   "id": "chg_routes3_lgw",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-23",
+   "retFrom": "2026-11-24",
+   "note": "New service London Gatwick: GA 80/81 Airbus A350-900 (daily)",
+   "createdAt": "2026-11-08T03:40:33.650Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "80",
+      "London Gatwick",
+      745,
+      "T2",
+      "I",
+      "Airbus A350-900",
+      "GA-CHG-LGW-80"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "81",
+      "London Gatwick",
+      1190,
+      "T2",
+      "I",
+      "Airbus A350-900",
+      "GA-CHG-LGW-80"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "London Gatwick",
+     "code": "LGW",
+     "lat": 51.15,
+     "lon": -0.18,
+     "region": "NW",
+     "tz": "Europe/London"
+    }
+   ]
+  },
+  {
+   "id": "chg_routes3_bhx",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-23",
+   "retFrom": "2026-11-25",
+   "note": "New service Birmingham: GA 82/83 Airbus A350-900 (ISO days 2467)",
+   "createdAt": "2026-11-08T03:40:33.650Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "82",
+      "Birmingham",
+      25,
+      "T2",
+      "I",
+      "Airbus A350-900",
+      "GA-CHG-BHX-82",
+      "2467"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "83",
+      "Birmingham",
+      445,
+      "T2",
+      "I",
+      "Airbus A350-900",
+      "GA-CHG-BHX-82",
+      "1357"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Birmingham",
+     "code": "BHX",
+     "lat": 52.45,
+     "lon": -1.75,
+     "region": "NW",
+     "tz": "Europe/London"
+    }
+   ]
+  },
+  {
+   "id": "chg_routes3_budapest",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-23",
+   "retFrom": "2026-11-24",
+   "note": "New service Budapest: GA 84/85 Airbus A350-900 (ISO days 1357)",
+   "createdAt": "2026-11-08T03:40:33.650Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "84",
+      "Budapest",
+      55,
+      "T2",
+      "I",
+      "Airbus A350-900",
+      "GA-CHG-BUD-84",
+      "1357"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "85",
+      "Budapest",
+      305,
+      "T2",
+      "I",
+      "Airbus A350-900",
+      "GA-CHG-BUD-84",
+      "1246"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Budapest",
+     "code": "BUD",
+     "lat": 47.44,
+     "lon": 19.26,
+     "region": "NW",
+     "tz": "Europe/Budapest"
+    }
+   ]
+  },
+  {
+   "id": "chg_routes3_berlin",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-23",
+   "retFrom": "2026-11-24",
+   "note": "New service Berlin: GA 86/87 Boeing 787-9 (ISO days 1346)",
+   "createdAt": "2026-11-08T03:40:33.650Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "86",
+      "Berlin",
+      40,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-BER-86",
+      "1346"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "87",
+      "Berlin",
+      345,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-BER-86",
+      "2457"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Berlin",
+     "code": "BER",
+     "lat": 52.37,
+     "lon": 13.5,
+     "region": "NW",
+     "tz": "Europe/Berlin"
+    }
+   ]
+  },
+  {
+   "id": "chg_routes3_dusseldorf",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-23",
+   "retFrom": "2026-11-24",
+   "note": "New service Dusseldorf: GA 88/89 Boeing 787-9 (ISO days 157)",
+   "createdAt": "2026-11-08T03:40:33.650Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "88",
+      "Dusseldorf",
+      15,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-DUS-88",
+      "157"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "89",
+      "Dusseldorf",
+      380,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-DUS-88",
+      "126"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Dusseldorf",
+     "code": "DUS",
+     "lat": 51.29,
+     "lon": 6.77,
+     "region": "NW",
+     "tz": "Europe/Berlin"
+    }
+   ]
+  },
+  {
+   "id": "chg_routes3_porto",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-23",
+   "retFrom": "2026-11-24",
+   "note": "New service Porto: GA 90/91 Airbus A350-900 (ISO days 1256)",
+   "createdAt": "2026-11-08T03:40:33.650Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "90",
+      "Porto",
+      45,
+      "T2",
+      "I",
+      "Airbus A350-900",
+      "GA-CHG-OPO-90",
+      "1256"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "91",
+      "Porto",
+      595,
+      "T2",
+      "I",
+      "Airbus A350-900",
+      "GA-CHG-OPO-90",
+      "2367"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Porto",
+     "code": "OPO",
+     "lat": 41.24,
+     "lon": -8.68,
+     "region": "NW",
+     "tz": "Europe/Lisbon"
+    }
+   ]
+  },
+  {
+   "id": "chg_routes3_lisbon",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-23",
+   "retFrom": "2026-11-26",
+   "note": "New service Lisbon: GA 92/93 Airbus A350-900 (ISO days 3467)",
+   "createdAt": "2026-11-08T03:40:33.650Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "92",
+      "Lisbon",
+      10,
+      "T2",
+      "I",
+      "Airbus A350-900",
+      "GA-CHG-LIS-92",
+      "3467"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "93",
+      "Lisbon",
+      575,
+      "T2",
+      "I",
+      "Airbus A350-900",
+      "GA-CHG-LIS-92",
+      "1457"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Lisbon",
+     "code": "LIS",
+     "lat": 38.77,
+     "lon": -9.13,
+     "region": "W",
+     "tz": "Europe/Lisbon"
+    }
+   ]
   }
  ],
  "ops": [
