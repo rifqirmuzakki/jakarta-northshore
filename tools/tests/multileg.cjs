@@ -68,7 +68,8 @@ async function main(){
    m.blocks[1]-=1600;m.stops[1]-=37;
    check(changed[3].sta-base[3].sta===1637,'Return does not derive from physical inputs');
    // A late Jakarta departure must travel through every onward and return leg.
-   const tail=S.FLEET.F.get('GA|Airbus A350-1000').tails.find(t=>t.seq.some(v=>v.d?.id==='GA 10'));
+   const tail=[...S.FLEET.F.values()].flatMap(f=>f.tails).find(t=>t.seq.some(v=>v.d?.id==='GA 10'));
+   check(!!tail,'GA10 physical aircraft missing');
    if(tail){const ls=db.tailLegs(tail,[day,day+1,day+2]);
     const delayed=db.opsChain(ls,l=>l.day===day&&l.f.id==='GA 10'?300:0,()=>0);
     const ret=delayed.find(l=>l.multi&&l.multiIndex===3&&l.day===day+2);
