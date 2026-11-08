@@ -3282,19 +3282,18 @@ function tAssignDay(day,V,F,carry){
    Indonesian registration database. */
 const V128_GA_LETTERS='ACDEFGHIJKLMNOPQRSTUVWXYZ';
 const V128_GA_SERIES=Object.freeze({
-  'Boeing 737-800':['GF','GM','GN','GO','GU','GW','GX','GZ','GC'],
-  'Boeing 737 MAX 8':['GD','GR'],
-  'Airbus A330-200':['GP'],
-  'Airbus A330-300':['GH','GK'],
-  'Airbus A330-900':['GQ','GT','GG'],
-  'Airbus A330-800':['GL'],
-  'Boeing 777-300ER':['GI','GS'],
-  'Airbus A350-1000':['GP','GL','GH','GK'],
-  // Standard A359 uses the retired 777 registration blocks.
-  'Airbus A350-900':['GS','GI'],
-  // GE was an unused 737-800 reserve block (indices 225+). Reassign it to
-  // 787-9 expansion without changing any existing aircraft registrations.
-  'Boeing 787-9':['GV','GJ','GE'],
+  'Boeing 737-800':['GM','GF','GN','GU','GD'],
+  'Boeing 737 MAX 8':['GR','GX'],
+  'Airbus A330-200':['GS'],
+  'Airbus A330-300':['GG','GI'],
+  'Airbus A330-900':['GP','GH','GQ'],
+  'Airbus A330-800':['GZ'],
+  'Boeing 777-300ER':['GS','GI'],
+  // GL preserves capacity for the larger A35K fleet on historical dates.
+  'Airbus A350-1000':['GJ','GW','GL'],
+  'Airbus A350-900':['GT','GK'],
+  // Approved overflow blocks follow the requested primary series.
+  'Boeing 787-9':['GC','GO','GE'],
   'Boeing 787-10':['GA'],
   'ATR 72-600':['GY']
 });
