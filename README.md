@@ -95,6 +95,12 @@ One hub with two kinds of records, both stored in the same dated log:
 Record shapes: timetable `{id, v:1, scope:'timetable', kind:'add'|'amend'|'cancel', from, to, ...}`; operational
 `{id, v:1, scope:'ops', kind:'delay'|'swap'|'aog'|'spare'|'weather', date, at, ...}`. The log is meant to be persisted as history later.
 
+### Swap the aircraft on any departure
+
+Operations hub > "Swap the aircraft on a departure" puts a different aircraft on any flight that has not left Jakarta yet, with or without an incident. Pick the departure, then choose an aircraft: the best few are suggested (aircraft of the same type on the ground in time), and any other can be chosen from the list. It records the same aircraft-swap decision as the incident flows, so it shows in the log, can be undone from "My changes and events", and the other flight takes the aircraft you replaced.
+
+Aircraft-out-of-service incidents are actionable whenever the aircraft flies out of Jakarta again the same day, including long stays; where there is nothing to decide, the incident now says why (no tracked aircraft, or the aircraft does not fly out again today).
+
 ## World view (the "World" button)
 
 Shows the Jakarta flights that are in the air right now on a world map (Natural Earth basemap, public domain), all airlines, Garuda highlighted ("GA only" filter). Aircraft sit on typical routings, not great-circle arcs: each destination follows a hand-curated corridor graph (`tools/world/graph.js`) chosen with a small jet-stream cost (eastbound is cheaper than westbound, so the track out and the track back can differ). Long routes have up to three genuinely different airways (for example Europe via Central Asia or via the Gulf and Egypt); each flight keeps one of them for the day, the usual track taking most flights. Outbound keeps to the right of its track and inbound to the left, and inbound leans to the other airway, so the two directions are mostly flown apart. Airspace we do not route through (Russia, Ukraine and Belarus, Iran, Iraq, Syria, the Black Sea) simply has no node. Routes are approximate, not real airways. Multi-stop destinations are drawn to the first city.
