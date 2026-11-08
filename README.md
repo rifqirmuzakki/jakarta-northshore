@@ -216,6 +216,10 @@ Run `node tools/tests/approach-dynamics.cjs` for all 96 STAR variants, live arri
 
 ### Standard A350-900 allocation (8 November 2026)
 
-The dated equipment amendment transfers 20 Garuda service pairs from A35K to standard A359. GA904/905 and GA906/907 Singapore retain A35K. Flight times and operating days are preserved, including existing approved retimings. A359 registrations use the retired 777 GS/GI blocks; aircraft and flight histories display A359.
+The dated equipment amendment transfers 20 Garuda service pairs from A35K to standard A359. GA904/905 and GA906/907 Singapore retain A35K. Flight times and operating days are preserved, including existing approved retimings. Aircraft and flight histories display A359.
 
 Run `node tools/tests/a359-reallocation.cjs` to check the effective-date boundary, schedule preservation, unique registrations and fleet allocation (27 A35K + 31 A359 including reserves).
+
+### Garuda registration series
+
+A35K: GJ/GW (GL overflow for larger historical fleets); A359: GT/GK; B789: GC/GO/GE; A339: GP/GH/GQ; B738: GM/GF/GN/GU/GD. GE and GQ are approved overflow blocks. Prefix each with PK- and append the allocator’s final letter (B excluded). The unused MAX allocation uses GR/GX so GD is reserved for B738. Registration assignments are shared by the map, aircraft history and flight history.
