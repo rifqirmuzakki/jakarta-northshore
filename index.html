@@ -7018,12 +7018,13 @@ function flightRowsFallback(meta,id,now,outb){
   if(V104_SECTORS[meta.city])return []; // physical services must come from their allocated outbound
   const c=C(),today=c.FLEET.day,blkOf=window.__DB&&window.__DB().tBlk,blk=blkOf?blkOf(null,meta.city):120,out=[],profile=historyLoadProfile();
   const ent=(c.ENTS||[]).find(e=>(outb?e.d:e.a)&&(outb?e.d:e.a).id===id)||null;
-  for(let d=today-14;d<=today;d++){
+  for(let d=today-14;d<=today+1;d++){      // tomorrow's arrival may already be in the air (long-haul inbound that left today)
     const dow=((d+3)%7+7)%7+1;if(meta.days&&!String(meta.days).includes(String(dow)))continue;
     {const e=window.JN_EFF&&window.JN_EFF.get(id);if(e&&((e.from!=null&&d<e.from)||(e.to!=null&&d>e.to)))continue}      // a service has no history before it starts (or after it ends)
     const base=d*1440;
     const l=outb?{d,kind:'d',flight:id,from:'Jakarta',to:meta.city,std:base+meta.t,sta:base+meta.t+blk,ent:d===today?ent:null,generated:false}
                 :{d,kind:'a',flight:id,from:meta.city,to:'Jakarta',std:base+meta.t-blk,sta:base+meta.t,ent:d===today?ent:null,generated:false};
+    if(d>today&&!(l.std<=today*1440+now))continue;
     const item=legRow(l,now,today,null,profile);
     v105HistorySectors(item).filter(x=>x.tone!=='untimed').forEach(x=>out.push({r:x,reg:null,ac:meta.ac,today}))}
   return out.sort((a,b)=>historyMoment(b.r)-historyMoment(a.r))}
@@ -7052,7 +7053,7 @@ function flightLegHtml(o){
   const cell=(lab,val,cls)=>'<div class="v181-c'+(cls?' '+cls:'')+'"><small>'+lab+'</small><b>'+val+'</b></div>';
   return '<section class="v81-leg v100-leg v181-leg">'+
     '<div class="v81-leghead"><span class="v81-dot '+statusClass+'"></span><span class="v81-date">'+esc(dayLabel)+'</span>'+pill+(r.tone==='live'?'<button type="button" class="jn-trk" data-jn-track="'+esc(lastFlight)+'">⌖ Track live</button>':'')+disPill(l,r)+
-      (o.reg?'<a class="v181-reg v73-regl" href="#/aircraft/'+esc(o.reg)+'">'+esc(o.reg)+' · '+esc(typeCodeOf(o.ac))+' ›</a>':'<span class="v181-reg v181-untracked">'+esc(typeCodeOf(o.ac))+' · registration not tracked</span>')+'</div>'+
+      (o.reg?'<a class="v181-reg v73-regl" href="#/aircraft/'+esc(o.reg)+'">'+esc(o.reg)+' · '+esc(typeCodeOf(o.ac))+' ›</a>':'<span class="v181-reg v181-untracked">'+esc(typeCodeOf(o.ac))+(l.d>o.today?' · registration assigned on the day it lands':' · registration not tracked')+'</span>')+'</div>'+
     '<div class="v81-route"><div class="v81-line"><i>↗</i><b>'+esc(fromLabel)+'</b><span class="v81-code">'+esc(fromCode)+'</span><span class="v182-off">'+esc(tzLabel(l.from,l.std))+'</span></div>'+
       '<div class="v81-line"><i>↘</i><b>'+esc(toLabel)+'</b><span class="v81-code">'+esc(toCode)+'</span><span class="v182-off">'+esc(tzLabel(l.to,l.sta))+'</span></div></div>'+
     '<div class="v181-grid">'+
