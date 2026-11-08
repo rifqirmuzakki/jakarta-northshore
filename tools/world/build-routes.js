@@ -144,7 +144,20 @@ Object.keys(air).forEach(city=>{
   // shortcut is not permission to delete the entire filed waypoint sequence.
   const shortcut=(p,ends)=>geometry.simplify(p,edgeOK,{...ends,maxLegKm:900,
     keep:i=>!!N[p[i][2]]&&!/^G_/.test(p[i][2])});
-  O=O.map(p=>fillLongLegs(shortcut(p,{before:JKT})));I=I.map(p=>fillLongLegs(shortcut(p,{after:JKT})));
+  /* Open-ocean stretches are built on the 3.5 degree grid, so they come out as a constant-latitude line. A real flight flies the great circle: replace each long run of unnamed grid fixes by great-circle fixes between the real fixes either side of it. */
+  const greatCircleRuns=p=>{const isG=q=>/^FIC/.test(q[2]||'')&&Math.abs(Math.round(q[0]/3.5*1000)/1000-q[0]/3.5)<1e-3+0*q[1];
+    const out=[];let i=0;
+    while(i<p.length){
+      if(!/^FIC/.test(p[i][2]||'')||i===0){out.push(p[i]);i++;continue}
+      let j=i;while(j<p.length&&/^FIC/.test(p[j][2]||''))j++;
+      const a=out[out.length-1],b=p[j];                                   // real fixes either side (b may be the destination, which has no id)
+      if(b&&gc(a,b)>2500){let ok=true;const pts=[],steps=Math.ceil(gc(a,b)/800);
+        for(let k=1;k<steps;k++){const q=slerp(a,b,k/steps);pts.push([r2(q[0]),r2(q[1]),'FIC'+r2(q[0]).toFixed(2)+'/'+r2(q[1]).toFixed(2)])}
+        const chain=[a,...pts,b];for(let m=1;m<chain.length;m++)if(!edgeOK(chain[m-1],chain[m]))ok=false;
+        if(ok){pts.forEach(q=>out.push(q));i=j;continue}}
+      for(let m=i;m<j;m++)out.push(p[m]);i=j}
+    return out};
+  O=O.map(p=>greatCircleRuns(fillLongLegs(shortcut(p,{before:JKT}))));I=I.map(p=>greatCircleRuns(fillLongLegs(shortcut(p,{after:JKT}))));
   /* Replace the airport-centre endpoint with runway-aligned terminal geometry.
      World corridors still own the en-route path; only the last/first local leg changes. */
   const outTerminal=terminalLeg(city,'out',O[0]),inTerminal=terminalLeg(city,'in',I[0]);

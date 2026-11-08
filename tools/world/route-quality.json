@@ -1766,11 +1766,11 @@
       "city": "Addis Ababa",
       "direction": "out",
       "variant": 0,
-      "km": 7860.1,
+      "km": 7830.1,
       "greatCircleKm": 7704.4,
-      "detourRatio": 1.0202,
-      "score": 7880,
-      "maxEnrouteTurnDeg": 20.2,
+      "detourRatio": 1.0163,
+      "score": 7845.9,
+      "maxEnrouteTurnDeg": 14.8,
       "turns": [
         {
           "point": [
@@ -1841,47 +1841,39 @@
             7.5,
             72.5
           ],
-          "degrees": 6.5,
+          "degrees": 10,
           "terminal": false
         },
         {
           "point": [
-            9.5,
-            67.27
+            8.02417,
+            65.78424
           ],
-          "degrees": 20.2,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            9.5,
-            60.17
+            8.43939,
+            59.05298
           ],
-          "degrees": 0.9,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            9.5,
-            56.62
+            8.73971,
+            52.30926
           ],
-          "degrees": 0.6,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            9.5,
-            53.07
+            8.92079,
+            45.55685
           ],
-          "degrees": 0.9,
-          "terminal": false
-        },
-        {
-          "point": [
-            9.5,
-            45.97
-          ],
-          "degrees": 2.6,
+          "degrees": 0.7,
           "terminal": false
         },
         {
@@ -1889,7 +1881,7 @@
             9.05398,
             39.05944
           ],
-          "degrees": 12,
+          "degrees": 16.9,
           "terminal": true
         }
       ],
@@ -1900,58 +1892,50 @@
       "city": "Addis Ababa",
       "direction": "in",
       "variant": 0,
-      "km": 7863.5,
+      "km": 7833.2,
       "greatCircleKm": 7707.7,
-      "detourRatio": 1.0202,
-      "score": 7883.4,
-      "maxEnrouteTurnDeg": 20.2,
+      "detourRatio": 1.0163,
+      "score": 7848.8,
+      "maxEnrouteTurnDeg": 14.8,
       "turns": [
         {
           "point": [
             9.01938,
             38.93971
           ],
-          "degrees": 11.8,
+          "degrees": 16.6,
           "terminal": true
         },
         {
           "point": [
-            9.5,
-            45.97
+            8.92079,
+            45.55685
           ],
-          "degrees": 2.8,
+          "degrees": 0.3,
           "terminal": false
         },
         {
           "point": [
-            9.5,
-            53.07
+            8.73971,
+            52.30926
           ],
-          "degrees": 0.9,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            9.5,
-            56.62
+            8.43939,
+            59.05298
           ],
-          "degrees": 0.6,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            9.5,
-            60.17
+            8.02417,
+            65.78424
           ],
-          "degrees": 0.9,
-          "terminal": false
-        },
-        {
-          "point": [
-            9.5,
-            67.27
-          ],
-          "degrees": 20.2,
+          "degrees": 0,
           "terminal": false
         },
         {
@@ -1959,7 +1943,7 @@
             7.5,
             72.5
           ],
-          "degrees": 6.5,
+          "degrees": 10,
           "terminal": false
         },
         {
@@ -15642,11 +15626,11 @@
       "city": "Los Angeles",
       "direction": "out",
       "variant": 0,
-      "km": 14983.8,
+      "km": 14664.3,
       "greatCircleKm": 14448.1,
-      "detourRatio": 1.0371,
-      "score": 15199,
-      "maxEnrouteTurnDeg": 35.3,
+      "detourRatio": 1.015,
+      "score": 14839.3,
+      "maxEnrouteTurnDeg": 38.4,
       "turns": [
         {
           "point": [
@@ -15693,197 +15677,117 @@
             8.42,
             124.61
           ],
-          "degrees": 10.5,
+          "degrees": 8.7,
           "terminal": false
         },
         {
           "point": [
-            13,
-            129.46
-          ],
-          "degrees": 12.3,
-          "terminal": false
-        },
-        {
-          "point": [
-            16.5,
-            131.96
-          ],
-          "degrees": 5.5,
-          "terminal": false
-        },
-        {
-          "point": [
-            20,
-            135.16
-          ],
-          "degrees": 4.2,
-          "terminal": false
-        },
-        {
-          "point": [
-            23.5,
-            139.11
-          ],
-          "degrees": 3,
-          "terminal": false
-        },
-        {
-          "point": [
-            27,
-            143.91
-          ],
-          "degrees": 26,
-          "terminal": false
-        },
-        {
-          "point": [
-            30.51665,
-            145.92467
+            13.03811,
+            129.81799
           ],
           "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            34,
-            148.09
-          ],
-          "degrees": 8.8,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            151.47
-          ],
-          "degrees": 21.5,
-          "terminal": false
-        },
-        {
-          "point": [
-            39.33722,
-            155.87206
+            17.54832,
+            135.22187
           ],
           "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            41,
-            160.5
+            21.90471,
+            140.89695
           ],
-          "degrees": 20.6,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            41,
-            169.78
+            26.05459,
+            146.92127
           ],
-          "degrees": 4.6,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            41,
-            174.41
+            29.93675,
+            153.37299
           ],
-          "degrees": 3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            41,
-            179.05
+            33.48022,
+            160.32445
           ],
-          "degrees": 3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            41,
-            183.69
+            36.60414,
+            167.83145
           ],
-          "degrees": 3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            41,
-            188.33
+            39.22006,
+            175.91729
           ],
-          "degrees": 3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            41,
-            192.96
+            41.23748,
+            184.5533
           ],
-          "degrees": 3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            41,
-            197.6
+            42.57364,
+            193.64235
           ],
-          "degrees": 3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            41,
-            202.24
+            43.16621,
+            203.01567
           ],
-          "degrees": 3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            41,
-            206.88
+            42.98535,
+            212.4521
           ],
-          "degrees": 3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            41,
-            211.51
+            42.04032,
+            221.71801
           ],
-          "degrees": 3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            41,
-            216.15
-          ],
-          "degrees": 3,
-          "terminal": false
-        },
-        {
-          "point": [
-            41,
-            220.79
-          ],
-          "degrees": 4.6,
-          "terminal": false
-        },
-        {
-          "point": [
-            41,
-            230.07
-          ],
-          "degrees": 17.1,
-          "terminal": false
-        },
-        {
-          "point": [
-            39.62048,
-            234.62944
+            40.37737,
+            230.61274
           ],
           "degrees": 0,
           "terminal": false
@@ -15893,7 +15797,7 @@
             38.07,
             239
           ],
-          "degrees": 34.8,
+          "degrees": 38.4,
           "terminal": false
         },
         {
@@ -15920,11 +15824,11 @@
       "city": "Los Angeles",
       "direction": "in",
       "variant": 0,
-      "km": 14977.2,
+      "km": 14657.7,
       "greatCircleKm": 14450.5,
-      "detourRatio": 1.0364,
-      "score": 15187,
-      "maxEnrouteTurnDeg": 35.3,
+      "detourRatio": 1.0143,
+      "score": 14827.2,
+      "maxEnrouteTurnDeg": 38.4,
       "turns": [
         {
           "point": [
@@ -15947,199 +15851,119 @@
             38.07,
             239
           ],
-          "degrees": 34.8,
+          "degrees": 38.4,
           "terminal": false
         },
         {
           "point": [
-            39.62048,
-            234.62944
+            40.37737,
+            230.61274
           ],
           "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            41,
-            230.07
-          ],
-          "degrees": 17.1,
-          "terminal": false
-        },
-        {
-          "point": [
-            41,
-            220.79
-          ],
-          "degrees": 4.6,
-          "terminal": false
-        },
-        {
-          "point": [
-            41,
-            216.15
-          ],
-          "degrees": 3,
-          "terminal": false
-        },
-        {
-          "point": [
-            41,
-            211.51
-          ],
-          "degrees": 3,
-          "terminal": false
-        },
-        {
-          "point": [
-            41,
-            206.88
-          ],
-          "degrees": 3,
-          "terminal": false
-        },
-        {
-          "point": [
-            41,
-            202.24
-          ],
-          "degrees": 3,
-          "terminal": false
-        },
-        {
-          "point": [
-            41,
-            197.6
-          ],
-          "degrees": 3,
-          "terminal": false
-        },
-        {
-          "point": [
-            41,
-            192.96
-          ],
-          "degrees": 3,
-          "terminal": false
-        },
-        {
-          "point": [
-            41,
-            188.33
-          ],
-          "degrees": 3,
-          "terminal": false
-        },
-        {
-          "point": [
-            41,
-            183.69
-          ],
-          "degrees": 3,
-          "terminal": false
-        },
-        {
-          "point": [
-            41,
-            179.05
-          ],
-          "degrees": 3,
-          "terminal": false
-        },
-        {
-          "point": [
-            41,
-            174.41
-          ],
-          "degrees": 3,
-          "terminal": false
-        },
-        {
-          "point": [
-            41,
-            169.78
-          ],
-          "degrees": 4.6,
-          "terminal": false
-        },
-        {
-          "point": [
-            41,
-            160.5
-          ],
-          "degrees": 20.6,
-          "terminal": false
-        },
-        {
-          "point": [
-            39.33722,
-            155.87206
+            42.04032,
+            221.71801
           ],
           "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            37.5,
-            151.47
-          ],
-          "degrees": 21.5,
-          "terminal": false
-        },
-        {
-          "point": [
-            34,
-            148.09
-          ],
-          "degrees": 8.8,
-          "terminal": false
-        },
-        {
-          "point": [
-            30.51665,
-            145.92467
+            42.98535,
+            212.4521
           ],
           "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            27,
-            143.91
+            43.16621,
+            203.01567
           ],
-          "degrees": 26,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            23.5,
-            139.11
+            42.57364,
+            193.64235
           ],
-          "degrees": 3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            20,
-            135.16
+            41.23748,
+            184.5533
           ],
-          "degrees": 4.2,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            16.5,
-            131.96
+            39.22006,
+            175.91729
           ],
-          "degrees": 5.5,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            13,
-            129.46
+            36.60414,
+            167.83145
           ],
-          "degrees": 12.3,
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            33.48022,
+            160.32445
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            29.93675,
+            153.37299
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            26.05459,
+            146.92127
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            21.90471,
+            140.89695
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            17.54832,
+            135.22187
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            13.03811,
+            129.81799
+          ],
+          "degrees": 0,
           "terminal": false
         },
         {
@@ -16147,7 +15971,7 @@
             8.42,
             124.61
           ],
-          "degrees": 10.5,
+          "degrees": 8.7,
           "terminal": false
         },
         {
@@ -19246,11 +19070,11 @@
       "city": "Nairobi",
       "direction": "out",
       "variant": 0,
-      "km": 7836.4,
+      "km": 7820.6,
       "greatCircleKm": 7749.4,
-      "detourRatio": 1.0112,
-      "score": 7949.8,
-      "maxEnrouteTurnDeg": 20.9,
+      "detourRatio": 1.0092,
+      "score": 7942.1,
+      "maxEnrouteTurnDeg": 31.1,
       "turns": [
         {
           "point": [
@@ -19265,111 +19089,71 @@
             -5,
             100
           ],
-          "degrees": 5.2,
+          "degrees": 10.8,
           "terminal": false
         },
         {
           "point": [
-            -4.5,
-            94.37
+            -5.06216,
+            93.33529
           ],
-          "degrees": 5.5,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            -4.5,
-            90.86
+            -5.05625,
+            86.67001
           ],
-          "degrees": 0.3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            -4.5,
-            87.35
+            -4.98236,
+            80.00554
           ],
-          "degrees": 0.3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            -4.5,
-            83.84
+            -4.84148,
+            73.34325
           ],
-          "degrees": 0.3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            -4.5,
-            80.32
+            -4.63556,
+            66.68436
           ],
-          "degrees": 0.3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            -4.5,
-            76.81
+            -4.36741,
+            60.02993
           ],
-          "degrees": 0.3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            -4.5,
-            73.3
+            -4.04068,
+            53.38077
           ],
-          "degrees": 0.3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            -4.5,
-            69.79
+            -3.65983,
+            46.73739
           ],
-          "degrees": 0.3,
-          "terminal": false
-        },
-        {
-          "point": [
-            -4.5,
-            66.28
-          ],
-          "degrees": 0.3,
-          "terminal": false
-        },
-        {
-          "point": [
-            -4.5,
-            62.77
-          ],
-          "degrees": 0.3,
-          "terminal": false
-        },
-        {
-          "point": [
-            -4.5,
-            59.26
-          ],
-          "degrees": 0.4,
-          "terminal": false
-        },
-        {
-          "point": [
-            -4.5,
-            52.24
-          ],
-          "degrees": 0.6,
-          "terminal": false
-        },
-        {
-          "point": [
-            -4.5,
-            45.22
-          ],
-          "degrees": 13.5,
+          "degrees": 0,
           "terminal": false
         },
         {
@@ -19377,7 +19161,7 @@
             -3.23,
             40.1
           ],
-          "degrees": 20.9,
+          "degrees": 31.1,
           "terminal": false
         },
         {
@@ -19396,11 +19180,11 @@
       "city": "Nairobi",
       "direction": "in",
       "variant": 0,
-      "km": 7831.1,
+      "km": 7815.4,
       "greatCircleKm": 7752.4,
-      "detourRatio": 1.0102,
-      "score": 7937.8,
-      "maxEnrouteTurnDeg": 19,
+      "detourRatio": 1.0081,
+      "score": 7929.4,
+      "maxEnrouteTurnDeg": 29.2,
       "turns": [
         {
           "point": [
@@ -19415,111 +19199,71 @@
             -3.23,
             40.1
           ],
-          "degrees": 19,
+          "degrees": 29.2,
           "terminal": false
         },
         {
           "point": [
-            -4.5,
-            45.22
+            -3.65983,
+            46.73739
           ],
-          "degrees": 13.5,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            -4.5,
-            52.24
+            -4.04068,
+            53.38077
           ],
-          "degrees": 0.6,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            -4.5,
-            59.26
+            -4.36741,
+            60.02993
           ],
-          "degrees": 0.4,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            -4.5,
-            62.77
+            -4.63556,
+            66.68436
           ],
-          "degrees": 0.3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            -4.5,
-            66.28
+            -4.84148,
+            73.34325
           ],
-          "degrees": 0.3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            -4.5,
-            69.79
+            -4.98236,
+            80.00554
           ],
-          "degrees": 0.3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            -4.5,
-            73.3
+            -5.05625,
+            86.67001
           ],
-          "degrees": 0.3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            -4.5,
-            76.81
+            -5.06216,
+            93.33529
           ],
-          "degrees": 0.3,
-          "terminal": false
-        },
-        {
-          "point": [
-            -4.5,
-            80.32
-          ],
-          "degrees": 0.3,
-          "terminal": false
-        },
-        {
-          "point": [
-            -4.5,
-            83.84
-          ],
-          "degrees": 0.3,
-          "terminal": false
-        },
-        {
-          "point": [
-            -4.5,
-            87.35
-          ],
-          "degrees": 0.3,
-          "terminal": false
-        },
-        {
-          "point": [
-            -4.5,
-            90.86
-          ],
-          "degrees": 0.3,
-          "terminal": false
-        },
-        {
-          "point": [
-            -4.5,
-            94.37
-          ],
-          "degrees": 5.5,
+          "degrees": 0,
           "terminal": false
         },
         {
@@ -19527,7 +19271,7 @@
             -5,
             100
           ],
-          "degrees": 5.2,
+          "degrees": 10.8,
           "terminal": false
         },
         {
@@ -21966,10 +21710,10 @@
       "city": "San Francisco",
       "direction": "out",
       "variant": 0,
-      "km": 14433.3,
+      "km": 14035.7,
       "greatCircleKm": 13959.3,
-      "detourRatio": 1.034,
-      "score": 14533.3,
+      "detourRatio": 1.0055,
+      "score": 14069.4,
       "maxEnrouteTurnDeg": 35.3,
       "turns": [
         {
@@ -22017,207 +21761,119 @@
             8.42,
             124.61
           ],
-          "degrees": 10.5,
+          "degrees": 7.9,
           "terminal": false
         },
         {
           "point": [
-            13,
-            129.46
-          ],
-          "degrees": 12.3,
-          "terminal": false
-        },
-        {
-          "point": [
-            16.5,
-            131.96
-          ],
-          "degrees": 5.5,
-          "terminal": false
-        },
-        {
-          "point": [
-            20,
-            135.16
-          ],
-          "degrees": 4.2,
-          "terminal": false
-        },
-        {
-          "point": [
-            23.5,
-            139.11
-          ],
-          "degrees": 3,
-          "terminal": false
-        },
-        {
-          "point": [
-            27,
-            143.91
-          ],
-          "degrees": 26,
-          "terminal": false
-        },
-        {
-          "point": [
-            30.51665,
-            145.92467
+            12.92521,
+            129.84226
           ],
           "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            34,
-            148.09
-          ],
-          "degrees": 30.5,
-          "terminal": false
-        },
-        {
-          "point": [
-            35.81282,
-            151.8992
+            17.32253,
+            135.2646
           ],
           "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            37.5,
-            155.88
+            21.56701,
+            140.94824
           ],
-          "degrees": 24,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            37.5,
-            164.7
+            25.60744,
+            146.9663
           ],
-          "degrees": 4,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            37.5,
-            169.11
+            29.38483,
+            153.39104
           ],
-          "degrees": 2.7,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            37.5,
-            173.52
+            32.83139,
+            160.28827
           ],
-          "degrees": 2.7,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            37.5,
-            177.94
+            35.87066,
+            167.70754
           ],
-          "degrees": 2.7,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            37.5,
-            182.35
+            38.4197,
+            175.66795
           ],
-          "degrees": 2.7,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            37.5,
-            186.76
+            40.39428,
+            184.14142
           ],
-          "degrees": 2.7,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            37.5,
-            191.17
+            41.71754,
+            193.03876
           ],
-          "degrees": 2.7,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            37.5,
-            195.58
+            42.33116,
+            202.20722
           ],
-          "degrees": 2.7,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            37.5,
-            199.99
+            42.20601,
+            211.44686
           ],
-          "degrees": 2.7,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            37.5,
-            204.41
+            41.34813,
+            220.54444
           ],
-          "degrees": 2.7,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            37.5,
-            208.82
+            39.79751,
+            229.31286
           ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            213.23
-          ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            217.64
-          ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            222.05
-          ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            226.46
-          ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            230.88
-          ],
-          "degrees": 6.1,
+          "degrees": 0.3,
           "terminal": false
         },
         {
@@ -22225,7 +21881,7 @@
             37.74663,
             -122.67459
           ],
-          "degrees": 28.6,
+          "degrees": 7.2,
           "terminal": true
         }
       ],
@@ -22236,10 +21892,10 @@
       "city": "San Francisco",
       "direction": "in",
       "variant": 0,
-      "km": 14435.3,
+      "km": 14039.2,
       "greatCircleKm": 13962.9,
-      "detourRatio": 1.0338,
-      "score": 14534.4,
+      "detourRatio": 1.0055,
+      "score": 14072.9,
       "maxEnrouteTurnDeg": 35.3,
       "turns": [
         {
@@ -22247,207 +21903,119 @@
             37.6894,
             -122.53778
           ],
-          "degrees": 28,
+          "degrees": 7,
           "terminal": true
         },
         {
           "point": [
-            37.5,
-            230.88
+            39.79751,
+            229.31286
           ],
-          "degrees": 5.4,
+          "degrees": 0.2,
           "terminal": false
         },
         {
           "point": [
-            37.5,
-            226.46
-          ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            222.05
-          ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            217.64
-          ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            213.23
-          ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            208.82
-          ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            204.41
-          ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            199.99
-          ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            195.58
-          ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            191.17
-          ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            186.76
-          ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            182.35
-          ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            177.94
-          ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            173.52
-          ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            169.11
-          ],
-          "degrees": 2.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            164.7
-          ],
-          "degrees": 4,
-          "terminal": false
-        },
-        {
-          "point": [
-            37.5,
-            155.88
-          ],
-          "degrees": 24,
-          "terminal": false
-        },
-        {
-          "point": [
-            35.81282,
-            151.8992
+            41.34813,
+            220.54444
           ],
           "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            34,
-            148.09
-          ],
-          "degrees": 30.5,
-          "terminal": false
-        },
-        {
-          "point": [
-            30.51665,
-            145.92467
+            42.20601,
+            211.44686
           ],
           "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            27,
-            143.91
+            42.33116,
+            202.20722
           ],
-          "degrees": 26,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            23.5,
-            139.11
+            41.71754,
+            193.03876
           ],
-          "degrees": 3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            20,
-            135.16
+            40.39428,
+            184.14142
           ],
-          "degrees": 4.2,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            16.5,
-            131.96
+            38.4197,
+            175.66795
           ],
-          "degrees": 5.5,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            13,
-            129.46
+            35.87066,
+            167.70754
           ],
-          "degrees": 12.3,
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            32.83139,
+            160.28827
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            29.38483,
+            153.39104
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            25.60744,
+            146.9663
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            21.56701,
+            140.94824
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            17.32253,
+            135.2646
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            12.92521,
+            129.84226
+          ],
+          "degrees": 0,
           "terminal": false
         },
         {
@@ -22455,7 +22023,7 @@
             8.42,
             124.61
           ],
-          "degrees": 10.5,
+          "degrees": 7.9,
           "terminal": false
         },
         {
@@ -24806,11 +24374,11 @@
       "city": "Tokyo Haneda",
       "direction": "out",
       "variant": 0,
-      "km": 5979.6,
+      "km": 5820.3,
       "greatCircleKm": 5782.7,
-      "detourRatio": 1.034,
-      "score": 6020.1,
-      "maxEnrouteTurnDeg": 31.3,
+      "detourRatio": 1.0065,
+      "score": 5834.4,
+      "maxEnrouteTurnDeg": 18.4,
       "turns": [
         {
           "point": [
@@ -24857,47 +24425,31 @@
             13.58,
             123.27
           ],
-          "degrees": 8.9,
+          "degrees": 18.4,
           "terminal": false
         },
         {
           "point": [
-            16.5,
-            128.31
-          ],
-          "degrees": 19.9,
-          "terminal": false
-        },
-        {
-          "point": [
-            20,
-            131.43
-          ],
-          "degrees": 4.2,
-          "terminal": false
-        },
-        {
-          "point": [
-            23.5,
-            135.29
-          ],
-          "degrees": 31.3,
-          "terminal": false
-        },
-        {
-          "point": [
-            27.00423,
-            136.35087
+            19.22308,
+            126.90022
           ],
           "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            30.5,
-            137.48
+            24.78959,
+            130.78749
           ],
-          "degrees": 3.4,
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            30.24635,
+            135.03708
+          ],
+          "degrees": 0,
           "terminal": false
         },
         {
@@ -24905,7 +24457,7 @@
             35.34261,
             139.58421
           ],
-          "degrees": 14.3,
+          "degrees": 3.2,
           "terminal": true
         }
       ],
@@ -24916,58 +24468,42 @@
       "city": "Tokyo Haneda",
       "direction": "in",
       "variant": 0,
-      "km": 5981.7,
+      "km": 5822.8,
       "greatCircleKm": 5785.2,
-      "detourRatio": 1.034,
-      "score": 6022.1,
-      "maxEnrouteTurnDeg": 31.3,
+      "detourRatio": 1.0065,
+      "score": 5836.8,
+      "maxEnrouteTurnDeg": 18.4,
       "turns": [
         {
           "point": [
             35.4348,
             139.66316
           ],
-          "degrees": 14,
+          "degrees": 3.2,
           "terminal": true
         },
         {
           "point": [
-            30.5,
-            137.48
-          ],
-          "degrees": 3.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            27.00423,
-            136.35087
+            30.24635,
+            135.03708
           ],
           "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            23.5,
-            135.29
+            24.78959,
+            130.78749
           ],
-          "degrees": 31.3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            20,
-            131.43
+            19.22308,
+            126.90022
           ],
-          "degrees": 4.2,
-          "terminal": false
-        },
-        {
-          "point": [
-            16.5,
-            128.31
-          ],
-          "degrees": 19.9,
+          "degrees": 0,
           "terminal": false
         },
         {
@@ -24975,7 +24511,7 @@
             13.58,
             123.27
           ],
-          "degrees": 8.9,
+          "degrees": 18.4,
           "terminal": false
         },
         {
@@ -25026,11 +24562,11 @@
       "city": "Tokyo Haneda / Vancouver",
       "direction": "out",
       "variant": 0,
-      "km": 5979.6,
+      "km": 5820.3,
       "greatCircleKm": 5782.7,
-      "detourRatio": 1.034,
-      "score": 6020.1,
-      "maxEnrouteTurnDeg": 31.3,
+      "detourRatio": 1.0065,
+      "score": 5834.4,
+      "maxEnrouteTurnDeg": 18.4,
       "turns": [
         {
           "point": [
@@ -25077,47 +24613,31 @@
             13.58,
             123.27
           ],
-          "degrees": 8.9,
+          "degrees": 18.4,
           "terminal": false
         },
         {
           "point": [
-            16.5,
-            128.31
-          ],
-          "degrees": 19.9,
-          "terminal": false
-        },
-        {
-          "point": [
-            20,
-            131.43
-          ],
-          "degrees": 4.2,
-          "terminal": false
-        },
-        {
-          "point": [
-            23.5,
-            135.29
-          ],
-          "degrees": 31.3,
-          "terminal": false
-        },
-        {
-          "point": [
-            27.00423,
-            136.35087
+            19.22308,
+            126.90022
           ],
           "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            30.5,
-            137.48
+            24.78959,
+            130.78749
           ],
-          "degrees": 3.4,
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            30.24635,
+            135.03708
+          ],
+          "degrees": 0,
           "terminal": false
         },
         {
@@ -25125,7 +24645,7 @@
             35.34261,
             139.58421
           ],
-          "degrees": 14.3,
+          "degrees": 3.2,
           "terminal": true
         }
       ],
@@ -25136,58 +24656,42 @@
       "city": "Tokyo Haneda / Vancouver",
       "direction": "in",
       "variant": 0,
-      "km": 5981.7,
+      "km": 5822.8,
       "greatCircleKm": 5785.2,
-      "detourRatio": 1.034,
-      "score": 6022.1,
-      "maxEnrouteTurnDeg": 31.3,
+      "detourRatio": 1.0065,
+      "score": 5836.8,
+      "maxEnrouteTurnDeg": 18.4,
       "turns": [
         {
           "point": [
             35.4348,
             139.66316
           ],
-          "degrees": 14,
+          "degrees": 3.2,
           "terminal": true
         },
         {
           "point": [
-            30.5,
-            137.48
-          ],
-          "degrees": 3.7,
-          "terminal": false
-        },
-        {
-          "point": [
-            27.00423,
-            136.35087
+            30.24635,
+            135.03708
           ],
           "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            23.5,
-            135.29
+            24.78959,
+            130.78749
           ],
-          "degrees": 31.3,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            20,
-            131.43
+            19.22308,
+            126.90022
           ],
-          "degrees": 4.2,
-          "terminal": false
-        },
-        {
-          "point": [
-            16.5,
-            128.31
-          ],
-          "degrees": 19.9,
+          "degrees": 0,
           "terminal": false
         },
         {
@@ -25195,7 +24699,7 @@
             13.58,
             123.27
           ],
-          "degrees": 8.9,
+          "degrees": 18.4,
           "terminal": false
         },
         {
@@ -25246,11 +24750,11 @@
       "city": "Tokyo Narita",
       "direction": "out",
       "variant": 0,
-      "km": 6038.2,
+      "km": 5894.9,
       "greatCircleKm": 5841.1,
-      "detourRatio": 1.0337,
-      "score": 6142.2,
-      "maxEnrouteTurnDeg": 31.3,
+      "detourRatio": 1.0092,
+      "score": 6007.9,
+      "maxEnrouteTurnDeg": 17.8,
       "turns": [
         {
           "point": [
@@ -25297,47 +24801,31 @@
             13.58,
             123.27
           ],
-          "degrees": 8.9,
+          "degrees": 17.8,
           "terminal": false
         },
         {
           "point": [
-            16.5,
-            128.31
-          ],
-          "degrees": 19.9,
-          "terminal": false
-        },
-        {
-          "point": [
-            20,
-            131.43
-          ],
-          "degrees": 4.2,
-          "terminal": false
-        },
-        {
-          "point": [
-            23.5,
-            135.29
-          ],
-          "degrees": 31.3,
-          "terminal": false
-        },
-        {
-          "point": [
-            27.00423,
-            136.35087
+            19.28983,
+            127.02644
           ],
           "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            30.5,
-            137.48
+            24.91735,
+            131.05306
           ],
-          "degrees": 10,
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            30.4265,
+            135.46136
+          ],
+          "degrees": 1.9,
           "terminal": false
         },
         {
@@ -25345,7 +24833,7 @@
             35.56763,
             140.54678
           ],
-          "degrees": 57.7,
+          "degrees": 71,
           "terminal": true
         }
       ],
@@ -25356,58 +24844,42 @@
       "city": "Tokyo Narita",
       "direction": "in",
       "variant": 0,
-      "km": 6034.8,
+      "km": 5888.9,
       "greatCircleKm": 5841.7,
-      "detourRatio": 1.033,
-      "score": 6136.3,
-      "maxEnrouteTurnDeg": 31.3,
+      "detourRatio": 1.0081,
+      "score": 5999.5,
+      "maxEnrouteTurnDeg": 17.8,
       "turns": [
         {
           "point": [
             35.66247,
             140.47963
           ],
-          "degrees": 56.7,
+          "degrees": 70.1,
           "terminal": true
         },
         {
           "point": [
-            30.5,
-            137.48
+            30.4265,
+            135.46136
           ],
-          "degrees": 9.1,
+          "degrees": 1.1,
           "terminal": false
         },
         {
           "point": [
-            27.00423,
-            136.35087
+            24.91735,
+            131.05306
           ],
           "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            23.5,
-            135.29
+            19.28983,
+            127.02644
           ],
-          "degrees": 31.3,
-          "terminal": false
-        },
-        {
-          "point": [
-            20,
-            131.43
-          ],
-          "degrees": 4.2,
-          "terminal": false
-        },
-        {
-          "point": [
-            16.5,
-            128.31
-          ],
-          "degrees": 19.9,
+          "degrees": 0,
           "terminal": false
         },
         {
@@ -25415,7 +24887,7 @@
             13.58,
             123.27
           ],
-          "degrees": 8.9,
+          "degrees": 17.8,
           "terminal": false
         },
         {
@@ -28358,11 +27830,11 @@
       "city": "Seattle",
       "direction": "out",
       "variant": 0,
-      "km": 13908.3,
+      "km": 13739.7,
       "greatCircleKm": 13491.1,
-      "detourRatio": 1.0309,
-      "score": 14104.3,
-      "maxEnrouteTurnDeg": 27.9,
+      "detourRatio": 1.0184,
+      "score": 13854.1,
+      "maxEnrouteTurnDeg": 18.4,
       "turns": [
         {
           "point": [
@@ -28505,79 +27977,47 @@
             49,
             175
           ],
-          "degrees": 27.9,
+          "degrees": 0.4,
           "terminal": false
         },
         {
           "point": [
-            48,
-            184.23
+            51.17389,
+            184.99156
           ],
-          "degrees": 14.7,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            48,
-            189.46
+            52.4248,
+            195.74975
           ],
-          "degrees": 3.9,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            48,
-            194.69
+            52.65768,
+            206.87398
           ],
-          "degrees": 3.9,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            48,
-            199.92
+            51.85349,
+            217.85465
           ],
-          "degrees": 3.9,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            48,
-            205.15
+            50.07614,
+            228.22631
           ],
-          "degrees": 3.9,
-          "terminal": false
-        },
-        {
-          "point": [
-            48,
-            210.38
-          ],
-          "degrees": 3.9,
-          "terminal": false
-        },
-        {
-          "point": [
-            48,
-            215.61
-          ],
-          "degrees": 5.8,
-          "terminal": false
-        },
-        {
-          "point": [
-            48,
-            226.07
-          ],
-          "degrees": 4.2,
-          "terminal": false
-        },
-        {
-          "point": [
-            47.87196,
-            231.91137
-          ],
-          "degrees": 3.9,
+          "degrees": 2,
           "terminal": false
         },
         {
@@ -28585,7 +28025,7 @@
             47.71561,
             -122.311
           ],
-          "degrees": 85.6,
+          "degrees": 65.7,
           "terminal": true
         }
       ],
@@ -28596,90 +28036,58 @@
       "city": "Seattle",
       "direction": "in",
       "variant": 0,
-      "km": 13899.4,
+      "km": 13735.1,
       "greatCircleKm": 13492.4,
-      "detourRatio": 1.0302,
-      "score": 14089.6,
-      "maxEnrouteTurnDeg": 27.9,
+      "detourRatio": 1.018,
+      "score": 13847.1,
+      "maxEnrouteTurnDeg": 18.4,
       "turns": [
         {
           "point": [
             47.59988,
             -122.311
           ],
-          "degrees": 83.9,
+          "degrees": 64.8,
           "terminal": true
         },
         {
           "point": [
-            47.87196,
-            231.91137
+            50.07614,
+            228.22631
           ],
-          "degrees": 2.2,
+          "degrees": 1.1,
           "terminal": false
         },
         {
           "point": [
-            48,
-            226.07
+            51.85349,
+            217.85465
           ],
-          "degrees": 4.2,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            48,
-            215.61
+            52.65768,
+            206.87398
           ],
-          "degrees": 5.8,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            48,
-            210.38
+            52.4248,
+            195.74975
           ],
-          "degrees": 3.9,
+          "degrees": 0,
           "terminal": false
         },
         {
           "point": [
-            48,
-            205.15
+            51.17389,
+            184.99156
           ],
-          "degrees": 3.9,
-          "terminal": false
-        },
-        {
-          "point": [
-            48,
-            199.92
-          ],
-          "degrees": 3.9,
-          "terminal": false
-        },
-        {
-          "point": [
-            48,
-            194.69
-          ],
-          "degrees": 3.9,
-          "terminal": false
-        },
-        {
-          "point": [
-            48,
-            189.46
-          ],
-          "degrees": 3.9,
-          "terminal": false
-        },
-        {
-          "point": [
-            48,
-            184.23
-          ],
-          "degrees": 14.7,
+          "degrees": 0,
           "terminal": false
         },
         {
@@ -28687,7 +28095,7 @@
             49,
             175
           ],
-          "degrees": 27.9,
+          "degrees": 0.4,
           "terminal": false
         },
         {
