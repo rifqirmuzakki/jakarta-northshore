@@ -4270,7 +4270,30 @@ function airRes(P,step){ // uniform resample
   for(let i=0;i<n;i++){const s=tot*i/(n-1);while(j<P.length-1&&cum[j]<s)j++;const d=cum[j]-cum[j-1],t=d>1e-6?(s-cum[j-1])/d:0;X[i]=P[j-1][0]+(P[j][0]-P[j-1][0])*t;Y[i]=P[j-1][1]+(P[j][1]-P[j-1][1])*t;S[i]=s}
   return {X,Y,S,n,total:tot};
 }
-const airPath=(R,i0,i1)=>{let s='';const st=Math.max(1,Math.round(((i1==null?R.n-1:i1)-(i0||0))/260));for(let i=i0||0;i<=(i1==null?R.n-1:i1);i+=st)s+=(s?'L':'M')+Math.round(R.X[i])+','+Math.round(R.Y[i]);return s};
+const AIR_BANK_LIMIT=25*Math.PI/180,AIR_GRAVITY=9.80665;
+function airHeading(R,i,f=0){const direction=j=>{if(j===0&&R.startTangent)return R.startTangent;if(j===R.n-1&&R.endTangent)return R.endTangent;const a=Math.max(0,j-1),b=Math.min(R.n-1,j+1),dx=R.X[b]-R.X[a],dy=R.Y[b]-R.Y[a],m=Math.hypot(dx,dy)||1;return [dx/m,dy/m]};
+  const a=direction(i),b=direction(Math.min(R.n-1,i+1));return AIR_HD(0,0,a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f);
+}
+function airTurnSpeeds(R,V){
+  for(let i=1;i<R.n-1;i++){const ax=R.X[i]-R.X[i-1],ay=R.Y[i]-R.Y[i-1],bx=R.X[i+1]-R.X[i],by=R.Y[i+1]-R.Y[i],a=Math.hypot(ax,ay),b=Math.hypot(bx,by);
+    const angle=Math.acos(Math.max(-1,Math.min(1,(ax*bx+ay*by)/(a*b||1)))),curvature=angle/Math.max(1,(a+b)/2);
+    if(curvature>1e-9){const limit=Math.sqrt(AIR_GRAVITY*Math.tan(AIR_BANK_LIMIT)/curvature);for(let j=i-1;j<=i+1;j++)V[j]=Math.min(V[j],limit)}}
+  // Brake before the bend and accelerate afterwards, rather than changing
+  // speed at a single point. Limit longitudinal acceleration to 0.5 m/s².
+  for(let i=R.n-2;i>=0;i--)V[i]=Math.min(V[i],Math.sqrt(V[i+1]**2+R.S[i+1]-R.S[i]));
+  for(let i=1;i<R.n;i++)V[i]=Math.min(V[i],Math.sqrt(V[i-1]**2+R.S[i]-R.S[i-1]));
+  return V;
+}
+function airJoinPaths(A,B){const n=A.n+B.n-1,R={X:new Float64Array(n),Y:new Float64Array(n),S:new Float64Array(n),n,total:A.total+B.total};
+  for(const key of ['X','Y']){R[key].set(A[key]);R[key].set(B[key].subarray(1),A.n)}R.S.set(A.S);for(let i=1;i<B.n;i++)R.S[A.n+i-1]=A.total+B.S[i];return R;
+}
+function airArrivalConnector(O,J,tangent){const dx=J[0]-O[0],dy=J[1]-O[1],len=Math.hypot(dx,dy),U=[dx/(len||1),dy/(len||1)],tm=Math.hypot(...tangent)||1,T=tangent.map(x=>x/tm);
+  for(const turnLength of [30000,15000,6000,1500]){const L=Math.min(turnLength,len*.8),C=[J[0]-U[0]*L,J[1]-U[1]*L],P=[O,C];
+    for(let i=1;i<=40;i++){const t=i/40,u=1-t,c1=[C[0]+U[0]*L/3,C[1]+U[1]*L/3],c2=[J[0]-T[0]*L/3,J[1]-T[1]*L/3];P.push([u*u*u*C[0]+3*u*u*t*c1[0]+3*u*t*t*c2[0]+t*t*t*J[0],u*u*u*C[1]+3*u*u*t*c1[1]+3*u*t*t*c2[1]+t*t*t*J[1]])}
+    if(P.every((p,i)=>!i||airDepartureClear(P[i-1],p))){const R=airRes(P,500);R.startTangent=U;R.endTangent=T;return R;}
+  }return null;
+}
+const airPath=(R,i0=0,i1=R.n-1)=>{if(i1<i0)return '';let s='';const step=Math.max(1,Math.round((i1-i0)/260)),add=i=>{s+=(s?'L':'M')+Math.round(R.X[i])+','+Math.round(R.Y[i])};for(let i=i0;i<i1;i+=step)add(i);add(i1);return s};
 function airLocate(R,e,key){ // arrays: R.E increasing -> index/fraction
   const E=R[key||'E'];let lo=0,hi=R.n-1;if(e<=E[0])return [0,0];if(e>=E[hi])return [hi-1,1];
   while(hi-lo>1){const m=(lo+hi)>>1;if(E[m]<=e)lo=m;else hi=m}
@@ -4298,11 +4321,17 @@ function airStar(gk,rwk,fl,vr){
     W.push(wld(B[0],B[1]));names.push('');
   }
   W.push(wld(A[0],0),wld(23000,0),wld(13000,0),[F.x,F.y]);names.push('','IF','FAF','');
-  const R=airRes(airProcedurePath(W,7000),250);
+  // Pass the holding fix exactly, aligned with the racetrack on both sides.
+  // Rounding across the fix used to miss it and snap position/heading on exit.
+  const h=[-G.u[0],-G.u[1]],before=airRes(airProcedurePath([G.X,G.G,[G.M[0]-h[0]*18000,G.M[1]-h[1]*18000],G.M],7000),250);
+  const after=airRes(airProcedurePath([G.M,[G.M[0]+h[0]*18000,G.M[1]+h[1]*18000],...W.slice(3)],7000),250),R=airJoinPaths(before,after);
   R.alt=new Float64Array(R.n);R.v=new Float64Array(R.n);R.E=new Float64Array(R.n);
-  let iM=0,bd=1e18,iG0=0,bg=1e18;for(let i=0;i<R.n;i++){const d=Math.hypot(R.X[i]-G.M[0],R.Y[i]-G.M[1]);if(d<bd){bd=d;iM=i}const e=Math.hypot(R.X[i]-G.G[0],R.Y[i]-G.G[1]);if(e<bg){bg=e;iG0=i}}
+  const iM=before.n-1;let iG0=0,bg=1e18;for(let i=0;i<=iM;i++){const e=Math.hypot(R.X[i]-G.G[0],R.Y[i]-G.G[1]);if(e<bg){bg=e;iG0=i}}
   const sG0=R.S[iG0];
-  for(let i=0;i<R.n;i++){const d=(R.total-R.S[i])/1000;R.alt[i]=i<iG0?24000+0.194*(sG0-R.S[i]):i<iM?12000+12000*(1-(R.S[i]-sG0)/(R.S[iM]-sG0)):Math.min(12000,airInterp(AIR_ALT,d));R.v[i]=airInterp(AIR_SPD,d);if(i)R.E[i]=R.E[i-1]+(R.S[i]-R.S[i-1])/((R.v[i]+R.v[i-1])/2)}
+  for(let i=0;i<R.n;i++){const d=(R.total-R.S[i])/1000;R.alt[i]=i<iG0?24000+0.194*(sG0-R.S[i]):i<iM?12000+12000*(1-(R.S[i]-sG0)/(R.S[iM]-sG0)):Math.min(12000,airInterp(AIR_ALT,d));R.v[i]=airInterp(AIR_SPD,d)}
+  const meterLift=12000-R.alt[iM];for(let i=iM;i<R.n;i++){const t=Math.max(0,1-(R.S[i]-R.S[iM])/30000);R.alt[i]+=meterLift*t*t*(3-2*t)}
+  R.v[iM]=Math.min(R.v[iM],AIR.HV);airTurnSpeeds(R,R.v);
+  for(let i=1;i<R.n;i++)R.E[i]=R.E[i-1]+(R.S[i]-R.S[i-1])/((R.v[i]+R.v[i-1])/2);
   R.vr=vr||0;R.iM=iM;R.iG0=iG0;R.eM=R.E[iM];R.eT=R.E[R.n-1];R.gk=gk;R.rwk=rwk;R.fl=fl;R.name=G.n+' '+(fl==='27'?1:2)+airRwy(rwk,fl).slice(-1);R.rwy=airRwy(rwk,fl);R.F=F;R.wp=W.map((p,i)=>({p,n:names[i]}));
   return AIR.stars[key]=R;
 }
@@ -4352,13 +4381,13 @@ function airSid(gk,rwk,fl,vr){
 /* ---- holding pattern at each metering fix: right-hand racetrack, 1-minute legs, standard-rate turns ---- */
 function airLoop(gk){
   if(AIR.loops[gk])return AIR.loops[gk];
-  const G=AIR.G[gk],F=G.M,h=[-G.u[0],-G.u[1]],R=[-h[1],h[0]],r=AIR.HV/.0523,L=AIR.HV*60,pts=[];
-  const arc=(c,a0,sg)=>{for(let k=0;k<=24;k++){const a=a0+sg*Math.PI*k/24;pts.push([c[0]+Math.cos(a)*r,c[1]+Math.sin(a)*r])}};
+  const G=AIR.G[gk],F=G.M,h=[-G.u[0],-G.u[1]],R=[-h[1],h[0]],r=Math.max(AIR.HV/(3*Math.PI/180),AIR.HV**2/(AIR_GRAVITY*Math.tan(AIR_BANK_LIMIT))),L=AIR.HV*60,pts=[];
+  const arc=(c,a0,sg)=>{const n=Math.max(48,Math.ceil(Math.PI*r/80));for(let k=0;k<=n;k++){const a=a0+sg*Math.PI*k/n;pts.push([c[0]+Math.cos(a)*r,c[1]+Math.sin(a)*r])}};
   const c1=[F[0]+R[0]*r,F[1]+R[1]*r],a1=Math.atan2(F[1]-c1[1],F[0]-c1[0]);arc(c1,a1,1);
   const P2=[F[0]+R[0]*2*r-h[0]*L,F[1]+R[1]*2*r-h[1]*L];pts.push(P2);
   const c2=[F[0]+R[0]*r-h[0]*L,F[1]+R[1]*r-h[1]*L],a2=Math.atan2(P2[1]-c2[1],P2[0]-c2[0]);arc(c2,a2,1);
   pts.push([F[0],F[1]]);
-  const Rs=airRes(pts,120);Rs.lap=Rs.total/AIR.HV;Rs.F=F;Rs.h=h;return AIR.loops[gk]=Rs;
+  const Rs=airRes(pts,120);Rs.lap=Rs.total/AIR.HV;Rs.F=F;Rs.h=h;Rs.startTangent=h;Rs.endTangent=h;return AIR.loops[gk]=Rs;
 }
 const RWS=C.RWS,PXC=(RWS[0].x0+RWS[1].x1)/2,PYC=(RWS[0].y+RWS[1].y)/2;
 const rwI=rwk=>rwk==='S'?1:0;
@@ -4411,8 +4440,10 @@ function airShortTransition(R,airport,kind,maxIndex){
     const alignment=(dx*cx+dy*cy)/(Math.hypot(dx,dy)*len||1);if(alignment<Math.cos(Math.PI/4))continue;
     const x=airport[0]-AIR_C[0],y=airport[1]-AIR_C[1],vx=P[0]-airport[0],vy=P[1]-airport[1],t=Math.max(0,Math.min(1,-(x*vx+y*vy)/(vx*vx+vy*vy||1)));
     if(Math.hypot(x+t*vx,y+t*vy)<18000)continue;
-    const cost=(dep?R.S[i]:R.total-R.S[i])+len+(1-alignment)*20000;
-    if(!best||cost<best.cost)best={i,P,len,cost};
+    let cost=(dep?R.S[i]:R.total-R.S[i])+len+(1-alignment)*20000;if(best&&cost>=best.cost)continue;
+    const path=dep?null:airArrivalConnector(airport,P,[dx,dy]);if(!dep&&!path)continue;
+    const length=path?path.total:len;cost+=length-len;
+    if(!best||cost<best.cost)best={i,P,len:length,cost,path};
   }
   return best;
 }
@@ -4431,7 +4462,7 @@ function buildTracks(){
       const f=e.a,city=f.city,gk=airGateByRoute(city,f.id,'in'),fl=e.dirA===9?'09':'27',hA=airH(f.id);
       const rwk=e.rwA===1?'S':'N',st=airStar(gk,rwk,fl,!e._busyA&&e._densA<=14&&hA%10<8?1:(e._busyA&&hA%5<3?2+(hA>>>3)%2:0));if(!st)return;
       const loop=airLoop(gk),D0=e.delay,k=D0>=AIR.HMIN?Math.max(1,Math.round(D0/loop.lap)):0;
-      const tS0=e.tF,tTD=e.td,tEx=tS0-(st.eT-st.eM),tEn=tEx-k*loop.lap,tAtG=tEn-(st.eM-st.E[st.iG0]);
+      const tS0=e.tF,tTD=e.td,tEx=tS0-(st.eT-st.eM),tEn=tEx-k*loop.lap,tAtG=tEn-(st.eM-st.E[st.iG0]),finalAlt=gpose(e,tS0)?.alt??1100;
       const q0=airCity(city),O=q0?airXY(q0[0],q0[1]):null,G0=AIR.G[gk],dG=Math.hypot(G0.G[0]-AIR_C[0],G0.G[1]-AIR_C[1]),sG0=st.S[st.iG0];
       const dO=O?Math.hypot(O[0]-AIR_C[0],O[1]-AIR_C[1]):dG+AIR.EXT,altC=airAltC(dO);
       let hs=null,iS=0,iJ=st.iG0,extraB=0,rem0,hE,tAtJ,t0;
@@ -4443,13 +4474,16 @@ function buildTracks(){
         for(let i=iS+1;i<=iJ;i++){const al=j=>Math.min(24000+0.194*(sG0-st.S[j]),altC,1500+0.24*(st.S[j]-st.S[iS]+extraB)),v1=Math.min(st.v[i-1],airVcl(al(i-1))),v2=Math.min(st.v[i],airVcl(al(i)));hE[i-iS]=hE[i-iS-1]+(st.S[i]-st.S[i-1])/((v1+v2)/2)}
         t0=tAtJ-hE[iJ-iS];rem0=st.total-st.S[iS];
       }else{
-        const J=transition?transition.P:(dO>=dG?G0.G:G0.M);iJ=transition?transition.i:(dO>=dG?st.iG0:st.iM);const len=Math.max(500,Math.hypot(J[0]-entry[0],J[1]-entry[1])),n=Math.max(2,Math.ceil(len/500)),ds=len/n,altJ=st.alt[iJ],remJ=st.total-st.S[iJ];
+        const J=transition?transition.P:(dO>=dG?G0.G:G0.M);iJ=transition?transition.i:(dO>=dG?st.iG0:st.iM);
+        const tangent=[st.X[Math.min(st.n-1,iJ+1)]-st.X[Math.max(0,iJ-1)],st.Y[Math.min(st.n-1,iJ+1)]-st.Y[Math.max(0,iJ-1)]];
+        const path=transition?.path||airArrivalConnector(entry,J,tangent)||airRes([entry,J],500),len=Math.max(1,path.total),n=path.n-1,ds=len/n,altJ=st.alt[iJ],remJ=st.total-st.S[iJ];
         hE=new Float64Array(n+1);
         const al=u=>Math.min(altJ+0.194*(len-u),altC,local?Infinity:1500+0.24*u),vv=u=>Math.min(airInterp(AIR_SPD,(remJ+len-u)/1000),airVcl(al(u)));
-        for(let kk=1;kk<=n;kk++)hE[kk]=hE[kk-1]+ds/((vv((kk-1)*ds)+vv(kk*ds))/2);
-        tAtJ=tEn-(st.E[st.iM]-st.E[iJ]);t0=tAtJ-hE[n];rem0=remJ+len;hs={O:entry,J,len,n,ds,enroute:!!local,hd:AIR_HD(entry[0],entry[1],J[0],J[1])};
+        const speeds=Float64Array.from(path.S,vv);speeds[n]=Math.min(speeds[n],st.v[iJ]);airTurnSpeeds(path,speeds);
+        for(let kk=1;kk<=n;kk++)hE[kk]=hE[kk-1]+ds/((speeds[kk-1]+speeds[kk])/2);
+        tAtJ=tEn-(st.E[st.iM]-st.E[iJ]);t0=tAtJ-hE[n];rem0=remJ+len;hs={O:entry,J,len,n,ds,path,enroute:!!local,hd:AIR_HD(entry[0],entry[1],J[0],J[1])};
       }
-      const a={e,kind:'arr',gk,st,loop,k,delay:D0,tG:tAtJ,tAtJ,tEn,tEx,tS0,tTD,t0,t1:tTD+1,iS,iJ,hs,hE,altC,dO,extraB,rem0,lvl:0,id:f.id,fl};
+      const a={e,kind:'arr',gk,st,loop,k,delay:D0,tG:tAtJ,tAtJ,tEn,tEx,tS0,tTD,t0,t1:tTD+1,iS,iJ,hs,hE,altC,finalAlt,dO,extraB,rem0,lvl:0,id:f.id,fl};
       A.push(a);e.aT=a;
     }
     if(e.d&&e.takeoff!=null){
@@ -4473,6 +4507,9 @@ function buildTracks(){
 }
 
 /* ground-sim pose in the world frame (used for the final approach and the climb-out) */
+function airHoldOffset(a,t){if(!a.k||!a.lvl)return 0;const height=1000*a.lvl,duration=Math.max(90,height/20);
+  return height*Math.max(0,Math.min(1,t<a.tEn?1-(a.tEn-t)/duration:1-(t-a.tEx)/duration));
+}
 function gpose(e,tt){
   const p=C.pose(e,tt);if(!p)return null;
   const q=C.pose(e,tt+1.5)||p,W=gw(p.x,p.y),W2=gw(q.x,q.y);
@@ -4486,19 +4523,21 @@ function posAt(a,tt){
       if(a.k&&tt>=a.tEn&&tt<a.tEx){
         const lp=a.loop,lam=((tt-a.tEn)*AIR.HV)%lp.total,i=Math.min(lp.n-2,Math.max(0,Math.floor(lam/(lp.total/(lp.n-1))))),f=lam/(lp.total/(lp.n-1))-i;
         const x=lp.X[i]+(lp.X[i+1]-lp.X[i])*f,y=lp.Y[i]+(lp.Y[i+1]-lp.Y[i])*f;
-        return {x,y,alt:12000+1000*a.lvl,hd:AIR_HD(lp.X[i],lp.Y[i],lp.X[i+1],lp.Y[i+1]),ph:'hold',lap:Math.floor((tt-a.tEn)/lp.lap)+1,left:a.tEx-tt,rem:a.st.total-a.st.S[a.st.iM]};
+        return {x,y,alt:12000+1000*a.lvl,hd:airHeading(lp,i,f),ph:'hold',holdIndex:i,lap:Math.floor((tt-a.tEn)/lp.lap)+1,left:a.tEx-tt,rem:a.st.total-a.st.S[a.st.iM]};
       }
       let e,i,f;
       if(tt<a.tAtJ){
         const h=a.hE,eh=tt-a.t0;let lo=0,hi=h.length-1;f=0;if(eh>0){while(hi-lo>1){const m=(lo+hi)>>1;if(h[m]<=eh)lo=m;else hi=m}const d=h[hi]-h[lo];f=d>1e-9?Math.min(1,(eh-h[lo])/d):0}
         if(a.hs){const H=a.hs,u=(lo+f)*H.ds,r=u/H.len;
-          return {x:H.O[0]+(H.J[0]-H.O[0])*r,y:H.O[1]+(H.J[1]-H.O[1])*r,alt:Math.min(st.alt[a.iJ]+0.194*(H.len-u),a.altC,H.enroute?Infinity:1500+0.24*u),hd:H.hd,ph:'arr',ei:a.iJ,rem:(H.len-u)+st.total-st.S[a.iJ]}}
+          const P=H.path,j=Math.min(P.n-2,lo);return {x:P.X[j]+(P.X[j+1]-P.X[j])*f,y:P.Y[j]+(P.Y[j+1]-P.Y[j])*f,alt:Math.min(st.alt[a.iJ]+0.194*(H.len-u),a.altC,H.enroute?Infinity:1500+0.24*u)+airHoldOffset(a,tt),hd:airHeading(P,j,f),ph:'arr',connectorIndex:j,ei:a.iJ,rem:(H.len-u)+st.total-st.S[a.iJ]}}
         i=a.iS+lo;e=-1}
       else{e=tt<a.tEn?(tt-a.tAtJ)+st.E[a.iJ]:st.eM+(tt-a.tEx);[i,f]=airLocate(st,e)}
       const x=st.X[i]+(st.X[i+1]-st.X[i])*f,y=st.Y[i]+(st.Y[i+1]-st.Y[i])*f;
-      const ex=a.k?Math.max(0,1-(tt-a.tEx)/90)*1000*a.lvl:0,sI=st.S[i]+(st.S[i+1]-st.S[i])*f,trav=a.hs?a.hs.len+sI-st.S[a.iJ]:sI-st.S[a.iS]+a.extraB;
-      const alt=Math.min(st.alt[i]+(st.alt[i+1]-st.alt[i])*f,a.altC,1500+0.24*Math.max(0,trav))+(e>st.eM?ex:0);
-      return {x,y,alt,hd:AIR_HD(st.X[i],st.Y[i],st.X[i+1],st.Y[i+1]),ph:'arr',ei:i,rem:st.total-sI};
+      const sI=st.S[i]+(st.S[i+1]-st.S[i])*f,trav=a.hs?a.hs.len+sI-st.S[a.iJ]:sI-st.S[a.iS]+a.extraB;
+      let alt=Math.min(st.alt[i]+(st.alt[i+1]-st.alt[i])*f,a.altC,1500+0.24*Math.max(0,trav))+airHoldOffset(a,tt);
+      const rem=st.total-sI,t=Math.max(0,1-rem/13000),blend=t*t*(3-2*t),glide=a.finalAlt+rem*0.0524/0.3048;
+      alt+=(glide-alt)*blend;
+      return {x,y,alt,hd:airHeading(st,i,f),ph:'arr',ei:i,rem};
     }
     const q=gpose(a.e,tt);if(!q)return null;
     return {x:q.x,y:q.y,alt:q.alt,hd:q.hd,ph:'rwy',rem:0};
@@ -4574,12 +4613,18 @@ function procSVG(fls){
 function routeSVG(tr,q){
   if(!tr)return '';
   if(tr.kind==='arr'){
-    const R=tr.st,i=q&&q.ei!=null&&q.ph==='arr'?Math.max(0,Math.min(R.n-1,q.ei)):(q&&q.ph==='hold'?R.iM:(q?R.n-1:0));
-    const a0=tr.hs?'':'';
+    const R=tr.st,start=tr.hs?tr.iJ:tr.iS,append=(a,b)=>a&&b?a+b.replace(/^M/,'L'):a||b,point=q?'M'+Math.round(q.x)+','+Math.round(q.y):'';
+    const prefix=tr.hs?airPath(tr.hs.path):'',i=q&&q.ei!=null?Math.max(0,Math.min(R.n-1,q.ei)):R.n-1;
+    const onward=first=>tr.k&&first<=R.iM?append(append(airPath(R,first,R.iM),airPath(tr.loop)),airPath(R,R.iM)):airPath(R,first);
     let past='',fut='';
-    if(tr.hs){past=`M${tr.hs.O[0].toFixed(0)},${tr.hs.O[1].toFixed(0)}L${tr.hs.J[0].toFixed(0)},${tr.hs.J[1].toFixed(0)}`}
-    past+=(past?airPath(R,tr.iJ,Math.max(tr.iJ,i)).replace(/^M/,'L'):airPath(R,tr.iS,Math.max(tr.iS,i)));
-    fut=airPath(R,i,R.n-1);
+    if(!q)fut=append(prefix,onward(start));
+    else if(q.connectorIndex!=null){const P=tr.hs.path,j=q.connectorIndex;past=append(airPath(P,0,j),point);fut=append(append(point,airPath(P,j+1)),onward(tr.iJ))}
+    else if(q.ph==='hold'){const P=tr.loop,j=q.holdIndex;past=append(prefix,airPath(R,start,R.iM));if(q.lap>1)past=append(past,airPath(P));past=append(append(past,airPath(P,0,j)),point);fut=append(append(point,airPath(P,j+1)),airPath(R,R.iM))}
+    else{
+      past=prefix;if(tr.k&&i>=R.iM){past=append(past,airPath(R,start,R.iM));past=append(past,airPath(tr.loop));past=append(past,airPath(R,R.iM,i))}else past=append(past,airPath(R,start,i));
+      past=append(past,point);fut=append(point,i<R.n-1?onward(i+1):'');
+    }
+    const landing=gpose(tr.e,tr.tTD);if(landing&&(!q||q.ph!=='rwy'||(landing.x-q.x)*tr.st.F.dx+(landing.y-q.y)*tr.st.F.dy>1))fut=append(fut,'M'+Math.round(landing.x)+','+Math.round(landing.y));
     return `<path class="a-sel past arr" d="${past}"/><path class="a-sel fut arr" d="${fut}"/>`;
   }
   const R=tr.sd,i=q&&q.ei!=null?Math.min(R.n-1,q.ei):0;
