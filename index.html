@@ -4218,16 +4218,18 @@ const AIR_C=[AIR_XC,AIR_YC+AIR_DY];
 const airP=(x,y)=>{const u=x-AIR_XC,v=y-AIR_YC;return [AIR_XC+u*AIR_CA-v*AIR_SA,AIR_YC+u*AIR_SA+v*AIR_CA+AIR_DY]};
 const airV=(dx,dy)=>[dx*AIR_CA-dy*AIR_SA,dx*AIR_SA+dy*AIR_CA];
 const AIR_TFM=`translate(0 ${AIR_DY}) rotate(${(AIR_TH*180/Math.PI).toFixed(2)} ${AIR_XC} ${AIR_YC})`;
-/* six arrival / departure gates (initial fixes ~150 km out) and the metering / holding fix ~88 km out on the same radial */
+/* Six arrival/departure gates and radial SID fixes. Arrival holding fixes
+   share that position unless a northward offset is configured. */
 const AIR_GATES={
   W :{n:'SUNDA',ll:[-5.95,105.55],m:'LUNAS',from:'Middle East · India · Africa'},
   NW:{n:'KARIM',ll:[-4.95,105.95],m:'ARUNA',from:'Singapore · Malaysia · Thailand · Europe'},
   N :{n:'SERIB',ll:[-4.70,106.95],m:'BATUR',from:'Vietnam · Hong Kong · China · Borneo'},
   NE:{n:'BAWEN',ll:[-5.00,108.00],m:'CAKRA',from:'Japan · Korea · Philippines · Sulawesi'},
-  E :{n:'INDRA',ll:[-5.95,108.35],m:'DEWAS',from:'East Java · Bali · Australia · NZ'},
+  E :{n:'INDRA',ll:[-5.95,108.35],m:'DEWAS',holdNorth:10000,from:'East Java · Bali · Australia · NZ'},
   S :{n:'PRATU',ll:[-7.20,106.50],m:'ELANG',from:'Western Australia'}};
 AIR.G={};Object.keys(AIR_GATES).forEach(k=>{const g=AIR_GATES[k],G=airXY(...g.ll),dx=G[0]-AIR_C[0],dy=G[1]-AIR_C[1],l=Math.hypot(dx,dy),u=[dx/l,dy/l];
-  AIR.G[k]={k,n:g.n,mn:g.m,from:g.from,G,M:[AIR_C[0]+u[0]*88000,AIR_C[1]+u[1]*88000],X:[G[0]+u[0]*AIR.EXT,G[1]+u[1]*AIR.EXT],u}});
+  const sidM=[AIR_C[0]+u[0]*88000,AIR_C[1]+u[1]*88000];
+  AIR.G[k]={k,n:g.n,mn:g.m,from:g.from,G,sidM,M:[sidM[0],sidM[1]-(g.holdNorth||0)],X:[G[0]+u[0]*AIR.EXT,G[1]+u[1]*AIR.EXT],u}});
 const AIR_RW={27:{N:'27R',M:'27R',S:'27L'},'09':{N:'09L',M:'09L',S:'09R'}};
 const airRwy=(rwk,fl)=>(AIR_RW[fl]||AIR_RW[27])[rwk]||rwk;
 const airCity=c=>AIR_CITY[c]||AIR_CITY[String(c).split(' / ')[0]]||null;
@@ -4326,13 +4328,13 @@ function airProcedurePath(W,turnRadius=7500){const out=[W[0]];for(let i=1;i<W.le
 function airSid(gk,rwk,fl,vr){
   const key=gk+rwk+fl+(vr?'#'+vr:'');if(key in AIR.sids)return AIR.sids[key];
   const E=airDend(rwk,fl);if(!E)return AIR.sids[key]=null;
-  const G=AIR.G[gk],h=[E.dx,E.dy],d1=[9000,5000,14500][vr||0],X1=[E.x+h[0]*d1,E.y+h[1]*d1],tm=[G.M[0]-X1[0],G.M[1]-X1[1]];
+  const G=AIR.G[gk],M=G.sidM,h=[E.dx,E.dy],d1=[9000,5000,14500][vr||0],X1=[E.x+h[0]*d1,E.y+h[1]*d1],tm=[M[0]-X1[0],M[1]-X1[1]];
   const dl=Math.atan2(h[0]*tm[1]-h[1]*tm[0],h[0]*tm[0]+h[1]*tm[1]),W=[[E.x,E.y],X1];
   // A Jakarta bypass already supplies the necessary turn. Do not add an
   // offshore reversal first, which would send eastbound departures around
   // the long western side instead of taking the clear eastern corridor.
-  if(Math.abs(dl)>2.36&&airDepartureClear(X1,G.M)){const nw=airV(0,-1),X2=[X1[0]+h[0]*5000+nw[0]*15000,X1[1]+h[1]*5000+nw[1]*15000],X3=[X2[0]-h[0]*14000,X2[1]-h[1]*14000];W.push(X2,X3)}
-  const rt=[-G.u[1]*3000,G.u[0]*3000];W.push([G.M[0]+rt[0],G.M[1]+rt[1]],[G.G[0]+rt[0],G.G[1]+rt[1]],[G.X[0]+rt[0],G.X[1]+rt[1]]);
+  if(Math.abs(dl)>2.36&&airDepartureClear(X1,M)){const nw=airV(0,-1),X2=[X1[0]+h[0]*5000+nw[0]*15000,X1[1]+h[1]*5000+nw[1]*15000],X3=[X2[0]-h[0]*14000,X2[1]-h[1]*14000];W.push(X2,X3)}
+  const rt=[-G.u[1]*3000,G.u[0]*3000];W.push([M[0]+rt[0],M[1]+rt[1]],[G.G[0]+rt[0],G.G[1]+rt[1]],[G.X[0]+rt[0],G.X[1]+rt[1]]);
   const R=airRes(airProcedurePath(W),250);
   R.alt=new Float64Array(R.n);R.v=new Float64Array(R.n);R.E=new Float64Array(R.n);
   const SP=[[0,90],[3000,110],[10000,135],[18000,165],[26000,200],[34000,225]];
