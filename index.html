@@ -7605,7 +7605,7 @@ const routeFor=l=>routeOf(l.city,l.dir,altOf(l.id,l.d,nAlt(l.city,l.dir),l.dir))
 const KMD=111.2;
 function legPath(l,r){if(l._pa&&l._pr===r)return l._pa;
   const H=l.hand,hd=(l.hhd||0)*RAD,sA=ensureSA(l,r),cl=Math.cos(H[0]*RAD);
-  const loc=(lo,la)=>[(lo-H[1])*cl*KMD,(la-H[0])*KMD],glob=(x,y)=>[H[1]+x/(cl*KMD),H[0]+y/KMD];
+  const loc=(lo,la)=>[(((lo-H[1]+540)%360+360)%360-180)*cl*KMD,(la-H[0])*KMD],glob=(x,y)=>[H[1]+x/(cl*KMD),H[0]+y/KMD];
   const dirAt=s=>{const a=at(r,Math.max(0,s-20)),b=at(r,Math.min(r.len,s+20)),A=loc(a[0],a[1]),B=loc(b[0],b[1]),dx=B[0]-A[0],dy=B[1]-A[1],m=Math.hypot(dx,dy)||1;return [dx/m,dy/m]};
   const T=[Math.sin(hd),Math.cos(hd)];
   const herm=(P0,T0,P1,T1)=>{const D=Math.hypot(P1[0]-P0[0],P1[1]-P0[1]),handle=Math.min(25,D*0.25),n=Math.max(8,Math.ceil(D/10)),o=[];for(let i=1;i<=n;i++){const t=i/n,t2=t*t,t3=t2*t,a=2*t3-3*t2+1,b=t3-2*t2+t,c=-2*t3+3*t2,d=t3-t2;o.push([a*P0[0]+b*T0[0]*handle+c*P1[0]+d*T1[0]*handle,a*P0[1]+b*T0[1]*handle+c*P1[1]+d*T1[1]*handle])}return o};
@@ -7616,6 +7616,7 @@ function legPath(l,r){if(l._pa&&l._pr===r)return l._pa;
   else{const sB=Math.min(r.len,sA+Math.min(260,(r.len-sA)*0.4)),Q=at(r,sB);
     push(H[1],H[0]);herm([0,0],T,loc(Q[0],Q[1]),dirAt(sB)).forEach(q=>{const g=glob(q[0],q[1]);push(g[0],g[1])});
     for(let i=0;i<r.lon.length;i++)if(r.cum[i]>sB)push(r.lon[i],r.lat[i])}
+  for(let i=1;i<lon.length;i++){while(lon[i]-lon[i-1]>180)lon[i]-=360;while(lon[i]-lon[i-1]<-180)lon[i]+=360}      // routes that cross the date line carry longitudes beyond 180 or below -180: keep the path continuous
   const cum=[0];for(let i=1;i<lon.length;i++)cum.push(cum[i-1]+gcd([lat[i-1],lon[i-1]],[lat[i],lon[i]]));
   l._pa={lon,lat,cum,len:cum[cum.length-1]};l._pr=r;return l._pa}
 function legPos(l,now,r){const u=Math.max(0,Math.min(1,(now-l.off)/(l.land-l.off))),p=distFrac(u),P=l.hand?legPath(l,r):r,pt=at(P,p*P.len);return [pt[0],pt[1],u]}
