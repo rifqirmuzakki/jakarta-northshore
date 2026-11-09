@@ -230,3 +230,6 @@ Run `node tools/tests/a359-reallocation.cjs` to check the effective-date boundar
 ### Garuda registration series
 
 A35K: GJ/GW (GL overflow for larger historical fleets); A359: GT/GK; B789: GC/GO/GE; A339: GP/GH/GQ; B738: GM/GF/GN/GU/GD. GE and GQ are approved overflow blocks. Prefix each with PK- and append the allocator’s final letter (B excluded). The unused MAX allocation uses GR/GX so GD is reserved for B738. Registration assignments are shared by the map, aircraft history and flight history.
+
+### Flight numbering (GA)
+Flights are numbered in blocks by region, outbound even and the return the next odd number: 0xx Europe and long-haul, 1xx Sumatra, 2xx Java, 3xx Surabaya (328–399 are free and are the overflow block for new regional international services), 4xx Bali and Nusa Tenggara, 5xx Kalimantan (Johannesburg 558/559, Nairobi 560/561 and Addis Ababa 562/563 were renumbered here from 7xx on 10 Nov 2026), 6xx Sulawesi, Maluku and Papua, 7xx/8xx/9xx Asia, Oceania and the Middle East (full). A renumbering is a cancel plus a new service with the same times from the same date, so the old number keeps its history.
