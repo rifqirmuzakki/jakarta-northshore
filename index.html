@@ -1323,9 +1323,15 @@ const JKT=[-6.13,106.66];
 function estBlock(lat,lon){const r=Math.PI/180,dl=(lat-JKT[0])*r,dg=(lon-JKT[1])*r,x=Math.sin(dl/2)**2+Math.cos(JKT[0]*r)*Math.cos(lat*r)*Math.sin(dg/2)**2,km=12742*Math.asin(Math.sqrt(x));return Math.round((22+km/(km>4000?820:700)*60)/5)*5}
 function suggestType(car,block){let best=null,bd=1e9;allRows().filter(r=>r[0]===car&&AIR_CITY[r[2]]).forEach(r=>{const a=AIR_CITY[r[2]],d=Math.abs(estBlock(a[0],a[1])-block);if(d<bd){bd=d;best=r[6]}});return best||typesFor(car)[0]}
 function homeTerm(c,z){const m={};allRows().filter(r=>r[0]===c&&r[5]===z).forEach(r=>m[r[4]]=(m[r[4]]||0)+1);const k=Object.keys(m).sort((a,b)=>m[b]-m[a])[0];return k||(z==='I'?'T2':'T1')}
-const curRow=(d,carrier,num)=>FLD[d].find(r=>r[0]===carrier&&r[1]===num);
+/* the row as the simulator really schedules it: some flights were retimed in code (frequency approvals), so the stored time can be older than the time they fly at */
+const effRow=(d,r)=>{
+  try{const A=window.SIMCORE&&window.SIMCORE.allFlights&&window.SIMCORE.allFlights();
+    const f=A&&(d==='IN'?A.in:A.out).find(x=>x.c===r[0]&&String(x.num)===String(r[1]));
+    if(f&&f.v79&&f.v79.source===r[3]&&Number.isFinite(f.t)&&f.t!==r[3]){const c=r.slice();c[3]=f.t;return c}}catch(e){}
+  return r};
+const curRow=(d,carrier,num)=>{const r=FLD[d].find(x=>x[0]===carrier&&x[1]===num);return r?effRow(d,r):r};
 const mateOf=(d,r)=>{const o=d==='OUT'?'IN':'OUT';return FLD[o].find(x=>x[0]===r[0]&&x[2]===r[2]&&x[7]===r[7]&&x!==r)};
-const flightsAll=()=>['OUT','IN'].flatMap(d=>FLD[d].map(r=>({d,r})));
+const flightsAll=()=>['OUT','IN'].flatMap(d=>{const A=window.SIMCORE&&window.SIMCORE.allFlights&&window.SIMCORE.allFlights(),m=new Map();if(A)(d==='IN'?A.in:A.out).forEach(f=>m.set(f.c+'|'+f.num,f));return FLD[d].map(r=>{const f=m.get(r[0]+'|'+r[1]);if(f&&f.v79&&f.v79.source===r[3]&&Number.isFinite(f.t)&&f.t!==r[3]){const c=r.slice();c[3]=f.t;return {d,r:c}}return {d,r}})});
 /* ---- shell ---- */
 let screen='home',st={},busy=false;
 const launch=document.createElement('button');launch.id='fm-launch';launch.textContent='Operations';launch.title='Operations: timetable changes and disruptions';
