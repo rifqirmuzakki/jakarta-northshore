@@ -1727,6 +1727,254 @@ window.JN_CHANGES_REPO={
      "tz": "Europe/Lisbon"
     }
    ]
+  },
+  {
+   "id": "chg_afr5xx_cx_out",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "cancel",
+   "from": "2026-11-10",
+   "to": null,
+   "note": "Renumbered to the 5xx series (Johannesburg 558/559, Nairobi 560/561, Addis Ababa 562/563).",
+   "createdAt": "2026-11-09T15:12:11.360Z",
+   "targets": [
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "712"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "722"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "738"
+    }
+   ]
+  },
+  {
+   "id": "chg_afr5xx_cx_in",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "cancel",
+   "from": "2026-11-10",
+   "to": null,
+   "note": "Renumbered to the 5xx series (Johannesburg 558/559, Nairobi 560/561, Addis Ababa 562/563).",
+   "createdAt": "2026-11-09T15:12:11.360Z",
+   "targets": [
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "713"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "723"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "739"
+    }
+   ]
+  },
+  {
+   "id": "chg_afr5xx_jnb",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-10",
+   "retFrom": "2026-11-10",
+   "note": "Renumbered Johannesburg: GA 712/713 is now GA 558/559 (Airbus A350-900, daily, same times)",
+   "createdAt": "2026-11-09T15:12:11.360Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "558",
+      "Johannesburg",
+      1205,
+      "T2",
+      "I",
+      "Airbus A350-900",
+      "GA-CHG-JNB-558"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "559",
+      "Johannesburg",
+      1185,
+      "T2",
+      "I",
+      "Airbus A350-900",
+      "GA-CHG-JNB-558"
+     ]
+    ]
+   },
+   "airports": []
+  },
+  {
+   "id": "chg_afr5xx_nbo",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-10",
+   "retFrom": "2026-11-10",
+   "note": "Renumbered Nairobi: GA 722/723 is now GA 560/561 (Boeing 787-9, daily, same times)",
+   "createdAt": "2026-11-09T15:12:11.360Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "560",
+      "Nairobi",
+      1295,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-NBO-560"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "561",
+      "Nairobi",
+      1125,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-NBO-560"
+     ]
+    ]
+   },
+   "airports": []
+  },
+  {
+   "id": "chg_afr5xx_add",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-10",
+   "retFrom": "2026-11-10",
+   "note": "Renumbered Addis Ababa: GA 738/739 is now GA 562/563 (Boeing 787-9, daily, same times)",
+   "createdAt": "2026-11-09T15:12:11.360Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "562",
+      "Addis Ababa",
+      625,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-ADD-562"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "563",
+      "Addis Ababa",
+      455,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-ADD-562"
+     ]
+    ]
+   },
+   "airports": []
+  },
+  {
+   "id": "chg_routes4_ngo",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-24",
+   "retFrom": "2026-11-24",
+   "note": "New service Nagoya: GA 712/713 Airbus A330-900 (daily)",
+   "createdAt": "2026-11-09T15:17:57.370Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "712",
+      "Nagoya",
+      145,
+      "T2",
+      "I",
+      "Airbus A330-900",
+      "GA-CHG-chg_routes4_ngo-712"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "713",
+      "Nagoya",
+      1095,
+      "T2",
+      "I",
+      "Airbus A330-900",
+      "GA-CHG-chg_routes4_ngo-712"
+     ]
+    ]
+   },
+   "airports": []
+  },
+  {
+   "id": "chg_routes4_ool",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-24",
+   "retFrom": "2026-11-24",
+   "note": "New service Gold Coast: GA 722/723 Airbus A330-900 (daily)",
+   "createdAt": "2026-11-09T15:17:57.370Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "722",
+      "Gold Coast",
+      195,
+      "T2",
+      "I",
+      "Airbus A330-900",
+      "GA-CHG-chg_routes4_ool-722"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "723",
+      "Gold Coast",
+      1135,
+      "T2",
+      "I",
+      "Airbus A330-900",
+      "GA-CHG-chg_routes4_ool-722"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Gold Coast",
+     "code": "OOL",
+     "lat": -28.16,
+     "lon": 153.5,
+     "region": "E",
+     "tz": "Australia/Brisbane"
+    }
+   ]
   }
  ],
  "ops": [
