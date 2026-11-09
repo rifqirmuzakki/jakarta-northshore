@@ -1727,6 +1727,41 @@ window.JN_CHANGES_REPO={
      "tz": "Europe/Lisbon"
     }
    ]
+  },
+  {
+   "id": "chg_ga_789_sin_dps_20261109",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "amend",
+   "from": "2026-11-10",
+   "to": null,
+   "note": "Boeing 787-9 replaces the Airbus A330-900 on Singapore GA898/899 and Denpasar GA404/421. Times and frequencies unchanged; frees A330-900 hours for medium-haul growth.",
+   "createdAt": "2026-11-09T14:49:21.824Z",
+   "targets": [
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "898"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "899"
+    },
+    {
+     "dir": "OUT",
+     "carrier": "GA",
+     "number": "404"
+    },
+    {
+     "dir": "IN",
+     "carrier": "GA",
+     "number": "421"
+    }
+   ],
+   "set": {
+    "aircraft": "Boeing 787-9"
+   }
   }
  ],
  "ops": [
