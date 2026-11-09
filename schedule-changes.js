@@ -1892,6 +1892,89 @@ window.JN_CHANGES_REPO={
     ]
    },
    "airports": []
+  },
+  {
+   "id": "chg_routes4_ngo",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-24",
+   "retFrom": "2026-11-24",
+   "note": "New service Nagoya: GA 712/713 Airbus A330-900 (daily)",
+   "createdAt": "2026-11-09T15:17:57.370Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "712",
+      "Nagoya",
+      145,
+      "T2",
+      "I",
+      "Airbus A330-900",
+      "GA-CHG-chg_routes4_ngo-712"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "713",
+      "Nagoya",
+      1095,
+      "T2",
+      "I",
+      "Airbus A330-900",
+      "GA-CHG-chg_routes4_ngo-712"
+     ]
+    ]
+   },
+   "airports": []
+  },
+  {
+   "id": "chg_routes4_ool",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-11-24",
+   "retFrom": "2026-11-24",
+   "note": "New service Gold Coast: GA 722/723 Airbus A330-900 (daily)",
+   "createdAt": "2026-11-09T15:17:57.370Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "722",
+      "Gold Coast",
+      195,
+      "T2",
+      "I",
+      "Airbus A330-900",
+      "GA-CHG-chg_routes4_ool-722"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "723",
+      "Gold Coast",
+      1135,
+      "T2",
+      "I",
+      "Airbus A330-900",
+      "GA-CHG-chg_routes4_ool-722"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Gold Coast",
+     "code": "OOL",
+     "lat": -28.16,
+     "lon": 153.5,
+     "region": "E",
+     "tz": "Australia/Brisbane"
+    }
+   ]
   }
  ],
  "ops": [
