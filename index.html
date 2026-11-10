@@ -5298,7 +5298,7 @@ function renderBoard(){
   const rail=x.tier==='late'?'r':x.tier==='warn'?'a':(x.done?'g':(x.boarding?'b':'m'));
   const sub=x.done?(x.at!=null?'<small>'+fmt(x.at)+'</small>':''):(x.tier!=='ok'?'<small class="'+(x.tier==='late'?'r':'a')+'">exp '+fmt(t+x.late*60)+'</small>':'');
   const reg=e.tail?'<i>·</i>'+esc(e.tail):'';
-  return hd+'<button type="button" class="bv2-row '+(t<T-300&&x.done?'past':'')+'" data-i="'+i+'"><span class="bv2-rail '+rail+'"></span><span class="bv2-logo">'+airlineLogo(f.c,'')+'</span><span class="bv2-main">'+(v104?'<strong class="v105-cycle" aria-label="'+esc(v104.label)+'"><span class="v105-cycle-a">'+esc(v104.via)+' <small>'+esc(v104.viaCode)+'</small></span><span class="v105-cycle-b">'+esc(v104.city)+' <small>'+esc(v104.code)+'</small></span></strong>':'<strong>'+esc(displayCity)+(code?'<small>'+esc(code)+'</small>':'')+'</strong>')+'<span class="bv2-meta">'+esc(f.id)+'<i>·</i>'+esc(NAME[f.c]||f.c)+reg+'</span></span><span class="bv2-t"><b>'+fmt(t)+'</b><span class="bv2-pill '+pillCls+'">'+esc(label)+'</span>'+sub+'</span><span class="bv2-gate"><small>'+esc(term)+'</small><b>'+esc(e.stand.id)+'</b></span></button>';
+  return hd+'<button type="button" class="bv2-row '+(t<T-300&&x.done?'past':'')+'" data-i="'+i+'"><span class="bv2-rail '+rail+'"></span><span class="bv2-tl"><b>'+fmt(t)+'</b>'+sub+'</span><span class="bv2-logo">'+airlineLogo(f.c,'')+'</span><span class="bv2-main">'+(v104?'<strong class="v105-cycle" aria-label="'+esc(v104.label)+'"><span class="v105-cycle-a">'+esc(v104.via)+' <small>'+esc(v104.viaCode)+'</small></span><span class="v105-cycle-b">'+esc(v104.city)+' <small>'+esc(v104.code)+'</small></span></strong>':'<strong>'+esc(displayCity)+(code?'<small>'+esc(code)+'</small>':'')+'</strong>')+'<span class="bv2-meta">'+esc(f.id)+'<i>·</i>'+esc(NAME[f.c]||f.c)+reg+'</span></span><span class="bv2-rt"><span class="bv2-pill '+pillCls+'">'+esc(label)+'</span><span class="bv2-gate"><small>'+esc(term)+'</small><b>'+esc(e.stand.id)+'</b></span></span></button>';
  }).join(''):'<div class="be">No matching flights</div>';
  $('bList').innerHTML=html;
  const summary=document.getElementById('v46-board-summary');
@@ -8351,26 +8351,27 @@ html body #card .wc-tele b{font:650 15px/1.1 var(--jn-font,system-ui,sans-serif)
 /* the board uses the same typeface as the cards and the rest of the app (an older layer forced Barlow on it) */
 html body #board,html body #board *,html body #board button,html body #board input{font-family:var(--jn-font,"Geist","Inter",-apple-system,"Segoe UI",sans-serif)!important}
 /* Flight board v2: logo-led rows with a status rail, a NOW line, status counts and a Now button */
-html body #board #bList .bv2-row{display:flex;align-items:center;gap:12px;width:100%;padding:11px 16px 11px 0;background:#fff;color:var(--jn-ink,#19272d);border:0;border-bottom:1px solid var(--jn-edge,#e3e9ec);text-align:left;font:inherit;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent}
+html body #board #bList .bv2-row{display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px 11px 0;background:#fff;color:var(--jn-ink,#19272d);border:0;border-bottom:1px solid var(--jn-edge,#e3e9ec);text-align:left;font:inherit;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent}
 html body #board #bList .bv2-row:active{background:#f4f7f8}
 html body #board #bList .bv2-row.past{opacity:.5}
 html body #board .bv2-rail{align-self:stretch;width:5px;margin:-11px 0 -11px 0;background:#c7d1d6;flex:none}
 html body #board .bv2-rail.g{background:#2a9a66}html body #board .bv2-rail.a{background:#e29a0b}html body #board .bv2-rail.r{background:#d4482f}html body #board .bv2-rail.b{background:#2f6fe0}
-html body #board .bv2-logo{flex:none;margin-left:-1px}html body #board .bv2-logo .airline-logo{width:40px;height:40px;border-radius:11px}
+html body #board .bv2-logo{flex:none}html body #board .bv2-logo .airline-logo{width:38px;height:38px;border-radius:10px}
 html body #board .bv2-main{flex:1;min-width:0;display:block}
 html body #board .bv2-main strong{display:block;font:650 16.5px/1.15 var(--jn-font,system-ui,sans-serif);color:var(--jn-ink,#19272d);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 html body #board .bv2-main strong small{font:600 11px/1 var(--jn-font,system-ui,sans-serif);color:#566870;margin-left:6px;letter-spacing:.03em}
 html body #board .bv2-meta{display:block;margin-top:4px;font:500 12.5px/1.2 var(--jn-font,system-ui,sans-serif);color:#5b6d76;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 html body #board .bv2-meta i{font-style:normal;margin:0 5px;color:#9aa7ae}
-html body #board .bv2-t{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:3px;min-width:74px}
-html body #board .bv2-t b{font:700 18px/1 var(--jn-font,system-ui,sans-serif);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-html body #board .bv2-t small{font:600 11.5px/1 var(--jn-font,system-ui,sans-serif);color:#566870;font-variant-numeric:tabular-nums}
-html body #board .bv2-t small.r{color:#bd3622}html body #board .bv2-t small.a{color:#965a00}
+html body #board .bv2-tl{flex:none;display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:56px;margin-left:11px}
+html body #board .bv2-tl b{font:700 19px/1 var(--jn-font,system-ui,sans-serif);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+html body #board .bv2-tl small{font:600 11.5px/1 var(--jn-font,system-ui,sans-serif);color:#566870;font-variant-numeric:tabular-nums}
+html body #board .bv2-tl small.r{color:#bd3622}html body #board .bv2-tl small.a{color:#965a00}
+html body #board .bv2-rt{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:6px;min-width:70px}
 html body #board .bv2-pill{font:650 11px/1 var(--jn-font,system-ui,sans-serif);padding:4px 8px;border-radius:999px;white-space:nowrap;background:#eef2f4;color:#5b6d76}
 html body #board .bv2-pill.g{background:#e6f4ec;color:#177a4d}html body #board .bv2-pill.a{background:#fcefd9;color:#9a5b00}html body #board .bv2-pill.r{background:#fbe9e5;color:#bd3622}html body #board .bv2-pill.b{background:#e6effc;color:#1d56b8}
-html body #board .bv2-gate{flex:none;text-align:right;min-width:42px;border-left:2px solid #e1e7ea;padding-left:10px}
-html body #board .bv2-gate small{display:block;font:600 10.5px/1 var(--jn-font,system-ui,sans-serif);color:#566870;letter-spacing:.05em;margin-bottom:3px}
-html body #board .bv2-gate b{font:700 18px/1 var(--jn-font,system-ui,sans-serif)}
+html body #board .bv2-gate{display:flex;align-items:baseline;gap:5px;min-width:0;border:0;padding:0;text-align:right}
+html body #board .bv2-gate small{display:inline;font:600 11px/1 var(--jn-font,system-ui,sans-serif);color:#566870;letter-spacing:.04em;margin:0}
+html body #board .bv2-gate b{font:700 16px/1 var(--jn-font,system-ui,sans-serif)}
 html body #board #bList .bv2-now{display:flex;align-items:center;gap:8px;padding:7px 16px;background:#fff;font:750 11px/1 var(--jn-font,system-ui,sans-serif);letter-spacing:.1em;color:#cc3d27}
 html body #board #bList .bv2-now::before,html body #board #bList .bv2-now::after{content:"";height:2px;background:#cc3d27;border-radius:1px;flex:1}html body #board #bList .bv2-now::before{flex:0 0 14px}
 html body #board #bF #v46-board-summary{display:contents}
