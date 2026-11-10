@@ -5331,9 +5331,9 @@ let fxOn=false,fxMode='dep',fxAlt='dep',fxPage=0,fxPaused=false,fxTick=0,fxPageT
 const fxEsc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function fxEl(){let el=document.getElementById('fids');if(el)return el;
  el=document.createElement('div');el.id='fids';el.setAttribute('role','region');el.setAttribute('aria-label','Flight display');el.hidden=true;
- el.innerHTML='<div class="fx-head"><div class="fx-ttl"><div class="fx-brand"><i></i><b>JAKARTA NORTHSHORE</b><span>SIM</span></div><h1 id="fxT">Departures</h1><p id="fxS">All terminals · simulated operations</p></div><div class="fx-clk" id="fxClk">--:--</div></div>'+
-  '<div class="fx-cols" aria-hidden="true"><span>Time</span><span></span><span>Destination</span><span class="fx-c3">Flight</span><span>Gate</span><span>Status</span></div><div class="fx-body" id="fxBody" aria-live="off"></div>'+
-  '<div class="fx-foot"><span id="fxPg"></span><span class="fx-dots" id="fxDots"></span><span id="fxCnt"></span></div>'+
+ el.innerHTML='<div class="fx-head"><div class="fx-ttl"><div class="fx-brand">JAKARTA NORTHSHORE<span>Simulated operations</span></div><h1 id="fxT">Departures</h1></div><div class="fx-clkw"><div class="fx-clk" id="fxClk">--:--</div><div class="fx-date" id="fxDate"></div></div></div>'+
+  '<div class="fx-cols" aria-hidden="true"><span>Time</span><span>Destination</span><span class="fx-c3">Flight</span><span class="fx-c4">Gate</span><span>Status</span></div><div class="fx-body" id="fxBody" aria-live="off"></div>'+
+  '<div class="fx-foot"><span id="fxPg"></span><span id="fxCnt"></span></div>'+
   '<div class="fx-tools" id="fxTools"><div class="fx-seg" role="radiogroup" aria-label="Show"><button data-m="dep" role="radio">Departures</button><button data-m="arr" role="radio">Arrivals</button><button data-m="both" role="radio">Both</button></div>'+
   '<button id="fxPause" aria-label="Pause paging" title="Pause paging"></button><button id="fxFull" aria-label="Full screen" title="Full screen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button id="fxX" aria-label="Exit display mode" title="Exit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></button></div>';
  document.body.appendChild(el);
@@ -5366,13 +5366,16 @@ function fxRender(force){
   const label=x.tier==='late'?'Delayed':x.st;
   const note=x.done?(x.at!=null?fmt(x.at):''):(x.tier!=='ok'?'now '+fmt(t+x.late*60):'');
   const sub=x.done?'':(x.tier!=='ok'?'<small class="'+(x.tier==='late'?'r':'a')+'">exp '+fmt(t+x.late*60)+'</small>':'');
-  return '<div class="fx-row"><span class="fx-rail '+rail+'"></span><span class="fx-t"><b>'+fmt(t)+'</b>'+sub+'</span><span class="fx-lg">'+airlineLogo(f.c,'')+'</span><span class="fx-d"><span class="fx-d1"><b>'+fxEsc(city)+'</b>'+(code?'<i>'+fxEsc(code)+'</i>':'')+'</span><em class="fx-n">'+fxEsc(f.id)+' · '+fxEsc(NAME[f.c]||f.c)+(term==='Remote'?'':' · '+fxEsc(term)+' '+fxEsc(e.stand.id))+'</em></span><span class="fx-f fx-c3">'+fxEsc(f.id)+'<i>·</i>'+fxEsc(NAME[f.c]||f.c)+'</span><span class="fx-g"><small>'+fxEsc(term)+'</small><b>'+fxEsc(e.stand.id)+'</b></span><span class="fx-s '+col+'"><i></i><b>'+fxEsc(label)+'</b>'+(note?'<small>'+fxEsc(note)+'</small>':'')+'</span></div>'}).join('')||'<div class="fx-empty">No flights in this window.</div>';
+  const st=x.tier==='late'?'is-late':(x.tier==='warn'?'is-warn':(x.done?'is-done':(x.boarding?'is-go':'')));
+  const tm=x.tier!=='ok'&&!x.done?'<s>'+fmt(t)+'</s><b>'+fmt(t+x.late*60)+'</b>':'<b>'+fmt(t)+'</b>';
+  const lg='<span class="fx-lg">'+airlineLogo(f.c,'')+'</span>';
+  return '<div class="fx-row '+st+'"><span class="fx-t">'+tm+'</span><span class="fx-d"><span class="fx-d1"><b>'+fxEsc(city)+'</b>'+(code?'<i>'+fxEsc(code)+'</i>':'')+'</span><em class="fx-n">'+lg+fxEsc(f.id)+'<u>'+fxEsc(term)+' '+fxEsc(e.stand.id)+'</u></em></span><span class="fx-f fx-c3">'+lg+'<span><b>'+fxEsc(f.id)+'</b><small>'+fxEsc(NAME[f.c]||f.c)+'</small></span></span><span class="fx-g fx-c4"><small>'+fxEsc(term)+'</small><b>'+fxEsc(e.stand.id)+'</b></span><span class="fx-s"><b>'+fxEsc(label)+'</b></span></div>'
+ }).join('')||'<div class="fx-empty">No flights in this window.</div>';
  if(force||body._h!==html){body._h=html;body.innerHTML=html}
  el.querySelector('#fxPg').textContent='Page '+(fxPage+1)+' of '+pages+(fxPaused?' · paused':' · next in '+Math.max(0,Math.ceil(8-(performance.now()-fxPageT)/1000))+' s');
- el.querySelector('#fxDots').innerHTML=Array.from({length:Math.min(pages,12)},(_,i)=>'<i'+(i===fxPage?' class="on"':'')+'></i>').join('');
  el.querySelector('#fxCnt').textContent=fxRows.length+' flights ahead · '+late+' delayed'}
 function fxLoop(){if(!fxOn)return;const now=performance.now();
- const d=new Date(),h=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(d);document.getElementById('fxClk').textContent=h;
+ const d=new Date(),h=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(d);document.getElementById('fxClk').textContent=h;const dt=document.getElementById('fxDate');if(dt)dt.textContent=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',weekday:'long',day:'numeric',month:'long'}).format(d);
  if(!fxPaused&&now-fxPageT>8000){fxPageT=now;const pages=Math.max(1,Math.ceil(fxRows.length/fxN));fxPage++;if(fxPage>=pages){fxPage=0;if(fxMode==='both')fxAlt=fxAlt==='dep'?'arr':'dep'}
   const b=document.getElementById('fxBody');b.classList.add('swap');setTimeout(()=>b.classList.remove('swap'),260);fxRender(true)}
  else if(now-fxTick>1000){fxTick=now;fxRender(false)}
@@ -8448,54 +8451,63 @@ html body #board #bNow{position:absolute;right:14px;bottom:16px;display:none;ali
 html body #board #bNow svg{width:16px;height:16px}
 </style>
 <style id="jn-display">
-/* Display mode: the board in our light theme, scaled for a spare screen */
-#fids{--u:clamp(13px,2.1vh,26px);position:fixed;inset:0;z-index:2147483000;background:#fff;color:#19272d;font-family:var(--jn-font,"Geist","Inter",-apple-system,"Segoe UI",sans-serif);font-size:var(--u);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
-#fids[hidden]{display:none}
-#fids *{font-family:inherit}
-#fids .fx-head{display:flex;align-items:flex-end;justify-content:space-between;gap:1em;padding:1.1em 1.6em .9em;border-bottom:1px solid var(--jn-edge,#dce2e0);background:#fff}
-#fids .fx-brand{display:flex;align-items:center;gap:.6em;font-size:.62em;font-weight:700;letter-spacing:.1em;color:#33505e}
-#fids .fx-brand i{width:.7em;height:.7em;border-radius:50%;background:#26775d}#fids .fx-brand span{background:#e3f1f4;color:#136477;padding:.25em .55em;border-radius:.4em;font-size:.9em}
-#fids h1{margin:.35em 0 0;font-size:1.9em;font-weight:650;letter-spacing:-.02em;line-height:1}
-#fids .fx-ttl p{margin:.45em 0 0;color:#566870;font-size:.7em}
-#fids .fx-clk{font-family:"Geist Mono","SFMono-Regular",Menlo,monospace;font-size:2.6em;font-weight:600;letter-spacing:.02em;line-height:1;color:#19272d}
-#fids .fx-cols,#fids .fx-row{display:grid;grid-template-columns:calc(var(--u)*5.6) calc(var(--u)*3.4) minmax(0,1fr) calc(var(--u)*13) calc(var(--u)*6.4) calc(var(--u)*12);gap:calc(var(--u)*.9);align-items:center;padding:0 calc(var(--u)*1.6) 0 calc(var(--u)*1.9)}
-#fids .fx-cols{height:2.4em;color:#566870;font-size:.62em;letter-spacing:.12em;text-transform:uppercase;font-weight:650;background:#f5f7f8;border-bottom:1px solid var(--jn-edge,#dce2e0)}
+/* Display mode: typography-led, hairlines instead of boxes, colour only where something needs attention */
+#fids{--u:clamp(13px,2.1vh,26px);--ink:#0f1c24;--mute:#66767f;--line:#e3e8eb;--teal:#136477;--red:#c23a22;--amber:#9a5b00;
+ position:fixed;inset:0;z-index:2147483000;background:#fff;color:var(--ink);font-family:var(--jn-font,"Geist","Inter",-apple-system,"Segoe UI",sans-serif);font-size:var(--u);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;font-feature-settings:"tnum" 1}
+#fids[hidden]{display:none}#fids *{font-family:inherit;box-sizing:border-box}
+#fids .mono,#fids .fx-t b,#fids .fx-t s,#fids .fx-clk,#fids .fx-g b,#fids .fx-f b{font-family:"Geist Mono","SFMono-Regular",Menlo,Consolas,monospace}
+#fids .fx-head{display:flex;align-items:flex-end;justify-content:space-between;gap:1em;padding:calc(var(--u)*1.5) calc(var(--u)*2.2) calc(var(--u)*.9)}
+#fids .fx-brand{font-size:.58em;font-weight:600;letter-spacing:.2em;color:var(--mute);display:flex;gap:1.2em;align-items:baseline}
+#fids .fx-brand span{letter-spacing:.04em;font-weight:500;text-transform:none;font-size:1.05em}
+#fids h1{margin:.28em 0 0;font-size:2.3em;font-weight:600;letter-spacing:-.03em;line-height:1}
+#fids .fx-clkw{text-align:right}
+#fids .fx-clk{font-size:2.6em;font-weight:500;letter-spacing:-.02em;line-height:1}
+#fids .fx-date{margin-top:.5em;font-size:.62em;color:var(--mute);letter-spacing:.04em}
+#fids .fx-cols,#fids .fx-row{display:grid;grid-template-columns:calc(var(--u)*7) minmax(0,1fr) calc(var(--u)*14) calc(var(--u)*6) calc(var(--u)*9);column-gap:calc(var(--u)*1.2);align-items:center;padding:0 calc(var(--u)*2.2)}
+#fids .fx-cols{height:2.6em;font-size:.56em;letter-spacing:.18em;text-transform:uppercase;font-weight:600;color:var(--mute);border-top:1.5px solid var(--ink);border-bottom:1px solid var(--line)}
+#fids .fx-cols span:last-child,#fids .fx-s{text-align:right;justify-self:end}
 #fids .fx-body{flex:1;min-height:0;overflow:hidden;transition:opacity .26s ease}#fids .fx-body.swap{opacity:0}
-#fids .fx-row{height:var(--rh,56px);border-bottom:1px solid #edf1f3;position:relative}
-#fids .fx-row:nth-child(even){background:#f9fbfb}
-#fids .fx-rail{position:absolute;left:0;top:0;bottom:0;width:.32em;background:#c7d1d6}
-#fids .fx-rail.g{background:#2a9a66}#fids .fx-rail.a{background:#e29a0b}#fids .fx-rail.r{background:#d4482f}#fids .fx-rail.b{background:#2f6fe0}
-#fids .fx-t{display:flex;flex-direction:column;gap:.15em}
-#fids .fx-t b{font-family:"Geist Mono","SFMono-Regular",Menlo,monospace;font-size:1.35em;font-weight:600;letter-spacing:-.01em;line-height:1}
-#fids .fx-t small{font-size:.62em;font-weight:650;font-family:"Geist Mono","SFMono-Regular",Menlo,monospace}#fids .fx-t small.r{color:#bd3622}#fids .fx-t small.a{color:#965a00}
-#fids .fx-lg .airline-logo{width:2.5em;height:2.5em;border-radius:.65em}
-#fids .fx-d{display:block;min-width:0;white-space:nowrap;overflow:hidden}#fids .fx-d1{display:flex;align-items:baseline;gap:.5em;min-width:0}
-#fids .fx-d b{font-size:1.28em;font-weight:650;letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis}
-#fids .fx-d i{font-style:normal;font-size:.62em;font-weight:650;color:#566870;letter-spacing:.06em}
-#fids .fx-n{display:none;font-style:normal;font-size:.7em;color:#566870;margin-top:.25em;overflow:hidden;text-overflow:ellipsis}
-#fids .fx-f{font-size:.78em;color:#566870;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#fids .fx-f i{font-style:normal;margin:0 .4em;color:#9aa7ae}
-#fids .fx-g{display:flex;align-items:baseline;gap:.4em}#fids .fx-g small{font-size:.62em;font-weight:650;color:#566870;letter-spacing:.05em}#fids .fx-g b{font-size:1.2em;font-weight:650}
-#fids .fx-s{display:flex;align-items:center;gap:.5em;min-width:0}#fids .fx-s i{width:.7em;height:.7em;border-radius:50%;flex:none;background:#8a97a3}
-#fids .fx-s b{font-size:.95em;font-weight:650;white-space:nowrap}#fids .fx-s small{font-size:.7em;color:#566870;font-weight:600;white-space:nowrap;font-family:"Geist Mono","SFMono-Regular",Menlo,monospace}
-#fids .fx-s.g{color:#177a4d}#fids .fx-s.g i{background:#2a9a66}#fids .fx-s.b{color:#1d56b8}#fids .fx-s.b i{background:#2f6fe0}#fids .fx-s.r{color:#bd3622}#fids .fx-s.r i{background:#d4482f}#fids .fx-s.m{color:#566870}
-#fids .fx-empty{padding:3em;text-align:center;color:#566870;font-size:1.1em}
-#fids .fx-foot{display:flex;align-items:center;justify-content:space-between;gap:1em;padding:.7em 1.6em;border-top:1px solid var(--jn-edge,#dce2e0);background:#f5f7f8;color:#566870;font-size:.68em}
-#fids .fx-dots{display:flex;gap:.5em}#fids .fx-dots i{width:.6em;height:.6em;border-radius:50%;background:#cbd5da}#fids .fx-dots i.on{background:#136477}
-#fids .fx-tools{position:absolute;top:.8em;right:.8em;display:flex;gap:.5em;align-items:center;opacity:0;pointer-events:none;transition:opacity .2s;z-index:3}
+#fids .fx-row{height:var(--rh,56px);border-bottom:1px solid var(--line)}
+#fids .fx-t{display:flex;flex-direction:column;gap:.18em;line-height:1}
+#fids .fx-t b{font-size:1.5em;font-weight:500;letter-spacing:-.02em}
+#fids .fx-t s{font-size:.78em;color:var(--mute);text-decoration-thickness:1px;font-weight:400}
+#fids .fx-d{min-width:0;overflow:hidden}#fids .fx-d1{display:flex;align-items:baseline;gap:.6em;min-width:0}
+#fids .fx-d b{font-size:1.45em;font-weight:500;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fids .fx-d i{font-style:normal;font-size:.6em;font-weight:500;letter-spacing:.14em;color:var(--mute)}
+#fids .fx-n{display:none}
+#fids .fx-f{display:flex;align-items:center;gap:.8em;min-width:0}
+#fids .fx-f span:last-child{display:flex;flex-direction:column;gap:.15em;min-width:0}
+#fids .fx-f b{font-size:.92em;font-weight:500;letter-spacing:-.01em}
+#fids .fx-f small{font-size:.66em;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fids .fx-lg .airline-logo{width:1.9em;height:1.9em;border-radius:.4em;border:0;background:transparent;flex:none}
+#fids .fx-lg .airline-logo img{padding:0}
+#fids .fx-lg .airline-logo .fallback{background:#e9eef0!important;color:#33505e!important;font-weight:700;font-size:.55em}#fids .fx-lg .airline-logo .fallback svg{filter:grayscale(1);opacity:.7}
+#fids .fx-g{display:flex;align-items:baseline;gap:.5em}#fids .fx-g small{font-size:.58em;letter-spacing:.14em;color:var(--mute);font-weight:600}
+#fids .fx-g b{font-size:1.15em;font-weight:500}
+#fids .fx-s b{font-size:.98em;font-weight:500;color:var(--mute);letter-spacing:-.005em}
+#fids .fx-row.is-go .fx-s b{color:var(--teal);font-weight:650}
+#fids .fx-row.is-warn .fx-s b{color:var(--amber);font-weight:650}
+#fids .fx-row.is-late .fx-s b{color:var(--red);font-weight:650}#fids .fx-row.is-late .fx-t b{color:var(--red)}
+#fids .fx-row.is-done{color:var(--mute)}#fids .fx-row.is-done .fx-d b,#fids .fx-row.is-done .fx-t b,#fids .fx-row.is-done .fx-g b,#fids .fx-row.is-done .fx-f b{color:var(--mute)}
+#fids .fx-empty{padding:3em;text-align:center;color:var(--mute);font-size:1.1em}
+#fids .fx-foot{display:flex;align-items:center;justify-content:space-between;gap:1em;padding:.9em calc(var(--u)*2.2);font-size:.6em;letter-spacing:.08em;color:var(--mute);border-top:1px solid var(--line);font-family:"Geist Mono","SFMono-Regular",Menlo,monospace}
+#fids .fx-tools{position:absolute;bottom:calc(var(--u)*3.6);left:50%;transform:translateX(-50%);display:flex;gap:.2em;align-items:center;opacity:0;pointer-events:none;transition:opacity .2s;z-index:3;background:rgba(255,255,255,.94);padding:.25em;border-radius:.7em;box-shadow:0 0 0 1px var(--line)}
 #fids.tools .fx-tools{opacity:1;pointer-events:auto}
-#fids .fx-tools button{font-size:.62em;height:2.9em;min-width:2.9em;border-radius:999px;border:1px solid #cfd8de;background:#fff;color:#19272d;display:grid;place-items:center;padding:0 1em;font-weight:650;cursor:pointer;box-shadow:0 2px 8px rgba(16,31,38,.1)}
-#fids .fx-tools button svg{width:1.45em;height:1.45em}#fids .fx-tools #fxPause,#fids .fx-tools #fxFull,#fids .fx-tools #fxX{padding:0}
-#fids .fx-seg{display:flex;background:#eef2f4;border-radius:999px;padding:.25em;gap:.15em}#fids .fx-seg button{border:0;box-shadow:none;background:none;height:2.5em;color:#566870}#fids .fx-seg button[aria-checked=true]{background:#fff;color:#19272d;box-shadow:0 1px 4px rgba(16,31,38,.18)}
+#fids .fx-tools button{font-size:.62em;height:2.7em;min-width:2.7em;border:0;background:none;color:var(--ink);display:grid;place-items:center;padding:0 .9em;font-weight:550;cursor:pointer;border-radius:.6em}
+#fids .fx-tools button:hover{background:#f0f3f5}#fids .fx-tools button svg{width:1.5em;height:1.5em}#fids .fx-tools #fxPause,#fids .fx-tools #fxFull,#fids .fx-tools #fxX{padding:0}
+#fids .fx-seg{display:flex;gap:.1em;margin-right:.3em}#fids .fx-seg button{color:var(--mute);border-radius:.5em}#fids .fx-seg button[aria-checked=true]{color:var(--ink);background:#eef2f4;font-weight:650}
 @media(max-width:760px){
- #fids{--u:clamp(12px,1.75vh,16px)}
- #fids .fx-cols,#fids .fx-row{grid-template-columns:calc(var(--u)*4.4) calc(var(--u)*2.9) minmax(0,1fr) calc(var(--u)*6.2);gap:calc(var(--u)*.75);padding:0 calc(var(--u)*.9) 0 calc(var(--u)*1.2)}
- #fids .fx-cols .fx-c3,#fids .fx-row .fx-c3{display:none}#fids .fx-cols span:nth-child(5){display:none}
- #fids .fx-row .fx-g{display:none}#fids .fx-n{display:block}
- #fids .fx-d b{font-size:1.2em}
- #fids .fx-s{flex-direction:column;align-items:flex-start;gap:.15em}#fids .fx-s i{display:none}
- #fids .fx-head{padding:1em 1.1em .8em}#fids .fx-clk{font-size:2.2em}
- #fids .fx-cnt,#fids #fxCnt{display:none}
- #fids .fx-tools{right:.5em;top:.5em}#fids .fx-seg button{padding:0 .7em}
+ #fids{--u:clamp(12px,1.7vh,15.5px)}
+ #fids .fx-cols,#fids .fx-row{grid-template-columns:calc(var(--u)*4.6) minmax(0,1fr) calc(var(--u)*6.6);column-gap:calc(var(--u)*.9);padding:0 calc(var(--u)*1.3)}
+ #fids .fx-cols .fx-c3,#fids .fx-row .fx-c3,#fids .fx-cols .fx-c4,#fids .fx-row .fx-c4{display:none}
+ #fids .fx-n{display:flex;align-items:center;gap:.5em;margin-top:.35em;font-style:normal;font-size:.72em;color:var(--mute);white-space:nowrap}
+ #fids .fx-n .airline-logo{width:1.6em;height:1.6em}#fids .fx-n u{text-decoration:none;margin-left:.3em;color:var(--ink);font-weight:550}
+ #fids .fx-row.is-done .fx-n u{color:var(--mute)}
+ #fids .fx-d b{font-size:1.3em}#fids .fx-t b{font-size:1.3em}
+ #fids .fx-head{padding:calc(var(--u)*1.2) calc(var(--u)*1.3) .7em}#fids h1{font-size:2em}#fids .fx-clk{font-size:2.1em}
+ #fids .fx-brand span{display:none}
+ #fids #fxCnt{display:none}
+ #fids .fx-tools{bottom:calc(var(--u)*3.4)}
 }
 #bDisp{width:36px;height:36px;border-radius:50%;border:0;background:#eef2f4;color:#33505e;display:grid;place-items:center;cursor:pointer;flex:none}#bDisp svg{width:19px;height:19px}
 </style>
