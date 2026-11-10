@@ -30,15 +30,38 @@ function runwayEnds(city){const p=TERMINALS[city]||TERMINALS[String(city).split(
  return p.runways.flatMap(r=>[['le',r.le],['he',r.he]].map(([side,e])=>({runway:r.id,end:e.id,side,point:[e.lat,e.lon],heading:e.heading})));}
 /* Generated terminal legs deliberately remain labelled as simulated geometry.
    The supplied runway thresholds/headings are factual; these are not published procedures. */
-function terminalLeg(city,dir,route){const ends=runwayEnds(city);if(!ends.length)return null;
- const course=dir==='out'?bearingDeg(route.at(-2),route.at(-1)):bearingDeg(route[0],route[1]);
+/* Simple SID / STAR at the destination (simulated, not published procedures). Arrival: a STAR of up to three fixes (IAF, IF, final fix) that bends from the last en-route fix onto the runway centreline, then the threshold. Departure: the runway, a climb-out fix, then up to two SID fixes that bend toward the first en-route fix. Airports without runway data get a straight-in runway aligned with the route. */
+const signed=d=>((d%360)+540)%360-180;
+function synthEnds(route,dir,city){
+ const c=air[city]||air[String(city).split(' / ')[0].trim()];if(!c)return [];
+ const p=dir==='out'?route.at(-1):route[0],e=dir==='out'?route.at(-2):route[1],course=bearingDeg(dir==='out'?e:p,dir==='out'?p:e),mk=h=>{const id=String(Math.round(h/10)||36).padStart(2,'0');return {id,h}};
+ const h1=(Math.round(course/10)*10+360)%360,h2=(h1+180)%360;
+ return [[h1,atBearing([c[0],c[1]],(h1+180)%360,1.6)],[h2,atBearing([c[0],c[1]],(h2+180)%360,1.6)]].map(([h,pt],i)=>({runway:mk(h).id+'/'+mk(h2).id,end:mk(h).id+'S',side:i?'he':'le',point:pt,heading:h}));
+}
+function terminalLeg(city,dir,route){let ends=runwayEnds(city);if(!ends.length)ends=synthEnds(route,dir,city);if(!ends.length)return null;
+ const out=dir==='out',E=out?route.at(-2):route[1];
+ const course=out?bearingDeg(route.at(-2),route.at(-1)):bearingDeg(route[0],route[1]);
  const end=ends.slice().sort((a,b)=>angle(a.heading,course)-angle(b.heading,course)||a.runway.localeCompare(b.runway))[0];
- if(dir==='out'){
-  const final=atBearing(end.point,(end.heading+180)%360,28);
-  return {end,points:[[...final,'TERM-ARR-'+end.end],[...end.point,'RWY-'+end.end]]};
+ const thr=end.point,h=end.heading,distE=gc(thr,E);
+ const clamp=(v,m)=>Math.max(-m,Math.min(m,v));
+ const clear=pts=>{for(let i=1;i<pts.length;i++)if(!edgeOK(pts[i-1],pts[i]))return false;return true};
+ if(out){
+  const back=(h+180)%360,delta=clamp(signed(bearingDeg(thr,E)-back),90);
+  const faf=[...atBearing(thr,back,22),'TERM-ARR-'+end.end];
+  const simple={end,points:[[...atBearing(thr,back,28),'TERM-ARR-'+end.end],[...thr,'RWY-'+end.end]]};
+  if(distE<75)return simple;                                          // last en-route fix is too close for a STAR
+  const iaf=[...atBearing(thr,(back+clamp(delta*0.65,45)+360)%360,58),'TERM-IAF-'+end.end],inf=[...atBearing(thr,(back+clamp(delta*0.3,20)+360)%360,40),'TERM-IF-'+end.end];
+  const pts=[iaf,inf,faf,[...thr,'RWY-'+end.end]];
+  const seq=[E,...pts];if(!clear(seq)||geometry.turnAngle(E,iaf,inf)>65||geometry.turnAngle(iaf,inf,faf)>50)return simple;
+  return {end,points:pts};
  }
- const climb=atBearing(end.point,end.heading,18);
- return {end,points:[[...end.point,'RWY-'+end.end],[...climb,'TERM-DEP-'+end.end]]};
+ const climb=[...atBearing(thr,h,18),'TERM-DEP-'+end.end],simple={end,points:[[...thr,'RWY-'+end.end],climb]};
+ if(distE<90)return simple;
+ const delta=clamp(signed(bearingDeg(thr,E)-h),90);
+ const s1=[...atBearing(thr,(h+clamp(delta*0.3,25)+360)%360,42),'TERM-SID1-'+end.end],s2=[...atBearing(thr,(h+clamp(delta*0.7,55)+360)%360,68),'TERM-SID2-'+end.end];
+ const pts=[[...thr,'RWY-'+end.end],climb,s1,s2];
+ const seq=[...pts,E];if(!clear(seq)||geometry.turnAngle(climb,s1,s2)>50||geometry.turnAngle(s1,s2,E)>65)return simple;
+ return {end,points:pts};
 }
 /* Check geodesic segments against polygon boundaries, not isolated samples. */
 const exclusion=geometry.exclusions(AVOID),bad=(la,lo)=>exclusion.bad([la,lo]);
