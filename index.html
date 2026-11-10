@@ -8348,6 +8348,8 @@ html body #card .wc-tele small{display:block;font:500 11px/1.2 var(--jn-font,sys
 html body #card .wc-tele b{font:650 15px/1.1 var(--jn-font,system-ui,sans-serif);color:#19272d;white-space:nowrap}
 </style>
 <style id="jn-board-v2">
+/* the board uses the same typeface as the cards and the rest of the app (an older layer forced Barlow on it) */
+html body #board,html body #board *,html body #board button,html body #board input{font-family:var(--jn-font,"Geist","Inter",-apple-system,"Segoe UI",sans-serif)!important}
 /* Flight board v2: logo-led rows with a status rail, a NOW line, status counts and a Now button */
 html body #board #bList .bv2-row{display:flex;align-items:center;gap:12px;width:100%;padding:11px 16px 11px 0;background:#fff;color:var(--jn-ink,#19272d);border:0;border-bottom:1px solid var(--jn-edge,#e3e9ec);text-align:left;font:inherit;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent}
 html body #board #bList .bv2-row:active{background:#f4f7f8}
