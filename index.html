@@ -7832,7 +7832,7 @@ function renderCard(){const l=sel;if(!l)return;const now=nowAbs(),m=M(),city=Str
     tlDep=ft&&ft.atd!=null?'Departed':(now>=l.off?'Departs (est.)':'Scheduled'),
     depTag=ft&&ft.atd!=null&&dd>5?' <i class="wc-d '+(dd>=15?'late':'warn')+'">+'+dd+'</i>':'',
     tlArr=landed?'Arrived':(live||ft?.eta!=null||l.eta!=null?'Arrives':'Scheduled'),
-    arrTag=ad>5?' <i class="wc-d '+(ad>=15?'late':'warn')+'">+'+ad+'</i>':((live||done)?' <i class="wc-d ok">on time</i>':'');
+    arrTag=ad>5?'<i class="wc-d '+(ad>=15?'late':'warn')+'">+'+ad+'</i> ':((live||done)?'<i class="wc-d ok">on time</i> ':'');
   const nm=(typeof NAME!=='undefined'&&NAME[l.c])||l.c,logo=typeof airlineLogo==='function'?airlineLogo(l.c,'sm'):'',lt=(abs,c)=>local(abs,c);
   const altS=live?(alt>=11000?'FL'+String(Math.round(alt/100)).padStart(3,'0'):alt<10?'Ground':(Math.round(alt/50)*50).toLocaleString('en')+' ft'):'—';
   const fid=esc(l.id),route=oK+' → '+dK,rwx=rwInfo(l);
@@ -7840,7 +7840,7 @@ function renderCard(){const l=sel;if(!l)return;const now=nowAbs(),m=M(),city=Str
   const body='<div class="jc-top"><div class="jc-id">'+logo+'<div><b>'+fid+'</b><span>'+esc(nm)+' · '+esc(ft?.ac||l.ac||'')+(reg?' · <a class="v73-regl" href="#/aircraft/'+esc(reg)+'">'+esc(reg)+' ›</a>':'')+'</span><a class="v181-fl v181-cardlink" href="#/flight/'+fid.replace(' ','')+'">Flight history ›</a></div></div></div>'+
    '<div class="jc-route"><div><b>'+esc(oC)+'</b><span>'+esc(oK||'')+'</span></div><div class="jc-arrow"><i style="width:'+pct+'%"></i><u style="left:'+pct+'%">✈</u></div><div class="r"><b>'+esc(dC)+'</b><span>'+esc(dK||'')+'</span></div></div>'+
    '<div class="wc-status"><span class="jb-s2 '+tone+'"><i></i>'+esc(state)+'</span>'+delayPill+'</div>'+
-   '<div class="wc-tl"><div class="wc-l"><small>'+esc(oK||oC)+' · '+tlDep+'</small><b>'+lt(depAbs,oC)+depTag+'</b></div>'+(live?'<div class="wc-c"><small>to go</small><b>'+(eta>now?Math.floor(remain/60)+'h '+String(remain%60).padStart(2,'0')+'m':'—')+'</b></div>':'')+'<div class="wc-r"><small>'+esc(dK||dC)+' · '+tlArr+'</small><b>'+lt(eta,dC)+arrTag+'</b></div></div>'+
+   '<div class="wc-tl"><div class="wc-l"><small>'+esc(oK||oC)+' · '+tlDep+'</small><b>'+lt(depAbs,oC)+depTag+'</b></div>'+(live?'<div class="wc-c"><small>to go</small><b>'+(eta>now?Math.floor(remain/60)+'h '+String(remain%60).padStart(2,'0')+'m':'—')+'</b></div>':'')+'<div class="wc-r"><small>'+esc(dK||dC)+' · '+tlArr+'</small><b>'+arrTag+lt(eta,dC)+'</b></div></div>'+
    '<div class="wc-tele">'+(live?'<div><small>Altitude</small><b>'+esc(altS)+'</b></div><div><small>Speed</small><b>'+(gs?gs+' kt':'—')+'</b></div><div><small>Heading</small><b>'+String(Math.round(selHd)).padStart(3,'0')+'°</b></div>':'')+(rwx?'<div><small>Runway '+esc((jk?dK:oK)||'')+'</small><b>'+esc(rwx.rwy)+'</b></div><div><small>Wind</small><b>'+String(rwx.wind.dir).padStart(3,'0')+'°/'+rwx.wind.spd+'</b></div>':'')+'</div>'+
    '<div class="jc-foot"><button id="cFol" class="'+(fol?'on':'')+'">'+(fol?'Following aircraft':'Follow aircraft')+'</button></div>';
   const hx=(cardExp?'E':'S')+(cardExp?body:strip);
