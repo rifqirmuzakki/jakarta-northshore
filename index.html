@@ -7828,17 +7828,20 @@ function renderCard(){const l=sel;if(!l)return;const now=nowAbs(),m=M(),city=Str
   const dd=ft&&ft.atd!=null?Math.round(ft.atd-l.std):0,depTxt=ft&&ft.atd!=null?(dd>5?'<span class="'+(dd>=15?'jc-late':'jc-warn')+'">Departed +'+dd+' min</span>':'<span class="jc-ok">Departed on time</span>'):'',
     etaTxt=ad>5?'<span class="'+(ad>=15?'jc-late':'jc-warn')+'">'+(done?'Arrived':'Arriving')+' +'+ad+' min late</span>':((live||done)?'<span class="jc-ok">'+(done?'Arrived on time':'Arriving on time')+'</span>':''),
     perf=depTxt+etaTxt;
+  const delayPill=ft&&ft.atd!=null?(dd>5?'<span class="wc-pill '+(dd>=15?'late':'warn')+'">Delayed '+dd+' min</span>':'<span class="wc-pill ok">Departed on time</span>'):(l.dly>=15?'<span class="wc-pill late">Delayed +'+Math.round(l.dly)+' min</span>':''),
+    tlDep=ft&&ft.atd!=null?'Departed':(now>=l.off?'Departs (est.)':'Scheduled'),
+    depTag=ft&&ft.atd!=null&&dd>5?' <i class="wc-d '+(dd>=15?'late':'warn')+'">+'+dd+'</i>':'',
+    tlArr=landed?'Arrived':(live||ft?.eta!=null||l.eta!=null?'Arrives':'Scheduled'),
+    arrTag=ad>5?' <i class="wc-d '+(ad>=15?'late':'warn')+'">+'+ad+'</i>':((live||done)?' <i class="wc-d ok">on time</i>':'');
   const nm=(typeof NAME!=='undefined'&&NAME[l.c])||l.c,logo=typeof airlineLogo==='function'?airlineLogo(l.c,'sm'):'',lt=(abs,c)=>local(abs,c);
   const altS=live?(alt>=11000?'FL'+String(Math.round(alt/100)).padStart(3,'0'):alt<10?'Ground':(Math.round(alt/50)*50).toLocaleString('en')+' ft'):'—';
   const fid=esc(l.id),route=oK+' → '+dK,rwx=rwInfo(l);
   const strip='<div class="v7-grab" aria-hidden="true"></div><div class="v7-strip" role="button" tabindex="0" aria-label="Expand flight details">'+logo+'<div class="js-id"><b>'+fid+'</b><span>'+esc(route)+'</span></div><span class="jb-s2 '+tone+'"><i></i>'+esc(state)+'</span><span class="js-gate">'+esc(altS)+'</span><span class="v7-chevron">⌃</span></div>';
   const body='<div class="jc-top"><div class="jc-id">'+logo+'<div><b>'+fid+'</b><span>'+esc(nm)+' · '+esc(ft?.ac||l.ac||'')+(reg?' · <a class="v73-regl" href="#/aircraft/'+esc(reg)+'">'+esc(reg)+' ›</a>':'')+'</span><a class="v181-fl v181-cardlink" href="#/flight/'+fid.replace(' ','')+'">Flight history ›</a></div></div></div>'+
    '<div class="jc-route"><div><b>'+esc(oC)+'</b><span>'+esc(oK||'')+'</span></div><div class="jc-arrow"><i style="width:'+pct+'%"></i><u style="left:'+pct+'%">✈</u></div><div class="r"><b>'+esc(dC)+'</b><span>'+esc(dK||'')+'</span></div></div>'+
-   '<div class="wc-head"><span class="jb-s2 '+tone+'"><i></i>'+esc(state)+'</span>'+(l.z?'<span class="wc-zone '+(l.z==='D'?'d':'i')+'">'+(l.z==='D'?'Domestic':'International')+'</span>':'')+'</div>'+
-   (perf?'<div class="wc-notes">'+[depTxt,etaTxt].filter(Boolean).join('<span class="wc-sep" aria-hidden="true">·</span>')+'</div>':'')+
-   (rwx?'<div class="wc-rw"><span class="wc-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3l-2 18M15 3l2 18M12 5v3M12 10.5v3M12 16v3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Runway <b>'+esc(rwx.rwy)+'</b> at '+esc((jk?dK:oK)||city)+'</span><span class="wc-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h10a2.5 2.5 0 1 0-2.4-3M3 14h14a3 3 0 1 1-2.8 4M3 19h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Wind <b>'+String(rwx.wind.dir).padStart(3,'0')+'°/'+rwx.wind.spd+' kt</b></span></div>':'')+
-   (live?'<div class="jc-tele" style="margin:10px 16px"><div><small>Altitude</small><b>'+esc(altS)+'</b></div><div><small>Ground speed</small><b>'+(gs?gs+' kt':(air?'—':'—'))+'</b></div><div><small>Heading</small><b>'+String(Math.round(selHd)).padStart(3,'0')+'°</b></div></div>':'')+
-   '<div class="jc-gate"><div><small>'+depLab+' '+esc(oK||oC)+'</small><b>'+lt(depAbs,oC)+'</b></div><div><small>'+etaLab+' '+esc(dK||dC)+'</small><b>'+lt(eta,dC)+'</b></div><div><small>Time to go</small><b>'+(live?(eta>now?Math.floor(remain/60)+'h '+String(remain%60).padStart(2,'0')+'m':'Updating ETA'):'—')+'</b></div></div>'+
+   '<div class="wc-status"><span class="jb-s2 '+tone+'"><i></i>'+esc(state)+'</span>'+delayPill+(l.z?'<span class="wc-zone '+(l.z==='D'?'d':'i')+'" title="'+(l.z==='D'?'Domestic':'International')+'">'+(l.z==='D'?'Dom':'Intl')+'</span>':'')+'</div>'+
+   '<div class="wc-tl"><div class="wc-l"><small>'+esc(oK||oC)+' · '+tlDep+'</small><b>'+lt(depAbs,oC)+depTag+'</b></div>'+(live?'<div class="wc-c"><small>to go</small><b>'+(eta>now?Math.floor(remain/60)+'h '+String(remain%60).padStart(2,'0')+'m':'—')+'</b></div>':'')+'<div class="wc-r"><small>'+esc(dK||dC)+' · '+tlArr+'</small><b>'+lt(eta,dC)+arrTag+'</b></div></div>'+
+   '<div class="wc-tele">'+(live?'<div><small>Altitude</small><b>'+esc(altS)+'</b></div><div><small>Speed</small><b>'+(gs?gs+' kt':'—')+'</b></div><div><small>Heading</small><b>'+String(Math.round(selHd)).padStart(3,'0')+'°</b></div>':'')+(rwx?'<div><small>Runway '+esc((jk?dK:oK)||'')+'</small><b>'+esc(rwx.rwy)+'</b></div><div><small>Wind</small><b>'+String(rwx.wind.dir).padStart(3,'0')+'°/'+rwx.wind.spd+'</b></div>':'')+'</div>'+
    '<div class="jc-foot"><button id="cFol" class="'+(fol?'on':'')+'">'+(fol?'Following aircraft':'Follow aircraft')+'</button></div>';
   const hx=(cardExp?'E':'S')+(cardExp?body:strip);
   card.style.display='block';if(card._wh===hx)return;card._wh=hx;
@@ -8305,5 +8308,19 @@ html body #card .wc-rw{display:flex;flex-wrap:wrap;gap:6px;padding:9px 18px 12px
 html body #card .wc-chip{display:inline-flex;align-items:center;gap:6px;background:#f3f5f6;color:#4a5b64;border-radius:8px;padding:6px 10px 6px 8px;font:500 12px/1 var(--jn-font,system-ui,sans-serif)}
 html body #card .wc-chip b{color:#19272d;font-weight:650;font-variant-numeric:tabular-nums}
 html body #card .wc-chip svg{width:14px;height:14px;flex:none;color:#6a7c85}
+html body #card .wc-status{display:flex;align-items:center;flex-wrap:nowrap;gap:8px 10px;padding:2px 18px 0}
+html body #card .wc-status .wc-zone{margin-left:auto}
+html body #card .wc-pill{font:650 12px/1 var(--jn-font,system-ui,sans-serif);padding:6px 10px;border-radius:999px;background:#eef2f4;color:#3c4d56}
+html body #card .wc-pill.late{background:#fbe9e5;color:#bd3622}html body #card .wc-pill.warn{background:#fcefd9;color:#9a5b00}html body #card .wc-pill.ok{background:#e6f4ec;color:#177a4d}
+html body #card .wc-tl{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;padding:16px 18px 0;font-variant-numeric:tabular-nums}
+html body #card .wc-tl small{display:block;font:500 11.5px/1.2 var(--jn-font,system-ui,sans-serif);color:#5b6d76;margin-bottom:3px}
+html body #card .wc-tl b{display:block;font:650 17px/1.1 var(--jn-font,system-ui,sans-serif);color:#19272d;letter-spacing:-.01em}
+html body #card .wc-tl .wc-c{text-align:center}html body #card .wc-tl .wc-r{text-align:right}
+html body #card .wc-d{font:650 12px/1 var(--jn-font,system-ui,sans-serif);font-style:normal;margin-left:2px}
+html body #card .wc-d.late{color:#cc3d27}html body #card .wc-d.warn{color:#b86e00}html body #card .wc-d.ok{color:#177a4d}
+html body #card .wc-tele{display:flex;justify-content:space-between;gap:8px;margin:14px 18px 6px;padding:12px 0 0;border-top:1px solid #e6ecef;font-variant-numeric:tabular-nums}
+html body #card .wc-tele:empty{display:none}
+html body #card .wc-tele small{display:block;font:500 11px/1.2 var(--jn-font,system-ui,sans-serif);color:#5b6d76;margin-bottom:3px;white-space:nowrap}
+html body #card .wc-tele b{font:650 15px/1.1 var(--jn-font,system-ui,sans-serif);color:#19272d;white-space:nowrap}
 </style>
 </body></html>
