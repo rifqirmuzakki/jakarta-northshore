@@ -1,7 +1,7 @@
 {
   "summary": {
-    "destinations": 179,
-    "variants": 358,
+    "destinations": 180,
+    "variants": 360,
     "excludedVariants": 0,
     "sharpEnrouteVariants": 1,
     "backtrackingVariants": 0,
@@ -36444,6 +36444,370 @@
             105.55
           ],
           "degrees": 0.2,
+          "terminal": true
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Las Vegas",
+      "direction": "out",
+      "variant": 0,
+      "km": 14708.8,
+      "greatCircleKm": 14615.5,
+      "detourRatio": 1.0064,
+      "score": 14744.6,
+      "maxEnrouteTurnDeg": 35.3,
+      "turns": [
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 12.7,
+          "terminal": true
+        },
+        {
+          "point": [
+            -1.00137,
+            111.00367
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            3,
+            114
+          ],
+          "degrees": 35.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            4.32,
+            118.14
+          ],
+          "degrees": 13.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            6,
+            121
+          ],
+          "degrees": 3.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            8.42,
+            124.61
+          ],
+          "degrees": 10.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            13.10346,
+            129.64064
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            17.68569,
+            134.86444
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            22.12302,
+            140.35737
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            26.36498,
+            146.19942
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            30.35239,
+            152.47265
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            34.01575,
+            159.256
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            37.27466,
+            166.61517
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.03926,
+            174.58642
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            42.21521,
+            183.15516
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            43.71308,
+            192.23539
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            44.4618,
+            201.66103
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            44.42245,
+            211.20137
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            43.59712,
+            220.60226
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            42.02845,
+            229.63793
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            39.79,
+            238.15
+          ],
+          "degrees": 11,
+          "terminal": false
+        }
+      ],
+      "excludedSegments": [],
+      "warnings": []
+    },
+    {
+      "city": "Las Vegas",
+      "direction": "in",
+      "variant": 0,
+      "km": 14708.8,
+      "greatCircleKm": 14615.5,
+      "detourRatio": 1.0064,
+      "score": 14744.6,
+      "maxEnrouteTurnDeg": 35.3,
+      "turns": [
+        {
+          "point": [
+            39.79,
+            238.15
+          ],
+          "degrees": 11,
+          "terminal": false
+        },
+        {
+          "point": [
+            42.02845,
+            229.63793
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            43.59712,
+            220.60226
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            44.42245,
+            211.20137
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            44.4618,
+            201.66103
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            43.71308,
+            192.23539
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            42.21521,
+            183.15516
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            40.03926,
+            174.58642
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            37.27466,
+            166.61517
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            34.01575,
+            159.256
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            30.35239,
+            152.47265
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            26.36498,
+            146.19942
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            22.12302,
+            140.35737
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            17.68569,
+            134.86444
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            13.10346,
+            129.64064
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            8.42,
+            124.61
+          ],
+          "degrees": 10.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            6,
+            121
+          ],
+          "degrees": 3.9,
+          "terminal": false
+        },
+        {
+          "point": [
+            4.32,
+            118.14
+          ],
+          "degrees": 13.1,
+          "terminal": false
+        },
+        {
+          "point": [
+            3,
+            114
+          ],
+          "degrees": 35.3,
+          "terminal": false
+        },
+        {
+          "point": [
+            -1.00137,
+            111.00367
+          ],
+          "degrees": 0,
+          "terminal": false
+        },
+        {
+          "point": [
+            -5,
+            108
+          ],
+          "degrees": 12.7,
           "terminal": true
         }
       ],

@@ -2010,6 +2010,89 @@ window.JN_CHANGES_REPO={
    "set": {
     "aircraft": "Boeing 787-9"
    }
+  },
+  {
+   "id": "chg_routes5_hnl",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-12-01",
+   "retFrom": "2026-12-03",
+   "note": "New service Honolulu: GA 94/95 Boeing 787-9 (daily)",
+   "createdAt": "2026-11-10T01:56:54.260Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "94",
+      "Honolulu",
+      1370,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-HNL-94"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "95",
+      "Honolulu",
+      315,
+      "T2",
+      "I",
+      "Boeing 787-9",
+      "GA-CHG-HNL-94"
+     ]
+    ]
+   },
+   "airports": []
+  },
+  {
+   "id": "chg_routes5_las",
+   "v": 1,
+   "scope": "timetable",
+   "kind": "add",
+   "from": "2026-12-01",
+   "retFrom": "2026-12-03",
+   "note": "New service Las Vegas: GA 96/97 Airbus A350-1000 (daily)",
+   "createdAt": "2026-11-10T01:56:54.260Z",
+   "rows": {
+    "OUT": [
+     [
+      "GA",
+      "96",
+      "Las Vegas",
+      555,
+      "T2",
+      "I",
+      "Airbus A350-1000",
+      "GA-CHG-LAS-96"
+     ]
+    ],
+    "IN": [
+     [
+      "GA",
+      "97",
+      "Las Vegas",
+      25,
+      "T2",
+      "I",
+      "Airbus A350-1000",
+      "GA-CHG-LAS-96"
+     ]
+    ]
+   },
+   "airports": [
+    {
+     "city": "Las Vegas",
+     "code": "LAS",
+     "lat": 36.08,
+     "lon": -115.15,
+     "region": "NE",
+     "tz": "America/Los_Angeles"
+    }
+   ]
   }
  ],
  "ops": [
