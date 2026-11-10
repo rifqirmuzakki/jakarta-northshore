@@ -7834,7 +7834,9 @@ function renderCard(){const l=sel;if(!l)return;const now=nowAbs(),m=M(),city=Str
   const strip='<div class="v7-grab" aria-hidden="true"></div><div class="v7-strip" role="button" tabindex="0" aria-label="Expand flight details">'+logo+'<div class="js-id"><b>'+fid+'</b><span>'+esc(route)+'</span></div><span class="jb-s2 '+tone+'"><i></i>'+esc(state)+'</span><span class="js-gate">'+esc(altS)+'</span><span class="v7-chevron">⌃</span></div>';
   const body='<div class="jc-top"><div class="jc-id">'+logo+'<div><b>'+fid+'</b><span>'+esc(nm)+' · '+esc(ft?.ac||l.ac||'')+(reg?' · <a class="v73-regl" href="#/aircraft/'+esc(reg)+'">'+esc(reg)+' ›</a>':'')+'</span><a class="v181-fl v181-cardlink" href="#/flight/'+fid.replace(' ','')+'">Flight history ›</a></div></div></div>'+
    '<div class="jc-route"><div><b>'+esc(oC)+'</b><span>'+esc(oK||'')+'</span></div><div class="jc-arrow"><i style="width:'+pct+'%"></i><u style="left:'+pct+'%">✈</u></div><div class="r"><b>'+esc(dC)+'</b><span>'+esc(dK||'')+'</span></div></div>'+
-   '<div class="jc-now"><span class="jb-s2 '+tone+'"><i></i>'+esc(state)+'</span>'+perf+(l.z?'<span class="jc-tag '+(l.z==='D'?'d':'i')+'">'+(l.z==='D'?'Domestic':'International')+'</span>':'')+(rwx?'<span class="jc-tag">RWY '+esc(rwx.rwy)+' at '+esc((jk?dK:oK)||city)+' · wind '+String(rwx.wind.dir).padStart(3,'0')+'°/'+rwx.wind.spd+' kt</span>':'')+'</div>'+
+   '<div class="wc-head"><span class="jb-s2 '+tone+'"><i></i>'+esc(state)+'</span>'+(l.z?'<span class="wc-zone '+(l.z==='D'?'d':'i')+'">'+(l.z==='D'?'Domestic':'International')+'</span>':'')+'</div>'+
+   (perf?'<div class="wc-notes">'+[depTxt,etaTxt].filter(Boolean).join('<span class="wc-sep" aria-hidden="true">·</span>')+'</div>':'')+
+   (rwx?'<div class="wc-rw"><span class="wc-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3l-2 18M15 3l2 18M12 5v3M12 10.5v3M12 16v3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Runway <b>'+esc(rwx.rwy)+'</b> at '+esc((jk?dK:oK)||city)+'</span><span class="wc-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h10a2.5 2.5 0 1 0-2.4-3M3 14h14a3 3 0 1 1-2.8 4M3 19h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Wind <b>'+String(rwx.wind.dir).padStart(3,'0')+'°/'+rwx.wind.spd+' kt</b></span></div>':'')+
    (live?'<div class="jc-tele" style="margin:10px 16px"><div><small>Altitude</small><b>'+esc(altS)+'</b></div><div><small>Ground speed</small><b>'+(gs?gs+' kt':(air?'—':'—'))+'</b></div><div><small>Heading</small><b>'+String(Math.round(selHd)).padStart(3,'0')+'°</b></div></div>':'')+
    '<div class="jc-gate"><div><small>'+depLab+' '+esc(oK||oC)+'</small><b>'+lt(depAbs,oC)+'</b></div><div><small>'+etaLab+' '+esc(dK||dC)+'</small><b>'+lt(eta,dC)+'</b></div><div><small>Time to go</small><b>'+(live?(eta>now?Math.floor(remain/60)+'h '+String(remain%60).padStart(2,'0')+'m':'Updating ETA'):'—')+'</b></div></div>'+
    '<div class="jc-foot"><button id="cFol" class="'+(fol?'on':'')+'">'+(fol?'Following aircraft':'Follow aircraft')+'</button></div>';
@@ -8291,5 +8293,17 @@ html body .jn149-more{width:100%;padding:12px;background:#f5f8fa;color:#266781;b
 html body #jnSearchResults .jnSearchEmpty{padding:32px 20px;font-size:13px;line-height:1.6}
 html body #jnSearchResults .jnSearchEmpty small{display:block;color:#52666f;margin-top:12px}
 @media(min-width:701px){html body #jnSearchShade{padding:5vh 12px!important;align-items:flex-start!important}html body #jnSearchShade #jnSearchPanel{height:min(85vh,850px)!important;max-height:85vh!important;border-radius:15px!important;box-shadow:0 20px 70px #0006!important}html body #jnSearchShade #jnSearchHead{padding-top:12px!important}}
+</style>
+<style id="jn-card-layout">
+/* World flight card: status row, delay notes and runway/wind chips laid out as three tidy rows */
+html body #card .wc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 18px 0;margin:0}
+html body #card .wc-zone{margin:0;font:650 10.5px/1 var(--jn-font,system-ui,sans-serif);letter-spacing:.07em;text-transform:uppercase;padding:6px 9px;border-radius:7px;background:#eef2f4;color:#3c4d56}
+html body #card .wc-notes{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;padding:6px 18px 0;font:600 13px/1.35 var(--jn-font,system-ui,sans-serif)}
+html body #card .wc-notes .jc-late,html body #card .wc-notes .jc-warn,html body #card .wc-notes .jc-ok{font-size:13px}
+html body #card .wc-sep{color:#9aa7ae;font-weight:700}
+html body #card .wc-rw{display:flex;flex-wrap:wrap;gap:6px;padding:9px 18px 12px}
+html body #card .wc-chip{display:inline-flex;align-items:center;gap:6px;background:#f3f5f6;color:#4a5b64;border-radius:8px;padding:6px 10px 6px 8px;font:500 12px/1 var(--jn-font,system-ui,sans-serif)}
+html body #card .wc-chip b{color:#19272d;font-weight:650;font-variant-numeric:tabular-nums}
+html body #card .wc-chip svg{width:14px;height:14px;flex:none;color:#6a7c85}
 </style>
 </body></html>
