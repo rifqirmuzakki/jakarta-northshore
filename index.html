@@ -5915,7 +5915,7 @@ html body #card .v7-strip{background:#fff!important;color:var(--jb-ink)!importan
 #card .jc-route .r{text-align:right}
 #card .jc-arrow{position:relative;height:2px;background:#dde4ea;border-radius:2px;margin:0 2px}#card .jc-arrow i{position:absolute;left:0;top:0;bottom:0;background:var(--jb-ac);border-radius:2px}#card .jc-arrow u{position:absolute;top:50%;transform:translate(-50%,-50%);text-decoration:none;font-size:16px;color:var(--jb-ac);background:#fff;padding:0 3px;line-height:1}
 #card .jc-now{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px}
-#card .jc-ok{font:650 12px system-ui,sans-serif;color:#137a45}#card .jc-late{font:650 12px system-ui,sans-serif;color:#d4412a}
+#card .jc-warn{font:650 12px system-ui,sans-serif;color:#b86e00}#card .jc-ok{font:650 12px system-ui,sans-serif;color:#137a45}#card .jc-late{font:650 12px system-ui,sans-serif;color:#d4412a}
 #card .jc-tag{margin-left:auto;font:700 10px/1 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:5px 8px;border-radius:6px}
 #card .jc-tag.d{background:#e8f0ff;color:#1a5fd0}#card .jc-tag.i{background:#f0e9ff;color:#6b3fc4}
 #card .jc-gate,#card .jc-tele{display:grid;grid-template-columns:repeat(3,1fr);margin:0 16px 10px;border:1px solid var(--jb-line);border-radius:14px;overflow:hidden}
@@ -7762,9 +7762,13 @@ function renderCard(){const l=sel;if(!l)return;const now=nowAbs(),m=M(),city=Str
   const remain=Math.max(0,Math.round(eta-now)),alt=air?air.alt:E.alt,gs=air?null:E.gs;
   const done=ft&&ft.ata!=null||(now>l.land&&!air&&!l.air);
   const state=air?airState(air):(live?E.ph:(done?'Landed':(now<l.off?'Scheduled':'Landed')));
-  const tone=l.dly>=15?'late':air&&air.ph==='hold'?'warn':air&&air.kind!=='dep'?'blue':live?'ok':(done?'ok':'mute');
+  /* the dot follows the expected arrival: on time (within 5 min), slightly late (6-14 min, amber) or late (15+ min, red) */
+  const ad=Math.round(eta-l.sta),etaTier=ad>=15?'late':ad>5?'warn':'ok';
+  const tone=etaTier==='late'?'late':(etaTier==='warn'||(air&&air.ph==='hold'))?'warn':air&&air.kind!=='dep'?'blue':live?'ok':(done?'ok':'mute');
   const pct=Math.round(Math.max(0,Math.min(1,(now-l.std)/Math.max(1,l.sta-l.std)))*100);
-  const dd=ft&&ft.atd!=null?Math.round(ft.atd-l.std):0,perf=ft&&ft.atd!=null?(dd>5?'<span class="jc-late">Departed +'+dd+' min</span>':'<span class="jc-ok">Departed on time</span>'):(l.dly>=15?'<span class="jc-late">Delayed +'+Math.round(l.dly)+' min</span>':'');
+  const dd=ft&&ft.atd!=null?Math.round(ft.atd-l.std):0,depTxt=ft&&ft.atd!=null?(dd>5?'<span class="'+(dd>=15?'jc-late':'jc-warn')+'">Departed +'+dd+' min</span>':'<span class="jc-ok">Departed on time</span>'):'',
+    etaTxt=ad>5?'<span class="'+(ad>=15?'jc-late':'jc-warn')+'">'+(done?'Arrived':'Arriving')+' +'+ad+' min late</span>':((live||done)?'<span class="jc-ok">'+(done?'Arrived on time':'Arriving on time')+'</span>':''),
+    perf=depTxt+etaTxt;
   const nm=(typeof NAME!=='undefined'&&NAME[l.c])||l.c,logo=typeof airlineLogo==='function'?airlineLogo(l.c,'sm'):'',lt=(abs,c)=>local(abs,c);
   const altS=live?(alt>=11000?'FL'+String(Math.round(alt/100)).padStart(3,'0'):alt<10?'Ground':(Math.round(alt/50)*50).toLocaleString('en')+' ft'):'—';
   const fid=esc(l.id),route=oK+' → '+dK;
