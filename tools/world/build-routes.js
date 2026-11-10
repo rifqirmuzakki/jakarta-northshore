@@ -30,15 +30,53 @@ function runwayEnds(city){const p=TERMINALS[city]||TERMINALS[String(city).split(
  return p.runways.flatMap(r=>[['le',r.le],['he',r.he]].map(([side,e])=>({runway:r.id,end:e.id,side,point:[e.lat,e.lon],heading:e.heading})));}
 /* Generated terminal legs deliberately remain labelled as simulated geometry.
    The supplied runway thresholds/headings are factual; these are not published procedures. */
-function terminalLeg(city,dir,route){const ends=runwayEnds(city);if(!ends.length)return null;
- const course=dir==='out'?bearingDeg(route.at(-2),route.at(-1)):bearingDeg(route[0],route[1]);
- const end=ends.slice().sort((a,b)=>angle(a.heading,course)-angle(b.heading,course)||a.runway.localeCompare(b.runway))[0];
- if(dir==='out'){
-  const final=atBearing(end.point,(end.heading+180)%360,28);
-  return {end,points:[[...final,'TERM-ARR-'+end.end],[...end.point,'RWY-'+end.end]]};
+/* Simple SID / STAR at the destination (simulated, not published procedures). Arrival: a STAR of up to three fixes (IAF, IF, final fix) that bends from the last en-route fix onto the runway centreline, then the threshold. Departure: the runway, a climb-out fix, then up to two SID fixes that bend toward the first en-route fix. Airports without runway data get a straight-in runway aligned with the route. */
+const signed=d=>((d%360)+540)%360-180;
+function synthEnds(route,dir,city){
+ const c=air[city]||air[String(city).split(' / ')[0].trim()];if(!c)return [];
+ const p=dir==='out'?route.at(-1):route[0],e=dir==='out'?route.at(-2):route[1],course=bearingDeg(dir==='out'?e:p,dir==='out'?p:e),mk=h=>{const id=String(Math.round(h/10)||36).padStart(2,'0');return {id,h}};
+ const h1=(Math.round(course/10)*10+360)%360,h2=(h1+180)%360;
+ return [[h1,atBearing([c[0],c[1]],(h1+180)%360,1.6)],[h2,atBearing([c[0],c[1]],(h2+180)%360,1.6)]].map(([h,pt],i)=>({runway:mk(h1).id+'/'+mk(h2).id,end:mk(h).id+'S',side:i?'he':'le',point:pt,heading:h}));
+}
+/* runway frame: x along the landing / take-off heading from the threshold (negative = before it), y to the side (positive = left of the heading) */
+const rframe=(thr,h,x,y)=>{const p=x>=0?atBearing(thr,h,x):atBearing(thr,(h+180)%360,-x);return y?atBearing(p,(h+(y>0?270:90))%360,Math.abs(y)):p};
+function terminalLeg(city,dir,route,endId){let ends=runwayEnds(city);if(!ends.length)ends=synthEnds(route,dir,city);if(!ends.length)return null;
+ const out=dir==='out',E=out?route.at(-2):route[1];
+ const course=out?bearingDeg(route.at(-2),route.at(-1)):bearingDeg(route[0],route[1]);
+ const end=(endId&&ends.find(e=>e.end===endId))||ends.slice().sort((a,b)=>angle(a.heading,course)-angle(b.heading,course)||a.runway.localeCompare(b.runway))[0];
+ const thr=end.point,h=end.heading,distE=gc(thr,E);
+ const clamp=(v,m)=>Math.max(-m,Math.min(m,v));
+ const clear=pts=>{for(let i=1;i<pts.length;i++)if(!edgeOK(pts[i-1],pts[i]))return false;return true};
+ const sideOf=()=>{const L=rframe(thr,h,0,16),R=rframe(thr,h,0,-16);return gc(L,E)<=gc(R,E)?1:-1};
+ const RW=[...thr,'RWY-'+end.end];
+ if(out){
+  const back=(h+180)%360,delta=signed(bearingDeg(thr,E)-back);
+  const simple={end,points:[[...atBearing(thr,back,28),'TERM-ARR-'+end.end],RW]};
+  if(distE<75)return simple;
+  let pts;
+  if(Math.abs(delta)<=100){                                              // joins the centreline from the side it comes from
+   pts=[[...atBearing(thr,(back+clamp(delta*0.65,45)+360)%360,58),'TERM-IAF-'+end.end],[...atBearing(thr,(back+clamp(delta*0.3,20)+360)%360,40),'TERM-IF-'+end.end],[...atBearing(thr,back,22),'TERM-ARR-'+end.end],RW];
+   if(!clear([E,...pts])||geometry.turnAngle(E,pts[0],pts[1])>65||geometry.turnAngle(pts[0],pts[1],pts[2])>50)return simple;
+  }else{                                                                   // the airport is passed first: downwind, base, final
+   const y=16*sideOf();
+   pts=[[...rframe(thr,h,10,y),'TERM-IAF-'+end.end],[...rframe(thr,h,-36,y),'TERM-IF-'+end.end],[...rframe(thr,h,-30,y*0.3),'TERM-BASE-'+end.end],[...rframe(thr,h,-20,0),'TERM-ARR-'+end.end],RW];
+   if(!clear([E,...pts]))return simple;
+  }
+  return {end,points:pts};
  }
- const climb=atBearing(end.point,end.heading,18);
- return {end,points:[[...end.point,'RWY-'+end.end],[...climb,'TERM-DEP-'+end.end]]};
+ const climb=[...atBearing(thr,h,18),'TERM-DEP-'+end.end],simple={end,points:[RW,climb]};
+ if(distE<90)return simple;
+ const delta=signed(bearingDeg(thr,E)-h);
+ let pts;
+ if(Math.abs(delta)<=100){
+  pts=[RW,climb,[...atBearing(thr,(h+clamp(delta*0.3,25)+360)%360,42),'TERM-SID1-'+end.end],[...atBearing(thr,(h+clamp(delta*0.7,55)+360)%360,68),'TERM-SID2-'+end.end]];
+  if(!clear([...pts,E])||geometry.turnAngle(pts[1],pts[2],pts[3])>50||geometry.turnAngle(pts[2],pts[3],E)>65)return simple;
+ }else{                                                                    // turn back after take-off: a short climbing turn on the side of the destination
+  const y=sideOf();
+  pts=[RW,climb,[...rframe(thr,h,29,6*y),'TERM-SID1-'+end.end],[...rframe(thr,h,29,20*y),'TERM-SID2-'+end.end],[...rframe(thr,h,10,25*y),'TERM-SID3-'+end.end]];
+  if(!clear([...pts,E]))return simple;
+ }
+ return {end,points:pts};
 }
 /* Check geodesic segments against polygon boundaries, not isolated samples. */
 const exclusion=geometry.exclusions(AVOID),bad=(la,lo)=>exclusion.bad([la,lo]);
@@ -160,12 +198,18 @@ Object.keys(air).forEach(city=>{
   O=O.map(p=>greatCircleRuns(fillLongLegs(shortcut(p,{before:JKT}))));I=I.map(p=>greatCircleRuns(fillLongLegs(shortcut(p,{after:JKT}))));
   /* Replace the airport-centre endpoint with runway-aligned terminal geometry.
      World corridors still own the en-route path; only the last/first local leg changes. */
-  const outTerminal=terminalLeg(city,'out',O[0]),inTerminal=terminalLeg(city,'in',I[0]);
+  /* One runway direction serves both arrivals and departures. The default is the end that best matches the arrival track; the reciprocal end is built as well (ob / ib) so the World view can pick the end by the simulated wind. */
+  const outTerminal=terminalLeg(city,'out',O[0]);
+  const endsOf=runwayEnds(city),mate=outTerminal&&(endsOf.length?endsOf:synthEnds(O[0],'out',city)).find(e=>e.runway===outTerminal.end.runway&&e.end!==outTerminal.end.end);
+  const inTerminal=outTerminal&&terminalLeg(city,'in',I[0],outTerminal.end.end);
+  let OB=null,IB=null,rw=null;
+  if(outTerminal&&inTerminal&&mate){const oT=terminalLeg(city,'out',O[0],mate.end),iT=terminalLeg(city,'in',I[0],mate.end);
+   if(oT&&iT){OB=O.map(p=>[...p.slice(0,-1),...oT.points]);IB=I.map(p=>[...iT.points,...p.slice(1)]);rw=[{id:outTerminal.end.end,hdg:outTerminal.end.heading},{id:mate.end,hdg:mate.heading}]}}
   if(outTerminal)O=O.map(p=>[...p.slice(0,-1),...outTerminal.points]);
   if(inTerminal)I=I.map(p=>[...inTerminal.points,...p.slice(1)]);
-  for(const p of O.concat(I))for(let j=1;j<p.length;j++)if(!edgeOK(p[j-1],p[j]))throw Error('Excluded route segment: '+city);
+  for(const p of O.concat(I,OB||[],IB||[]))for(let j=1;j<p.length;j++)if(!edgeOK(p[j-1],p[j]))throw Error('Excluded route segment: '+city);
   const run=a=>a.reduce((s,p,q)=>q?s+gc(a[q-1],p):s,0),o=O[0],i=I[0],rp=L=>L.map(a=>a.map(p=>[r2(p[0]),r2(p[1]),...(p[2]?[p[2]]:[])]));
-  routes[city]={o:rp(O),i:rp(I),og:OG,ig:IG,terminal:{out:outTerminal&&outTerminal.end,in:inTerminal&&inTerminal.end},lo:Math.round(gc(JKT,o[0])+run(o)),li:Math.round(run(i)+gc(i[i.length-1],JKT)),gc:Math.round(direct)} });
+  routes[city]={o:rp(O),i:rp(I),...(OB&&IB?{ob:rp(OB),ib:rp(IB),rw}:{}),og:OG,ig:IG,terminal:{out:outTerminal&&outTerminal.end,in:inTerminal&&inTerminal.end},lo:Math.round(gc(JKT,o[0])+run(o)),li:Math.round(run(i)+gc(i[i.length-1],JKT)),gc:Math.round(direct)} });
 for(const [city,r] of Object.entries(routes))for(const [dir,L] of [['o',r.o],['i',r.i]])for(const p of L){
   const full=dir==='o'?[JKT,...p]:[...p,JKT];
   for(let j=1;j<full.length;j++)if(!exclusion.clear(full[j-1],full[j]))throw Error('Invalid exported route '+city+' '+dir);
