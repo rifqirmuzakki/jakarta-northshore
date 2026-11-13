@@ -145,12 +145,50 @@ h2{margin:0;font-size:12px;font-weight:600;color:var(--mute);letter-spacing:.08e
 .push .lg{width:36px;height:36px;border-radius:9px;background:var(--deep);color:#fff;display:grid;place-items:center;flex:none}.push .lg svg{width:22px;height:17px}.push b{display:block;font-size:14px;font-weight:600}.push p{margin:2px 0 0;font-size:13px;color:var(--mute);line-height:1.35}.push small{margin-left:auto;font-size:11px;color:var(--mute)}
 .demo{position:absolute;right:12px;bottom:78px;z-index:10;height:32px;padding:0 13px;border-radius:999px;background:var(--ink);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;gap:7px;box-shadow:0 6px 18px rgba(0,0,0,.25)}.demo i{width:7px;height:7px;border-radius:50%;background:#43d18b}
 .dm{margin-top:6px}.dm button{display:flex;align-items:center;gap:12px;width:100%;padding:14px 0;border-bottom:1px solid var(--line);font-size:15.5px;font-weight:550}.dm small{display:block;color:var(--mute);font-weight:400;font-size:12.5px;margin-top:1px}.dm svg{width:20px;height:20px;color:var(--teal);flex:none}
+/* v2 additions: logo, pickers, calendar, chips, itinerary details */
+.glogo{display:grid;place-items:center;background:#fff;border-radius:9px;overflow:hidden;width:32px;height:32px;flex:none;position:relative}
+.glogo img{width:100%;height:100%;object-fit:contain;padding:3px}
+.glogo svg{display:none;width:20px;height:16px;color:var(--deep)}.glogo.nf svg{display:block}
+.logo .glogo{width:34px;height:34px}.push .lg{background:#fff;border:1px solid var(--line)}.push .lg .glogo{width:100%;height:100%;border-radius:9px}
+.pass .hd .l .glogo{width:26px;height:26px;border-radius:7px}
+.qrow{display:grid;grid-template-columns:1fr 44px 1fr;align-items:stretch;gap:0;margin:2px 20px 0;position:relative}
+.qrow .pt{display:block;border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:#fff;width:100%}.qrow .pt small{display:block;font-size:11px;color:var(--mute);letter-spacing:.06em;text-transform:uppercase}.qrow .pt b{display:block;font-family:var(--mono);font-size:30px;font-weight:500;letter-spacing:-.04em;line-height:1.1;margin-top:3px}.qrow .pt span{display:block;font-size:13px;color:var(--mute);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qrow .sw{align-self:center;justify-self:center;width:36px;height:36px;border-radius:50%;background:#fff;border:1px solid var(--line);display:grid;place-items:center;color:var(--teal);z-index:2;margin:0 -2px}.qrow .sw svg{width:18px;height:18px}
+.dts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 20px 0}.dts .fd.off{opacity:.45}
+.err{margin:10px 20px 0;color:var(--red);font-size:13px;font-weight:550}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 16px 4px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
+.chips button{flex:none;height:34px;padding:0 14px;border-radius:17px;background:#fff;box-shadow:inset 0 0 0 1px var(--line);font-size:13.5px;font-weight:550;color:var(--mute)}.chips button.on{background:var(--deep);color:#fff;box-shadow:none}.chips i{width:1px;background:var(--line);margin:6px 2px;flex:none}
+.sum{margin:12px 16px 0;background:#fff;border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 0 var(--line)}.sum .ck{width:28px;height:28px;border-radius:50%;background:#e1f3ea;color:var(--green);display:grid;place-items:center;flex:none}.sum .ck svg{width:16px;height:16px}.sum b{display:block;font-size:14.5px;font-weight:600}.sum small{color:var(--mute);font-size:12.5px}.sum .ch{margin-left:auto;color:var(--teal-d);font-size:13px;font-weight:600}
+.fl .stp{display:flex;flex-direction:column;align-items:center;gap:0}.fl .stp .tag{display:inline-block;margin-top:5px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:9px;background:var(--soft);color:var(--mute);white-space:nowrap}.fl .stp .tag.c{background:#fcefd9;color:var(--amber)}
+.fl .top2{display:block;width:100%;text-align:left}
+.fl .ap{font-family:var(--font);font-size:11.5px;color:var(--mute);letter-spacing:0;font-weight:400;display:block}
+.cab button.x{opacity:.45;pointer-events:none}
+.lay{margin:2px 0 18px;display:flex;gap:8px;align-items:flex-start;background:var(--soft);border-radius:12px;padding:10px 12px;font-size:12.5px;color:var(--mute);line-height:1.4}.lay b{color:var(--ink);font-weight:600}.lay.w{background:#fcefd9;color:var(--amber)}.lay.w b{color:var(--amber)}.lay svg{width:16px;height:16px;flex:none;margin-top:1px}
+.lg2{margin-bottom:6px}.lg2 .t{font-family:var(--mono);font-size:21px;font-weight:500;letter-spacing:-.03em}.lg2 .t sup{font-size:11px;color:var(--teal-d)}.lg2 .c{font-size:14.5px;font-weight:600;margin-top:1px}.lg2 .d{font-size:12.5px;color:var(--mute);margin-top:1px}
+.sheet .sec2{margin:18px 0 6px}.am{display:grid;gap:8px;margin:8px 0 0;font-size:13.5px;color:var(--mute)}.am div{display:flex;gap:10px;align-items:center}.am svg{width:18px;height:18px;color:var(--teal);flex:none}
+.cmp{overflow-x:auto;margin:12px -20px 0;padding:0 20px}.cmp table{border-collapse:collapse;min-width:640px;width:100%;font-size:12.5px}.cmp th{font-size:11.5px;text-align:left;padding:8px 8px 10px;font-weight:600;vertical-align:bottom}.cmp td{padding:9px 8px;border-top:1px solid var(--line);color:var(--ink)}.cmp td:first-child,.cmp th:first-child{color:var(--mute);font-weight:500;position:sticky;left:0;background:#fff;min-width:84px}.cmp td.n{color:var(--mute)}
+.lnk{color:var(--teal-d);font-weight:600;font-size:13.5px;margin-top:12px;display:inline-block}
+.pk{display:flex;flex-direction:column;height:100%}.pk .in{display:flex;align-items:center;gap:10px;margin:4px 16px 8px;background:#fff;border-radius:14px;padding:0 14px;height:48px;box-shadow:inset 0 0 0 1px var(--line)}.pk .in svg{width:19px;height:19px;color:var(--mute)}.pk .in input{flex:1;font-size:16px;height:100%}
+.pi{display:flex;align-items:center;gap:14px;width:100%;padding:12px 20px;background:#fff;border-bottom:1px solid var(--line)}.pi .cd{font-family:var(--mono);font-size:17px;font-weight:500;width:46px;letter-spacing:-.02em}.pi b{display:block;font-size:15.5px;font-weight:550}.pi small{color:var(--mute);font-size:12.5px}.pi .z{margin-left:auto;font-size:11px;font-weight:600;color:var(--mute);background:var(--soft);padding:3px 8px;border-radius:9px}
+.pl{padding:14px 20px 6px;font-size:11.5px;color:var(--mute);letter-spacing:.08em;text-transform:uppercase;font-weight:600;background:var(--soft)}
+.cal{padding:0 0 12px}.cal .mh{font-size:15px;font-weight:600;margin:18px 0 8px}.wk,.cal .gd{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}.wk span{font-size:11px;color:var(--mute);text-align:center;padding:4px 0}
+.cal .gd button{height:52px;border-radius:10px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}.cal .gd b{font-size:15px;font-weight:550}.cal .gd em{font-style:normal;font-size:9.5px;color:var(--mute);font-family:var(--mono)}.cal .gd em.lo{color:var(--green);font-weight:600}
+.cal .gd button.x{opacity:.35;pointer-events:none}.cal .gd button.rg{background:var(--sky);border-radius:0}.cal .gd button.on{background:var(--deep);color:#fff;border-radius:10px}.cal .gd button.on em{color:#bcd9e4}
+.calh{position:sticky;top:-10px;background:#fff;padding:2px 0 8px;z-index:2}
+.lp{display:flex;gap:8px;padding:0 16px 12px;overflow-x:auto;scrollbar-width:none}.lp button{flex:none;height:36px;padding:0 14px;border-radius:18px;background:rgba(255,255,255,.14);color:#fff;font-size:13.5px;font-weight:550;font-family:var(--mono)}.lp button.on{background:#fff;color:var(--deep)}
+.dirh{display:flex;justify-content:space-between;align-items:baseline;margin:22px 20px 8px}.dirh b{font-size:17px;font-weight:600;letter-spacing:-.02em}.dirh small{color:var(--mute);font-size:13px}
+.legc{margin:0 16px;background:#fff;border-radius:18px;padding:16px 18px 6px}
+.legc .lg2 .t{font-size:22px}.legc .meta{font-size:12.5px;color:var(--mute);margin:0 0 14px;padding-left:2px;display:flex;gap:6px;align-items:center}
+.pxrow{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--line)}.pxrow:first-of-type{border:0}.pxrow b{font-size:15.5px;font-weight:550}.pxrow small{display:block;color:var(--mute);font-size:12.5px;font-weight:400}
+.fd.bad{box-shadow:0 0 0 1.5px var(--red);border-color:var(--red)}
+.nores{padding:46px 28px;text-align:center;color:var(--mute);font-size:14.5px;line-height:1.5}.nores b{display:block;color:var(--ink);font-size:17px;margin-bottom:6px}
 </style>
 </head>
 <body>
 <div class="stage"><div class="phone" id="app">
 <section class="view on" id="v-home" data-tab="home"></section>
 <section class="view nonav" id="v-search" data-tab="book"></section>
+<section class="view nonav" id="v-pick" data-tab="book"></section>
 <section class="view nonav" id="v-results" data-tab="book"></section>
 <section class="view nonav" id="v-review" data-tab="book"></section>
 <section class="view nonav wh" id="v-done" data-tab="trips"></section>
@@ -172,258 +210,361 @@ h2{margin:0;font-size:12px;font-weight:600;color:var(--mute);letter-spacing:.08e
 <div class="scrim" id="scrim"></div><div class="sheet" id="sheet"></div><div class="push" id="push" role="status"></div>
 </div></div>
 
+<script src="network.js"></script>
 <script>
-/* ---------- brand + art ---------- */
-/* abstract wing mark (original, not the airline logo) */
+/* ================= brand + art ================= */
 const WING='<svg viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M4 84C30 78 52 62 62 38"/><path d="M16 84C42 80 66 66 78 40"/><path d="M30 84C56 82 82 70 96 44"/><path d="M46 84C70 84 96 74 112 50"/><path d="M62 38C64 22 72 10 86 4"/><path d="M78 40C80 28 88 18 100 14"/></svg>';
+const GL=()=>`<span class="glogo"><img alt="" src="https://www.gstatic.com/flights/airline_logos/70px/GA.png" onerror="this.parentNode.classList.add('nf');this.remove()">${WING}</span>`;
 const WINGBG='<svg class="wing" viewBox="0 0 120 90" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round">'+[0,1,2,3,4,5,6].map(i=>`<path d="M${2+i*5} ${88-i*1.5}C${28+i*8} ${80-i*2} ${50+i*9} ${62-i*3} ${60+i*8} ${36-i*3}"/>`).join('')+'</svg>';
 const AR='<svg viewBox="0 0 56 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 8h53M47 2l7 6-7 6"/></svg>';
-const PAL={KIX:['#0a3a52','#d4573b'],DPS:['#0e6d7f','#e6a94b'],SIN:['#0a2c4a','#27a3b8'],HND:['#142a52','#e48aa0'],SYD:['#0b5a73','#f08a4b'],AMS:['#27405a','#e0b25a']};
-const SCENE={
- KIX:'<circle cx="150" cy="70" r="26" fill="#fff" opacity=".9"/><path d="M0 120L70 90L130 108L210 84L300 112V160H0Z" fill="#000" opacity=".22"/><path d="M0 134L90 108L170 128L300 100V160H0Z" fill="#000" opacity=".28"/>',
- DPS:'<circle cx="214" cy="62" r="24" fill="#fff" opacity=".85"/><path d="M0 108C40 96 70 120 110 108S190 96 300 114V160H0Z" fill="#fff" opacity=".16"/><path d="M0 128C50 116 90 140 140 128S230 116 300 132V160H0Z" fill="#000" opacity=".22"/>',
- SIN:'<g fill="#000" opacity=".26"><rect x="30" y="86" width="26" height="74"/><rect x="62" y="64" width="22" height="96"/><rect x="92" y="96" width="30" height="64"/><rect x="130" y="74" width="20" height="86"/><rect x="156" y="104" width="34" height="56"/><rect x="198" y="80" width="24" height="80"/><rect x="228" y="100" width="30" height="60"/></g><circle cx="238" cy="44" r="14" fill="#fff" opacity=".8"/>',
- HND:'<circle cx="82" cy="44" r="16" fill="#fff" opacity=".85"/><path d="M60 160L150 62L240 160Z" fill="#000" opacity=".24"/><path d="M128 84L150 62L172 84L160 90L150 82L140 90Z" fill="#fff" opacity=".7"/>',
- SYD:'<circle cx="64" cy="64" r="22" fill="#fff" opacity=".85"/><path d="M130 112c0-34 24-52 52-58-8 22-10 40-6 58z" fill="#fff" opacity=".4"/><path d="M178 112c4-24 22-40 52-46-8 18-8 32-2 46z" fill="#fff" opacity=".3"/><path d="M0 128C50 116 100 140 160 126S250 120 300 130V160H0Z" fill="#000" opacity=".24"/>',
- AMS:'<g fill="#000" opacity=".24"><path d="M20 160V92l22-18 22 18v68z"/><path d="M72 160V84l26-22 26 22v76z"/><path d="M132 160V96l20-16 20 16v64z"/><path d="M180 160V80l26-20 26 20v80z"/></g><circle cx="248" cy="46" r="15" fill="#fff" opacity=".8"/>'};
-const art=(c,cls)=>{const p=PAL[c]||PAL.KIX;return `<svg class="${cls||''}" viewBox="0 0 300 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="g${c}${cls||''}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p[0]}"/><stop offset="1" stop-color="${p[1]}"/></linearGradient></defs><rect width="300" height="160" fill="url(#g${c}${cls||''})"/>${SCENE[c]||''}</svg>`};
+const PALS=[['#0a3a52','#d4573b'],['#0e6d7f','#e6a94b'],['#0a2c4a','#27a3b8'],['#142a52','#e48aa0'],['#0b5a73','#f08a4b'],['#27405a','#e0b25a'],['#0c4a4f','#6fbf9a'],['#3a2f5b','#e08a6a']];
+const PAL={KIX:0,DPS:1,SIN:2,HND:3,SYD:4,AMS:5};
+const SCENE=[
+ '<circle cx="150" cy="70" r="26" fill="#fff" opacity=".9"/><path d="M0 120L70 90L130 108L210 84L300 112V160H0Z" fill="#000" opacity=".22"/><path d="M0 134L90 108L170 128L300 100V160H0Z" fill="#000" opacity=".28"/>',
+ '<circle cx="214" cy="62" r="24" fill="#fff" opacity=".85"/><path d="M0 108C40 96 70 120 110 108S190 96 300 114V160H0Z" fill="#fff" opacity=".16"/><path d="M0 128C50 116 90 140 140 128S230 116 300 132V160H0Z" fill="#000" opacity=".22"/>',
+ '<g fill="#000" opacity=".26"><rect x="30" y="86" width="26" height="74"/><rect x="62" y="64" width="22" height="96"/><rect x="92" y="96" width="30" height="64"/><rect x="130" y="74" width="20" height="86"/><rect x="156" y="104" width="34" height="56"/><rect x="198" y="80" width="24" height="80"/><rect x="228" y="100" width="30" height="60"/></g><circle cx="238" cy="44" r="14" fill="#fff" opacity=".8"/>',
+ '<circle cx="82" cy="44" r="16" fill="#fff" opacity=".85"/><path d="M60 160L150 62L240 160Z" fill="#000" opacity=".24"/><path d="M128 84L150 62L172 84L160 90L150 82L140 90Z" fill="#fff" opacity=".7"/>',
+ '<circle cx="64" cy="64" r="22" fill="#fff" opacity=".85"/><path d="M130 112c0-34 24-52 52-58-8 22-10 40-6 58z" fill="#fff" opacity=".4"/><path d="M178 112c4-24 22-40 52-46-8 18-8 32-2 46z" fill="#fff" opacity=".3"/><path d="M0 128C50 116 100 140 160 126S250 120 300 130V160H0Z" fill="#000" opacity=".24"/>',
+ '<g fill="#000" opacity=".24"><path d="M20 160V92l22-18 22 18v68z"/><path d="M72 160V84l26-22 26 22v76z"/><path d="M132 160V96l20-16 20 16v64z"/><path d="M180 160V80l26-20 26 20v80z"/></g><circle cx="248" cy="46" r="15" fill="#fff" opacity=".8"/>'];
+const hash=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0};
+const seeded=s=>hash(s)/4294967295;
+let _aid=0;
+const art=(c,cls)=>{const ix=PAL[c]!=null?PAL[c]:hash(c)%PALS.length,p=PALS[ix],sc=SCENE[PAL[c]!=null?PAL[c]:(hash(c+'s')%SCENE.length)],id='ag'+(_aid++);return `<svg class="${cls||''}" viewBox="0 0 300 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p[0]}"/><stop offset="1" stop-color="${p[1]}"/></linearGradient></defs><rect width="300" height="160" fill="url(#${id})"/>${sc}</svg>`};
 
-/* ---------- data: real flights from the simulated Garuda schedule ---------- */
-const DEST={
- KIX:{city:'Osaka Kansai',short:'Osaka',tz:2,base:5200,long:true,fl:[['GA 856','08:15',420,'A330-900'],['GA 858','15:00',420,'A330-900'],['GA 860','22:00',420,'A330-900']]},
- DPS:{city:'Denpasar',short:'Bali',tz:1,base:1150,fl:[['GA 404','07:15',105,'787-9'],['GA 412','13:00',105,'A330-900'],['GA 418','17:05',105,'737-800'],['GA 424','22:10',105,'737-800']]},
- SIN:{city:'Singapore',short:'Singapore',tz:1,base:1950,fl:[['GA 898','05:30',100,'787-9'],['GA 904','11:50',100,'A350-1000'],['GA 910','14:10',100,'737-800'],['GA 914','19:55',100,'737-800']]},
- HND:{city:'Tokyo Haneda',short:'Tokyo',tz:2,base:5800,long:true,fl:[['GA 920','09:55',445,'A350-1000'],['GA 922','19:45',445,'787-9'],['GA 924','23:45',445,'787-9']]},
- SYD:{city:'Sydney',short:'Sydney',tz:4,base:5600,long:true,fl:[['GA 730','08:25',425,'787-9'],['GA 732','14:55',425,'A350-1000'],['GA 734','19:50',425,'A350-900'],['GA 736','22:05',425,'A330-900']]},
- AMS:{city:'Amsterdam',short:'Amsterdam',tz:-6,base:11800,long:true,fl:[['GA 44','11:50',855,'A350-900'],['GA 2','23:30',855,'A350-1000']]}};
+/* ================= network + engine ================= */
+const NET=window.GA_NET,HUB='JKT',CT=NET.cities;CT.JKT={n:'Jakarta',tz:'Asia/Jakarta',z:'D'};
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const hm=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(Math.floor(m%60)).padStart(2,'0')};
-const mins=t=>+t.slice(0,2)*60+ +t.slice(3);
+const hm=m=>{m=((Math.round(m)%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
 const idr=n=>'IDR '+(Math.round(n/1000)*1000).toLocaleString('en-US');
-const seeded=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0)/4294967295};
-const D0=new Date();const addDays=n=>{const d=new Date(D0);d.setHours(0,0,0,0);d.setDate(d.getDate()+n);return d};
-const fmtD=(d,o)=>d.toLocaleDateString('en-GB',o||{weekday:'short',day:'numeric',month:'short'});
 const dur=b=>Math.floor(b/60)+'h '+String(b%60).padStart(2,'0')+'m';
-const arrOf=(dep,blk,tz)=>{const t=mins(dep)+blk+tz*60;return {t:hm(t),d:Math.floor(t/1440)}};
-const sup=d=>d>0?`<sup>+${d}</sup>`:'';
+const cname=c=>CT[c]?CT[c].n:c;
+const nowAbs=()=>Math.floor(Date.now()/6e4)+420;
+const TD=Math.floor(nowAbs()/1440);
+const isoDow=dn=>((dn+3)%7)+1;
+const dnOf=s=>s?Math.floor(Date.parse(s+'T00:00:00Z')/864e5):null;
+const fmtDn=(dn,o)=>new Date(dn*864e5).toLocaleDateString('en-GB',Object.assign({timeZone:'UTC'},o||{weekday:'short',day:'numeric',month:'short'}));
+const _tz={};
+function lp(abs,code){const z=CT[code].tz;const f=_tz[z]||(_tz[z]=new Intl.DateTimeFormat('en-GB',{timeZone:z,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}));const p={};f.formatToParts(new Date((abs-420)*6e4)).forEach(x=>p[x.type]=+x.value);return {day:Math.floor(Date.UTC(p.year,p.month-1,p.day)/864e5),min:p.hour*60+p.minute}}
+const fT=(abs,c)=>hm(lp(abs,c).min);
+const sup=d=>d>0?`<sup>+${d}</sup>`:d<0?`<sup>${d}</sup>`:'';
+const FLS=NET.flights.map(f=>({id:f[0],out:f[1]===0,code:f[2],dep:f[3],arr:f[4],days:f[5],term:f[6],ac:f[7],from:dnOf(f[8]),to:dnOf(f[9])}));
+const DEP={};FLS.forEach(f=>{const o=f.out?HUB:f.code;(DEP[o]=DEP[o]||[]).push(f)});
+const runs=(f,D)=>f.days.includes(isoDow(D))&&(f.from==null||D>=f.from)&&(f.to==null||D<=f.to);
+const mkLeg=(f,D)=>({id:f.id,from:f.out?HUB:f.code,to:f.out?f.code:HUB,dep:D*1440+f.dep,arr:D*1440+f.arr,term:f.term,ac:f.ac});
+function legsDep(o,X){const r=[];(DEP[o]||[]).forEach(f=>{const g=X-Math.floor(f.dep/1440);for(let D=g-1;D<=g+1;D++){if(!runs(f,D))continue;const l=mkLeg(f,D);if(lp(l.dep,l.from).day===X)r.push(l)}});return r.sort((a,b)=>a.dep-b.dep)}
+const MCT=(a,b)=>{const za=CT[a.from].z,zb=CT[b.to].z;let m=za==='D'&&zb==='D'?50:za!==zb?90:75;if(a.term!==b.term)m+=30;return m};
+const _sc={};
+function search(o,d,X){const k=o+d+X;if(_sc[k])return _sc[k];let r=[];
+ if(o===HUB)r=legsDep(o,X).filter(l=>l.to===d).map(l=>[l]);
+ else if(d===HUB)r=legsDep(o,X).filter(l=>l.to===HUB).map(l=>[l]);
+ else legsDep(o,X).filter(l=>l.to===HUB).forEach(a=>{const best=[];(DEP[HUB]||[]).forEach(f=>{if(f.code!==d)return;const g=Math.floor(a.arr/1440);for(let D=g-1;D<=g+1;D++){if(!runs(f,D))continue;const b=mkLeg(f,D),gap=b.dep-a.arr;if(gap>=MCT(a,b)&&gap<=480)best.push({L:[a,b],gap})}});best.sort((x,y)=>x.gap-y.gap).slice(0,2).forEach(x=>r.push(x.L))});
+ const out=r.map(L=>({legs:L,dep:L[0].dep,arr:L[L.length-1].arr,dur:L[L.length-1].arr-L[0].dep,stops:L.length-1,key:L.map(l=>l.id+'|'+l.dep).join('>')})).sort((a,b)=>a.dep-b.dep).slice(0,14);
+ return _sc[k]=out}
+/* ---- fares: distance (block time) x time of day x days out x seeded demand; cabins, families and rules on top ---- */
+const RULES={
+ 'Economy Saver':{bag:'7 kg cabin bag',chk:'Not included',seat:'At check-in',chg:'IDR 450,000 fee',ref:'Not refundable',mil:'50%',lng:'—'},
+ 'Economy Flex':{bag:'7 kg cabin bag',chk:'30 kg',seat:'Free selection',chg:'Free',ref:'IDR 250,000 fee',mil:'100%',lng:'—'},
+ 'Premium Economy':{bag:'2 × 7 kg',chk:'2 × 25 kg',seat:'Free selection',chg:'Free',ref:'IDR 250,000 fee',mil:'150%',lng:'—'},
+ 'Business Saver':{bag:'2 × 7 kg',chk:'2 × 32 kg',seat:'Free selection',chg:'IDR 450,000 fee',ref:'25% fee',mil:'200%',lng:'Lounge'},
+ 'Business Flex':{bag:'2 × 7 kg',chk:'2 × 32 kg',seat:'Free selection',chg:'Free',ref:'Fully refundable',mil:'225%',lng:'Lounge'}};
+const legCabs=l=>/ATR/.test(l.ac)?['Economy']:/737/.test(l.ac)?['Economy','Business']:['Economy','Premium','Business'];
+const farEnd=l=>l.from===HUB?l.to:l.from;
+function legEco(l){const blk=l.arr-l.dep,intl=CT[farEnd(l)].z==='I',base=intl?500000+blk*12500:250000+blk*9000,t=lp(l.dep,l.from),dout=t.day-TD;
+ const tod=(t.min>=360&&t.min<=540)||(t.min>=1020&&t.min<=1200)?1.1:(t.min>=1320||t.min<300?0.9:1),adv=1+Math.max(0,14-dout)*0.028,dem=0.9+seeded(l.id+dout)*0.38;return base*tod*adv*dem}
+let SOLD={};try{SOLD=JSON.parse(localStorage.getItem('ga-sold')||'{}')}catch(e){}
+const sold=(l,c)=>SOLD[l.id+'|'+l.dep+'|'+c]||0;
+function fares(it){const cabs=it.legs.map(legCabs).reduce((a,b)=>a.filter(x=>b.includes(x)));
+ const eco=it.legs.reduce((s,l)=>s+legEco(l),0)*(it.stops?0.94:1),blk=it.legs.reduce((s,l)=>s+l.arr-l.dep,0),bk=blk>600?3.6:blk>240?3.1:2.6;
+ const F=(n,p)=>({n,p,r:RULES[n]});
+ const cb=[{k:'Economy',fam:[F('Economy Saver',eco),F('Economy Flex',eco*1.28)]}];
+ if(cabs.includes('Premium'))cb.push({k:'Premium',fam:[F('Premium Economy',eco*1.75)]});
+ if(cabs.includes('Business'))cb.push({k:'Business',fam:[F('Business Saver',eco*bk),F('Business Flex',eco*bk*1.18)]});
+ cb.forEach(c=>{const base=2+Math.floor(seeded(it.key+c.k)*(c.k==='Economy'?9:5));c.left=Math.max(0,base-Math.max(...it.legs.map(l=>sold(l,c.k))))});
+ return cb}
+const minEco=(o,d,X)=>{const r=search(o,d,X);return r.length?Math.min(...r.map(i=>fares(i)[0].fam[0].p)):null};
+const pmul=q=>q.a+q.c*0.75+q.i*0.1,seats=q=>q.a+q.c;
+const paxTxt=q=>q.a+' adult'+(q.a>1?'s':'')+(q.c?' · '+q.c+' child'+(q.c>1?'ren':''):'')+(q.i?' · '+q.i+' infant'+(q.i>1?'s':''):'');
+const isIntl=legs=>legs.some(l=>CT[farEnd(l)].z==='I');
 
-/* ---------- fare model: distance band x time of day x days out x seeded demand; cabins and families on top ---------- */
-function fares(dest,fl,daysOut){const D=DEST[dest],t=mins(fl[1]);
- const tod=(t>=360&&t<=540)||(t>=1020&&t<=1200)?1.1:(t>=1320||t<300?0.9:1),adv=1+Math.max(0,14-daysOut)*0.028,dem=0.9+seeded(fl[0]+daysOut)*0.38;
- const eco=D.base*1000*tod*adv*dem,left=2+Math.floor(seeded(fl[0]+'L'+daysOut)*8),bk=D.base>9000?3.6:D.long?3.1:2.6;
- const cabins=[{k:'Economy',fam:[{n:'Economy Saver',p:eco,u:['Cabin bag 7 kg','Meal and drinks','Changes with a fee','Miles at 50%']},{n:'Economy Flex',p:eco*1.28,u:['Checked bag 30 kg','Seat selection','Free changes','Miles at 100%']}]}];
- if(D.long)cabins.push({k:'Premium',fam:[{n:'Premium Economy',p:eco*1.75,u:['2 bags of 25 kg','Wider seat, more legroom','Priority boarding','Miles at 150%']}]});
- cabins.push({k:'Business',fam:[{n:'Business Saver',p:eco*bk,u:['Lounge access','Lie-flat seat','2 bags of 32 kg','Miles at 200%']},{n:'Business Flex',p:eco*bk*1.18,u:['Everything in Saver','Free changes and refunds','Chauffeur at Jakarta','Miles at 225%']}]});
- return {eco,left,cabins}}
+/* ================= state ================= */
+const S={stack:['home'],hometab:0,q:{from:'JKT',to:'KIX',type:'ret',d1:TD+1,d2:TD+6,a:1,c:0,i:0,cab:'Economy'},step:0,sel:[],sort:'price',filt:new Set(),pickFor:'to',cal:'d1',cur:null,fi:0,
+ pay:0,tt:0,bk:0,pl:0,opt:'keep',bookings:[],past:[{from:'JKT',to:'DPS',day:TD-21,id:'GA 412',fam:'Economy Saver'},{from:'JKT',to:'SIN',day:TD-48,id:'GA 904',fam:'Business Saver'}],
+ msgs:[]};
+const eD=l=>l.dep+(l.delay||0),eA=l=>l.arr+(l.delay||0);
+const flat=b=>b.dirs.flatMap(d=>d.legs);
+const fleg=b=>{const L=flat(b);return L.find(l=>eA(l)>nowAbs())||L[L.length-1]};
+function mkBooking(q,its,fams,names){const dirs=its.map(it=>({legs:it.legs.map(l=>{const row=12+hash(l.id+l.dep)%20,col=hash(l.id+'c'+l.dep)%5;return Object.assign({},l,{gate:(l.term==='T2'?'K':'C')+(2+hash(l.id)%10),row,col,status:'ok',delay:0,rebooked:null})})}));
+ const rate=(it,f)=>f.p;let fare=0;its.forEach((it,i)=>fare+=fams[i].fam.p*pmul(q));
+ const tax=fare*0.11,chg=its.reduce((s,it)=>s+it.legs.reduce((a,l)=>a+(CT[farEnd(l)].z==='I'?85000:40000),0),0)*seats(q);
+ return {ref:'GA'+(hash(String(Date.now())+its[0].key)%36**3).toString(36).toUpperCase().padStart(3,'0')+'K',pax:{a:q.a,c:q.c,i:q.i},cab:fams[0].cab,fams:fams.map(f=>f.fam.n),dirs,names,fare,tax,chg,total:fare+tax+chg,q:Object.assign({},q)}}
+const seatOf=(l,n)=>(l.row)+'ABCDEF'[(l.col+n)%6];
+function sampleBooking(){const q={from:'JKT',to:'KIX',type:'ret',d1:TD+1,d2:TD+6,a:1,c:0,i:0,cab:'Economy'},o=search('JKT','KIX',TD+1),r=search('KIX','JKT',TD+6);
+ const io=o.find(i=>i.legs[0].id==='GA 856')||o[0],ir=r[0];return mkBooking(q,[io,ir],[{cab:'Economy',fam:fares(io)[0].fam[1]},{cab:'Economy',fam:fares(ir)[0].fam[1]}],['Rina Wijaya'])}
+const baseMsgs=()=>[{id:1,kind:'info',t:'Check-in is open',p:'Your flight to Osaka leaves tomorrow. Your boarding pass is ready.',at:'09:12',unread:true,go:'pass'}];
+function reset(){S.bookings=[sampleBooking()];S.msgs=baseMsgs();S.bk=0;S.pl=0}
+reset();
+const B0=()=>S.bookings[0],BK=()=>S.bookings[Math.min(S.bk,S.bookings.length-1)];
+const countdown=l=>{const ms=(eD(l)-nowAbs())*6e4;if(ms<=0)return 'Departed';const h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4);return h>=48?'in '+Math.floor(h/24)+' days':h>=24?'in 1 day '+(h-24)+' h':h>=1?'in '+h+' h '+m+' min':'in '+m+' min'};
+const stat=l=>l.status==='cancel'?['bad','Cancelled','Rebook to continue']:l.status==='delay'?['warn','Delayed','now '+fT(eD(l),l.from)]:l.status==='boarding'?['ok','Boarding','Gate '+l.gate]:['ok','On time','Check-in open'];
+const routeTxt=b=>{const d0=b.dirs[0].legs,a=d0[0].from,z=d0[d0.length-1].to;return b.dirs.length>1?[a,z,'⇄']:[a,z,'→']};
 
-/* ---------- state ---------- */
-const mkTrip=()=>({ref:'GA7K2M',flight:'GA 856',dest:'KIX',date:addDays(1),dep:'08:15',blk:420,term:'T2',gate:'K6',seat:'24A',fam:'Economy Flex',pax:1,status:'ok',delay:0,rebooked:null});
-const S={stack:['home'],hometab:0,dest:'KIX',day:1,pax:1,cab:'Economy',pick:null,sel:{cab:0,fam:0},pay:0,tt:0,
- trip:mkTrip(),past:[{dest:'DPS',flight:'GA 412',date:addDays(-21),fam:'Economy Saver'},{dest:'SIN',flight:'GA 904',date:addDays(-48),fam:'Business Saver'}],
- msgs:[{id:1,kind:'info',t:'Check-in is open',p:'GA 856 to Osaka leaves tomorrow at 08:15. Your boarding pass is ready.',at:'09:12',unread:true,go:'pass'}],opt:'keep'};
-const T=()=>S.trip,Dd=()=>DEST[T().dest];
-const depMin=()=>mins(T().dep)+T().delay;
-const arrLoc=()=>{const t=T();const a=arrOf(hm(depMin()),t.blk,Dd().tz);return a};
-function countdown(){const t=T();const d=new Date(t.date);d.setHours(0,depMin(),0,0);const ms=d-new Date();if(ms<=0)return 'Departed';const h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4);return h>=48?'in '+Math.floor(h/24)+' days':h>=24?'in 1 day '+(h-24)+' h':h>=1?'in '+h+' h '+m+' min':'in '+m+' min'}
-const statusTxt=()=>{const t=T();return t.status==='cancel'?['bad','Cancelled','Rebook to continue']:t.status==='delay'?['warn','Delayed','now '+hm(depMin())]:t.status==='boarding'?['ok','Boarding','Gate '+t.gate]:['ok','On time','Check-in open']};
-
-/* ---------- routing ---------- */
+/* ================= routing ================= */
 const TABS=['home','search','trips','inbox','me'];
 function go(name,push=true){const el=$('#v-'+name);if(!el)return;
  $$('.view').forEach(v=>v.classList.remove('on','enter'));el.classList.add('on','enter');el.scrollTop=0;
- const tab=el.dataset.tab;$$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
+ $$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===el.dataset.tab));
  if(push&&S.stack[S.stack.length-1]!==name)S.stack.push(name);
- const nn=el.classList.contains('nonav');$('#tabs').style.display=nn?'none':'grid';$('#demoBtn').style.bottom=nn?'18px':'78px';$('#demoBtn').style.display=['search','results','review','done'].includes(name)?'none':'flex';
+ const nn=el.classList.contains('nonav');$('#tabs').style.display=nn?'none':'grid';$('#demoBtn').style.bottom=nn?'18px':'78px';
+ $('#demoBtn').style.display=['search','pick','results','review','done'].includes(name)?'none':'flex';
  render(name)}
 function back(){S.stack.pop();go(S.stack[S.stack.length-1]||'home',false)}
 document.addEventListener('click',e=>{
- const g=e.target.closest('[data-go]');if(g){e.preventDefault();const n=g.dataset.go;if(TABS.includes(n))S.stack=[n];go(n);return}
+ const g=e.target.closest('[data-go]');if(g){e.preventDefault();const n=g.dataset.go;if(TABS.includes(n))S.stack=[n];if(g.dataset.bk!=null)S.bk=+g.dataset.bk;go(n);return}
+ const p=e.target.closest('[data-pass]');if(p){S.bk=+p.dataset.pass;const L=flat(BK());S.pl=Math.max(0,L.indexOf(fleg(BK())));go('pass');return}
  if(e.target.closest('[data-back]'))back()});
 const NAV=(t,dk)=>`<div class="nav ${dk?'dk':''}"><button class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><span class="t">${t}</span></div>`;
-const CH='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#aab6bd" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>';
-const IC={
- ci:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M14 6v12" stroke-dasharray="2 2.4"/></svg>',
- seat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v8a2 2 0 0 0 2 2h6l2 6M7 14H5M10 8h3"/></svg>',
- bag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="7" width="12" height="13" rx="2"/><path d="M9 7V4.5h6V7M9.5 11v5M14.5 11v5"/></svg>',
- meal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2.5 1.5-3 5-3 8h3"/></svg>',
- ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg>',
- warn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>',
- bad:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7"/></svg>',
- bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6.5 2 6.5H4S6 14 6 9zM10 19a2 2 0 0 0 4 0"/></svg>',
- info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg>'};
-
-/* ---------- HOME ---------- */
-function tripCardHtml(){const t=T(),d=Dd(),[c,a]=statusTxt(),dep=hm(depMin());
- return `<div class="tc"><button style="display:block;width:100%" data-go="trip"><div class="art">${art(t.dest,'bg')}<div class="ov"><div class="a"><span>${fmtD(t.date,{weekday:'short',day:'numeric',month:'short'})}</span><span>${t.flight}</span></div><div class="b"><b>JKT</b>${AR}<b>${t.dest}</b></div></div></div>
- <div class="inf"><div><small>Departs</small><b>${dep}</b></div><div><small>Gate</small><b>${t.status==='cancel'?'—':t.gate}</b></div><div><small>Seat</small><b>${t.seat}</b></div></div></button>
- <div class="ft2"><span class="cd">Departs <b>${countdown()}</b></span><span class="chip ${c==='ok'?'ok':c}">${a}</span></div>
- <div class="acts"><button class="btn sm t" style="width:100%" data-go="${t.status==='cancel'?'notice':'pass'}">${t.status==='cancel'?'Rebook':'Boarding pass'}</button><button class="btn sm o" style="width:100%" data-go="trip">Trip details</button></div></div>`}
-function renderHome(){const hr=D0.getHours(),ht=S.hometab;
- const tabs=['Book','Manage','Check-in','Status'];
- let body='';
- if(ht===0)body=`<div class="ft"><button class="c" data-go="search"><b>JKT</b><small>Jakarta</small></button>${AR.replace('<svg','<svg style="width:26px;height:14px;margin:0 auto 18px"')}<button class="c r" data-go="search"><b>${S.dest}</b><small>${DEST[S.dest].city}</small></button></div>
- <div class="fields"><button class="fd" data-go="search"><small>Depart</small><b>${fmtD(addDays(S.day),{weekday:'short',day:'numeric',month:'short'})}</b></button><button class="fd" data-go="search"><small>Passengers</small><b>${S.pax} adult${S.pax>1?'s':''} · ${S.cab}</b></button></div>
- <button class="btn t" style="margin-top:16px" data-go="search">Search flights</button>`;
- else if(ht===1)body=`<div class="fields" style="margin-top:0"><label class="fd"><small>Booking reference</small><input value="GA7K2M" aria-label="Booking reference"></label><label class="fd"><small>Last name</small><input value="Wijaya" aria-label="Last name"></label></div><button class="btn t" style="margin-top:16px" data-go="trip">Retrieve booking</button>`;
- else if(ht===2)body=`<div class="fields" style="margin-top:0"><label class="fd"><small>Booking reference</small><input value="GA7K2M" aria-label="Booking reference"></label><label class="fd"><small>Last name</small><input value="Wijaya" aria-label="Last name"></label></div><button class="btn t" style="margin-top:16px" data-go="pass">Check in</button>`;
- else body=`<div class="fields" style="margin-top:0"><label class="fd"><small>Flight number</small><input value="${T().flight}" aria-label="Flight number"></label><label class="fd"><small>Date</small><b>${fmtD(T().date,{day:'numeric',month:'short'})}</b></label></div><button class="btn t" style="margin-top:16px" data-go="trip">Check status</button>`;
- const ex=Object.keys(DEST).map(k=>{const D=DEST[k];return `<button class="dc" data-ex="${k}"><div class="im">${art(k)}</div><div class="tx"><b>${D.short}</b><small>${k} · ${D.long?'Long haul':'Short haul'}</small><em>from <b>${(D.base*1000*0.92/1e6).toFixed(1)}M</b></em></div></button>`}).join('');
- $('#v-home').innerHTML=`<div class="hero">${WINGBG}<div class="row"><div class="logo">${WING}Garuda Indonesia</div><button class="bell" data-go="inbox" aria-label="Inbox">${IC.bell}<span class="dot" id="dot1">1</span></button></div>
-  <h1>${hr<11?'Good morning':hr<16?'Good afternoon':'Good evening'}, Rina</h1><div class="hd">${fmtD(D0,{weekday:'long',day:'numeric',month:'long'})}</div><div class="mem"><i></i>GarudaMiles Silver · 12,480 miles</div></div>
- <div class="bk"><div class="bt">${tabs.map((x,i)=>`<button class="${i===ht?'on':''}" data-ht="${i}">${x}</button>`).join('')}</div><div class="bb">${body}</div></div>
- <div class="sec"><h3>Your next trip</h3><button data-go="trips"><small>All trips</small></button></div>${tripCardHtml()}
- <div class="sec"><h3>Explore from Jakarta</h3></div><div class="ex">${ex}</div>
- <div class="sec"><h3>GarudaMiles</h3></div><div class="mc"><div class="k">Silver</div><b>12,480</b><div class="bar"><i></i></div><small>3,520 miles to Gold</small></div>
- <p class="fine">Concept prototype using the Jakarta Northshore simulation. Simulated schedule and fares, not affiliated with Garuda Indonesia. No real bookings, accounts or payments.</p>`;
- badge()}
-$('#v-home').addEventListener('click',e=>{const h=e.target.closest('[data-ht]');if(h){S.hometab=+h.dataset.ht;renderHome();return}
- const x=e.target.closest('[data-ex]');if(x){S.dest=x.dataset.ex;go('search')}});
-function badge(){const n=S.msgs.filter(m=>m.unread).length;['#badge','#dot1'].forEach(s=>{const e=$(s);if(!e)return;e.textContent=n;e.classList.toggle('on',n>0)})}
-
-/* ---------- SEARCH ---------- */
-const minFare=(k,n)=>Math.min(...DEST[k].fl.map(f=>fares(k,f,n).eco));
-function renderSearch(){
- $('#v-search').innerHTML=`${NAV('Book a flight')}<div class="sh"><h2>From</h2><div style="display:flex;align-items:baseline;gap:10px;margin:6px 0 14px"><span class="mono" style="font-size:26px;font-weight:500;letter-spacing:-.04em">JKT</span><span class="sub" style="margin:0">Jakarta Soekarno-Hatta</span></div><h2>To</h2></div>
- <div style="background:#fff;padding-bottom:8px">${Object.keys(DEST).map(k=>{const D=DEST[k];return `<button class="dr ${k===S.dest?'sel':''}" data-d="${k}"><span class="th">${art(k)}</span><span><b>${D.short}</b><small>${k} · ${D.city}</small></span><span class="p"><small>from</small><b>${(minFare(k,S.day)/1e6).toFixed(1)}M</b></span><span class="rad"></span></button>`}).join('')}</div>
- <div class="sh" style="margin-top:10px"><h2>Departure</h2></div><div class="strip">${Array.from({length:14},(_,i)=>i+1).map(n=>{const d=addDays(n),lo=minFare(S.dest,n),all=Array.from({length:14},(_,j)=>minFare(S.dest,j+1)),cheap=lo<=Math.min(...all)*1.04;return `<button class="${n===S.day?'on':''}" data-n="${n}"><small>${fmtD(d,{weekday:'short'})}</small><b>${d.getDate()}</b><em class="${cheap?'lo':''}">${(lo/1e6).toFixed(1)}M</em></button>`}).join('')}</div>
- <div class="step" style="margin-top:10px"><div><b>Passengers</b><small>Adults 12+</small></div><div class="n"><button data-pax="-1" aria-label="Fewer">−</button><span>${S.pax}</span><button data-pax="1" aria-label="More">+</button></div></div>
- <div class="sh" style="margin-top:10px;padding-bottom:10px"><h2 style="margin-bottom:10px">Cabin</h2></div><div style="background:#fff;padding:0 0 18px;margin-top:-12px"><div class="seg">${['Economy','Premium','Business'].map(c=>`<button class="${c===S.cab?'on':''}" data-c="${c}">${c==='Premium'?'Premium Eco':c}</button>`).join('')}</div></div>
- <div class="foot"><button class="btn t" id="goRes">Search flights</button></div>`}
-$('#v-search').addEventListener('click',e=>{const t=e.target;let b;
- if(b=t.closest('[data-d]')){S.dest=b.dataset.d;const y=$('#v-search').scrollTop;renderSearch();$('#v-search').scrollTop=y}
- else if(b=t.closest('[data-n]')){S.day=+b.dataset.n;const y=$('#v-search').scrollTop,x=$('#v-search .strip').scrollLeft;renderSearch();$('#v-search').scrollTop=y;$('#v-search .strip').scrollLeft=x}
- else if(b=t.closest('[data-pax]')){S.pax=Math.max(1,Math.min(9,S.pax+ +b.dataset.pax));const y=$('#v-search').scrollTop;renderSearch();$('#v-search').scrollTop=y}
- else if(b=t.closest('[data-c]')){S.cab=b.dataset.c;const y=$('#v-search').scrollTop;renderSearch();$('#v-search').scrollTop=y}
- else if(t.closest('#goRes'))go('results')});
-
-/* ---------- RESULTS ---------- */
-function renderResults(){const D=DEST[S.dest];
- $('#v-results').innerHTML=`${NAV('Choose your flight',true)}<div class="rh"><div class="r"><span>JKT</span>${AR}<span>${S.dest}</span></div><div class="m">${D.city} · ${S.pax} adult${S.pax>1?'s':''} · prices per person</div></div>
- <div class="strip" style="padding-top:12px">${[1,2,3,4,5,6,7].map(n=>{const d=addDays(n);return `<button class="${n===S.day?'on':''}" data-n="${n}"><small>${fmtD(d,{weekday:'short'})}</small><b>${d.getDate()}</b><em>${(minFare(S.dest,n)/1e6).toFixed(1)}M</em></button>`}).join('')}</div>
- <div class="res">${D.fl.map((f,i)=>{const q=fares(S.dest,f,S.day),a=arrOf(f[1],f[2],D.tz);
-  return `<div class="fl"><div class="a"><div class="tm">${f[1]}<small>Jakarta</small></div><div class="ln"><span>${dur(f[2])}</span><i></i><span>Nonstop</span></div><div class="tm" style="text-align:right">${a.t}${sup(a.d)}<small>${D.short}</small></div></div>
-  <div class="mt"><span class="lg"><img alt="" src="https://www.gstatic.com/flights/airline_logos/70px/GA.png" onerror="this.remove()"></span>${f[0]} · ${f[3]}</div>
-  <div class="cab c${q.cabins.length}">${q.cabins.map((c,ci)=>`<button data-f="${i}" data-ci="${ci}" class="${c.k===S.cab?'pref':''}"><small>${c.k==='Premium'?'Premium Eco':c.k}</small><b>${(c.fam[0].p/1e6).toFixed(2)}M</b>${ci===0&&q.left<5?`<em>${q.left} left</em>`:''}</button>`).join('')}</div></div>`}).join('')}</div>`}
-$('#v-results').addEventListener('click',e=>{let b;
- if(b=e.target.closest('[data-n]')){S.day=+b.dataset.n;renderResults()}
- else if(b=e.target.closest('[data-f]')){S.pick=+b.dataset.f;S.sel={cab:+b.dataset.ci,fam:0};fareSheet()}});
-function fareSheet(){const D=DEST[S.dest],f=D.fl[S.pick],q=fares(S.dest,f,S.day),c=q.cabins[S.sel.cab],fam=c.fam[S.sel.fam];
- $('#sheet').innerHTML=`<div class="grab"></div><b style="font-size:20px;font-weight:600;letter-spacing:-.02em">${c.k==='Premium'?'Premium Economy':c.k}</b><div class="sub" style="margin-top:3px">${f[0]} · ${fmtD(addDays(S.day))} · ${f[1]} → ${arrOf(f[1],f[2],D.tz).t}</div>`+
-  c.fam.map((m,i)=>`<button class="fam ${i===S.sel.fam?'sel':''}" data-fam="${i}"><div class="h"><b>${m.n}</b><span>${idr(m.p)}</span></div><ul>${m.u.map(x=>`<li>${x}</li>`).join('')}</ul></button>`).join('')+
-  `<button class="btn t" style="margin-top:16px" id="selBtn">Select · ${idr(fam.p*S.pax)}</button><p class="fine" style="padding:12px 0 0;text-align:center">${S.pax>1?S.pax+' passengers · ':''}Taxes added at checkout</p>`;openSheet()}
+const I=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const IC={ci:I('<path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M14 6v12" stroke-dasharray="2 2.4"/>'),
+ seat:I('<path d="M7 4v8a2 2 0 0 0 2 2h6l2 6M7 14H5M10 8h3"/>'),bag:I('<rect x="6" y="7" width="12" height="13" rx="2"/><path d="M9 7V4.5h6V7M9.5 11v5M14.5 11v5"/>'),meal:I('<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2.5 1.5-3 5-3 8h3"/>'),
+ ok:I('<circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/>'),warn:I('<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/>'),bad:I('<circle cx="12" cy="12" r="9"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7"/>'),
+ bell:I('<path d="M6 9a6 6 0 1 1 12 0c0 5 2 6.5 2 6.5H4S6 14 6 9zM10 19a2 2 0 0 0 4 0"/>'),info:I('<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/>'),
+ sw:I('<path d="M7 4v14M7 18l-3-3M7 18l3-3M17 20V6M17 6l-3 3M17 6l3 3"/>'),srch:I('<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>'),tv:I('<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M9 21h6"/>'),pin:I('<path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>')};
+const badge=()=>{const n=S.msgs.filter(m=>m.unread).length;['#badge','#dot1'].forEach(s=>{const e=$(s);if(!e)return;e.textContent=n;e.classList.toggle('on',n>0)})};
 function openSheet(){$('#sheet').classList.add('on');$('#scrim').classList.add('on')}
 function closeSheet(){$('#sheet').classList.remove('on');$('#scrim').classList.remove('on')}
 $('#scrim').onclick=closeSheet;
-$('#sheet').addEventListener('click',e=>{let b;
- if(b=e.target.closest('[data-fam]')){S.sel.fam=+b.dataset.fam;fareSheet()}
- else if(e.target.closest('#selBtn')){closeSheet();go('review')}
- else if(e.target.closest('[data-close]'))closeSheet();
- else if(b=e.target.closest('[data-ops]')){closeSheet();setTimeout(()=>ops(b.dataset.ops),200)}});
 
-/* ---------- REVIEW + CONFIRM ---------- */
-const cur=()=>{const D=DEST[S.dest],f=D.fl[S.pick],q=fares(S.dest,f,S.day),c=q.cabins[S.sel.cab],fam=c.fam[S.sel.fam];return {D,f,q,c,fam}};
-function renderReview(){const {D,f,c,fam}=cur(),base=fam.p*S.pax,tax=base*0.11,fee=S.dest==='DPS'||S.dest==='SIN'?0:85000*S.pax,tot=base+tax+fee,a=arrOf(f[1],f[2],D.tz);
- $('#v-review').innerHTML=`${NAV('Review and pay')}
- <div class="blk"><h2>Flight</h2><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="mono" style="font-size:24px;font-weight:500;letter-spacing:-.03em">${f[1]} → ${a.t}${sup(a.d)}</div><div class="sub" style="margin-top:4px">Jakarta to ${D.short} · ${fmtD(addDays(S.day),{weekday:'short',day:'numeric',month:'short'})}</div><div class="sub" style="margin-top:2px">${f[0]} · ${f[3]} · ${fam.n}</div></div></div></div>
- <div class="blk"><h2>Passenger</h2><label class="fd" style="margin-bottom:10px"><small>Name as on passport or ID</small><input value="Rina Wijaya" aria-label="Name"></label><label class="fd"><small>Email</small><input value="rina@example.com" aria-label="Email"></label></div>
- <div class="blk"><h2>Price</h2><div class="pr"><span>${fam.n} × ${S.pax}</span><b>${idr(base)}</b></div><div class="pr"><span>Taxes (PPN 11%)</span><b>${idr(tax)}</b></div>${fee?`<div class="pr"><span>Airport charges</span><b>${idr(fee)}</b></div>`:''}<div class="pr t"><span>Total</span><b>${idr(tot)}</b></div></div>
+/* ================= HOME ================= */
+function tripCard(b,bi){const l=fleg(b),s=stat(l),far=farEnd(l),ps=lp(eD(l),l.from);
+ return `<div class="tc"><button style="display:block;width:100%" data-go="trip" data-bk="${bi}"><div class="art">${art(far,'bg')}<div class="ov"><div class="a"><span>${fmtDn(ps.day)}</span><span>${l.id}</span></div><div class="b"><b>${l.from}</b>${AR}<b>${l.to}</b></div></div></div>
+ <div class="inf"><div><small>Departs</small><b>${hm(ps.min)}</b></div><div><small>Gate</small><b>${l.status==='cancel'?'—':l.gate}</b></div><div><small>Seat</small><b>${seatOf(l,0)}</b></div></div></button>
+ <div class="ft2"><span class="cd">Departs <b>${countdown(l)}</b></span><span class="chip ${s[0]==='ok'?'ok':s[0]}">${s[1]}</span></div>
+ <div class="acts"><button class="btn sm t" style="width:100%" data-${l.status==='cancel'?'go="notice"':'pass="'+bi+'"'}>${l.status==='cancel'?'Rebook':'Boarding pass'}</button><button class="btn sm o" style="width:100%" data-go="trip" data-bk="${bi}">Trip details</button></div></div>`}
+const POP=['DPS','SIN','KIX','HND','SYD','MEL','AMS','LHR','DXB','KUL','HKG','BKK','ICN','JED'].filter(c=>CT[c]);
+function renderHome(){const hr=new Date().getHours(),ht=S.hometab,q=S.q,tabs=['Book','Manage','Check-in','Status'];let body;
+ if(ht===0)body=`<div class="ft"><button class="c" data-go="search"><b>${q.from}</b><small>${cname(q.from)}</small></button>${AR.replace('<svg','<svg style="width:26px;height:14px;margin:0 auto 18px"')}<button class="c r" data-go="search"><b>${q.to}</b><small>${cname(q.to)}</small></button></div>
+ <div class="fields"><button class="fd" data-go="search"><small>Depart${q.type==='ret'?' · Return':''}</small><b>${fmtDn(q.d1,{day:'numeric',month:'short'})}${q.type==='ret'?' – '+fmtDn(q.d2,{day:'numeric',month:'short'}):''}</b></button><button class="fd" data-go="search"><small>Passengers</small><b>${q.a+q.c+q.i} · ${q.cab==='Premium'?'Premium Eco':q.cab}</b></button></div>
+ <button class="btn t" style="margin-top:16px" data-go="search">Search flights</button>`;
+ else if(ht===1||ht===2)body=`<div class="fields" style="margin-top:0"><label class="fd"><small>Booking reference</small><input value="${B0().ref}" aria-label="Booking reference"></label><label class="fd"><small>Last name</small><input value="Wijaya" aria-label="Last name"></label></div><button class="btn t" style="margin-top:16px" ${ht===1?'data-go="trip" data-bk="0"':'data-pass="0"'}>${ht===1?'Retrieve booking':'Check in'}</button>`;
+ else{const l=fleg(B0());body=`<div class="fields" style="margin-top:0"><label class="fd"><small>Flight number</small><input value="${l.id}" aria-label="Flight number"></label><label class="fd"><small>Date</small><b>${fmtDn(lp(eD(l),l.from).day,{day:'numeric',month:'short'})}</b></label></div><button class="btn t" style="margin-top:16px" data-go="trip" data-bk="0">Check status</button>`}
+ const ex=POP.map(k=>{const p=minEco(HUB,k,TD+7);return `<button class="dc" data-ex="${k}"><div class="im">${art(k)}</div><div class="tx"><b>${cname(k)}</b><small>${k} · ${CT[k].z==='D'?'Domestic':'International'}</small>${p?`<em>from <b>${(p/1e6).toFixed(1)}M</b></em>`:''}</div></button>`}).join('');
+ $('#v-home').innerHTML=`<div class="hero">${WINGBG}<div class="row"><div class="logo">${GL()}Garuda Indonesia</div><button class="bell" data-go="inbox" aria-label="Inbox">${IC.bell}<span class="dot" id="dot1">1</span></button></div>
+  <h1>${hr<11?'Good morning':hr<16?'Good afternoon':'Good evening'}, Rina</h1><div class="hd">${fmtDn(TD,{weekday:'long',day:'numeric',month:'long'})}</div><div class="mem"><i></i>GarudaMiles Silver · 12,480 miles</div></div>
+ <div class="bk"><div class="bt">${tabs.map((x,i)=>`<button class="${i===ht?'on':''}" data-ht="${i}">${x}</button>`).join('')}</div><div class="bb">${body}</div></div>
+ <div class="sec"><h3>Your next trip</h3><button data-go="trips"><small>All trips</small></button></div>${tripCard(B0(),0)}
+ <div class="sec"><h3>Explore from Jakarta</h3></div><div class="ex">${ex}</div>
+ <div class="sec"><h3>GarudaMiles</h3></div><div class="mc"><div class="k">Silver</div><b>12,480</b><div class="bar"><i></i></div><small>3,520 miles to Gold</small></div>
+ <p class="fine">Concept prototype using the Jakarta Northshore simulation. Simulated schedule and fares, not affiliated with Garuda Indonesia. No real bookings, accounts or payments.</p>`;badge()}
+$('#v-home').addEventListener('click',e=>{const h=e.target.closest('[data-ht]');if(h){S.hometab=+h.dataset.ht;renderHome();return}
+ const x=e.target.closest('[data-ex]');if(x){S.q.from=HUB;S.q.to=x.dataset.ex;go('search')}});
+
+/* ================= SEARCH ================= */
+function renderSearch(){const q=S.q,same=q.from===q.to,ret=q.type==='ret';
+ const stp=(k,l,s,min,max)=>`<div class="pxrow"><div><b>${l}</b><small>${s}</small></div><div class="n" style="display:flex;align-items:center;gap:14px"><button data-p="${k}" data-v="-1" aria-label="Fewer ${l}" style="width:36px;height:36px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:20px;text-align:center">−</button><span class="mono" style="font-size:18px;min-width:14px;text-align:center">${q[k]}</span><button data-p="${k}" data-v="1" aria-label="More ${l}" style="width:36px;height:36px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:20px;text-align:center">+</button></div></div>`;
+ $('#v-search').innerHTML=`${NAV('Book a flight')}
+ <div class="seg" style="grid-template-columns:1fr 1fr;margin:6px 20px 14px">${[['one','One way'],['ret','Return']].map(([k,l])=>`<button class="${q.type===k?'on':''}" data-tp="${k}">${l}</button>`).join('')}</div>
+ <div class="qrow"><button class="pt" data-pk="from"><small>From</small><b>${q.from}</b><span>${cname(q.from)}</span></button><button class="sw" data-swap aria-label="Swap">${IC.sw.replace('<svg','<svg style="transform:rotate(90deg)"')}</button><button class="pt" data-pk="to" style="text-align:right"><small>To</small><b>${q.to}</b><span>${cname(q.to)}</span></button></div>
+ ${same?'<div class="err">Choose two different airports.</div>':(q.from!==HUB&&q.to!==HUB?'<div class="sub" style="margin:10px 22px 0;font-size:13px">Connects through Jakarta. We check connection times for you.</div>':'')}
+ <div class="dts"><button class="fd" data-cal="d1"><small>Depart</small><b>${fmtDn(q.d1)}</b></button><button class="fd ${ret?'':'off'}" data-cal="d2"><small>Return</small><b>${ret?fmtDn(q.d2):'One way'}</b></button></div>
+ <div class="blk" style="margin:12px 20px 0;padding:6px 16px"><h2 style="display:none"></h2>${stp('a','Adults','12 years and over')}${stp('c','Children','2 to 11 years')}${stp('i','Infants','Under 2, on lap')}</div>
+ <div class="seg" style="margin:14px 20px 0">${['Economy','Premium','Business'].map(c=>`<button class="${c===q.cab?'on':''}" data-c="${c}">${c==='Premium'?'Premium Eco':c}</button>`).join('')}</div>
+ <div style="height:96px"></div><div class="foot" style="position:absolute;left:0;right:0;bottom:0"><button class="btn t" id="goRes" ${same?'disabled style="opacity:.5"':''}>Search flights</button></div>`}
+$('#v-search').addEventListener('click',e=>{const t=e.target;let b;const y=$('#v-search').scrollTop;const rr=()=>{renderSearch();$('#v-search').scrollTop=y};
+ if(b=t.closest('[data-tp]')){S.q.type=b.dataset.tp;if(S.q.d2<S.q.d1)S.q.d2=S.q.d1+5;rr()}
+ else if(t.closest('[data-swap]')){[S.q.from,S.q.to]=[S.q.to,S.q.from];rr()}
+ else if(b=t.closest('[data-pk]')){S.pickFor=b.dataset.pk;go('pick')}
+ else if(b=t.closest('[data-cal]')){if(b.dataset.cal==='d2'&&S.q.type!=='ret')return;S.cal=b.dataset.cal;calSheet()}
+ else if(b=t.closest('[data-p]')){const k=b.dataset.p,q=S.q;let v=q[k]+ +b.dataset.v;const lo=k==='a'?1:0;v=Math.max(lo,Math.min(9,v));q[k]=v;if(q.a+q.c>9)q[k]-=1;if(q.i>q.a)q.i=q.a;rr()}
+ else if(b=t.closest('[data-c]')){S.q.cab=b.dataset.c;rr()}
+ else if(t.closest('#goRes')&&S.q.from!==S.q.to){S.step=0;S.sel=[];S.filt=new Set();go('results')}});
+
+/* airport picker */
+function renderPick(){const f=S.pickFor,other=S.q[f==='from'?'to':'from'];
+ $('#v-pick').innerHTML=`${NAV(f==='from'?'Where from?':'Where to?')}<div class="pk"><label class="in">${IC.srch}<input id="pkIn" placeholder="City or airport code" aria-label="Search airports" autocomplete="off"></label><div id="pkList"></div></div>`;pickList('')}
+function pickList(txt){const f=S.pickFor,other=S.q[f==='from'?'to':'from'],t=txt.trim().toLowerCase();
+ let codes=Object.keys(CT).filter(c=>c!==other);const row=c=>`<button class="pi" data-sel="${c}"><span class="cd">${c}</span><span><b>${CT[c].n}</b><small>${CT[c].z==='D'?'Indonesia':'International'}</small></span>${c===HUB?'<span class="z">Hub</span>':''}</button>`;
+ if(!t){const pop=[HUB,...POP].filter((c,i,a)=>c!==other&&a.indexOf(c)===i);const rest=codes.filter(c=>!pop.includes(c)).sort((a,b)=>CT[a].n.localeCompare(CT[b].n));
+  $('#pkList').innerHTML=`<div class="pl">Popular</div>${pop.map(row).join('')}<div class="pl">All airports</div>${rest.map(row).join('')}`}
+ else{const m=codes.filter(c=>c.toLowerCase().startsWith(t)||CT[c].n.toLowerCase().includes(t)).sort((a,b)=>(a.toLowerCase()===t?-1:0)-(b.toLowerCase()===t?-1:0)||CT[a].n.localeCompare(CT[b].n));$('#pkList').innerHTML=m.length?m.map(row).join(''):'<div class="nores"><b>No airport found</b>Try a city name or a three-letter code.</div>'}}
+$('#v-pick').addEventListener('input',e=>{if(e.target.id==='pkIn')pickList(e.target.value)});
+$('#v-pick').addEventListener('click',e=>{const b=e.target.closest('[data-sel]');if(!b)return;S.q[S.pickFor]=b.dataset.sel;back()});
+
+/* calendar with lowest fare per day */
+const pcache={};
+function dayPrice(o,d,dn){const k=o+d+dn;return k in pcache?pcache[k]:(pcache[k]=minEco(o,d,dn))}
+function calSheet(){const q=S.q,d2=S.cal==='d2',o=d2?q.to:q.from,d=d2?q.from:q.to,t0=new Date(TD*864e5);let h='';
+ for(let m=0;m<7;m++){const first=Date.UTC(t0.getUTCFullYear(),t0.getUTCMonth()+m,1),fd=Math.floor(first/864e5),dt=new Date(first),dim=new Date(Date.UTC(dt.getUTCFullYear(),dt.getUTCMonth()+1,0)).getUTCDate(),lead=isoDow(fd)-1;
+  const cells=[];let mn=1e12;for(let i=0;i<dim;i++){const dn=fd+i,ok=dn>TD&&(!d2||dn>=q.d1),p=ok?dayPrice(o,d,dn):null;cells.push({dn,i,ok,p});if(p&&p<mn)mn=p}
+  h+=`<div class="mh">${dt.toLocaleDateString('en-GB',{month:'long',year:'numeric',timeZone:'UTC'})}</div><div class="gd">${'<span></span>'.repeat(lead)}${cells.map(c=>{const on=c.dn===q.d1||(q.type==='ret'&&c.dn===q.d2),rg=q.type==='ret'&&c.dn>q.d1&&c.dn<q.d2,dis=!c.ok||!c.p;return `<button class="${on?'on':rg?'rg':''} ${dis?'x':''}" data-dn="${c.dn}"><b>${c.i+1}</b><em class="${c.p&&c.p<=mn*1.05?'lo':''}">${c.p?(c.p/1e6).toFixed(1):(c.ok?'—':'')}</em></button>`}).join('')}</div>`}
+ $('#sheet').innerHTML=`<div class="grab"></div><div class="calh"><b style="font-size:20px;font-weight:600;letter-spacing:-.02em">${d2?'Choose return date':'Choose departure date'}</b><div class="sub" style="margin-top:3px">${o} to ${d} · lowest fare per person, in millions of rupiah</div><div class="wk" style="margin-top:12px">${['M','T','W','T','F','S','S'].map(x=>`<span>${x}</span>`).join('')}</div></div><div class="cal">${h}</div>`;
+ openSheet()}
+$('#sheet').addEventListener('click',e=>{const b=e.target.closest('[data-dn]');if(!b)return;const dn=+b.dataset.dn,q=S.q;
+ if(S.cal==='d1'){q.d1=dn;if(q.type==='ret'){if(q.d2<dn)q.d2=dn+5;S.cal='d2';calSheet();return}}else q.d2=dn;
+ closeSheet();if(S.stack[S.stack.length-1]==='search')renderSearch()});
+
+/* ================= RESULTS ================= */
+const todOf=it=>{const m=lp(it.dep,it.legs[0].from).min;return m<720?'Morning':m<1080?'Afternoon':'Evening'};
+function listFor(){const q=S.q,rv=S.step===1,o=rv?q.to:q.from,d=rv?q.from:q.to,X=rv?q.d2:q.d1;let its=search(o,d,X).slice();
+ if(S.filt.has('Nonstop'))its=its.filter(i=>!i.stops);const tf=['Morning','Afternoon','Evening'].filter(x=>S.filt.has(x));if(tf.length)its=its.filter(i=>tf.includes(todOf(i)));
+ const cabK=q.cab;const price=i=>{const c=fares(i);return (c.find(x=>x.k===cabK)||c[0]).fam[0].p};
+ its.sort(S.sort==='price'?(a,b)=>price(a)-price(b):S.sort==='fast'?(a,b)=>a.dur-b.dur:(a,b)=>a.dep-b.dep);return {its,o,d,X}}
+function renderResults(){const q=S.q,rv=S.step===1,{its,o,d,X}=listFor(),pm=pmul(q);
+ const sel0=S.sel[0];
+ const lo=rv?q.d1:TD+1,days=[];for(let n=X-3;n<=X+3;n++)if(n>=lo&&n>TD)days.push(n);
+ const chips=[['Sort','sort'],['price','Lowest price'],['early','Earliest'],['fast','Fastest']];
+ $('#v-results').innerHTML=`${NAV(q.type==='ret'?(rv?'Choose your return':'Choose your outbound'):'Choose your flight',true)}<div class="rh"><div class="r"><span>${o}</span>${AR}<span>${d}</span></div><div class="m">${cname(o)} to ${cname(d)} · ${paxTxt(q)}</div></div>
+ ${rv&&sel0?`<div class="sum"><span class="ck">${IC.ok}</span><div><b>Outbound · ${sel0.it.legs.map(l=>l.id).join(' + ')}</b><small>${fmtDn(lp(sel0.it.dep,sel0.it.legs[0].from).day)} · ${sel0.fam.n} · ${idr(sel0.fam.p*pm)}</small></div><button class="ch" data-change>Change</button></div>`:''}
+ <div class="strip" style="padding-top:12px">${days.map(n=>{const p=dayPrice(o,d,n);return `<button class="${n===X?'on':''}" data-n="${n}" ${p?'':'disabled style="opacity:.4"'}><small>${fmtDn(n,{weekday:'short'})}</small><b>${new Date(n*864e5).getUTCDate()}</b><em>${p?(p/1e6).toFixed(1)+'M':'—'}</em></button>`}).join('')}</div>
+ <div class="chips" role="group" aria-label="Sort and filter">${[['price','Lowest price'],['early','Earliest'],['fast','Fastest']].map(([k,l])=>`<button class="${S.sort===k?'on':''}" data-sort="${k}">${l}</button>`).join('')}<i></i>${['Nonstop','Morning','Afternoon','Evening'].map(f=>`<button class="${S.filt.has(f)?'on':''}" data-filt="${f}">${f}</button>`).join('')}</div>
+ <div class="res">${its.length?its.map((it,i)=>itCard(it,i,o,d)).join(''):`<div class="nores"><b>No flights match</b>${S.filt.size?'Try removing a filter, or pick another date.':'Garuda has no service on this date. Try the dates above.'}</div>`}</div>`}
+function itCard(it,i,o,d){const f=fares(it),l0=it.legs[0],ll=it.legs[it.legs.length-1],dd=lp(ll.arr,ll.to).day-lp(l0.dep,l0.from).day,cab=S.q.cab,cn=f.length;
+ const tag=it.stops?`<span class="tag c">1 stop · ${HUB} ${dur(it.legs[1].dep-it.legs[0].arr)}</span>`:'<span class="tag">Nonstop</span>';
+ return `<div class="fl"><button class="top2" data-det="${i}"><div class="a"><div class="tm">${fT(l0.dep,l0.from)}<small class="ap">${l0.from}</small></div><div class="ln stp"><span>${dur(it.dur)}</span><i></i>${tag}</div><div class="tm" style="text-align:right">${fT(ll.arr,ll.to)}${sup(dd)}<small class="ap">${ll.to}</small></div></div>
+ <div class="mt"><span class="lg">${GL().replace('class="glogo"','class="glogo" style="width:20px;height:20px;border-radius:5px"')}</span>${it.legs.map(l=>l.id).join(' + ')} · ${[...new Set(it.legs.map(l=>l.ac))].join(' / ')}</div></button>
+ <div class="cab c${cn}">${f.map((c,ci)=>`<button data-f="${i}" data-ci="${ci}" class="${c.k===cab?'pref':''} ${c.left===0?'x':''}"><small>${c.k==='Premium'?'Premium Eco':c.k}</small><b>${c.left===0?'Full':(c.fam[0].p/1e6).toFixed(2)+'M'}</b>${c.left>0&&c.left<=4?`<em>${c.left} left</em>`:''}</button>`).join('')}</div></div>`}
+$('#v-results').addEventListener('click',e=>{const t=e.target;let b;
+ if(b=t.closest('[data-n]')){if(S.step===1)S.q.d2=+b.dataset.n;else{S.q.d1=+b.dataset.n;if(S.q.d2<S.q.d1)S.q.d2=S.q.d1+5}renderResults()}
+ else if(b=t.closest('[data-sort]')){S.sort=b.dataset.sort;renderResults()}
+ else if(b=t.closest('[data-filt]')){const f=b.dataset.filt;S.filt.has(f)?S.filt.delete(f):S.filt.add(f);renderResults()}
+ else if(t.closest('[data-change]')){S.step=0;S.sel=[];renderResults()}
+ else if(b=t.closest('[data-f]')){S.cur={i:+b.dataset.f,ci:+b.dataset.ci};S.fi=0;fareSheet()}
+ else if(b=t.closest('[data-det]')){detSheet(listFor().its[+b.dataset.det])}});
+const curIt=()=>listFor().its[S.cur.i];
+function detSheet(it){const cn=S.q.cab;let h=`<div class="grab"></div><b style="font-size:20px;font-weight:600;letter-spacing:-.02em">${cname(it.legs[0].from)} to ${cname(it.legs[it.legs.length-1].to)}</b><div class="sub" style="margin-top:3px">${fmtDn(lp(it.dep,it.legs[0].from).day,{weekday:'long',day:'numeric',month:'long'})} · ${dur(it.dur)} · ${it.stops?'1 stop':'Nonstop'}</div><div style="margin-top:16px">`;
+ it.legs.forEach((l,i)=>{const dd=lp(l.arr,l.to).day-lp(l.dep,l.from).day,wide=!/737|ATR/.test(l.ac);
+  h+=`<div class="lg2"><div class="t">${fT(l.dep,l.from)}</div><div class="c">${cname(l.from)} · ${l.from}${l.from===HUB?' · Terminal '+l.term.slice(1):''}</div><div class="d">${l.id} · ${l.ac} · ${dur(l.arr-l.dep)}</div></div><div class="lg2" style="margin-bottom:${i<it.legs.length-1?4:0}px"><div class="t">${fT(l.arr,l.to)}${sup(dd)}</div><div class="c">${cname(l.to)} · ${l.to}${l.to===HUB?' · Terminal '+l.term.slice(1):''}</div></div>`;
+  const nx=it.legs[i+1];if(nx){const gap=nx.dep-l.arr,tc=l.term!==nx.term,short=gap<MCT(l,nx)+25;h+=`<div class="lay ${short?'w':''}">${IC.warn}<span><b>${dur(gap)} in Jakarta</b><br>${tc?`Change terminals, ${l.term} to ${nx.term}. Allow 30 minutes for the shuttle.`:`Stay in Terminal ${l.term.slice(1)}.`} ${short?'This is a tight connection.':'If your first flight is late, we rebook you on the next flight.'}</span></div>`}});
+ const wide=it.legs.every(l=>!/737|ATR/.test(l.ac)),long=it.dur>180;
+ h+=`</div><h2 class="sec2">On board</h2><div class="am"><div>${IC.meal}${long?'Full meal service and drinks':'Snack and drinks'}</div><div>${IC.tv}${wide?'Seatback screens with films and music':'Entertainment on your own device'}</div><div>${IC.bag}Baggage depends on the fare you choose</div></div><button class="btn t" style="margin-top:18px" data-close>Close</button>`;
+ $('#sheet').innerHTML=h;openSheet()}
+function fareSheet(){const it=curIt(),f=fares(it),c=f[S.cur.ci],fam=c.fam[S.fi],pm=pmul(S.q),l0=it.legs[0];
+ $('#sheet').innerHTML=`<div class="grab"></div><b style="font-size:20px;font-weight:600;letter-spacing:-.02em">${c.k==='Premium'?'Premium Economy':c.k}</b><div class="sub" style="margin-top:3px">${it.legs.map(l=>l.id).join(' + ')} · ${fmtDn(lp(l0.dep,l0.from).day)} · ${fT(l0.dep,l0.from)} to ${fT(it.arr,it.legs[it.legs.length-1].to)}</div>`+
+  c.fam.map((m,i)=>`<button class="fam ${i===S.fi?'sel':''}" data-fam="${i}"><div class="h"><b>${m.n}</b><span>${idr(m.p)}</span></div><ul><li>${m.r.bag}${m.r.chk!=='Not included'?' · checked bag '+m.r.chk:''}</li><li>Seat: ${m.r.seat}</li><li>Changes: ${m.r.chg}</li><li>Refund: ${m.r.ref}</li><li>Miles at ${m.r.mil}</li></ul></button>`).join('')+
+  `<button class="lnk" data-cmp>Compare all fares</button><button class="btn t" style="margin-top:12px" id="selBtn">Select · ${idr(fam.p*pm)}</button><p class="fine" style="padding:12px 0 0;text-align:center">Price for ${paxTxt(S.q)}. Taxes and charges added at checkout.</p>`;openSheet()}
+function cmpSheet(){const it=curIt(),f=fares(it),fams=f.flatMap(c=>c.fam),rows=[['Cabin bag','bag'],['Checked bag','chk'],['Seat','seat'],['Changes','chg'],['Refund','ref'],['Miles','mil'],['Lounge','lng']];
+ $('#sheet').innerHTML=`<div class="grab"></div><b style="font-size:20px;font-weight:600;letter-spacing:-.02em">Compare fares</b><div class="cmp"><table><thead><tr><th></th>${fams.map(m=>`<th>${m.n}<br><span class="mono" style="font-weight:500;color:var(--mute)">${(m.p/1e6).toFixed(2)}M</span></th>`).join('')}</tr></thead><tbody>${rows.map(([l,k])=>`<tr><td>${l}</td>${fams.map(m=>`<td class="${m.r[k]==='—'||m.r[k]==='Not included'||m.r[k]==='Not refundable'?'n':''}">${m.r[k]}</td>`).join('')}</tr>`).join('')}</tbody></table></div><button class="btn o" style="margin-top:18px" data-fare>Back to fares</button>`;openSheet()}
+$('#sheet').addEventListener('click',e=>{const t=e.target;let b;
+ if(b=t.closest('[data-fam]')){S.fi=+b.dataset.fam;fareSheet()}
+ else if(t.closest('[data-cmp]'))cmpSheet();else if(t.closest('[data-fare]'))fareSheet();
+ else if(t.closest('#selBtn')){const it=curIt(),c=fares(it)[S.cur.ci];S.sel[S.step]={it,cab:c.k,fam:c.fam[S.fi]};closeSheet();
+  if(S.q.type==='ret'&&S.step===0){S.step=1;renderResults();$('#v-results').scrollTop=0}else go('review')}
+ else if(t.closest('[data-close]'))closeSheet();
+ else if(b=t.closest('[data-ops]')){closeSheet();setTimeout(()=>ops(b.dataset.ops),200)}});
+
+/* ================= REVIEW + CONFIRM ================= */
+function quote(){const q=S.q,sel=S.sel.filter(Boolean),pm=pmul(q);let fare=0;sel.forEach(s=>fare+=s.fam.p*pm);const tax=fare*0.11,chg=sel.reduce((s,x)=>s+x.it.legs.reduce((a,l)=>a+(CT[farEnd(l)].z==='I'?85000:40000),0),0)*seats(q);return {sel,fare,tax,chg,total:fare+tax+chg}}
+function renderReview(){const q=S.q,Q=quote(),pm=pmul(q),names=[];for(let i=0;i<q.a;i++)names.push(['Adult '+(i+1),i===0?'Rina Wijaya':'']);for(let i=0;i<q.c;i++)names.push(['Child '+(i+1),'']);for(let i=0;i<q.i;i++)names.push(['Infant '+(i+1),'']);
+ const fl=Q.sel.map((s,i)=>{const l0=s.it.legs[0],ll=s.it.legs[s.it.legs.length-1],dd=lp(ll.arr,ll.to).day-lp(l0.dep,l0.from).day;return `<div style="${i?'border-top:1px solid var(--line);margin-top:14px;padding-top:14px':''}"><div class="sub" style="margin:0 0 4px;font-weight:600;color:var(--teal-d)">${q.type==='ret'?(i?'Return':'Outbound'):'Flight'} · ${fmtDn(lp(l0.dep,l0.from).day,{weekday:'short',day:'numeric',month:'short'})}</div><div class="mono" style="font-size:23px;font-weight:500;letter-spacing:-.03em">${fT(l0.dep,l0.from)} → ${fT(ll.arr,ll.to)}${sup(dd)}</div><div class="sub" style="margin-top:4px">${cname(l0.from)} to ${cname(ll.to)} · ${s.it.stops?'1 stop in Jakarta':'Nonstop'}</div><div class="sub" style="margin-top:2px">${s.it.legs.map(l=>l.id).join(' + ')} · ${s.fam.n}</div></div>`}).join('');
+ $('#v-review').innerHTML=`${NAV('Review and pay')}<div class="blk"><h2>Your trip</h2>${fl}</div>
+ <div class="blk"><h2>Passengers</h2>${names.map((n,i)=>`<label class="fd" style="margin-bottom:10px" id="pw${i}"><small>${n[0]} · name as on passport or ID</small><input id="pn${i}" value="${n[1]}" placeholder="Given name and family name" aria-label="${n[0]} name"></label>`).join('')}<label class="fd"><small>Email for your e-ticket</small><input value="rina@example.com" aria-label="Email"></label></div>
+ <div class="blk"><h2>Price</h2><div class="pr"><span>Fares · ${q.a} adult${q.a>1?'s':''}${q.c?', '+q.c+' child':''}${q.i?', '+q.i+' infant':''}</span><b>${idr(Q.fare)}</b></div><div class="pr"><span>Taxes (PPN 11%)</span><b>${idr(Q.tax)}</b></div><div class="pr"><span>Airport charges</span><b>${idr(Q.chg)}</b></div><div class="pr t"><span>Total</span><b>${idr(Q.total)}</b></div>${q.c||q.i?`<p class="fine" style="padding:6px 0 0">Children pay 75% of the adult fare. Infants pay 10% and travel on a lap.</p>`:''}</div>
  <div class="blk"><h2>Pay with</h2>${['QRIS','Credit card','GoPay'].map((x,i)=>`<button class="pay ${i===S.pay?'sel':''}" data-pay="${i}"><span class="ic">${['QR','CARD','GO'][i]}</span>${x}<span class="rad"></span></button>`).join('')}</div>
- <p class="fine" style="padding-bottom:110px">Concept prototype. No payment is taken.</p>
- <div class="foot" style="position:absolute;left:0;right:0"><button class="btn t" id="payBtn">Pay ${idr(tot)}</button></div>`}
+ <p class="fine" style="padding-bottom:110px">Concept prototype. No payment is taken.</p><div class="foot" style="position:absolute;left:0;right:0;bottom:0"><button class="btn t" id="payBtn">Pay ${idr(Q.total)}</button></div>`}
 $('#v-review').addEventListener('click',e=>{let b;
  if(b=e.target.closest('[data-pay]')){S.pay=+b.dataset.pay;const y=$('#v-review').scrollTop;renderReview();$('#v-review').scrollTop=y}
- else if(e.target.closest('#payBtn')){const {D,f,fam}=cur();
-  S.trip={ref:'GA'+Math.random().toString(36).slice(2,5).toUpperCase()+'K',flight:f[0],dest:S.dest,date:addDays(S.day),dep:f[1],blk:f[2],term:S.dest==='DPS'?'T1':'T2',gate:'K'+(2+Math.floor(seeded(f[0])*9)),seat:(12+Math.floor(seeded(f[0]+'s')*20))+'ABCDEF'[Math.floor(seeded(f[0]+'x')*6)],fam:fam.n,pax:S.pax,status:'ok',delay:0,rebooked:null};
-  S.msgs=[{id:Date.now(),kind:'info',t:'Booking confirmed',p:`${f[0]} to ${D.city}, ${fmtD(addDays(S.day))}. Reference ${S.trip.ref}.`,at:'now',unread:true,go:'trip'}];
+ else if(e.target.closest('#payBtn')){const q=S.q,n=q.a+q.c+q.i,names=[];let bad=false;for(let i=0;i<n;i++){const v=$('#pn'+i).value.trim();names.push(v);if(!v){bad=true;$('#pw'+i).classList.add('bad')}}
+  if(bad){toast('Check passenger names','Every traveller needs a name as on their ID');return}
+  const sel=S.sel.filter(Boolean),bk=mkBooking(q,sel.map(s=>s.it),sel.map(s=>({cab:s.cab,fam:s.fam})),names);
+  sel.forEach(s=>s.it.legs.forEach(l=>{const k=l.id+'|'+l.dep+'|'+s.cab;SOLD[k]=(SOLD[k]||0)+seats(q)}));try{localStorage.setItem('ga-sold',JSON.stringify(SOLD))}catch(x){}
+  S.bookings.unshift(bk);S.bk=0;const l0=bk.dirs[0].legs[0];S.msgs.unshift({id:Date.now(),kind:'info',t:'Booking confirmed',p:`${cname(l0.from)} to ${cname(bk.dirs[0].legs.slice(-1)[0].to)}, ${fmtDn(lp(l0.dep,l0.from).day)}. Reference ${bk.ref}.`,at:'now',unread:true,go:'trip'});
   S.stack=['trips'];go('done',false)}});
-function renderDone(){const t=T(),d=Dd();
+function renderDone(){const b=BK();
  $('#v-done').innerHTML=`<div class="okw"><div class="okc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div></div>
- <div class="pad" style="text-align:center;padding-top:16px"><h1>You are booked</h1><div class="sub">Reference <b class="mono" style="color:var(--ink)">${t.ref}</b></div></div>
- <div style="margin-top:24px">${tripCardHtml()}</div>
- <div class="pad" style="margin-top:18px;display:grid;gap:10px"><button class="btn t" data-go="trips">View my trips</button><button class="btn o" data-go="home">Back to home</button></div><p class="fine" style="text-align:center">A confirmation is in your Inbox.</p>`;badge()}
+ <div class="pad" style="text-align:center;padding-top:16px"><h1>You are booked</h1><div class="sub">Reference <b class="mono" style="color:var(--ink)">${b.ref}</b> · ${idr(b.total)}</div></div>
+ <div style="margin-top:24px">${tripCard(b,0)}</div>
+ <div class="pad" style="margin-top:18px;display:grid;gap:10px"><button class="btn t" data-go="trip" data-bk="0">View trip details</button><button class="btn o" data-go="home">Back to home</button></div><p class="fine" style="text-align:center">A confirmation is in your Inbox.</p>`;badge()}
 
-/* ---------- TRIPS ---------- */
+/* ================= TRIPS ================= */
+function bookCard(b,bi){const [a,z,ar]=routeTxt(b),l=fleg(b),s=stat(l),d0=lp(b.dirs[0].legs[0].dep,a).day,d1=b.dirs.length>1?lp(b.dirs[1].legs[0].dep,z).day:null;
+ return `<button class="tc" style="margin-bottom:12px;text-align:left" data-go="trip" data-bk="${bi}"><div class="art" style="height:96px">${art(farEnd(b.dirs[0].legs.slice(-1)[0]),'bg')}<div class="ov"><div class="a"><span>${fmtDn(d0,{day:'numeric',month:'short'})}${d1?' – '+fmtDn(d1,{day:'numeric',month:'short'}):''}</span><span>${b.ref}</span></div><div class="b"><b style="font-size:26px">${a}</b>${b.dirs.length>1?'<svg viewBox="0 0 56 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 5h53M47 0l7 5M55 11H2M9 6l-7 5"/></svg>':AR}<b style="font-size:26px">${z}</b></div></div></div><div class="ft2"><span class="cd">${flat(b).map(x=>x.id).join(' · ')}</span><span class="chip ${s[0]==='ok'?'ok':s[0]}">${s[1]}</span></div></button>`}
 function renderTrips(){const up=S.tt===0;
  $('#v-trips').innerHTML=`<div style="padding:18px 20px 4px"><h1>My trips</h1></div><div class="seg4"><button class="${up?'on':''}" data-tt="0">Upcoming</button><button class="${up?'':'on'}" data-tt="1">Past</button></div><div style="padding-top:12px">`+
- (up?tripCardHtml():S.past.map(p=>`<div class="tc" style="margin-bottom:12px;opacity:.9"><div class="art" style="height:84px">${art(p.dest,'bg')}<div class="ov"><div class="a"><span>${fmtD(p.date)}</span><span>${p.flight}</span></div><div class="b"><b style="font-size:24px">JKT</b>${AR}<b style="font-size:24px">${p.dest}</b></div></div></div><div class="ft2"><span class="cd">${DEST[p.dest].city} · ${p.fam}</span><span class="chip">Completed</span></div></div>`).join(''))+'</div><div style="height:20px"></div>'}
+ (up?S.bookings.map(bookCard).join(''):S.past.map(p=>`<div class="tc" style="margin-bottom:12px;opacity:.9"><div class="art" style="height:84px">${art(p.to==='JKT'?p.from:p.to,'bg')}<div class="ov"><div class="a"><span>${fmtDn(p.day)}</span><span>${p.id}</span></div><div class="b"><b style="font-size:24px">${p.from}</b>${AR}<b style="font-size:24px">${p.to}</b></div></div></div><div class="ft2"><span class="cd">${cname(p.to)} · ${p.fam}</span><span class="chip">Completed</span></div></div>`).join(''))+'</div><div style="height:20px"></div>'}
 $('#v-trips').addEventListener('click',e=>{const b=e.target.closest('[data-tt]');if(b){S.tt=+b.dataset.tt;renderTrips()}});
-function renderTrip(){const t=T(),d=Dd(),late=t.status==='delay',st=statusTxt(),a=arrLoc();
- $('#v-trip').innerHTML=`<div class="th">${art(t.dest,'bg')}<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,40,58,.35),rgba(6,40,58,.7))"></div>
-  <div class="nav" style="background:none;color:#fff;padding-left:0;margin:0 -8px"><button class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><span class="t">${t.flight} · ${fmtD(t.date,{weekday:'short',day:'numeric',month:'short'})}</span></div>
-  <div class="rr"><div><b>JKT</b><small>Jakarta</small></div>${AR}<div style="text-align:right"><b>${t.dest}</b><small>${d.city}</small></div></div>
-  <div class="cd ${st[0]==='ok'?'':st[0]}"><i></i>${st[1]} · ${t.status==='cancel'?st[2]:'departs '+countdown()}</div></div>
- <div class="qa"><button data-go="pass">${IC.ci}Boarding pass</button><button data-sheet="seat">${IC.seat}Seat</button><button data-sheet="bag">${IC.bag}Baggage</button><button data-sheet="meal">${IC.meal}Meals</button></div>
- <div class="tl"><div class="s"><div class="t">${hm(depMin())}${late?`<s>${t.dep}</s><em>+${t.delay} min</em>`:''}</div><div class="c">Jakarta · Terminal ${t.term.slice(1)}</div><div class="d">Gate ${t.status==='cancel'?'—':t.gate} · boarding ${hm(depMin()-45)}</div></div>
-  <div class="fl2">${dur(t.blk)} · nonstop · ${t.flight}</div>
-  <div class="s e"><div class="t">${a.t}${sup(a.d)}</div><div class="c">${d.city}</div><div class="d">Local time</div></div></div>
- <div class="kv"><div><small>Passenger</small><b style="font-family:var(--font);font-weight:550">Rina Wijaya${t.pax>1?' +'+(t.pax-1):''}</b></div><div><small>Booking</small><b>${t.ref}</b></div><div><small>Seat</small><b>${t.seat}</b></div><div><small>Fare</small><b style="font-family:var(--font);font-weight:550;font-size:15px">${t.fam}</b></div></div><div style="height:28px"></div>`}
-document.addEventListener('click',e=>{const s=e.target.closest('[data-sheet]');if(!s)return;const k=s.dataset.sheet;
- const T_={seat:['Change seat','Choose from the seats still free on '+T().flight+'.',['24A Window · free','24C Aisle · free','12A Extra legroom · '+idr(450000)]],bag:['Add baggage','Extra checked bags, priced per bag.',['1 bag · 20 kg · '+idr(280000),'1 bag · 30 kg · '+idr(400000)]],meal:['Pre-order a meal','Choose before check-in closes.',['Nasi goreng kampung','Grilled chicken, rice and vegetables','Vegetarian · gado-gado']]}[k];
+function legBlock(l,b,k){const dd=lp(eA(l),l.to).day-lp(eD(l),l.from).day,late=l.status==='delay',st=stat(l);
+ return `<div class="legc"><div class="lg2"><div class="t">${fT(eD(l),l.from)}${late?` <s style="font-size:13px;color:var(--mute);font-family:var(--font)">${fT(l.dep,l.from)}</s> <em style="font-style:normal;color:var(--red);font-size:13px;font-weight:600;font-family:var(--font)">+${l.delay} min</em>`:''}</div><div class="c">${cname(l.from)} · ${l.from}${l.from===HUB?' · Terminal '+l.term.slice(1):''}</div><div class="d">${l.id} · ${l.ac}${l.from===HUB&&l.status!=='cancel'?' · Gate '+l.gate:''}</div></div>
+ <div class="meta">${dur(l.arr-l.dep)} · seat ${Array.from({length:seats(b.pax)},(_,n)=>seatOf(l,n)).join(', ')}${st[0]!=='ok'||l.status==='boarding'?' · <b style="color:var(--'+(st[0]==='ok'?'green':st[0]==='warn'?'amber':'red')+')">'+st[1]+'</b>':''}</div>
+ <div class="lg2" style="padding-bottom:12px"><div class="t">${fT(eA(l),l.to)}${sup(dd)}</div><div class="c">${cname(l.to)} · ${l.to}</div></div></div>`}
+function renderTrip(){const b=BK(),l=fleg(b),st=stat(l),[a,z]=routeTxt(b),far=farEnd(b.dirs[0].legs.slice(-1)[0]);
+ const dirsH=b.dirs.map((d,di)=>{const d0=d.legs[0];return `<div class="dirh"><b>${b.dirs.length>1?(di?'Return':'Outbound'):'Your flight'}</b><small>${fmtDn(lp(d0.dep,d0.from).day,{weekday:'short',day:'numeric',month:'short'})}${d.legs.length>1?' · 1 stop':' · Nonstop'}</small></div>`+d.legs.map((x,i)=>{const nx=d.legs[i+1];return legBlock(x,b)+(nx?`<div class="lay" style="margin:8px 16px">${IC.warn}<span><b>${dur(nx.dep-x.arr)} in Jakarta</b><br>${x.term!==nx.term?`Change terminals, ${x.term} to ${nx.term}.`:`Stay in Terminal ${x.term.slice(1)}.`} Protected connection.</span></div>`:'')}).join('')}).join('');
+ $('#v-trip').innerHTML=`<div class="th">${art(far,'bg')}<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,40,58,.35),rgba(6,40,58,.72))"></div>
+  <div class="nav" style="background:none;color:#fff;padding-left:0;margin:0 -8px"><button class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><span class="t">${b.ref}</span></div>
+  <div class="rr"><div><b>${a}</b><small>${cname(a)}</small></div>${b.dirs.length>1?'<svg viewBox="0 0 56 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 5h53M47 0l7 5M55 11H2M9 6l-7 5"/></svg>':AR}<div style="text-align:right"><b>${z}</b><small>${cname(z)}</small></div></div>
+  <div class="cd ${st[0]==='ok'?'':st[0]}"><i></i>${l.id} · ${st[1]} · ${l.status==='cancel'?st[2]:'departs '+countdown(l)}</div></div>
+ <div class="qa"><button data-pass="${S.bk}">${IC.ci}Boarding pass</button><button data-sheet="seat">${IC.seat}Seat</button><button data-sheet="bag">${IC.bag}Baggage</button><button data-sheet="meal">${IC.meal}Meals</button></div>
+ ${dirsH}
+ <div class="kv" style="margin-top:20px"><div style="grid-column:1/-1"><small>Passengers</small><b style="font-family:var(--font);font-weight:550;font-size:15.5px">${b.names.map((n,i)=>n||('Passenger '+(i+1))).join(' · ')}</b></div><div><small>Booking</small><b>${b.ref}</b></div><div><small>Paid</small><b style="font-size:15px">${idr(b.total)}</b></div><div style="grid-column:1/-1"><small>Fare</small><b style="font-family:var(--font);font-weight:550;font-size:15px">${[...new Set(b.fams)].join(' · ')}</b></div></div><div style="height:84px"></div>`}
+document.addEventListener('click',e=>{const s=e.target.closest('[data-sheet]');if(!s)return;const k=s.dataset.sheet,l=fleg(BK());
+ const T_={seat:['Change seat','Choose from the seats still free on '+l.id+'.',['Window · free','Aisle · free','Extra legroom · '+idr(450000)]],bag:['Add baggage','Extra checked bags, priced per bag.',['1 bag · 20 kg · '+idr(280000),'1 bag · 30 kg · '+idr(400000)]],meal:['Pre-order a meal','Choose before check-in closes.',['Nasi goreng kampung','Grilled chicken, rice and vegetables','Vegetarian · gado-gado']]}[k];
  $('#sheet').innerHTML=`<div class="grab"></div><b style="font-size:20px;font-weight:600">${T_[0]}</b><p class="sub">${T_[1]}</p><div class="dm">${T_[2].map(x=>`<button data-close>${x}</button>`).join('')}</div><p class="fine" style="padding:12px 0 0">Concept prototype. Nothing is charged.</p>`;openSheet()});
 
-/* ---------- PASS ---------- */
+/* ================= PASS ================= */
 function qr(seed){const n=25,rng=i=>seeded(seed+i);let s='';const f=(x,y)=>`<rect x="${x}" y="${y}" width="7" height="7" fill="#0c1d27"/><rect x="${x+1}" y="${y+1}" width="5" height="5" fill="#fff"/><rect x="${x+2}" y="${y+2}" width="3" height="3" fill="#0c1d27"/>`;
  for(let y=0;y<n;y++)for(let x=0;x<n;x++){if((x<8&&y<8)||(x>n-9&&y<8)||(x<8&&y>n-9))continue;if(rng(y*n+x)>.52)s+=`<rect x="${x}" y="${y}" width="1" height="1" fill="#0c1d27"/>`}
  return `<svg viewBox="-1 -1 27 27" shape-rendering="crispEdges" role="img" aria-label="Boarding pass code">${s}${f(0,0)}${f(n-7,0)}${f(0,n-7)}</svg>`}
-function renderPass(){const t=T(),d=Dd(),late=t.status==='delay',dep=hm(depMin());
+function renderPass(){const b=BK(),L=flat(b),l=L[Math.min(S.pl,L.length-1)],late=l.status==='delay',ps=lp(eD(l),l.from),bd=eD(l)-45,cls=b.fams[Math.min(b.dirs.findIndex(d=>d.legs.includes(l)),b.fams.length-1)]||b.fams[0];
  const N=(c,i,h)=>`<div class="note ${c}">${i}<span>${h}</span></div>`;
- const note=t.status==='cancel'?N('bad',IC.bad,'This flight is cancelled. <b>Rebook</b> from your Inbox to get a new pass.'):
-  late?N('warn',IC.warn,`Departure moved to <b>${dep}</b>. Boarding now opens at <b>${hm(depMin()-45)}</b>. Gate ${t.gate}.`):
-  t.status==='boarding'?N('',IC.ok,`<b>Boarding now</b> at gate ${t.gate}. Gate closes at ${hm(depMin()-15)}.`):
-  N('',IC.warn,`Boarding opens at <b>${hm(depMin()-45)}</b>. Gate ${t.gate} is confirmed 90 minutes before departure.`);
- $('#v-pass').innerHTML=`<div class="pw">${NAV('Boarding pass',true)}
- <div class="pass"><div class="hd">${WINGBG}<div class="l"><span>${WING}Garuda Indonesia</span><span>${t.fam.split(' ')[0]}</span></div><div class="rr"><div><b>JKT</b><small>Jakarta</small></div>${AR}<div style="text-align:right"><b>${t.dest}</b><small>${d.city}</small></div></div></div>
- <div class="bd"><div class="name"><small>Passenger</small><b>WIJAYA / RINA MS</b></div>
- <div class="g"><div><small>Flight</small><b>${t.flight.replace(' ','')}</b></div><div><small>Date</small><b>${fmtD(t.date,{day:'numeric',month:'short'})}</b></div><div><small>Seat</small><b>${t.seat}</b></div>
- <div><small>Departs</small><b class="${late?'s':''}">${dep}</b></div><div><small>Gate</small><b>${t.status==='cancel'?'—':t.gate}</b></div><div><small>Boards</small><b>${hm(depMin()-45)}</b></div></div>
- <div class="cut"></div><div class="qr">${t.status==='cancel'?'<div class="empty" style="padding:30px 0">Pass withdrawn</div>':qr(t.ref+t.flight+t.seat)}</div></div></div>${note}
- <div style="padding:16px 16px 28px;display:grid;grid-template-columns:1fr 1fr;gap:10px"><button class="btn o">Add to Wallet</button><button class="btn o" data-go="trip">Trip details</button></div></div>`}
+ const note=l.status==='cancel'?N('bad',IC.bad,'This flight is cancelled. <b>Rebook</b> from your Inbox to get a new pass.'):
+  late?N('warn',IC.warn,`Departure moved to <b>${hm(ps.min)}</b>. Boarding now opens at <b>${fT(bd,l.from)}</b>. Gate ${l.gate}.`):
+  l.status==='boarding'?N('',IC.ok,`<b>Boarding now</b> at gate ${l.gate}. Gate closes at ${fT(eD(l)-15,l.from)}.`):
+  N('',IC.warn,`Boarding opens at <b>${fT(bd,l.from)}</b>. Gate ${l.gate} is confirmed 90 minutes before departure.`);
+ $('#v-pass').innerHTML=`<div class="pw">${NAV('Boarding pass',true)}${L.length>1?`<div class="lp">${L.map((x,i)=>`<button class="${x===l?'on':''}" data-pl="${i}">${x.from} → ${x.to}</button>`).join('')}</div>`:''}
+ <div class="pass"><div class="hd">${WINGBG}<div class="l"><span>${GL()}Garuda Indonesia</span><span>${cls.split(' ')[0]}</span></div><div class="rr"><div><b>${l.from}</b><small>${cname(l.from)}</small></div>${AR}<div style="text-align:right"><b>${l.to}</b><small>${cname(l.to)}</small></div></div></div>
+ <div class="bd"><div class="name"><small>Passenger 1 of ${b.names.length}</small><b>${(b.names[0]||'Passenger').toUpperCase().split(' ').reverse().join(' / ')}</b></div>
+ <div class="g"><div><small>Flight</small><b>${l.id.replace(' ','')}</b></div><div><small>Date</small><b>${fmtDn(ps.day,{day:'numeric',month:'short'})}</b></div><div><small>Seat</small><b>${seatOf(l,0)}</b></div>
+ <div><small>Departs</small><b class="${late?'s':''}">${hm(ps.min)}</b></div><div><small>Gate</small><b>${l.status==='cancel'?'—':l.gate}</b></div><div><small>Boards</small><b>${fT(bd,l.from)}</b></div></div>
+ <div class="cut"></div><div class="qr">${l.status==='cancel'?'<div class="empty" style="padding:30px 0">Pass withdrawn</div>':qr(b.ref+l.id+seatOf(l,0))}</div></div></div>${note}
+ <div style="padding:16px 16px 84px;display:grid;grid-template-columns:1fr 1fr;gap:10px"><button class="btn o">Add to Wallet</button><button class="btn o" data-go="trip" data-bk="${S.bk}">Trip details</button></div></div>`}
+$('#v-pass').addEventListener('click',e=>{const p=e.target.closest('[data-pl]');if(p){S.pl=+p.dataset.pl;renderPass()}});
 
-/* ---------- INBOX + NOTICE ---------- */
+/* ================= INBOX + NOTICE ================= */
 function renderInbox(){$('#v-inbox').innerHTML=`<div style="padding:18px 20px 14px"><h1>Inbox</h1></div>`+(S.msgs.length?S.msgs.map((m,i)=>`<button class="msg ${m.unread?'unread':''}" data-m="${i}"><span class="ic ${m.kind==='bad'?'bad':m.kind==='warn'?'warn':''}">${IC[m.kind]||IC.ci}</span><div style="min-width:0"><b>${m.t}</b><p>${m.p}</p></div><span class="tm">${m.at}</span></button>`).join(''):'<div class="empty">No messages</div>')}
-$('#v-inbox').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(!b)return;const m=S.msgs[+b.dataset.m];m.unread=false;badge();go(m.go||'notice')});
-function renderNotice(){const t=T(),d=Dd(),cx=t.status==='cancel',late=t.status==='delay',alt=d.fl.find(f=>mins(f[1])>mins(t.dep)+30)||d.fl[d.fl.length-1];
- let body;
- if(t.rebooked)body=`<div class="pad" style="padding-top:8px"><h1>You are rebooked</h1><div class="sub">${t.rebooked.flight} · ${t.rebooked.dep} today</div></div>${`<div class="note">${IC.ok}<span>Same fare, no charge. Your new boarding pass is ready.</span></div>`}<div class="pad" style="padding-top:20px"><button class="btn t" data-go="pass">Open boarding pass</button></div>`;
+$('#v-inbox').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(!b)return;const m=S.msgs[+b.dataset.m];m.unread=false;badge();S.bk=0;if(m.go==='pass'){const L=flat(B0());S.pl=Math.max(0,L.indexOf(fleg(B0())))}go(m.go||'notice')});
+const altFor=l=>{const X=lp(l.dep,l.from).day;let a=legsDep(l.from,X).filter(x=>x.to===l.to&&x.dep>l.dep+30)[0];if(!a)a=legsDep(l.from,X+1).filter(x=>x.to===l.to)[0];return a};
+function renderNotice(){const b=B0(),l=fleg(b),cx=l.status==='cancel',late=l.status==='delay',alt=altFor(l),route=`${cname(l.from)} to ${cname(l.to)}`;let body;
+ if(l.rebooked)body=`<div class="pad" style="padding-top:8px"><h1>You are rebooked</h1><div class="sub">${l.id} · ${fT(l.dep,l.from)} ${fmtDn(lp(l.dep,l.from).day)}</div></div><div class="note" style="margin-top:18px">${IC.ok}<span>Same fare, no charge. Your new boarding pass is ready.</span></div><div class="pad" style="padding-top:20px"><button class="btn t" data-pass="0">Open boarding pass</button></div>`;
  else if(!late&&!cx)body='<div class="empty">Nothing needs your attention.</div>';
- else body=`<div class="pad" style="padding-top:8px"><h1>${cx?'Your flight is cancelled':'Your flight is delayed'}</h1><div class="sub">${t.flight} · Jakarta to ${d.short} · ${fmtD(t.date)}</div></div>
- <div class="note ${cx?'bad':'warn'}" style="margin-top:18px">${cx?IC.bad:IC.warn}<span>${cx?'<b>Operational reasons.</b> We are sorry. Choose how to continue.':`<b>New departure ${hm(depMin())}</b> (was ${t.dep}). Late arrival of the aircraft. Gate ${t.gate}.`}</span></div>
+ else{const dayTxt=alt&&lp(alt.dep,alt.from).day!==lp(l.dep,l.from).day?' tomorrow':'';body=`<div class="pad" style="padding-top:8px"><h1>${cx?'Your flight is cancelled':'Your flight is delayed'}</h1><div class="sub">${l.id} · ${route} · ${fmtDn(lp(l.dep,l.from).day)}</div></div>
+ <div class="note ${cx?'bad':'warn'}" style="margin-top:18px">${cx?IC.bad:IC.warn}<span>${cx?'<b>Operational reasons.</b> We are sorry. Choose how to continue.':`<b>New departure ${fT(eD(l),l.from)}</b> (was ${fT(l.dep,l.from)}). Late arrival of the aircraft. Gate ${l.gate}.`}</span></div>
  <div class="pad" style="padding-top:20px"><h2>Your options</h2>
-  ${cx?'':`<button class="opt ${S.opt==='keep'?'sel':''}" data-opt="keep"><div class="h"><b>Keep this flight</b><span>${hm(depMin())}</span></div><p>Seat ${t.seat} stays. Boarding opens at ${hm(depMin()-45)}.</p></button>`}
-  <button class="opt ${S.opt==='rebook'||cx&&S.opt!=='refund'?'sel':''}" data-opt="rebook"><div class="h"><b>Rebook ${alt[0]}</b><span>${alt[1]}</span></div><p>Same fare and cabin, no charge. Seat chosen for you.</p></button>
-  <button class="opt ${S.opt==='refund'?'sel':''}" data-opt="refund"><div class="h"><b>Refund</b><span>${idr(fares(t.dest,[t.flight,t.dep,t.blk,''],1).eco)}</span></div><p>Back to your original payment within 7 days.</p></button></div>
- <div class="vch"><b>Meal voucher</b>${late&&t.delay>=45?' of IDR 120,000 is available':' is available if you wait more than 2 hours'} at the Garuda counter in Terminal ${t.term.slice(1)}.</div>
- <div class="foot" style="margin-top:24px"><button class="btn t" id="confirmOpt">Confirm</button></div>`;
+  ${cx?'':`<button class="opt ${S.opt==='keep'?'sel':''}" data-opt="keep"><div class="h"><b>Keep this flight</b><span>${fT(eD(l),l.from)}</span></div><p>Seat ${seatOf(l,0)} stays. Boarding opens at ${fT(eD(l)-45,l.from)}.</p></button>`}
+  ${alt?`<button class="opt ${S.opt==='rebook'||cx&&S.opt!=='refund'?'sel':''}" data-opt="rebook"><div class="h"><b>Rebook ${alt.id}</b><span>${fT(alt.dep,alt.from)}${dayTxt}</span></div><p>Same fare and cabin, no charge. Seat chosen for you.</p></button>`:''}
+  <button class="opt ${S.opt==='refund'?'sel':''}" data-opt="refund"><div class="h"><b>Refund</b><span>${idr(b.total/Math.max(1,flat(b).length))}</span></div><p>Back to your original payment within 7 days.</p></button></div>
+ <div class="vch"><b>Meal voucher</b>${late&&l.delay>=45?' of IDR 120,000 is available':' is available if you wait more than 2 hours'} at the Garuda counter${l.from===HUB?' in Terminal '+l.term.slice(1):''}.</div>
+ <div class="foot" style="margin-top:24px"><button class="btn t" id="confirmOpt">Confirm</button></div>`}
  $('#v-notice').innerHTML=NAV('Flight update')+body}
 $('#v-notice').addEventListener('click',e=>{const o=e.target.closest('[data-opt]');if(o){S.opt=o.dataset.opt;renderNotice();return}
- if(e.target.closest('#confirmOpt')){const t=T(),d=Dd(),alt=d.fl.find(f=>mins(f[1])>mins(t.dep)+30)||d.fl[d.fl.length-1];
-  if(S.opt==='rebook'||t.status==='cancel'&&S.opt!=='refund'){t.rebooked={flight:alt[0],dep:alt[1]};t.flight=alt[0];t.dep=alt[1];t.blk=alt[2];t.status='ok';t.delay=0;S.msgs.unshift({id:Date.now(),kind:'info',t:'You are rebooked',p:alt[0]+' at '+alt[1]+'. Same fare, no charge.',at:'now',unread:false,go:'notice'});renderNotice();toast('Rebooked',alt[0]+' · '+alt[1])}
-  else if(S.opt==='refund')toast('Refund requested','Within 7 days');else toast('Staying on '+t.flight,'Boarding opens '+hm(depMin()-45))}});
-function renderMe(){$('#v-me').innerHTML=`<div class="hero" style="padding-bottom:30px">${WINGBG}<div class="logo">${WING}GarudaMiles</div><h1>Rina Wijaya</h1><div class="hd">Member since 2019</div><div class="mem"><i></i>Silver</div></div><div class="kv" style="margin-top:-0px;margin-top:16px"><div><small>Miles</small><b>12,480</b></div><div><small>Tier miles</small><b>6,480</b></div><div><small>Next tier</small><b>Gold</b></div><div><small>Expires</small><b>Dec 2028</b></div></div><p class="fine">Concept prototype. Simulated data.</p>`}
-const R={home:renderHome,search:renderSearch,results:renderResults,review:renderReview,done:renderDone,trips:renderTrips,trip:renderTrip,pass:renderPass,inbox:renderInbox,notice:renderNotice,me:renderMe};
-function render(n){(R[n]||(()=>{}))()}
+ if(e.target.closest('#confirmOpt')){const b=B0(),l=fleg(b),alt=altFor(l);
+  if(alt&&(S.opt==='rebook'||l.status==='cancel'&&S.opt!=='refund')){Object.assign(l,{id:alt.id,dep:alt.dep,arr:alt.arr,term:alt.term,ac:alt.ac,status:'ok',delay:0,rebooked:alt.id});S.msgs.unshift({id:Date.now(),kind:'info',t:'You are rebooked',p:alt.id+' at '+fT(alt.dep,alt.from)+'. Same fare, no charge.',at:'now',unread:false,go:'notice'});renderNotice();toast('Rebooked',alt.id+' · '+fT(alt.dep,alt.from))}
+  else if(S.opt==='refund')toast('Refund requested','Within 7 days');else toast('Staying on '+l.id,'Boarding opens '+fT(eD(l)-45,l.from))}});
+function renderMe(){$('#v-me').innerHTML=`<div class="hero" style="padding-bottom:30px">${WINGBG}<div class="logo">${GL()}GarudaMiles</div><h1>Rina Wijaya</h1><div class="hd">Member since 2019</div><div class="mem"><i></i>Silver</div></div><div class="kv" style="margin-top:16px"><div><small>Miles</small><b>12,480</b></div><div><small>Tier miles</small><b>6,480</b></div><div><small>Next tier</small><b>Gold</b></div><div><small>Expires</small><b>Dec 2028</b></div></div><p class="fine">Concept prototype. Simulated data.</p>`}
+const R={home:renderHome,search:renderSearch,pick:renderPick,results:renderResults,review:renderReview,done:renderDone,trips:renderTrips,trip:renderTrip,pass:renderPass,inbox:renderInbox,notice:renderNotice,me:renderMe};
+const render=n=>(R[n]||(()=>{}))();
 
-/* ---------- operations demo: what the airport console would send ---------- */
-function toast(t,p){const el=$('#push');el.innerHTML=`<span class="lg">${WING}</span><div style="min-width:0"><b>${t}</b><p>${p}</p></div><small>now</small>`;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),3800)}
-function ops(kind){const t=T(),M=(k,ti,p,go_)=>S.msgs.unshift({id:Date.now(),kind:k,t:ti,p,at:'now',unread:true,go:go_});t.rebooked=null;S.opt='keep';
- if(kind==='delay'){t.status='delay';t.delay=45;M('warn',t.flight+' is delayed 45 minutes','New departure '+hm(depMin())+'. Gate '+t.gate+'. Tap to see your options.','notice');toast(t.flight+' is delayed 45 min','New departure '+hm(depMin())+' · gate '+t.gate)}
- else if(kind==='gate'){const old=t.gate;t.gate='K'+(parseInt(t.gate.slice(1))+3);M('info','Gate change',t.flight+' now departs from gate '+t.gate+' (was '+old+').','pass');toast('Gate change · '+t.flight,'Now gate '+t.gate+' (was '+old+')')}
- else if(kind==='boarding'){t.status='boarding';M('info','Boarding now',t.flight+' is boarding at gate '+t.gate+'. Gate closes at '+hm(depMin()-15)+'.','pass');toast('Boarding now · '+t.flight,'Gate '+t.gate)}
- else if(kind==='cancel'){t.status='cancel';M('bad',t.flight+' is cancelled','We are sorry. Rebook on the next flight at no charge.','notice');toast(t.flight+' is cancelled','Tap to rebook')}
- else{S.trip=mkTrip();S.msgs=[{id:1,kind:'info',t:'Check-in is open',p:'GA 856 to Osaka leaves tomorrow at 08:15. Your boarding pass is ready.',at:'09:12',unread:true,go:'pass'}]}
+/* ================= operations demo (what the airport console would send) ================= */
+function toast(t,p){const el=$('#push');el.innerHTML=`<span class="lg">${GL()}</span><div style="min-width:0"><b>${t}</b><p>${p}</p></div><small>now</small>`;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),3800)}
+function ops(kind){const b=B0(),l=fleg(b),M=(k,ti,p,g)=>S.msgs.unshift({id:Date.now(),kind:k,t:ti,p,at:'now',unread:true,go:g});l.rebooked=null;S.opt='keep';
+ if(kind==='delay'){l.status='delay';l.delay=45;M('warn',l.id+' is delayed 45 minutes','New departure '+fT(eD(l),l.from)+'. Gate '+l.gate+'. Tap to see your options.','notice');toast(l.id+' is delayed 45 min','New departure '+fT(eD(l),l.from)+' · gate '+l.gate)}
+ else if(kind==='gate'){const old=l.gate;l.gate=l.gate[0]+(parseInt(l.gate.slice(1))+3);M('info','Gate change',l.id+' now departs from gate '+l.gate+' (was '+old+').','pass');toast('Gate change · '+l.id,'Now gate '+l.gate+' (was '+old+')')}
+ else if(kind==='boarding'){l.status='boarding';M('info','Boarding now',l.id+' is boarding at gate '+l.gate+'. Gate closes at '+fT(eD(l)-15,l.from)+'.','pass');toast('Boarding now · '+l.id,'Gate '+l.gate)}
+ else if(kind==='cancel'){l.status='cancel';M('bad',l.id+' is cancelled','We are sorry. Rebook on the next flight at no charge.','notice');toast(l.id+' is cancelled','Tap to rebook')}
+ else reset();
  render(S.stack[S.stack.length-1]);badge();closeSheet()}
-$('#demoBtn').onclick=()=>{const I=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
- $('#sheet').innerHTML=`<div class="grab"></div><b style="font-size:20px;font-weight:600;letter-spacing:-.02em">Operations demo</b><p class="sub">In the full version these come from the airport console. Try one and watch the trip change.</p><div class="dm">
- <button data-ops="delay">${I('<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/>')}<span>Delay the flight 45 minutes<small>New time, a notification and rebooking options</small></span></button>
+$('#demoBtn').onclick=()=>{$('#sheet').innerHTML=`<div class="grab"></div><b style="font-size:20px;font-weight:600;letter-spacing:-.02em">Operations demo</b><p class="sub">In the full version these come from the airport console. Try one and watch the trip change.</p><div class="dm">
+ <button data-ops="delay">${I('<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/>')}<span>Delay the next flight 45 minutes<small>New time, a notification and rebooking options</small></span></button>
  <button data-ops="gate">${I('<path d="M5 12h14M13 6l6 6-6 6"/>')}<span>Change the gate<small>The pass and trip update</small></span></button>
  <button data-ops="boarding">${I('<path d="M8 12.5l3 3 5-6"/><circle cx="12" cy="12" r="9"/>')}<span>Start boarding<small>Boarding now at the gate</small></span></button>
  <button data-ops="cancel">${I('<circle cx="12" cy="12" r="9"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7"/>')}<span>Cancel the flight<small>Rebook, or refund</small></span></button>
  <button data-ops="reset">${I('<path d="M4 12a8 8 0 1 0 2.5-5.8M4 4v5h5"/>')}<span>Reset</span></button></div>`;openSheet()};
-/* deep links for review: ?s=pass|search|results|review|done|trip|inbox|notice&demo=delay */
-(()=>{const q=new URLSearchParams(location.search);go('home');const d=q.get('demo');if(d)ops(d);const s=q.get('s');
- if(['results','review'].includes(s)){S.pick=1;S.sel={cab:0,fam:0}}
+/* deep links for review: ?s=search|pick|results|review|done|trip|pass|inbox|notice &from=SYD&to=KIX &one=1 &step=1 &sheet=fare|det|cmp|cal &demo=delay */
+(()=>{const u=new URLSearchParams(location.search),q=S.q;if(u.get('from'))q.from=u.get('from');if(u.get('to'))q.to=u.get('to');if(u.get('one'))q.type='one';if(u.get('a'))q.a=+u.get('a');if(u.get('c'))q.c=+u.get('c');if(u.get('i'))q.i=+u.get('i');
+ const s=u.get('s');go('home');const d=u.get('demo');if(d)ops(d);
+ const auto=()=>{[0,1].slice(0,q.type==='ret'?2:1).forEach(k=>{S.step=k;const l=listFor();if(l.its[0]){const c=fares(l.its[0])[0];S.sel[k]={it:l.its[0],cab:c.k,fam:c.fam[0]}}});S.step=0};
+ if(s==='review'||s==='done')auto();
+ if(s==='results'&&u.get('step')==='1'){S.step=0;const l=listFor();if(l.its[0]){const c=fares(l.its[0])[0];S.sel[0]={it:l.its[0],cab:c.k,fam:c.fam[0]};S.step=1}}
+ if(s==='done'){const sel=S.sel.filter(Boolean);S.bookings.unshift(mkBooking(q,sel.map(x=>x.it),sel.map(x=>({cab:x.cab,fam:x.fam})),['Rina Wijaya']));S.bk=0}
  if(s&&$('#v-'+s)){if(TABS.includes(s))S.stack=[s];go(s)}
- if(q.get('sheet')==='fare'){S.pick=0;fareSheet()}})();
+ const sh=u.get('sheet');if(sh==='cal')calSheet();else if(sh&&s==='results'){S.cur={i:+(u.get('i')||0),ci:+(u.get('ci')||0)};S.fi=0;sh==='det'?detSheet(curIt()):sh==='cmp'?cmpSheet():fareSheet()}})();
 </script>
 </body>
 </html>
