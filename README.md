@@ -304,3 +304,11 @@ Trips groups actual bookings into upcoming and completed journeys, preserving bo
 Services are scoped to the selected flight and traveller. Baggage shows the booked allowance; seat and meal preferences can be saved before departure, with explicit draft cancellation. Seat requests do not change the assigned seat or promise availability. Infants and past/cancelled flights have appropriate information or read-only handling. Assigned seat numbers remain distinct when a party spans more than one row. Bookings and preferences remain session-local prototype data.
 
 Run `node tools/tests/garuda-trips.cjs` for actual booking grouping and identity, timeline/connection states, contextual actions, traveller/flight preference isolation, draft cancellation, infant/past handling, unique seats and 320–1280px layouts. Home, Search, Results, Review and Confirmation browser suites also pass.
+
+### Destination imagery throughout the passenger journey
+
+A shared city-photo catalogue now connects Home discovery and the next-trip card with Search, Results, Review, Confirmation, Trips cards and trip details. Search follows the selected destination and route swaps; Results follows the active outbound/return direction. Connecting journeys use the final city, while Home's next-trip card follows the current journey direction. Review and confirmation use compact city/photo panels, leaving operational details and primary actions on solid surfaces.
+
+The initial curated set covers Bali, Amsterdam, Osaka, Tokyo, Singapore, London and Sydney, with multiple airports sharing a photo only when they serve the same city. Destinations without a curated photo use a branded city panel. Failed images hide cleanly without losing the destination name or reserved layout. Files are local, compressed, explicitly sized, and listed with their sources/licence in `garuda/assets/README.md`; Trips card covers load lazily.
+
+Run `node tools/tests/garuda-destinations.cjs` for catalogue decoding, search/swap, connection and return destination identity, booking-to-trip continuity, failed-image recovery and 320–1280px layouts. The six existing passenger browser suites also pass.
