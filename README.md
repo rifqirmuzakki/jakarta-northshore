@@ -242,3 +242,6 @@ Each destination has its two runway directions built (the default end and the re
 
 ### Flight numbering (GA)
 Flights are numbered in blocks by region, outbound even and the return the next odd number: 0xx Europe and long-haul, 1xx Sumatra, 2xx Java, 3xx Surabaya (328–399 are free and are the overflow block for new regional international services), 4xx Bali and Nusa Tenggara, 5xx Kalimantan (Johannesburg 558/559, Nairobi 560/561 and Addis Ababa 562/563 were renumbered here from 7xx, effective 1 Oct 2026), 6xx Sulawesi, Maluku and Papua, 7xx/8xx/9xx Asia, Oceania and the Middle East (full). A renumbering is a cancel plus a new service with the same times from the same date, so the old number keeps its history.
+
+## Garuda app concept (`garuda/`)
+A clickable passenger-app concept using real flights from the simulated schedule: Home, Book (fare families from a small deterministic fare model), Trips, Boarding pass and Inbox with a disruption/rebooking notice. The "Demo: operations" button simulates what the airport console would send (delay, gate change, boarding, cancel). Simulated, not affiliated; no real bookings or payments. Open `/garuda/`.
