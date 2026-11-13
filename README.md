@@ -248,7 +248,7 @@ A passenger-app concept built on the simulated Garuda timetable. Open `/garuda/`
 
 - **Search:** any origin and destination from the 153 cities Garuda serves, one way or return, adults / children / infants, cabin preference, and a price calendar showing the lowest fare per day.
 - **Itineraries:** nonstop flights, and connections through Jakarta with minimum connection times (shorter for domestic, longer when changing between domestic and international, plus a terminal-change allowance). Arrival times are in local time with day offsets.
-- **Results:** sort and filter, a date strip, flight details (legs, aircraft, layover, terminal change), fare families per cabin with a fare-rules comparison table.
+- **Results:** sort and filter, a date strip, flight details (legs, aircraft, layover, terminal change), inline fare families per cabin with consistently presented baggage, seat, change and refund rules.
 - **Return trips:** pick the outbound, then the return, with the outbound kept visible.
 - **Booking:** passenger names, a price breakdown (child 75%, infant 10%, taxes, airport charges), mock payment, and a booking record with one or more flights. Seats sold in this browser reduce availability.
 - **Manage:** trips, trip details per leg, boarding pass per leg, and demo scenarios under Profile that simulate a delay, gate change, boarding or cancellation and the rebooking choices.
@@ -270,3 +270,11 @@ Flight search follows Home’s Switzer typography and blue/white palette. A full
 The search button stays below the scrolling form and above the safe area. Form selections survive airport-picker cancellation and navigation to results/Home and back. Search sheets trap keyboard focus, close with Escape and restore focus; cabin radios support arrow keys. Results retain their existing layout.
 
 Run `node tools/tests/garuda-search.cjs` for picker/search/swap, date ranges, one-way/return drafts, passenger limits, cabin selection, keyboard behaviour, preserved form state and 320–1280px layouts. `garuda-home.cjs` covers the unchanged Home actions.
+
+### Garuda results redesign
+
+Results use Switzer and the same white/blue design as Home and Search. Flight cards show local times, journey duration, connections, explicit arrival-day changes and inclusive prices for the whole travelling party. Cabin and fare-family choices expand inside the card; checked baggage, seat selection, change and refund rules use the same fields for every fare. Nearby dates, sorting, filters, clear-filter recovery and flight-detail dialogs remain available.
+
+During return selection, the chosen outbound stays visible and prices show the combined trip total. Returning to outbound restores its selected fare. Return options preceding the outbound arrival are excluded. A shared price calculation is used by results, review and mock booking confirmation. Browser-local cabin availability is computed consistently per flight leg and checked against the party’s seated travellers before selection and payment. This remains a simulated, session/browser-local booking model.
+
+Run `node tools/tests/garuda-results.cjs` for inclusive adult/child/infant pricing through mock payment, inline fares, sort/filter behaviour, return selection and back navigation, connections/day offsets, availability guards and 320–1280px layout checks. Home and Search regressions also pass.
