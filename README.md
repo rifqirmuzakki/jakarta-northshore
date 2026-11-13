@@ -262,3 +262,11 @@ Home uses Switzer, a deep-blue wing header and a next-journey card before the bo
 Navigation has Home, Book, Trips and Profile, with Inbox behind the bell and journey-updates shortcut. Profile contains the existing demo scenario menu. Two locally stored destination photographs link into booking. Font and photo sources are documented in `garuda/assets/README.md`.
 
 Run `node tools/tests/garuda-home.cjs` for Home navigation, check-in/pass actions, journey states, destination links, image loading, keyboard activation, 320–1280px layout checks and demo-menu access. Booking/check-in state remains local to the running prototype.
+
+### Garuda search redesign
+
+Flight search follows Home’s Switzer typography and blue/white palette. A full-height airport picker supports city/code search, clearing, keyboard selection and cancellation; the route card provides a swap action. Dates share one range picker with departure/return tabs, two visible months, month navigation, fare hints, a night-count summary and an explicit Apply action. Traveller counts and preferred cabin share a draft sheet with the nine-seated-traveller and one-infant-per-adult limits. Closing either sheet discards its draft, including an unconfirmed change from one-way to return.
+
+The search button stays below the scrolling form and above the safe area. Form selections survive airport-picker cancellation and navigation to results/Home and back. Search sheets trap keyboard focus, close with Escape and restore focus; cabin radios support arrow keys. Results retain their existing layout.
+
+Run `node tools/tests/garuda-search.cjs` for picker/search/swap, date ranges, one-way/return drafts, passenger limits, cabin selection, keyboard behaviour, preserved form state and 320–1280px layouts. `garuda-home.cjs` covers the unchanged Home actions.
