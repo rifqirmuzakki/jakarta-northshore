@@ -191,7 +191,7 @@ h2{margin:0;font-size:12px;font-weight:600;color:var(--mute);letter-spacing:.08e
 #v-home button{font-family:inherit}#v-home button:focus-visible,#tabs button:focus-visible,.home-demo:focus-visible{outline:3px solid #19a9bb;outline-offset:4px}
 .home-hero{position:relative;isolation:isolate;overflow:hidden;padding:24px 24px 52px;background:#062e48;color:white}
 .home-wing{position:absolute;width:350px;height:260px;right:-120px;top:18px;z-index:-1;opacity:.65;pointer-events:none}
-.home-brand{display:flex;justify-content:space-between;align-items:center;gap:12px}.home-brand .logo{gap:10px;font-size:15px;font-weight:500;letter-spacing:-.025em}.home-brand .glogo{width:32px;height:32px;border-radius:8px}
+.home-brand{display:flex;justify-content:space-between;align-items:center;gap:12px}.home-brand .home-logo{display:block;width:178px;height:auto;max-width:calc(100% - 60px);flex:none}
 .home-brand .bell{height:44px;width:44px;background:#ffffff0b;border:1px solid #ffffff24}.home-brand .bell .dot{background:#47c4d0;color:#062e48;box-shadow:0 0 0 2px #062e48}
 .home-welcome{margin-top:25px}.home-welcome .home-date{font-size:11px;letter-spacing:.08em;color:#a6c5d4;margin-bottom:8px}.home-welcome h1{font-size:28px;line-height:1.18;font-weight:500;letter-spacing:-.045em}.home-welcome p{font-size:13px;color:#c0d8e3;margin:8px 0 0;line-height:1.5}
 .home-member{display:flex;align-items:center;gap:7px;margin-top:17px;font-size:11px;font-weight:500;color:#d7e5eb;min-height:28px}.home-member i{width:6px;height:6px;background:#c5d5df;border-radius:50%}.home-member svg{width:13px;height:13px;margin-left:2px}
@@ -396,7 +396,7 @@ function homeJourney(x){if(!x)return `<section class="home-journey" aria-label="
 }
 function renderHome(){const localNow=lp(nowAbs(),HUB),hr=Math.floor(localNow.min/60),greeting=hr<11?'Good morning':hr<17?'Good afternoon':'Good evening',x=nextHomeTrip();
  const destinations=[{code:'DPS',name:'Bali',tag:'A little closer to nature',image:'bali',alt:'Balinese temple beside a lake'},{code:'AMS',name:'Amsterdam',tag:'Take the scenic route',image:'amsterdam',alt:'Canal-side houses in Amsterdam'}].filter(d=>CT[d.code]);
- $('#v-home').innerHTML=`<header class="home-hero">${HOME_WING}<div class="home-brand"><div class="logo">${GL()}Garuda Indonesia</div><button class="bell" data-go="inbox" aria-label="Open inbox">${IC.bell}<span class="dot" id="dot1"></span></button></div>
+ $('#v-home').innerHTML=`<header class="home-hero">${HOME_WING}<div class="home-brand"><img class="home-logo" src="assets/garuda-logo-white.svg" alt="Garuda Indonesia" width="178" height="41"><button class="bell" data-go="inbox" aria-label="Open inbox">${IC.bell}<span class="dot" id="dot1"></span></button></div>
  <div class="home-welcome"><div class="home-date">${fmtDn(localNow.day,{weekday:'long',day:'numeric',month:'long'})} · Jakarta</div><h1>${greeting}, Rina.</h1><p>A little care, every step of your journey.</p></div><button class="home-member" data-go="me" aria-label="View your GarudaMiles membership"><i></i>GarudaMiles Silver <span aria-hidden="true">·</span> 12,480 miles ${HOME_CHEVRON}</button></header>
  <main class="home-main">${homeJourney(x)}
  <button class="home-book" data-go="search"><span class="home-book-icon">${IC.srch}</span><span><b>Where would you like to go?</b><small>Book your next flight with Garuda</small></span>${HOME_CHEVRON}</button>
