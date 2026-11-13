@@ -288,3 +288,11 @@ Names support single-name travellers. Children need a birth date matching age 2�
 Billable fare and tax components are rounded to IDR 1,000 before summing, matching the UI’s currency precision so the displayed breakdown, results, review and confirmation reconcile.
 
 Run `node tools/tests/garuda-review.cjs` for grouped drafts, payment/fare/back persistence, inline validation, birthday boundaries, price arithmetic, fixed confirmation layout and duplicate/incomplete submission guards. Results, Search and Home suites cover the surrounding flow.
+
+### Garuda confirmation and empty startup
+
+Fresh sessions start without bookings, past-trip fixtures or sample journey notifications. The previous automatic Osaka trip is removed; confirmation, trip and pass preview links and demo updates do not create a replacement. Home and Trips provide empty states, and demo operations require a booking the user creates. “Clear demo trips” clears session trips/updates and returns Home.
+
+Confirmation shows the official Garuda logo, a unique session booking reference with copy/manual-selection fallback, actual outbound/return flights, traveller names, contact email, payment method and the confirmed total. The next-step message reflects the flight’s check-in/boarding state. “View your trip” remains visible below the scrolling receipt. Notifications resolve their booking by reference so adding another trip does not redirect an older notification to the wrong booking. This is still a browser/session prototype: no real payment or confirmation email is sent.
+
+Run `node tools/tests/garuda-confirmation.cjs` for empty startup/history, a full round-trip booking, receipt data, copy fallback, next steps, unique references, notification targeting, no-booking preview/reset safety and 320–1280px layouts. Home’s booked-trip tests now create their fixture explicitly instead of depending on production sample data.
