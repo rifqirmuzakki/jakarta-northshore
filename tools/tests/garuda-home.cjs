@@ -8,7 +8,7 @@ const root=path.resolve(__dirname,'../..'),art='/workspace/artifacts';
  await p.goto('https://garuda.test/garuda/');await p.waitForFunction(()=>window.__homeTest);await p.evaluate(()=>document.fonts.ready);
  assert.equal(await p.locator('#tabs button').count(),4);assert.equal(await p.locator('#demoBtn').isVisible(),false);
  assert.equal(await p.evaluate(()=>__homeTest.S.bookings.length),0);assert.match(await p.locator('#v-home').innerText(),/Your next journey starts here/);
- await p.evaluate(()=>{const T=__homeTest,q={...T.S.q},out=T.search(q.from,q.to,q.d1)[0],ret=T.search(q.to,q.from,q.d2)[0];T.S.bookings=[T.mkBooking(q,[out,ret],[out,ret].map(it=>({cab:'Economy',fam:T.fares(it)[0].fam[0]})),['Rina Wijaya'])];T.go('home')});
+ await p.evaluate(()=>{const T=__homeTest,q={...T.S.q,to:'KIX'},out=T.search(q.from,q.to,q.d1)[0],ret=T.search(q.to,q.from,q.d2)[0];T.S.bookings=[T.mkBooking(q,[out,ret],[out,ret].map(it=>({cab:'Economy',fam:T.fares(it)[0].fam[0]})),['Rina Wijaya'])];T.go('home')});
  assert.equal(await p.locator('#v-home .home-cta').innerText(),'Check in');await p.screenshot({animations:'disabled',path:art+'/garuda-home-redesign-mobile.png'});
  await p.locator('[data-home-action="checkin"]').focus();await p.keyboard.press('Enter');await p.locator('#home-confirm-checkin').click();assert(await p.locator('#v-pass').evaluate(e=>e.classList.contains('on')));
  await p.evaluate(()=>__homeTest.go('home'));assert.equal(await p.locator('#v-home .home-cta').innerText(),'Open boarding pass');
