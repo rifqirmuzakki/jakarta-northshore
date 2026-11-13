@@ -278,3 +278,13 @@ Results use Switzer and the same white/blue design as Home and Search. Flight ca
 During return selection, the chosen outbound stays visible and prices show the combined trip total. Returning to outbound restores its selected fare. Return options preceding the outbound arrival are excluded. A shared price calculation is used by results, review and mock booking confirmation. Browser-local cabin availability is computed consistently per flight leg and checked against the party’s seated travellers before selection and payment. This remains a simulated, session/browser-local booking model.
 
 Run `node tools/tests/garuda-results.cjs` for inclusive adult/child/infant pricing through mock payment, inline fares, sort/filter behaviour, return selection and back navigation, connections/day offsets, availability guards and 320–1280px layout checks. Home and Search regressions also pass.
+
+### Garuda review and traveller details
+
+Review uses the shared Switzer/blue-and-white design with a compact flight/fare summary, expandable inclusions, grouped adult/child/infant cards, contact email, price breakdown and payment choice. The confirmation button remains below the scrolling form and shows the full trip total. Passenger names, birth dates, email and payment choice survive fare/payment changes and back navigation; inactive traveller drafts retain their type/index association when counts change.
+
+Names support single-name travellers. Children need a birth date matching age 2–11 at first departure; lap infants must remain under two through the last flight departure and are associated with an adult. Inline errors identify name, email and birth-date issues and move focus to the first invalid field. Submission validates inventory again, blocks incomplete flight selections and guards duplicate confirmation. The mock booking retains traveller/contact/payment metadata for later trip views. Details remain in the running prototype’s memory; no real payment or email is sent.
+
+Billable fare and tax components are rounded to IDR 1,000 before summing, matching the UI’s currency precision so the displayed breakdown, results, review and confirmation reconcile.
+
+Run `node tools/tests/garuda-review.cjs` for grouped drafts, payment/fare/back persistence, inline validation, birthday boundaries, price arithmetic, fixed confirmation layout and duplicate/incomplete submission guards. Results, Search and Home suites cover the surrounding flow.
