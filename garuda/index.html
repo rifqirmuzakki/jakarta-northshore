@@ -182,6 +182,44 @@ h2{margin:0;font-size:12px;font-weight:600;color:var(--mute);letter-spacing:.08e
 .pxrow{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--line)}.pxrow:first-of-type{border:0}.pxrow b{font-size:15.5px;font-weight:550}.pxrow small{display:block;color:var(--mute);font-size:12.5px;font-weight:400}
 .fd.bad{box-shadow:0 0 0 1.5px var(--red);border-color:var(--red)}
 .nores{padding:46px 28px;text-align:center;color:var(--mute);font-size:14.5px;line-height:1.5}.nores b{display:block;color:var(--ink);font-size:17px;margin-bottom:6px}
+/* v3 restraint: flat surfaces, hairlines, smaller radii, status as text, no decorative art */
+:root{--mono:var(--font);--soft:#f5f6f7;--line:#dde4e7}
+body,html{background:#cdd6db}
+.tabs button.on::before{display:none}
+.hero{background:var(--deep);padding:16px 20px 92px}.hero .wing{display:none}.hero h1{font-size:26px;margin-top:22px}.hero .hd{color:#a3bcc7;font-size:14px;margin-top:5px}
+.bell{background:rgba(255,255,255,.1)}
+.bk{border-radius:14px;box-shadow:none;border:1px solid var(--line);margin:-70px 16px 0}.bt button.on::after{left:0;right:0}
+.btn{border-radius:10px;height:48px}.btn.sm{border-radius:9px;height:42px}
+.fd,.qrow .pt,.step{border-radius:10px}.fd small,.qrow .pt small,.kv small,.pass .g small,.pass .name small,.tc .inf small{text-transform:none;letter-spacing:0;font-size:12px}
+h2{text-transform:none;letter-spacing:0;font-size:13px;font-weight:550}
+.qrow .pt b{font-weight:600}.qrow .sw{box-shadow:none}
+.seg,.seg button{border-radius:8px}.seg button.on{box-shadow:none;border:1px solid var(--line)}
+.strip button,.cab button{border-radius:9px}.chips button{border-radius:8px}.lp button{border-radius:8px}.seg4 button{border-radius:8px;box-shadow:inset 0 0 0 1px var(--line)}
+.sec{padding-top:24px}.sec h3{font-size:18px}
+.fl,.blk,.legc,.sum,.msg,.kv,.tl,.note,.opt,.fam,.pass,.tc,.mc{box-shadow:none!important;border:1px solid var(--line);border-radius:12px}
+.note{border-radius:10px}.kv{padding:2px 18px}
+.sheet{border-radius:16px 16px 0 0}.push{border-radius:12px;box-shadow:0 6px 20px rgba(6,40,58,.18),0 0 0 1px var(--line)}
+.chip{background:none!important;padding:0;font-size:13px;display:inline-flex;align-items:center;gap:6px;border-radius:0}.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.chip.ok{color:var(--green)}.chip.warn{color:var(--amber)}.chip.bad{color:var(--red)}
+/* trip cards: type only */
+.tcb{display:block;width:100%;text-align:left;padding:16px 18px 4px}
+.tc .r1{display:flex;justify-content:space-between;font-size:13px;color:var(--mute)}
+.tc .r2{display:flex;align-items:center;gap:12px;margin-top:10px;font-size:30px;font-weight:600;letter-spacing:-.03em;line-height:1.1}.tc .r2 svg{width:32px;height:12px;color:#8aa0aa}
+.tc .r3{font-size:13.5px;color:var(--mute);margin-top:3px}
+.tc .inf{padding:14px 0 10px;grid-template-columns:repeat(3,1fr)}.tc .inf b{font-weight:550;font-size:16px}
+.tc .ft2{border-top:1px solid var(--line)}.tc .acts{padding:2px 14px 14px}
+.bc{display:block;width:calc(100% - 32px);text-align:left;margin-bottom:12px;background:#fff}.bc .tcb{padding-bottom:12px}
+/* airport list */
+.xl{border-top:1px solid var(--line);background:#fff}
+.xr{display:flex;align-items:center;gap:14px;width:100%;padding:14px 20px;border-bottom:1px solid var(--line)}.xr .cd{font-weight:600;width:42px;font-size:16px;letter-spacing:-.01em}.xr b{display:block;font-size:16px;font-weight:550}.xr small{color:var(--mute);font-size:13px}.xr .pz{margin-left:auto;text-align:right;font-size:15.5px;font-weight:550}.xr .pz small{display:block;font-size:11.5px;font-weight:400}
+.mc{background:#fff;color:var(--ink);margin:6px 16px 0}.mc .k{color:var(--teal-d);letter-spacing:0;text-transform:none;font-size:13px;font-weight:550}.mc .bar{background:var(--soft)}.mc .bar i{background:var(--teal)}.mc small{color:var(--mute)}.mc b{font-size:26px}
+/* trip detail: header and actions */
+.th{padding-bottom:18px}.th .cd{background:none;height:auto;padding:0;margin-top:14px;font-size:14px;font-weight:500;color:#d6e6ec}
+.qa{margin:0;gap:0;background:#fff;border-bottom:1px solid var(--line);position:static}.qa button{box-shadow:none;border-radius:0;border-right:1px solid var(--line);padding:14px 4px 12px;background:#fff}.qa button:last-child{border:0}
+.pw{background:var(--soft)}.pass .hd{background:var(--deep)}.cut::before,.cut::after{background:var(--soft)}
+.okc{background:none;border:1.5px solid var(--green);width:56px;height:56px}.okc svg{width:28px;height:28px}
+.lay.p{background:#e8f3ec;color:#1d5b3f}.lay.p b{color:#1d5b3f}
+.lp button{background:#fff;color:var(--mute);box-shadow:inset 0 0 0 1px var(--line)}.lp button.on{background:var(--deep);color:#fff;box-shadow:none}.lp{padding-top:12px}
 </style>
 </head>
 <body>
@@ -300,6 +338,8 @@ function mkBooking(q,its,fams,names){const dirs=its.map(it=>({legs:it.legs.map(l
 const seatOf=(l,n)=>(l.row)+'ABCDEF'[(l.col+n)%6];
 function sampleBooking(){const q={from:'JKT',to:'KIX',type:'ret',d1:TD+1,d2:TD+6,a:1,c:0,i:0,cab:'Economy'},o=search('JKT','KIX',TD+1),r=search('KIX','JKT',TD+6);
  const io=o.find(i=>i.legs[0].id==='GA 856')||o[0],ir=r[0];return mkBooking(q,[io,ir],[{cab:'Economy',fam:fares(io)[0].fam[1]},{cab:'Economy',fam:fares(ir)[0].fam[1]}],['Rina Wijaya'])}
+function sampleConnect(){const q={from:'SYD',to:'KIX',type:'one',d1:TD+1,d2:TD+1,a:1,c:0,i:0,cab:'Economy'},o=search('SYD','KIX',TD+1).filter(i=>i.stops).sort((a,b)=>(a.legs[1].dep-a.legs[0].arr)-(b.legs[1].dep-b.legs[0].arr)),io=o[0];
+ return mkBooking(q,[io],[{cab:'Economy',fam:fares(io)[0].fam[1]}],['Rina Wijaya'])}
 const baseMsgs=()=>[{id:1,kind:'info',t:'Check-in is open',p:'Your flight to Osaka leaves tomorrow. Your boarding pass is ready.',at:'09:12',unread:true,go:'pass'}];
 function reset(){S.bookings=[sampleBooking()];S.msgs=baseMsgs();S.bk=0;S.pl=0}
 reset();
@@ -308,6 +348,14 @@ const countdown=l=>{const ms=(eD(l)-nowAbs())*6e4;if(ms<=0)return 'Departed';con
 const stat=l=>l.status==='cancel'?['bad','Cancelled','Rebook to continue']:l.status==='delay'?['warn','Delayed','now '+fT(eD(l),l.from)]:l.status==='boarding'?['ok','Boarding','Gate '+l.gate]:['ok','On time','Check-in open'];
 const routeTxt=b=>{const d0=b.dirs[0].legs,a=d0[0].from,z=d0[d0.length-1].to;return b.dirs.length>1?[a,z,'⇄']:[a,z,'→']};
 
+/* ---- connection protection: if the first flight is late, check the connection and rebook onto the next flight ---- */
+const connOf=(b,l)=>{for(const d of b.dirs){const i=d.legs.indexOf(l);if(i>=0&&d.legs[i+1])return {next:d.legs[i+1],gap:eD(d.legs[i+1])-eA(l),need:MCT(l,d.legs[i+1])}}return null};
+function protect(b,l){const c=connOf(b,l);if(!c||c.gap>=c.need)return null;const n=c.next,min=eA(l)+c.need;let alt=null;
+ for(let k=0;k<=2&&!alt;k++){const day=lp(min,HUB).day+k;alt=legsDep(HUB,day).find(x=>x.to===n.to&&x.dep>=min)}
+ if(!alt)return {failed:true,old:n.id};
+ const old={id:n.id,dep:n.dep},wait=alt.dep-eA(l),night=lp(alt.dep,HUB).day!==lp(eA(l),HUB).day||wait>=600;
+ Object.assign(n,{id:alt.id,dep:alt.dep,arr:alt.arr,term:alt.term,ac:alt.ac,delay:0,status:'ok',row:12+hash(alt.id+alt.dep)%20,gate:(alt.term==='T2'?'K':'C')+(2+hash(alt.id)%10),prot:{oldId:old.id,oldDep:old.dep,wait,night}});
+ return {alt:n,old,wait,night}}
 /* ================= routing ================= */
 const TABS=['home','search','trips','inbox','me'];
 function go(name,push=true){const el=$('#v-'+name);if(!el)return;
@@ -315,7 +363,7 @@ function go(name,push=true){const el=$('#v-'+name);if(!el)return;
  $$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===el.dataset.tab));
  if(push&&S.stack[S.stack.length-1]!==name)S.stack.push(name);
  const nn=el.classList.contains('nonav');$('#tabs').style.display=nn?'none':'grid';$('#demoBtn').style.bottom=nn?'18px':'78px';
- $('#demoBtn').style.display=['search','pick','results','review','done'].includes(name)?'none':'flex';
+ $('#demoBtn').style.display=['search','pick','results','review','done','notice'].includes(name)?'none':'flex';
  render(name)}
 function back(){S.stack.pop();go(S.stack[S.stack.length-1]||'home',false)}
 document.addEventListener('click',e=>{
@@ -335,8 +383,8 @@ function closeSheet(){$('#sheet').classList.remove('on');$('#scrim').classList.r
 $('#scrim').onclick=closeSheet;
 
 /* ================= HOME ================= */
-function tripCard(b,bi){const l=fleg(b),s=stat(l),far=farEnd(l),ps=lp(eD(l),l.from);
- return `<div class="tc"><button style="display:block;width:100%" data-go="trip" data-bk="${bi}"><div class="art">${art(far,'bg')}<div class="ov"><div class="a"><span>${fmtDn(ps.day)}</span><span>${l.id}</span></div><div class="b"><b>${l.from}</b>${AR}<b>${l.to}</b></div></div></div>
+function tripCard(b,bi){const l=fleg(b),s=stat(l),ps=lp(eD(l),l.from);
+ return `<div class="tc"><button class="tcb" data-go="trip" data-bk="${bi}"><div class="r1"><span>${fmtDn(ps.day,{weekday:'long',day:'numeric',month:'long'})}</span><span>${l.id}</span></div><div class="r2"><b>${l.from}</b>${AR}<b>${l.to}</b></div><div class="r3">${cname(l.from)} to ${cname(l.to)}</div>
  <div class="inf"><div><small>Departs</small><b>${hm(ps.min)}</b></div><div><small>Gate</small><b>${l.status==='cancel'?'—':l.gate}</b></div><div><small>Seat</small><b>${seatOf(l,0)}</b></div></div></button>
  <div class="ft2"><span class="cd">Departs <b>${countdown(l)}</b></span><span class="chip ${s[0]==='ok'?'ok':s[0]}">${s[1]}</span></div>
  <div class="acts"><button class="btn sm t" style="width:100%" data-${l.status==='cancel'?'go="notice"':'pass="'+bi+'"'}>${l.status==='cancel'?'Rebook':'Boarding pass'}</button><button class="btn sm o" style="width:100%" data-go="trip" data-bk="${bi}">Trip details</button></div></div>`}
@@ -347,13 +395,13 @@ function renderHome(){const hr=new Date().getHours(),ht=S.hometab,q=S.q,tabs=['B
  <button class="btn t" style="margin-top:16px" data-go="search">Search flights</button>`;
  else if(ht===1||ht===2)body=`<div class="fields" style="margin-top:0"><label class="fd"><small>Booking reference</small><input value="${B0().ref}" aria-label="Booking reference"></label><label class="fd"><small>Last name</small><input value="Wijaya" aria-label="Last name"></label></div><button class="btn t" style="margin-top:16px" ${ht===1?'data-go="trip" data-bk="0"':'data-pass="0"'}>${ht===1?'Retrieve booking':'Check in'}</button>`;
  else{const l=fleg(B0());body=`<div class="fields" style="margin-top:0"><label class="fd"><small>Flight number</small><input value="${l.id}" aria-label="Flight number"></label><label class="fd"><small>Date</small><b>${fmtDn(lp(eD(l),l.from).day,{day:'numeric',month:'short'})}</b></label></div><button class="btn t" style="margin-top:16px" data-go="trip" data-bk="0">Check status</button>`}
- const ex=POP.map(k=>{const p=minEco(HUB,k,TD+7);return `<button class="dc" data-ex="${k}"><div class="im">${art(k)}</div><div class="tx"><b>${cname(k)}</b><small>${k} · ${CT[k].z==='D'?'Domestic':'International'}</small>${p?`<em>from <b>${(p/1e6).toFixed(1)}M</b></em>`:''}</div></button>`}).join('');
- $('#v-home').innerHTML=`<div class="hero">${WINGBG}<div class="row"><div class="logo">${GL()}Garuda Indonesia</div><button class="bell" data-go="inbox" aria-label="Inbox">${IC.bell}<span class="dot" id="dot1">1</span></button></div>
-  <h1>${hr<11?'Good morning':hr<16?'Good afternoon':'Good evening'}, Rina</h1><div class="hd">${fmtDn(TD,{weekday:'long',day:'numeric',month:'long'})}</div><div class="mem"><i></i>GarudaMiles Silver · 12,480 miles</div></div>
+ const ex=POP.slice(0,7).map(k=>{const p=minEco(HUB,k,TD+7),f=search(HUB,k,TD+7)[0];return `<button class="xr" data-ex="${k}"><span class="cd">${k}</span><span><b>${cname(k)}</b><small>${CT[k].z==='D'?'Domestic':'International'}${f?' · '+dur(f.dur)+' nonstop':''}</small></span>${p?`<span class="pz"><small>from IDR</small>${(Math.round(p/1000)*1000).toLocaleString('en-US')}</span>`:''}</button>`}).join('');
+ $('#v-home').innerHTML=`<div class="hero"><div class="row"><div class="logo">${GL()}Garuda Indonesia</div><button class="bell" data-go="inbox" aria-label="Inbox">${IC.bell}<span class="dot" id="dot1">1</span></button></div>
+  <h1>Rina Wijaya</h1><div class="hd">GarudaMiles Silver · 12,480 miles</div></div>
  <div class="bk"><div class="bt">${tabs.map((x,i)=>`<button class="${i===ht?'on':''}" data-ht="${i}">${x}</button>`).join('')}</div><div class="bb">${body}</div></div>
  <div class="sec"><h3>Your next trip</h3><button data-go="trips"><small>All trips</small></button></div>${tripCard(B0(),0)}
- <div class="sec"><h3>Explore from Jakarta</h3></div><div class="ex">${ex}</div>
- <div class="sec"><h3>GarudaMiles</h3></div><div class="mc"><div class="k">Silver</div><b>12,480</b><div class="bar"><i></i></div><small>3,520 miles to Gold</small></div>
+ <div class="sec"><h3>Flights from Jakarta</h3></div><div class="xl">${ex}</div>
+ <div class="sec"><h3>GarudaMiles</h3></div><div class="mc"><div class="k">Silver member</div><b>12,480</b><div class="bar"><i></i></div><small>3,520 miles to Gold</small></div>
  <p class="fine">Concept prototype using the Jakarta Northshore simulation. Simulated schedule and fares, not affiliated with Garuda Indonesia. No real bookings, accounts or payments.</p>`;badge()}
 $('#v-home').addEventListener('click',e=>{const h=e.target.closest('[data-ht]');if(h){S.hometab=+h.dataset.ht;renderHome();return}
  const x=e.target.closest('[data-ex]');if(x){S.q.from=HUB;S.q.to=x.dataset.ex;go('search')}});
@@ -470,24 +518,28 @@ $('#v-review').addEventListener('click',e=>{let b;
   S.stack=['trips'];go('done',false)}});
 function renderDone(){const b=BK();
  $('#v-done').innerHTML=`<div class="okw"><div class="okc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div></div>
- <div class="pad" style="text-align:center;padding-top:16px"><h1>You are booked</h1><div class="sub">Reference <b class="mono" style="color:var(--ink)">${b.ref}</b> · ${idr(b.total)}</div></div>
+ <div class="pad" style="text-align:center;padding-top:16px"><h1>Booking confirmed</h1><div class="sub">Reference <b class="mono" style="color:var(--ink)">${b.ref}</b> · ${idr(b.total)}</div></div>
  <div style="margin-top:24px">${tripCard(b,0)}</div>
  <div class="pad" style="margin-top:18px;display:grid;gap:10px"><button class="btn t" data-go="trip" data-bk="0">View trip details</button><button class="btn o" data-go="home">Back to home</button></div><p class="fine" style="text-align:center">A confirmation is in your Inbox.</p>`;badge()}
 
 /* ================= TRIPS ================= */
-function bookCard(b,bi){const [a,z,ar]=routeTxt(b),l=fleg(b),s=stat(l),d0=lp(b.dirs[0].legs[0].dep,a).day,d1=b.dirs.length>1?lp(b.dirs[1].legs[0].dep,z).day:null;
- return `<button class="tc" style="margin-bottom:12px;text-align:left" data-go="trip" data-bk="${bi}"><div class="art" style="height:96px">${art(farEnd(b.dirs[0].legs.slice(-1)[0]),'bg')}<div class="ov"><div class="a"><span>${fmtDn(d0,{day:'numeric',month:'short'})}${d1?' – '+fmtDn(d1,{day:'numeric',month:'short'}):''}</span><span>${b.ref}</span></div><div class="b"><b style="font-size:26px">${a}</b>${b.dirs.length>1?'<svg viewBox="0 0 56 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 5h53M47 0l7 5M55 11H2M9 6l-7 5"/></svg>':AR}<b style="font-size:26px">${z}</b></div></div></div><div class="ft2"><span class="cd">${flat(b).map(x=>x.id).join(' · ')}</span><span class="chip ${s[0]==='ok'?'ok':s[0]}">${s[1]}</span></div></button>`}
+function bookCard(b,bi){const [a,z]=routeTxt(b),l=fleg(b),s=stat(l),d0=lp(b.dirs[0].legs[0].dep,a).day,d1=b.dirs.length>1?lp(b.dirs[1].legs[0].dep,z).day:null,ret=b.dirs.length>1;
+ return `<button class="tc bc" data-go="trip" data-bk="${bi}"><div class="tcb"><div class="r1"><span>${fmtDn(d0,{day:'numeric',month:'short'})}${d1?' to '+fmtDn(d1,{day:'numeric',month:'short'}):''}</span><span>${b.ref}</span></div><div class="r2"><b>${a}</b>${AR}<b>${z}</b></div><div class="r3">${cname(a)} ${ret?'and back':'to '+cname(z)}${b.dirs.some(d=>d.legs.length>1)?' · via Jakarta':''}</div></div><div class="ft2"><span class="cd">${flat(b).map(x=>x.id).join(' · ')}</span><span class="chip ${s[0]==='ok'?'ok':s[0]}">${s[1]}</span></div></button>`}
 function renderTrips(){const up=S.tt===0;
  $('#v-trips').innerHTML=`<div style="padding:18px 20px 4px"><h1>My trips</h1></div><div class="seg4"><button class="${up?'on':''}" data-tt="0">Upcoming</button><button class="${up?'':'on'}" data-tt="1">Past</button></div><div style="padding-top:12px">`+
- (up?S.bookings.map(bookCard).join(''):S.past.map(p=>`<div class="tc" style="margin-bottom:12px;opacity:.9"><div class="art" style="height:84px">${art(p.to==='JKT'?p.from:p.to,'bg')}<div class="ov"><div class="a"><span>${fmtDn(p.day)}</span><span>${p.id}</span></div><div class="b"><b style="font-size:24px">${p.from}</b>${AR}<b style="font-size:24px">${p.to}</b></div></div></div><div class="ft2"><span class="cd">${cname(p.to)} · ${p.fam}</span><span class="chip">Completed</span></div></div>`).join(''))+'</div><div style="height:20px"></div>'}
+ (up?S.bookings.map(bookCard).join(''):S.past.map(p=>`<div class="tc bc" style="opacity:.85"><div class="tcb"><div class="r1"><span>${fmtDn(p.day)}</span><span>${p.id}</span></div><div class="r2"><b>${p.from}</b>${AR}<b>${p.to}</b></div><div class="r3">${cname(p.to)} · ${p.fam}</div></div></div>`).join(''))+'</div><div style="height:20px"></div>'}
 $('#v-trips').addEventListener('click',e=>{const b=e.target.closest('[data-tt]');if(b){S.tt=+b.dataset.tt;renderTrips()}});
+function layPill(x,nx){const gap=nx.dep-eA(x),tc=x.term!==nx.term;
+ if(nx.prot)return `<div class="lay p" style="margin:8px 16px">${IC.ok}<span><b>Connection protected</b><br>${x.id} was late, so we moved you from ${nx.prot.oldId} to ${nx.id}. ${dur(gap)} in Jakarta.${nx.prot.night?' Hotel and meals are included.':' A meal voucher is included.'}</span></div>`;
+ const need=MCT(x,nx),short=gap<need+25;
+ return `<div class="lay ${short?'w':''}">${IC.warn}<span><b>${dur(gap)} in Jakarta</b><br>${tc?`Change terminals, ${x.term} to ${nx.term}.`:`Stay in Terminal ${x.term.slice(1)}.`} ${short?'Tight, but still protected. If you miss it, we rebook you.':'Protected: if your first flight is late, we rebook you.'}</span></div>`}
 function legBlock(l,b,k){const dd=lp(eA(l),l.to).day-lp(eD(l),l.from).day,late=l.status==='delay',st=stat(l);
  return `<div class="legc"><div class="lg2"><div class="t">${fT(eD(l),l.from)}${late?` <s style="font-size:13px;color:var(--mute);font-family:var(--font)">${fT(l.dep,l.from)}</s> <em style="font-style:normal;color:var(--red);font-size:13px;font-weight:600;font-family:var(--font)">+${l.delay} min</em>`:''}</div><div class="c">${cname(l.from)} · ${l.from}${l.from===HUB?' · Terminal '+l.term.slice(1):''}</div><div class="d">${l.id} · ${l.ac}${l.from===HUB&&l.status!=='cancel'?' · Gate '+l.gate:''}</div></div>
- <div class="meta">${dur(l.arr-l.dep)} · seat ${Array.from({length:seats(b.pax)},(_,n)=>seatOf(l,n)).join(', ')}${st[0]!=='ok'||l.status==='boarding'?' · <b style="color:var(--'+(st[0]==='ok'?'green':st[0]==='warn'?'amber':'red')+')">'+st[1]+'</b>':''}</div>
+ <div class="meta">${l.prot?'<b style="color:var(--teal-d)">Rebooked, connection protected</b> · ':''}${dur(l.arr-l.dep)} · seat ${Array.from({length:seats(b.pax)},(_,n)=>seatOf(l,n)).join(', ')}${st[0]!=='ok'||l.status==='boarding'?' · <b style="color:var(--'+(st[0]==='ok'?'green':st[0]==='warn'?'amber':'red')+')">'+st[1]+'</b>':''}</div>
  <div class="lg2" style="padding-bottom:12px"><div class="t">${fT(eA(l),l.to)}${sup(dd)}</div><div class="c">${cname(l.to)} · ${l.to}</div></div></div>`}
 function renderTrip(){const b=BK(),l=fleg(b),st=stat(l),[a,z]=routeTxt(b),far=farEnd(b.dirs[0].legs.slice(-1)[0]);
- const dirsH=b.dirs.map((d,di)=>{const d0=d.legs[0];return `<div class="dirh"><b>${b.dirs.length>1?(di?'Return':'Outbound'):'Your flight'}</b><small>${fmtDn(lp(d0.dep,d0.from).day,{weekday:'short',day:'numeric',month:'short'})}${d.legs.length>1?' · 1 stop':' · Nonstop'}</small></div>`+d.legs.map((x,i)=>{const nx=d.legs[i+1];return legBlock(x,b)+(nx?`<div class="lay" style="margin:8px 16px">${IC.warn}<span><b>${dur(nx.dep-x.arr)} in Jakarta</b><br>${x.term!==nx.term?`Change terminals, ${x.term} to ${nx.term}.`:`Stay in Terminal ${x.term.slice(1)}.`} Protected connection.</span></div>`:'')}).join('')}).join('');
- $('#v-trip').innerHTML=`<div class="th">${art(far,'bg')}<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,40,58,.35),rgba(6,40,58,.72))"></div>
+ const dirsH=b.dirs.map((d,di)=>{const d0=d.legs[0];return `<div class="dirh"><b>${b.dirs.length>1?(di?'Return':'Outbound'):'Your flight'}</b><small>${fmtDn(lp(d0.dep,d0.from).day,{weekday:'short',day:'numeric',month:'short'})}${d.legs.length>1?' · 1 stop':' · Nonstop'}</small></div>`+d.legs.map((x,i)=>{const nx=d.legs[i+1];return legBlock(x,b)+(nx?`<div style="margin:8px 16px">${layPill(x,nx)}</div>`:'')}).join('')}).join('');
+ $('#v-trip').innerHTML=`<div class="th">
   <div class="nav" style="background:none;color:#fff;padding-left:0;margin:0 -8px"><button class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><span class="t">${b.ref}</span></div>
   <div class="rr"><div><b>${a}</b><small>${cname(a)}</small></div>${b.dirs.length>1?'<svg viewBox="0 0 56 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 5h53M47 0l7 5M55 11H2M9 6l-7 5"/></svg>':AR}<div style="text-align:right"><b>${z}</b><small>${cname(z)}</small></div></div>
   <div class="cd ${st[0]==='ok'?'':st[0]}"><i></i>${l.id} · ${st[1]} · ${l.status==='cancel'?st[2]:'departs '+countdown(l)}</div></div>
@@ -509,7 +561,7 @@ function renderPass(){const b=BK(),L=flat(b),l=L[Math.min(S.pl,L.length-1)],late
   l.status==='boarding'?N('',IC.ok,`<b>Boarding now</b> at gate ${l.gate}. Gate closes at ${fT(eD(l)-15,l.from)}.`):
   N('',IC.warn,`Boarding opens at <b>${fT(bd,l.from)}</b>. Gate ${l.gate} is confirmed 90 minutes before departure.`);
  $('#v-pass').innerHTML=`<div class="pw">${NAV('Boarding pass',true)}${L.length>1?`<div class="lp">${L.map((x,i)=>`<button class="${x===l?'on':''}" data-pl="${i}">${x.from} → ${x.to}</button>`).join('')}</div>`:''}
- <div class="pass"><div class="hd">${WINGBG}<div class="l"><span>${GL()}Garuda Indonesia</span><span>${cls.split(' ')[0]}</span></div><div class="rr"><div><b>${l.from}</b><small>${cname(l.from)}</small></div>${AR}<div style="text-align:right"><b>${l.to}</b><small>${cname(l.to)}</small></div></div></div>
+ <div class="pass"><div class="hd"><div class="l"><span>${GL()}Garuda Indonesia</span><span>${cls.split(' ')[0]}</span></div><div class="rr"><div><b>${l.from}</b><small>${cname(l.from)}</small></div>${AR}<div style="text-align:right"><b>${l.to}</b><small>${cname(l.to)}</small></div></div></div>
  <div class="bd"><div class="name"><small>Passenger 1 of ${b.names.length}</small><b>${(b.names[0]||'Passenger').toUpperCase().split(' ').reverse().join(' / ')}</b></div>
  <div class="g"><div><small>Flight</small><b>${l.id.replace(' ','')}</b></div><div><small>Date</small><b>${fmtDn(ps.day,{day:'numeric',month:'short'})}</b></div><div><small>Seat</small><b>${seatOf(l,0)}</b></div>
  <div><small>Departs</small><b class="${late?'s':''}">${hm(ps.min)}</b></div><div><small>Gate</small><b>${l.status==='cancel'?'—':l.gate}</b></div><div><small>Boards</small><b>${fT(bd,l.from)}</b></div></div>
@@ -521,6 +573,9 @@ $('#v-pass').addEventListener('click',e=>{const p=e.target.closest('[data-pl]');
 function renderInbox(){$('#v-inbox').innerHTML=`<div style="padding:18px 20px 14px"><h1>Inbox</h1></div>`+(S.msgs.length?S.msgs.map((m,i)=>`<button class="msg ${m.unread?'unread':''}" data-m="${i}"><span class="ic ${m.kind==='bad'?'bad':m.kind==='warn'?'warn':''}">${IC[m.kind]||IC.ci}</span><div style="min-width:0"><b>${m.t}</b><p>${m.p}</p></div><span class="tm">${m.at}</span></button>`).join(''):'<div class="empty">No messages</div>')}
 $('#v-inbox').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(!b)return;const m=S.msgs[+b.dataset.m];m.unread=false;badge();S.bk=0;if(m.go==='pass'){const L=flat(B0());S.pl=Math.max(0,L.indexOf(fleg(B0())))}go(m.go||'notice')});
 const altFor=l=>{const X=lp(l.dep,l.from).day;let a=legsDep(l.from,X).filter(x=>x.to===l.to&&x.dep>l.dep+30)[0];if(!a)a=legsDep(l.from,X+1).filter(x=>x.to===l.to)[0];return a};
+function connBlock(b,l){const c=connOf(b,l);if(!c)return '';const n=c.next;
+ if(n.prot)return `<div class="pad" style="padding-top:18px"><h2>Your connection</h2><div class="lay p" style="margin:8px 0 0">${IC.ok}<span><b>Protected. You are on ${n.id}.</b><br>${cname(n.from)} to ${cname(n.to)} at ${fT(n.dep,n.from)}${lp(n.dep,HUB).day!==lp(eD(l),HUB).day?' tomorrow':''}, instead of ${n.prot.oldId} at ${fT(n.prot.oldDep,n.from)}. ${n.prot.night?'We have booked a hotel near the airport and added meal vouchers.':'A meal voucher is included.'} Same fare, no charge.</span></div></div>`;
+ return `<div class="pad" style="padding-top:18px"><h2>Your connection</h2><div class="lay ${c.gap<c.need+25?'w':'p'}" style="margin:8px 0 0">${IC.ok}<span><b>Still on track.</b><br>You will have ${dur(c.gap)} in Jakarta for ${n.id}. If this flight gets later, we rebook you automatically.</span></div></div>`}
 function renderNotice(){const b=B0(),l=fleg(b),cx=l.status==='cancel',late=l.status==='delay',alt=altFor(l),route=`${cname(l.from)} to ${cname(l.to)}`;let body;
  if(l.rebooked)body=`<div class="pad" style="padding-top:8px"><h1>You are rebooked</h1><div class="sub">${l.id} · ${fT(l.dep,l.from)} ${fmtDn(lp(l.dep,l.from).day)}</div></div><div class="note" style="margin-top:18px">${IC.ok}<span>Same fare, no charge. Your new boarding pass is ready.</span></div><div class="pad" style="padding-top:20px"><button class="btn t" data-pass="0">Open boarding pass</button></div>`;
  else if(!late&&!cx)body='<div class="empty">Nothing needs your attention.</div>';
@@ -530,21 +585,25 @@ function renderNotice(){const b=B0(),l=fleg(b),cx=l.status==='cancel',late=l.sta
   ${cx?'':`<button class="opt ${S.opt==='keep'?'sel':''}" data-opt="keep"><div class="h"><b>Keep this flight</b><span>${fT(eD(l),l.from)}</span></div><p>Seat ${seatOf(l,0)} stays. Boarding opens at ${fT(eD(l)-45,l.from)}.</p></button>`}
   ${alt?`<button class="opt ${S.opt==='rebook'||cx&&S.opt!=='refund'?'sel':''}" data-opt="rebook"><div class="h"><b>Rebook ${alt.id}</b><span>${fT(alt.dep,alt.from)}${dayTxt}</span></div><p>Same fare and cabin, no charge. Seat chosen for you.</p></button>`:''}
   <button class="opt ${S.opt==='refund'?'sel':''}" data-opt="refund"><div class="h"><b>Refund</b><span>${idr(b.total/Math.max(1,flat(b).length))}</span></div><p>Back to your original payment within 7 days.</p></button></div>
- <div class="vch"><b>Meal voucher</b>${late&&l.delay>=45?' of IDR 120,000 is available':' is available if you wait more than 2 hours'} at the Garuda counter${l.from===HUB?' in Terminal '+l.term.slice(1):''}.</div>
+ ${connBlock(b,l)}<div class="vch"><b>Meal voucher</b>${late&&l.delay>=45?' of IDR 120,000 is available':' is available if you wait more than 2 hours'} at the Garuda counter${l.from===HUB?' in Terminal '+l.term.slice(1):''}.</div>
  <div class="foot" style="margin-top:24px"><button class="btn t" id="confirmOpt">Confirm</button></div>`}
  $('#v-notice').innerHTML=NAV('Flight update')+body}
 $('#v-notice').addEventListener('click',e=>{const o=e.target.closest('[data-opt]');if(o){S.opt=o.dataset.opt;renderNotice();return}
  if(e.target.closest('#confirmOpt')){const b=B0(),l=fleg(b),alt=altFor(l);
   if(alt&&(S.opt==='rebook'||l.status==='cancel'&&S.opt!=='refund')){Object.assign(l,{id:alt.id,dep:alt.dep,arr:alt.arr,term:alt.term,ac:alt.ac,status:'ok',delay:0,rebooked:alt.id});S.msgs.unshift({id:Date.now(),kind:'info',t:'You are rebooked',p:alt.id+' at '+fT(alt.dep,alt.from)+'. Same fare, no charge.',at:'now',unread:false,go:'notice'});renderNotice();toast('Rebooked',alt.id+' · '+fT(alt.dep,alt.from))}
   else if(S.opt==='refund')toast('Refund requested','Within 7 days');else toast('Staying on '+l.id,'Boarding opens '+fT(eD(l)-45,l.from))}});
-function renderMe(){$('#v-me').innerHTML=`<div class="hero" style="padding-bottom:30px">${WINGBG}<div class="logo">${GL()}GarudaMiles</div><h1>Rina Wijaya</h1><div class="hd">Member since 2019</div><div class="mem"><i></i>Silver</div></div><div class="kv" style="margin-top:16px"><div><small>Miles</small><b>12,480</b></div><div><small>Tier miles</small><b>6,480</b></div><div><small>Next tier</small><b>Gold</b></div><div><small>Expires</small><b>Dec 2028</b></div></div><p class="fine">Concept prototype. Simulated data.</p>`}
+function renderMe(){$('#v-me').innerHTML=`<div class="hero" style="padding-bottom:26px"><div class="logo">${GL()}GarudaMiles</div><h1>Rina Wijaya</h1><div class="hd">Silver member since 2019</div></div><div class="kv" style="margin-top:16px"><div><small>Miles</small><b>12,480</b></div><div><small>Tier miles</small><b>6,480</b></div><div><small>Next tier</small><b>Gold</b></div><div><small>Expires</small><b>Dec 2028</b></div></div><p class="fine">Concept prototype. Simulated data.</p>`}
 const R={home:renderHome,search:renderSearch,pick:renderPick,results:renderResults,review:renderReview,done:renderDone,trips:renderTrips,trip:renderTrip,pass:renderPass,inbox:renderInbox,notice:renderNotice,me:renderMe};
 const render=n=>(R[n]||(()=>{}))();
 
 /* ================= operations demo (what the airport console would send) ================= */
 function toast(t,p){const el=$('#push');el.innerHTML=`<span class="lg">${GL()}</span><div style="min-width:0"><b>${t}</b><p>${p}</p></div><small>now</small>`;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),3800)}
-function ops(kind){const b=B0(),l=fleg(b),M=(k,ti,p,g)=>S.msgs.unshift({id:Date.now(),kind:k,t:ti,p,at:'now',unread:true,go:g});l.rebooked=null;S.opt='keep';
- if(kind==='delay'){l.status='delay';l.delay=45;M('warn',l.id+' is delayed 45 minutes','New departure '+fT(eD(l),l.from)+'. Gate '+l.gate+'. Tap to see your options.','notice');toast(l.id+' is delayed 45 min','New departure '+fT(eD(l),l.from)+' · gate '+l.gate)}
+function ops(kind){if(kind==='conn'){S.bookings[0]=sampleConnect();S.bk=0;S.msgs=baseMsgs();S.msgs[0].p='Your trip from Sydney to Osaka via Jakarta is ready.';render(S.stack[S.stack.length-1]);badge();closeSheet();toast('Connecting trip loaded','Sydney to Osaka via Jakarta');return}
+ if(kind==='miss'&&!connOf(B0(),fleg(B0())))S.bookings[0]=sampleConnect();
+ const b=B0(),l=fleg(b),M=(k,ti,p,g)=>S.msgs.unshift({id:Date.now(),kind:k,t:ti,p,at:'now',unread:true,go:g});l.rebooked=null;S.opt='keep';
+ if(kind==='delay'){l.status='delay';l.delay=45;M('warn',l.id+' is delayed 45 minutes','New departure '+fT(eD(l),l.from)+'. Gate '+l.gate+'. Tap to see your options.','notice');toast(l.id+' is delayed 45 min','New departure '+fT(eD(l),l.from)+' · gate '+l.gate);const r=protect(b,l);if(r&&r.alt)M('warn','Your connection is protected','We moved you to '+r.alt.id+' ('+fT(r.alt.dep,HUB)+').','trip')}
+ else if(kind==='miss'){const c=connOf(b,l);l.status='delay';l.delay=Math.max(90,c.gap-c.need+25);M('warn',l.id+' is delayed '+(l.delay>=60?Math.floor(l.delay/60)+' h'+(l.delay%60?' '+l.delay%60+' min':''):l.delay+' minutes'),'New arrival in Jakarta '+fT(eA(l),HUB)+'. Tap for details.','notice');const r=protect(b,l);
+  if(r&&r.alt)M('warn','Your connection is protected',l.id+' is late, so we moved you to '+r.alt.id+' ('+fT(r.alt.dep,HUB)+(r.night?', tomorrow':'')+'). '+(r.night?'Hotel and meals are on us.':'A meal voucher is included.'),'trip'),toast('Connection protected',r.old.id+' → '+r.alt.id+' at '+fT(r.alt.dep,HUB));else toast(l.id+' is delayed','Tap for details')}
  else if(kind==='gate'){const old=l.gate;l.gate=l.gate[0]+(parseInt(l.gate.slice(1))+3);M('info','Gate change',l.id+' now departs from gate '+l.gate+' (was '+old+').','pass');toast('Gate change · '+l.id,'Now gate '+l.gate+' (was '+old+')')}
  else if(kind==='boarding'){l.status='boarding';M('info','Boarding now',l.id+' is boarding at gate '+l.gate+'. Gate closes at '+fT(eD(l)-15,l.from)+'.','pass');toast('Boarding now · '+l.id,'Gate '+l.gate)}
  else if(kind==='cancel'){l.status='cancel';M('bad',l.id+' is cancelled','We are sorry. Rebook on the next flight at no charge.','notice');toast(l.id+' is cancelled','Tap to rebook')}
@@ -552,6 +611,8 @@ function ops(kind){const b=B0(),l=fleg(b),M=(k,ti,p,g)=>S.msgs.unshift({id:Date.
  render(S.stack[S.stack.length-1]);badge();closeSheet()}
 $('#demoBtn').onclick=()=>{$('#sheet').innerHTML=`<div class="grab"></div><b style="font-size:20px;font-weight:600;letter-spacing:-.02em">Operations demo</b><p class="sub">In the full version these come from the airport console. Try one and watch the trip change.</p><div class="dm">
  <button data-ops="delay">${I('<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/>')}<span>Delay the next flight 45 minutes<small>New time, a notification and rebooking options</small></span></button>
+ <button data-ops="conn">${I('<path d="M5 18a3 3 0 0 1 3-3h8a3 3 0 0 0 0-6H9M9 6L6 9l3 3"/>')}<span>Load a connecting trip<small>Sydney to Osaka via Jakarta</small></span></button>
+ <button data-ops="miss">${I('<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/>')}<span>Delay the first flight so the connection is missed<small>We rebook the next flight automatically</small></span></button>
  <button data-ops="gate">${I('<path d="M5 12h14M13 6l6 6-6 6"/>')}<span>Change the gate<small>The pass and trip update</small></span></button>
  <button data-ops="boarding">${I('<path d="M8 12.5l3 3 5-6"/><circle cx="12" cy="12" r="9"/>')}<span>Start boarding<small>Boarding now at the gate</small></span></button>
  <button data-ops="cancel">${I('<circle cx="12" cy="12" r="9"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7"/>')}<span>Cancel the flight<small>Rebook, or refund</small></span></button>
