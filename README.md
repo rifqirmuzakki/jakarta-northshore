@@ -296,3 +296,11 @@ Fresh sessions start without bookings, past-trip fixtures or sample journey noti
 Confirmation shows the official Garuda logo, a unique session booking reference with copy/manual-selection fallback, actual outbound/return flights, traveller names, contact email, payment method and the confirmed total. The next-step message reflects the flight’s check-in/boarding state. “View your trip” remains visible below the scrolling receipt. Notifications resolve their booking by reference so adding another trip does not redirect an older notification to the wrong booking. This is still a browser/session prototype: no real payment or confirmation email is sent.
 
 Run `node tools/tests/garuda-confirmation.cjs` for empty startup/history, a full round-trip booking, receipt data, copy fallback, next steps, unique references, notification targeting, no-booking preview/reset safety and 320–1280px layouts. Home’s booked-trip tests now create their fixture explicitly instead of depending on production sample data.
+
+### Garuda Trips redesign
+
+Trips groups actual bookings into upcoming and completed journeys, preserving booking identity when sorting. Cards show travel dates, route, status and a contextual check-in, boarding-pass, flight-update or booking-details action. Details group outbound and return legs into a local-time timeline with connection duration, terminal changes and missed-connection warnings. Fare rules and booking/contact/payment details remain accessible.
+
+Services are scoped to the selected flight and traveller. Baggage shows the booked allowance; seat and meal preferences can be saved before departure, with explicit draft cancellation. Seat requests do not change the assigned seat or promise availability. Infants and past/cancelled flights have appropriate information or read-only handling. Assigned seat numbers remain distinct when a party spans more than one row. Bookings and preferences remain session-local prototype data.
+
+Run `node tools/tests/garuda-trips.cjs` for actual booking grouping and identity, timeline/connection states, contextual actions, traveller/flight preference isolation, draft cancellation, infant/past handling, unique seats and 320–1280px layouts. Home, Search, Results, Review and Confirmation browser suites also pass.
