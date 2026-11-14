@@ -1,0 +1,17 @@
+/* Branded loader: an abstract wing that draws itself, used for splash, searching, payment and check-in. */
+.ga-loader{position:absolute;inset:0;z-index:300;display:grid;place-items:center;background:#062e48;color:#fff;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s ease,visibility 0s linear .2s;font-family:"Switzer",Arial,sans-serif;text-align:center}
+.ga-loader.on{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .16s ease}
+.ga-loader.splash{background:#062e48}
+.ga-loader-inner{padding:24px;max-width:320px;outline:0}
+.ga-loader-logo{display:none;width:178px;height:auto;margin:0 auto 26px}.ga-loader.splash .ga-loader-logo{display:block}
+.ga-wing{width:124px;height:93px;display:block;margin:0 auto;overflow:visible}
+.ga-wing path{stroke:#fff;stroke-width:3;stroke-dasharray:150;stroke-dashoffset:150;animation:ga-draw 1.7s cubic-bezier(.55,.1,.3,1) infinite}
+.ga-wing path:nth-child(1){animation-delay:0s}.ga-wing path:nth-child(2){animation-delay:.1s}.ga-wing path:nth-child(3){animation-delay:.2s}.ga-wing path:nth-child(4){animation-delay:.3s}
+.ga-wing path:nth-child(5){stroke:#54bbca;animation-delay:.4s}.ga-wing path:nth-child(6){stroke:#54bbca;animation-delay:.5s}
+@keyframes ga-draw{0%{stroke-dashoffset:150;opacity:0}12%{opacity:1}55%{stroke-dashoffset:0;opacity:1}85%{stroke-dashoffset:-150;opacity:.15}100%{stroke-dashoffset:-150;opacity:0}}
+.ga-loader-msg{margin:24px 0 0;font-size:16px;font-weight:500;letter-spacing:-.01em;min-height:1.4em;transition:opacity .2s}
+.ga-loader-msg.swap{opacity:0}
+.ga-loader-sub{margin:6px 0 0;font-size:12.5px;color:#a9c6d4;min-height:1.3em}
+.ga-loader-bar{width:120px;height:3px;background:#ffffff26;border-radius:3px;margin:20px auto 0;overflow:hidden}.ga-loader-bar i{display:block;height:100%;width:40%;background:#54bbca;border-radius:3px;animation:ga-bar 1.3s ease-in-out infinite}
+@keyframes ga-bar{0%{transform:translateX(-110%)}100%{transform:translateX(280%)}}
+@media(prefers-reduced-motion:reduce){.ga-wing path{animation:none;stroke-dashoffset:0;opacity:1}.ga-loader-bar i{animation:none;width:100%;opacity:.6}.ga-loader,.ga-loader.on{transition:none}}

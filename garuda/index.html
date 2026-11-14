@@ -339,6 +339,7 @@ h2{margin:0;font-size:12px;font-weight:600;color:var(--mute);letter-spacing:.08e
 <link rel="stylesheet" href="desktop.css">
 <link rel="stylesheet" href="home-airline.css">
 <link rel="stylesheet" href="home-concept.css">
+<link rel="stylesheet" href="loader.css?v=1">
 </head>
 <body>
 <div class="stage"><div class="phone" id="app">
@@ -1054,5 +1055,6 @@ $('#demoBtn').onclick=()=>{if(!BK()){$('#sheet').innerHTML='<div class="grab"></
  if(s&&$('#v-'+s)){if(TABS.includes(s))S.stack=[s];go(s)}
  const sh=u.get('sheet');if(sh==='cal')calSheet();else if(sh&&s==='results'){S.cur={i:+(u.get('i')||0),ci:+(u.get('ci')||0)};S.fi=0;sh==='det'?detSheet(curIt()):sh==='cmp'?cmpSheet():fareSheet()}})();
 </script>
+<script src="loader.js?v=1"></script>
 </body>
 </html>
