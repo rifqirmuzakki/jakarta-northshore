@@ -429,6 +429,9 @@ const RULES={
  'Premium Economy':{bag:'2 × 7 kg',chk:'2 × 25 kg',seat:'Free selection',chg:'Free',ref:'IDR 250,000 fee',mil:'150%',lng:'—'},
  'Business Saver':{bag:'2 × 7 kg',chk:'2 × 32 kg',seat:'Free selection',chg:'IDR 450,000 fee',ref:'25% fee',mil:'200%',lng:'Lounge'},
  'Business Flex':{bag:'2 × 7 kg',chk:'2 × 32 kg',seat:'Free selection',chg:'Free',ref:'Fully refundable',mil:'225%',lng:'Lounge'}};
+/* Booking classes (subclasses): [letter, closes when the cabin is this full, price relative to the family's cheapest class] */
+const SUBCLASSES={'Economy Lite':[['G',.30,1],['L',.50,1.07],['T',.70,1.15]],'Economy Value':[['K',.35,1],['N',.55,1.06],['Q',.75,1.13]],'Economy Standard':[['H',.40,1],['E',.60,1.06],['M',1,1.12]],'Economy Flexi':[['B',.70,1],['Y',1,1.12]],
+ 'Premium Economy':[['S',.45,1],['P',.70,1.08],['W',1,1.18]],'Business Saver':[['Z',.35,1],['I',.60,1.07],['D',1,1.15]],'Business Flex':[['C',.70,1],['J',1,1.10]]};
 const legCabs=l=>/ATR/.test(l.ac)?['Economy']:/737/.test(l.ac)?['Economy','Business']:['Economy','Premium','Business'];
 const farEnd=l=>l.from===HUB?l.to:l.from;
 /* Pricing settings. The Pricing Lab (pricing-lab.html) reads and tunes these; the defaults are the live model. */
@@ -474,7 +477,11 @@ function fares(it){const cabs=it.legs.map(legCabs).reduce((a,b)=>a.filter(x=>b.i
  const ratio=cab=>{if(!C.load.on)return 1;let w=0,t=0;it.legs.forEach(l=>{const e=legEco(l);w+=e;t+=e*loadInfo(l,cab).mult/loadInfo(l,'Economy').mult});return w?t/w:1};
  if(cabs.includes('Premium'))cb.push({k:'Premium',fam:[F('Premium Economy',eco*C.fam.premium*ratio('Premium'))]});
  if(cabs.includes('Business'))cb.push({k:'Business',fam:[F('Business Saver',eco*bk*ratio('Business')),F('Business Flex',eco*bk*ratio('Business')*C.fam.bizFlex)]});
- cb.forEach(c=>{if(C.load.on){const li=it.legs.map(l=>loadInfo(l,c.k));c.left=Math.min(...li.map(x=>x.left));c.atFare=Math.min(...li.map(x=>x.atFare));c.frac=Math.max(...li.map(x=>x.frac))}else{c.left=Math.max(0,Math.min(...it.legs.map(l=>2+Math.floor(seeded(l.id+'|'+l.dep+'|'+c.k)*(c.k==='Economy'?9:5))-sold(l,c.k))));c.atFare=c.left}});
+ cb.forEach(c=>{if(C.load.on){const li=it.legs.map(l=>loadInfo(l,c.k));c.left=Math.min(...li.map(x=>x.left));c.atFare=Math.min(...li.map(x=>x.atFare));c.frac=Math.max(...li.map(x=>x.frac))}else{c.left=Math.max(0,Math.min(...it.legs.map(l=>2+Math.floor(seeded(l.id+'|'+l.dep+'|'+c.k)*(c.k==='Economy'?9:5))-sold(l,c.k))));c.atFare=c.left}
+  /* subclasses: each fare family has booking classes that are price steps; the cheapest close first as the cabin fills */
+  const li=it.legs.map(l=>({cap:cabinCap(l,c.k),sold:C.load.on?loadInfo(l,c.k).sold:0}));
+  c.fam.forEach(f=>{const rows=SUBCLASSES[f.n]||[],p0=f.p;f.p0=p0;f.subs=rows.map(([k,close,ratio],i)=>{let left=c.left;if(C.load.on&&i<rows.length-1)left=Math.max(0,Math.min(c.left,...li.map(x=>Math.floor(x.cap*close)-x.sold)));return {k,close,ratio,left,p:p0*ratio}});
+   const open=f.subs.find(x=>x.left>0)||f.subs[f.subs.length-1];f.sub=open.k;f.p=p0*open.ratio})});
  return cb}
 const minEco=(o,d,X)=>{const r=search(o,d,X);return r.length?Math.min(...r.map(i=>fares(i)[0].fam[0].p)):null};
 const pmul=(q,intl=true)=>q.a+q.c*(intl?PRICE_CFG.pax.child:PRICE_CFG.pax.childDom)+q.i*PRICE_CFG.pax.infant,seats=q=>q.a+q.c;
@@ -500,7 +507,7 @@ const fleg=b=>{const L=flat(b);return L.find(l=>eA(l)>nowAbs())||L[L.length-1]};
 function bookingReference(seed){let n=hash(seed)%36**4,ref;do{ref='GA'+(n++%36**4).toString(36).toUpperCase().padStart(4,'0')}while(S.bookings.some(b=>b.ref===ref));return ref;}
 function mkBooking(q,its,fams,names){const dirs=its.map(it=>({legs:it.legs.map(l=>{const row=12+hash(l.id+l.dep)%20,col=hash(l.id+'c'+l.dep)%5;return Object.assign({},l,{gate:(l.term==='T2'?'K':'C')+(2+hash(l.id)%10),row,col,status:'ok',delay:0,rebooked:null})})}));
  const {fare,tax,chg,total}=priceSummary(its.map((it,i)=>({it,fam:fams[i].fam})),q);
- const b={ref:bookingReference(String(Date.now())+its[0].key),pax:{a:q.a,c:q.c,i:q.i},cab:fams[0].cab,fams:fams.map(f=>f.fam.n),cabs:fams.map(f=>f.cab),dirs,names,fare,tax,chg,total,q:Object.assign({},q)};allocateBookingSeats(b);return b;}
+ const b={ref:bookingReference(String(Date.now())+its[0].key),pax:{a:q.a,c:q.c,i:q.i},cab:fams[0].cab,fams:fams.map(f=>f.fam.n),cabs:fams.map(f=>f.cab),dirs,names,fare,tax,chg,total,q:Object.assign({},q),classes:fams.map(f=>f.fam.sub||'')};allocateBookingSeats(b);return b;}
 const seatOf=(l,n)=>(l.row+Math.floor((l.col+n)/6))+'ABCDEF'[(l.col+n)%6];
 function reset(){S.bookings=[];S.past=[];S.msgs=[];S.sel=[];S.bk=0;S.pl=0;S.step=0;S.tt=0;S.opt='keep';S.noticeRef=null;S.noticeLeg=null;const push=$('#push');clearTimeout(push._t);push.classList.remove('on')}
 reset();
