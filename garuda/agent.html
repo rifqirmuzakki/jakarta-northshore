@@ -6,19 +6,26 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://api.fontshare.com"><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700&display=swap">
-<link rel="stylesheet" href="agent.css?v=1">
+<link rel="stylesheet" href="agent.css?v=2">
 </head>
 <body>
 <header class="top">
  <div class="brand"><img src="assets/garuda-logo-white.svg" alt="Garuda Indonesia" height="26"><span>Sales counter</span></div>
  <nav class="tabs" id="tabs" aria-label="Sections">
-  <button data-tab="sell" class="on">Sell</button><button data-tab="books">Bookings <i id="nb"></i></button><button data-tab="shift">Shift</button>
+  <button data-tab="term" class="on">Terminal</button><button data-tab="sell">Guided sell</button><button data-tab="books">Bookings <i id="nb"></i></button><button data-tab="shift">Shift</button>
  </nav>
  <div class="who"><span id="clock"></span><span>Counter JKT-03</span><a href="pricing-lab.html">Pricing Lab</a><a href="index.html">Passenger app</a></div>
 </header>
 <div id="boot" class="boot">Starting the pricing engine…</div>
 <main id="app" hidden>
- <section id="t-sell">
+ <section id="t-term">
+  <div class="term">
+   <div class="scr" id="scr"><div class="out" id="tout" tabindex="0" aria-live="polite"></div>
+    <form id="tform" autocomplete="off"><span class="pr">&gt;</span><input id="tin" spellcheck="false" autocapitalize="characters" aria-label="Terminal entry"></form></div>
+   <aside class="tside" id="tside" aria-label="Booking in progress"></aside>
+  </div>
+ </section>
+ <section id="t-sell" hidden>
   <form class="cmd" id="cmdform" autocomplete="off">
    <label for="cmd">Quick entry</label>
    <input id="cmd" placeholder="JKT SIN 12DEC 19DEC 2A1C   (from, to, depart, return, travellers, Y W J)" spellcheck="false">
@@ -45,6 +52,7 @@
  <section id="t-shift" hidden></section>
 </main>
 <iframe id="eng" src="index.html" title="Pricing engine" aria-hidden="true" tabindex="-1" style="position:absolute;left:-10000px;top:0;width:390px;height:844px;border:0"></iframe>
-<script src="agent.js?v=1"></script>
+<script src="agent.js?v=2"></script>
+<script src="agent-term.js?v=1"></script>
 </body>
 </html>

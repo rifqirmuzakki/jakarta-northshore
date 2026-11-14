@@ -4,7 +4,7 @@
 (function(){
 'use strict';
 var KEY='ga-agent-bookings',SKEY='ga-agent-shift',CKEY='ga-agent-closed',COUNTER='Counter JKT-03';
-var W,P,E={},BKS=[],st={tab:'sell',step:'search',q:null,res:[],sel:[null,null],pax:[],contact:{phone:'',email:''},pay:{m:'Cash',tendered:'',ok:false},showErr:false,issued:null,selBook:null,refund:false,filter:'',shift:null,float:500000};
+var W,P,E={},BKS=[],st={tab:'term',step:'search',q:null,res:[],sel:[null,null],pax:[],contact:{phone:'',email:''},pay:{m:'Cash',tendered:'',ok:false},showErr:false,issued:null,selBook:null,refund:false,filter:'',shift:null,float:500000};
 var $=function(id){return document.getElementById(id)};
 var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var num=function(n){return (Math.round(n/1000)*1000).toLocaleString('en-US')};
@@ -15,7 +15,7 @@ var TYPE={a:'Adult',c:'Child',i:'Infant'};
 var store={get:function(k,d){try{var v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}},set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
 
 /* ---------- start-up: wait for the engine frame ---------- */
-var tries=0,timer=setInterval(function(){tries++;try{W=$('eng').contentWindow;if(W&&W.GA_PRICING&&W.search&&W.eval('typeof CT')==='object'&&W.eval('typeof priceSummary')==='function'){clearInterval(timer);init()}}catch(e){}
+var tries=0,timer=setInterval(function(){tries++;var ready=false;try{W=$('eng').contentWindow;ready=!!(W&&W.GA_PRICING&&W.search&&W.eval('typeof CT')==='object'&&W.eval('typeof priceSummary')==='function')}catch(e){}if(ready){clearInterval(timer);init()}
  if(tries>200){clearInterval(timer);$('boot').textContent='The pricing engine did not start. Reload the page.'}},100);
 
 function init(){
@@ -26,8 +26,10 @@ function init(){
  var dl=$('cities');dl.innerHTML=Object.keys(E.CT).sort(function(a,b){return E.CT[a].n<E.CT[b].n?-1:1}).map(function(c){return '<option value="'+c+'" label="'+esc(E.CT[c].n)+'"></option>'}).join('');
  $('f-from').value=E.HUB;$('f-d1').min=iso(E.TD+1);$('f-d2').min=iso(E.TD+1);
  $('boot').hidden=true;$('app').hidden=false;
- wire();tick();setInterval(tick,30000);renderAll();
- var qs=new URLSearchParams(location.search).get('cmd');if(qs){$('cmd').value=qs;fillFromCmd(qs);runSearch()}
+ GA_AGENT.ctx={W:W,P:P,E:E,BKS:BKS,store:store,KEY:KEY,COUNTER:COUNTER,num:num,money:money,esc:esc,dshort:dshort,iso:iso,parseDate:parseDate,ticketNo:ticketNo,refundRows:refundRows,printTicket:printTicket,cancelBooking:cancelBooking,renderAll:renderAll,statusOf:statusOf,tlText:tlText,MON:MON,st:st};
+ sweepHeld();setInterval(function(){if(sweepHeld()&&window.GA_TERM)GA_TERM.refresh()},60000);
+ wire();tick();setInterval(tick,30000);renderAll();document.dispatchEvent(new Event('ga-agent-ready'));
+ var qs=new URLSearchParams(location.search).get('cmd');if(qs){st.tab='sell';renderAll();$('cmd').value=qs;fillFromCmd(qs);runSearch()}
 }
 function tick(){$('clock').textContent=E.fmtDn(E.TD,{weekday:'short',day:'numeric',month:'short'})+' · '+E.fT(E.nowAbs(),E.HUB)+' WIB'}
 function iso(dn){return new Date(dn*864e5).toISOString().slice(0,10)}
@@ -136,10 +138,12 @@ function printTicket(ref){var i=BKS.findIndex(function(b){return b.ref===ref});i
 
 /* ---------- bookings tab ---------- */
 function isCancelled(b){return !!b.cancelled}
+function statusOf(b){return b.cancelled?(b.cancelled.expired?['Expired','bad']:['Cancelled','bad']):b.held?['Held','warn']:['Ticketed','ok']}
+function tlText(ms){var d=new Date(ms+7*36e5),p=function(n){return String(n).padStart(2,'0')};return d.getUTCDate()+MON[d.getUTCMonth()]+' '+p(d.getUTCHours())+p(d.getUTCMinutes())+' WIB'}
 function routeOf(b){var d0=b.dirs[0].legs;return d0[0].from+(b.dirs.length>1?' ⇄ ':' → ')+d0[d0.length-1].to}
 function dateOf(b){var l=b.dirs[0].legs[0];return dshort(W.lp(l.dep,l.from).day)}
 function booksHtml(){var f=st.filter.trim().toUpperCase(),list=BKS.filter(function(b){return !f||b.ref.indexOf(f)>=0||b.names.join(' ').toUpperCase().indexOf(f)>=0||routeOf(b).indexOf(f)>=0});
- var rows=list.map(function(b){return '<tr class="row'+(st.selBook===b.ref?' on':'')+'" data-book="'+b.ref+'"><td><b>'+esc(b.ref)+'</b></td><td>'+esc(b.names[0])+(b.names.length>1?' +'+(b.names.length-1):'')+'</td><td>'+routeOf(b)+'</td><td>'+dateOf(b)+'</td><td class="n">'+num(b.total)+'</td><td>'+esc(b.paymentMethod)+'</td><td><span class="tag '+(isCancelled(b)?'bad':'ok')+'">'+(isCancelled(b)?'Cancelled':'Ticketed')+'</span></td></tr>'}).join('');
+ var rows=list.map(function(b){return '<tr class="row'+(st.selBook===b.ref?' on':'')+'" data-book="'+b.ref+'"><td><b>'+esc(b.ref)+'</b></td><td>'+esc(b.names[0])+(b.names.length>1?' +'+(b.names.length-1):'')+'</td><td>'+routeOf(b)+'</td><td>'+dateOf(b)+'</td><td class="n">'+num(b.total)+'</td><td>'+(b.held&&!b.cancelled?'—':esc(b.paymentMethod||'—'))+'</td><td><span class="tag '+statusOf(b)[1]+'">'+statusOf(b)[0]+'</span></td></tr>'}).join('');
  var sel=BKS.find(function(b){return b.ref===st.selBook});
  return '<div class="filter"><input id="bq" placeholder="Find by reference, name or route" value="'+esc(st.filter)+'" aria-label="Find a booking"></div><div class="split"><div class="pane"><h2>Bookings <small>'+list.length+' of '+BKS.length+'</small></h2>'
   +(list.length?'<div class="tw"><table><thead><tr><th>Ref</th><th>Passenger</th><th>Route</th><th>Departs</th><th class="n">Total (IDR)</th><th>Paid by</th><th>Status</th></tr></thead><tbody>'+rows+'</tbody></table></div>':'<div class="empty">'+(BKS.length?'No booking matches.':'No tickets issued yet. Sell one from the Sell tab.')+'</div>')+'</div><div>'+(sel?detailHtml(sel):'<div class="pane"><div class="empty">Select a booking to see its tickets and options.</div></div>')+'</div></div>'}
@@ -147,21 +151,22 @@ function refundRows(b){var seatsN=b.pax.a+b.pax.c,n=b.dirs.length,rows=[],tot=0;
  b.dirs.forEach(function(d,i){var dp=(b.dirPrices&&b.dirPrices[i])||{fare:b.fare/n,tax:b.tax/n,chg:b.chg/n,total:b.total/n},famN=b.fams[i]||b.fams[0],rule=(E.RULES[famN]||{}).ref||'',fee=0,paid=dp.total;
   if(/^Not refundable/i.test(rule))fee=dp.fare;else if(/IDR\s*([\d,]+)\s*fee/i.test(rule))fee=+rule.match(/IDR\s*([\d,]+)/)[1].replace(/,/g,'')*seatsN;else if(/(\d+)%\s*fee/i.test(rule))fee=dp.fare*(+rule.match(/(\d+)%/)[1]/100);
   fee=Math.min(fee,paid);var ref=paid-fee;tot+=ref;rows.push({dir:d.legs[0].from+' → '+d.legs[d.legs.length-1].to,fam:famN,rule:rule,paid:paid,fee:fee,refund:ref})});return {rows:rows,total:tot}}
-function detailHtml(b){var cx=isCancelled(b),h='<div class="pane"><h2>'+esc(b.ref)+' <span class="tag '+(cx?'bad':'ok')+'">'+(cx?'Cancelled':'Ticketed')+'</span></h2><div class="in"><dl class="kv">';
+function detailHtml(b){var cx=isCancelled(b),h='<div class="pane"><h2>'+esc(b.ref)+' <span class="tag '+statusOf(b)[1]+'">'+statusOf(b)[0]+'</span></h2><div class="in"><dl class="kv">';
  h+='<dt>Passengers</dt><dd>'+b.names.map(function(n,i){return esc(n.toUpperCase())+' <span class="t" style="color:var(--mute)">'+ticketNo(b,i)+'</span>'}).join('<br>')+'</dd>';
  b.dirs.forEach(function(d,i){h+='<dt>'+(b.dirs.length>1?(i?'Return':'Outbound'):'Flight')+'</dt><dd>'+d.legs.map(function(l){return '<b>'+esc(l.id)+'</b> '+l.from+' '+E.fT(l.dep,l.from)+' → '+l.to+' '+E.fT(l.arr,l.to)+' · '+dshort(W.lp(l.dep,l.from).day)}).join('<br>')+'<br><span style="color:var(--mute)">'+esc(b.fams[i]||b.fams[0])+'</span></dd>'});
- h+='<dt>Total</dt><dd><b>'+money(b.total)+'</b> <span style="color:var(--mute)">(fare '+num(b.fare)+', PPN '+num(b.tax)+', airport charges '+num(b.chg)+')</span></dd><dt>Paid by</dt><dd>'+esc(b.paymentMethod)+(b.payment&&b.payment.approval?' · approval '+b.payment.approval:'')+'</dd><dt>Issued</dt><dd>'+esc(b.place||'Online')+(b.issuedMs?' · '+new Date(b.issuedMs).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'')+'</dd><dt>Contact</dt><dd>'+esc(b.contactPhone||'')+(b.contactEmail?' · '+esc(b.contactEmail):'')+'</dd>';
- if(cx)h+='<dt>Cancelled</dt><dd>Refund '+money(b.cancelled.refund)+' to '+esc(b.paymentMethod)+(b.cancelled.at?' · '+new Date(b.cancelled.at).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'')+'</dd>';
+ h+='<dt>Total</dt><dd><b>'+money(b.total)+'</b> <span style="color:var(--mute)">(fare '+num(b.fare)+', PPN '+num(b.tax)+', airport charges '+num(b.chg)+')</span></dd><dt>Paid by</dt><dd>'+(b.held?'Not paid. Ticketing time limit '+tlText(b.tl)+'. Ticket it in the Terminal with ET.':esc(b.paymentMethod||'')+(b.payment&&b.payment.approval?' · approval '+b.payment.approval:''))+'</dd><dt>Issued</dt><dd>'+esc(b.place||'Online')+(b.issuedMs?' · '+new Date(b.issuedMs).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'')+'</dd><dt>Contact</dt><dd>'+esc(b.contactPhone||'')+(b.contactEmail?' · '+esc(b.contactEmail):'')+'</dd>';
+ if(cx&&b.cancelled.held)h+='<dt>'+(b.cancelled.expired?'Expired':'Cancelled')+'</dt><dd>Seats released '+(b.cancelled.at?new Date(b.cancelled.at).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'')+'</dd>';else if(cx)h+='<dt>Cancelled</dt><dd>Refund '+money(b.cancelled.refund)+' to '+esc(b.paymentMethod)+(b.cancelled.at?' · '+new Date(b.cancelled.at).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'')+'</dd>';
  h+='</dl>';
- if(st.refund&&!cx){var r=refundRows(b);h+='<h3 style="margin:16px 0 6px;font-size:13px">Cancel and refund</h3><table><thead><tr><th>Direction</th><th>Fare rule</th><th class="n">Paid</th><th class="n">Fee kept</th><th class="n">Refund</th></tr></thead><tbody>'+r.rows.map(function(x){return '<tr><td>'+x.dir+'</td><td>'+esc(x.fam)+'<small style="display:block;color:var(--mute)">'+esc(x.rule)+'</small></td><td class="n">'+num(x.paid)+'</td><td class="n">'+num(x.fee)+'</td><td class="n"><b>'+num(x.refund)+'</b></td></tr>'}).join('')+'</tbody></table><div class="chg"><span>Refund to '+esc(b.paymentMethod)+'</span><b>'+money(r.total)+'</b></div><p class="note">Fees follow the fare rules of this simulation. Taxes and airport charges are refunded unless the fee is larger. The seats go back on sale.</p><div class="btns"><button type="button" class="pri danger" style="background:var(--bad);border:0;color:#fff" data-cxgo="'+b.ref+'">Cancel booking and refund</button><button type="button" class="ghost" data-cxno="1">Keep booking</button></div>'}
- else h+='<div class="btns">'+(cx?'':'<button type="button" class="pri" data-print="'+b.ref+'">Print e-ticket</button><button type="button" class="ghost danger" data-cx="'+b.ref+'">Cancel and refund…</button>')+'</div>';
+ if(st.refund&&!cx&&!b.held){var r=refundRows(b);h+='<h3 style="margin:16px 0 6px;font-size:13px">Cancel and refund</h3><table><thead><tr><th>Direction</th><th>Fare rule</th><th class="n">Paid</th><th class="n">Fee kept</th><th class="n">Refund</th></tr></thead><tbody>'+r.rows.map(function(x){return '<tr><td>'+x.dir+'</td><td>'+esc(x.fam)+'<small style="display:block;color:var(--mute)">'+esc(x.rule)+'</small></td><td class="n">'+num(x.paid)+'</td><td class="n">'+num(x.fee)+'</td><td class="n"><b>'+num(x.refund)+'</b></td></tr>'}).join('')+'</tbody></table><div class="chg"><span>Refund to '+esc(b.paymentMethod)+'</span><b>'+money(r.total)+'</b></div><p class="note">Fees follow the fare rules of this simulation. Taxes and airport charges are refunded unless the fee is larger. The seats go back on sale.</p><div class="btns"><button type="button" class="pri danger" style="background:var(--bad);border:0;color:#fff" data-cxgo="'+b.ref+'">Cancel booking and refund</button><button type="button" class="ghost" data-cxno="1">Keep booking</button></div>'}
+ else h+='<div class="btns">'+(cx?'':b.held?'<button type="button" class="ghost danger" data-cxgo="'+b.ref+'">Cancel booking and release seats</button>':'<button type="button" class="pri" data-print="'+b.ref+'">Print e-ticket</button><button type="button" class="ghost danger" data-cx="'+b.ref+'">Cancel and refund…</button>')+'</div>';
  return h+'</div></div>'}
-function cancelBooking(ref){var b=BKS.find(function(x){return x.ref===ref});if(!b||isCancelled(b))return;var r=refundRows(b),n=b.pax.a+b.pax.c;
+function cancelBooking(ref,expired){var b=BKS.find(function(x){return x.ref===ref});if(!b||isCancelled(b))return;var held=!!b.held,r=held?{rows:[],total:0}:refundRows(b),n=b.pax.a+b.pax.c;
  b.dirs.forEach(function(d,i){d.legs.forEach(function(l){l.status='cancel';W.adjustSold(l,(b.cabs&&b.cabs[i])||b.cab,-n)})});P.clear();
- b.cancelled={at:Date.now(),refund:Math.round(r.total),rows:r.rows};store.set(KEY,BKS);st.refund=false;renderAll()}
+ b.cancelled={at:Date.now(),refund:Math.round(r.total),rows:r.rows,held:held,expired:!!expired};(b.hist=b.hist||[]).push({at:Date.now(),t:expired?'TICKETING TIME LIMIT PASSED - SEATS RELEASED':held?'HELD BOOKING CANCELLED':'BOOKING CANCELLED, REFUND '+Math.round(r.total)});store.set(KEY,BKS);st.refund=false;renderAll()}
+function sweepHeld(){var n=0;BKS.slice().forEach(function(b){if(b.held&&!b.cancelled&&b.tl&&b.tl<Date.now()){cancelBooking(b.ref,true);n++}});return n}
 
 /* ---------- shift tab ---------- */
-function shiftData(){var s=st.shift.start,sales=BKS.filter(function(b){return (b.issuedMs||0)>=s&&b.place===COUNTER}),cx=BKS.filter(function(b){return b.cancelled&&b.cancelled.at>=s&&b.place===COUNTER}),by={};
+function shiftData(){var s=st.shift.start,sales=BKS.filter(function(b){return (b.issuedMs||0)>=s&&b.place===COUNTER}),cx=BKS.filter(function(b){return b.cancelled&&!b.cancelled.held&&b.cancelled.at>=s&&b.place===COUNTER}),by={};
  PAYS.forEach(function(p){by[p[0]]={n:0,sales:0,refunds:0}});sales.forEach(function(b){var m=by[b.paymentMethod]||(by[b.paymentMethod]={n:0,sales:0,refunds:0});m.n++;m.sales+=b.total});cx.forEach(function(b){var m=by[b.paymentMethod]||(by[b.paymentMethod]={n:0,sales:0,refunds:0});m.refunds+=b.cancelled.refund});
  var S=sales.reduce(function(a,b){return a+b.total},0),R=cx.reduce(function(a,b){return a+b.cancelled.refund},0);return {sales:sales,cx:cx,by:by,S:S,R:R,cash:by.Cash.sales-by.Cash.refunds}}
 function shiftHtml(){var d=shiftData(),fl=+st.shift.float||0,exp=fl+d.cash,cnt=st.shift.counted,diff=cnt==null||cnt===''?null:+cnt-exp,closed=store.get(CKEY,[]);
@@ -176,9 +181,9 @@ function closeShift(){var d=shiftData(),fl=+st.shift.float||0,exp=fl+d.cash,cnt=
 
 /* ---------- rendering ---------- */
 function renderAll(){$('nb').textContent=BKS.length||'';
- $('t-sell').hidden=st.tab!=='sell';$('t-books').hidden=st.tab!=='books';$('t-shift').hidden=st.tab!=='shift';
+ $('t-term').hidden=st.tab!=='term';$('t-sell').hidden=st.tab!=='sell';$('t-books').hidden=st.tab!=='books';$('t-shift').hidden=st.tab!=='shift';
  [].forEach.call(document.querySelectorAll('#tabs button'),function(b){b.classList.toggle('on',b.dataset.tab===st.tab)});
- if(st.tab==='sell')renderSell();else if(st.tab==='books')$('t-books').innerHTML=booksHtml();else $('t-shift').innerHTML=shiftHtml()}
+ if(st.tab==='term'){if(window.GA_TERM)GA_TERM.show()}else if(st.tab==='sell')renderSell();else if(st.tab==='books')$('t-books').innerHTML=booksHtml();else $('t-shift').innerHTML=shiftHtml()}
 function renderSell(){var w=$('work');
  if(!st.q)w.innerHTML='<div class="pane"><div class="empty"><b style="display:block;color:var(--ink);font-size:16px;margin-bottom:4px">Start a sale</b>Type a route above, for example <span class="t">JKT SIN 12DEC 19DEC 2A1C</span>, or fill in the form and press Search.</div></div>';
  else if(st.step==='search'){var h=stepsHtml();for(var d=0;d<dirs();d++)h+=dirTable(d);w.innerHTML=h}
@@ -218,5 +223,5 @@ function wire(){
 function mkPaxKeep(){var q=st.q,n=q.a+q.c+q.i;if(st.pax.length!==n||st.pax.filter(function(p){return p.type==='a'}).length!==q.a||st.pax.filter(function(p){return p.type==='c'}).length!==q.c)mkPax()}
 
 /* test hooks */
-window.GA_AGENT={state:function(){return st},bookings:function(){return BKS},issue:issue,run:runSearch,parse:fillFromCmd,refund:refundRows,shift:shiftData};
+window.GA_AGENT={ctx:null,sweep:function(){return sweepHeld()},state:function(){return st},bookings:function(){return BKS},issue:issue,run:runSearch,parse:fillFromCmd,refund:refundRows,shift:shiftData};
 })();

@@ -388,4 +388,14 @@ A desktop tool for staff who sell and issue tickets in person (a ticket office o
 - **Shared with the passenger app**: it loads `index.html` in a hidden frame and uses its pricing engine, seat inventory (`ga-sold`) and e-ticket, so a seat sold here changes prices there. The Pricing Lab settings apply too.
 - **Storage**: counter bookings are in this browser (`ga-agent-bookings`, `ga-agent-shift`, `ga-agent-closed`). The passenger app keeps its own bookings in memory only, so counter bookings do not yet appear in its "Trips". A shared backend (Supabase) is the planned next step.
 - Not built yet: sign-in, seat selection at the counter, changes and reissues, discount overrides with approval, commissions, multi-city.
-- Test: `tools/tests/garuda-agent.cjs`.
+- Test: `tools/tests/garuda-agent.cjs`. This guided flow is the "Guided sell" tab.
+
+### Sales terminal (the default tab of `garuda/agent.html`, `garuda/agent-term.js`)
+A GDS-style command screen (Amadeus, Sabre and Galileo flavour) on the same engine. The command set is simplified and Garuda-specific, not real GDS syntax. Type `HE` for the list.
+- Availability and sell: `AN21DECJKTSIN` (class letters with seats per line, equipment, duration, via), `AN28DEC` (reverses the pair for the return), `SS2Y1` (2 seats, class Y, line 1). Classes: Y Flexi, S Standard, V Value, L Lite, W Premium Economy, C Business Saver, J Business Flex.
+- Booking elements: `NM2WIJAYA/RINA/BUDI`, child `NM1WIJAYA/SARI(CHD/01JUN18)`, infant `(INF/20AUG25)`, `AP+62...`, `APE-x@y.com`, `TKOK` or `TKTL25NOV`, `RFRINA`, `XE3` and `XE2-3`, `IG`. Elements are numbered and shown in the side panel with a live quote and a "next" hint.
+- `FQD` fare quote (with round-trip adjustments), `FQN` fare rules, `ER` save (needs name, itinerary, contact, ticketing and received-from; creates a **held** booking: seats are taken now and released when the ticketing time limit passes), `FPCASH[/amount]`, `FPCC`, `FPDC`, `FPQRIS`, `FPTRF`, `ET` issue (ticket numbers), `EP` print the e-ticket.
+- `RT<locator>`, `RT<surname>` (pick from a list with `RT<line>`), `XI` then `XIY` (refund by fare rules, or release seats for a held booking), `QT` held bookings by time limit, `RH` history, `DACSIN`, `DAN SINGAPORE`, `JD`, `CL`. Arrow up and down recall earlier entries.
+- Held bookings expire by themselves (checked at load and every minute). The Bookings tab shows Held, Ticketed, Cancelled and Expired.
+- Not built yet: work areas, sign-in, seat map (`SM`), changes and reissues (`XI` and rebuild only), ticketing queues beyond `QT`, SSR and remarks elements.
+- Test: `tools/tests/garuda-agent-terminal.cjs`.

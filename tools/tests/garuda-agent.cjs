@@ -7,7 +7,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  const ctx=await b.newContext({viewport:{width:1440,height:900}}),p=await ctx.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));
  await ctx.route('https://garuda.test/**',r=>{let f=path.join(root,new URL(r.request().url()).pathname);if(f.endsWith('/'))f+='index.html';if(!fs.existsSync(f))return r.fulfill({status:404,body:''});const ext=path.extname(f),t={'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'}[ext]||'application/octet-stream';r.fulfill({status:200,contentType:t,body:fs.readFileSync(f)})});
  await p.goto('https://garuda.test/garuda/agent.html');await p.waitForSelector('#app:not([hidden])',{timeout:20000});
- assert.equal(await p.locator('#nb').innerText(),'');
+ assert.equal(await p.locator('#nb').innerText(),'');await p.click('[data-tab="sell"]');
  /* quick entry, return trip, 2 adults + 1 child + 1 infant */
  await p.fill('#cmd',`jkt sin ${ddmon(21)} ${ddmon(28)} 2A1C1I`);await p.press('#cmd','Enter');
  assert.equal(await p.inputValue('#f-from'),'JKT');assert.equal(await p.inputValue('#f-to'),'SIN');assert.equal(await p.inputValue('#f-a'),'2');assert.equal(await p.inputValue('#f-c'),'1');assert.equal(await p.inputValue('#f-i'),'1');
