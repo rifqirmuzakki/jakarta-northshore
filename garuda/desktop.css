@@ -1,0 +1,23 @@
+/* A desktop application shell, with the same content and booking state as mobile. */
+@media (min-width: 900px) {
+  html,body {background:#edf3f5}
+  .stage {display:block;min-height:100%;padding:0}
+  .phone {width:100%;max-width:none;height:100dvh;max-height:none;border-radius:0;box-shadow:none;background:#f4f8fa}
+  .view,.view.nonav {top:72px;bottom:0}
+  #tabs {display:grid!important;top:0;bottom:auto;left:0;right:0;height:72px;padding:0 max(32px,calc((100vw - 1200px)/2));grid-template-columns:1fr repeat(4,110px);align-items:stretch;background:#062e48;border:0;box-shadow:0 2px 14px #0a293014}
+  #tabs::before {content:"";align-self:center;width:176px;height:40px;background:url("assets/garuda-logo-white.svg") left center/contain no-repeat}
+  #tabs button {flex-direction:row;gap:8px;color:#d2e2e9;font-size:13px;font-weight:500}
+  #tabs button svg {width:19px;height:19px}
+  #tabs button.on {color:#fff;border-bottom:3px solid #54bbca}
+  #v-home .home-hero {padding-left:max(32px,calc((100% - 1120px)/2));padding-right:max(32px,calc((100% - 1120px)/2))}
+  #v-home .home-brand .home-logo {display:none}
+  #v-home .home-brand {justify-content:flex-end}
+  #v-home .home-main {max-width:1160px;margin:0 auto;padding-left:20px;padding-right:20px}
+  #v-home .home-destinations {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .search-body,.review-body,.confirmation-body,.trip-body,.boarding-body,.update-body {width:100%;max-width:820px;margin:0 auto;padding-left:32px;padding-right:32px}
+  .results-list,.results-count,.results-controls,.results-heading,.results-date-strip,.results-local,.results-outbound,.trips-header,.trips-tab-row,.trips-list,.updates-inbox-head,.updates-inbox-list {width:100%;max-width:960px;margin-left:auto;margin-right:auto}
+  .search-footer,.review-footer,.confirmation-footer,.trip-footer,.boarding-footer,.update-footer {padding-left:max(32px,calc((100% - 756px)/2));padding-right:max(32px,calc((100% - 756px)/2))}
+  .sheet {left:50%;right:auto;width:min(680px,calc(100% - 48px));max-height:85%;border-radius:20px 20px 0 0;transform:translate(-50%,105%)}
+  .sheet.on {transform:translate(-50%,0)}
+  .push {left:auto;right:24px;width:400px}
+}
