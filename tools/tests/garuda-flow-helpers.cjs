@@ -1,0 +1,5 @@
+async function bookingToPeople(p){if(await p.locator('[data-booking-continue]').count()&&await p.locator('#pn0').count()===0)await p.locator('[data-booking-continue]').click();}
+async function bookingToPayment(p){await bookingToPeople(p);if(await p.locator('[data-booking-continue]').count())await p.locator('[data-booking-continue]').click();}
+async function checkinToReview(p){if(await p.locator('[data-checkin-review]').count())await p.locator('[data-checkin-review]').click();if(await p.locator('[data-checkin-seats-next]').count())await p.locator('[data-checkin-seats-next]').click();if(await p.locator('[data-checkin-baggage]').count())await p.locator('[data-checkin-baggage]').check();if(await p.locator('[data-checkin-baggage-next]').count())await p.locator('[data-checkin-baggage-next]').click();}
+async function checkinToTravellers(p){for(let i=0;i<3&&await p.locator('[data-checkin-person]').count()===0;i++)await p.locator('[data-checkin-back]').click();}
+module.exports={bookingToPeople,bookingToPayment,checkinToReview,checkinToTravellers};
