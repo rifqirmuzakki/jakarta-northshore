@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://api.fontshare.com"><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700&display=swap">
-<link rel="stylesheet" href="agent.css?v=2">
+<link rel="stylesheet" href="agent.css?v=3">
 </head>
 <body>
 <header class="top">
@@ -20,7 +20,7 @@
 <main id="app" hidden>
  <section id="t-term">
   <div class="term">
-   <div class="scr" id="scr"><div class="out" id="tout" tabindex="0" aria-live="polite"></div>
+   <div class="scr" id="scr"><div class="termbar"><span>SALES TERMINAL <small>· SIMULATION</small></span><button type="button" id="term-help">Command reference <kbd>HE</kbd></button></div><div class="out" id="tout" tabindex="0" aria-live="polite"></div>
     <form id="tform" autocomplete="off"><span class="pr">&gt;</span><input id="tin" spellcheck="false" autocapitalize="characters" aria-label="Terminal entry"></form></div>
    <aside class="tside" id="tside" aria-label="Booking in progress"></aside>
   </div>
@@ -53,6 +53,6 @@
 </main>
 <iframe id="eng" src="index.html" title="Pricing engine" aria-hidden="true" tabindex="-1" style="position:absolute;left:-10000px;top:0;width:390px;height:844px;border:0"></iframe>
 <script src="agent.js?v=3"></script>
-<script src="agent-term.js?v=3"></script>
+<script src="agent-term.js?v=4"></script>
 </body>
 </html>
