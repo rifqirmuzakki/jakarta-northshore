@@ -305,6 +305,12 @@ Services are scoped to the selected flight and traveller. Eligible seat changes 
 
 Run `node tools/tests/garuda-trips.cjs` for actual booking grouping and identity, timeline/connection states, contextual actions, traveller/flight preference isolation, draft cancellation, infant/past handling, unique seats and 320–1280px layouts. Home, Search, Results, Review and Confirmation browser suites also pass.
 
+### Journey updates
+
+Home, Trips, Inbox and boarding passes show flight-specific delay, gate and cancellation updates. The update screen compares scheduled and revised local times or gates, flags affected connections, and offers an explicit choice to keep a delayed flight or change to an available same-cabin flight when the rest of the itinerary permits it. A changed flight requires check-in again. Inbox messages identify their booking and flight, including when an older message refers to a flight that has since changed.
+
+Refund information shows the booked fare rule without promising an amount or processing time. These actions and messages use session-local simulation data; no real booking change, refund or notification is sent. Run `node tools/tests/garuda-updates.cjs` for disruption consistency, choices, replacement-flight checks, notification identity and responsive layouts.
+
 ### Destination imagery throughout the passenger journey
 
 A shared city-photo catalogue now connects Home discovery and the next-trip card with Search, Results, Review, Confirmation, Trips cards and trip details. Search follows the selected destination and route swaps; Results follows the active outbound/return direction. Connecting journeys use the final city, while Home's next-trip card follows the current journey direction. Review and confirmation use compact city/photo panels, leaving operational details and primary actions on solid surfaces.
