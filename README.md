@@ -348,6 +348,6 @@ The guided flow also preserves the Economy cabin-experience page and its four Ec
 
 ### Passenger journey refinements
 
-The Economy fare selector links to the cabin experience through a compact photo preview for widebodies and an icon for aircraft without representative cabin photography. Booking management uses a simpler route header and grouped service actions. Flight/traveller selectors appear when a choice exists.
+The Economy fare selector links to the cabin experience through a compact photo preview for widebodies and an icon for aircraft without representative cabin photography. Booking management uses the same deep-blue journey header, soft surfaces and rounded service cards as Home and Trips; Overview retains its destination photograph. Flight/traveller selectors appear when a choice exists.
 
 Seat maps keep their traveller/seat summary in the fixed footer instead of covering scrolling rows. Single-traveller seat selection avoids an unnecessary dropdown; selectors for groups and multi-leg journeys use a clearly sized, keyboard-accessible control. Boarding passes omit selectors when there is only one traveller and flight, and show the static demo QR code described above. Search, fare rules, seat assignment and traveller/pass switching behaviour remain covered by the existing browser suites.
