@@ -305,6 +305,10 @@ Services are scoped to the selected flight and traveller. Eligible seat changes 
 
 Run `node tools/tests/garuda-trips.cjs` for actual booking grouping and identity, timeline/connection states, contextual actions, traveller/flight preference isolation, draft cancellation, infant/past handling, unique seats and 320–1280px layouts. Home, Search, Results, Review and Confirmation browser suites also pass.
 
+### Garuda Home
+
+Home keeps the next journey and its relevant check-in, boarding-pass or disruption action prominent. Checked-in departures display known terminal and gate details. Booking, check-in, trip management and journey updates are accessible from Home, including an unread update count. With no upcoming booking, check-in opens Trips rather than implying that a real booking can be retrieved in this session-only prototype. On desktop, the journey and travel essentials appear side by side.
+
 ### Desktop web layout
 
 The Garuda app adapts to desktop screens with a branded top navigation bar, wider journey content and appropriately sized dialogs. Booking, check-in, trip management and updates use the same session and flows as the mobile layout. Mobile navigation and screen layouts remain available on smaller screens.
