@@ -431,23 +431,29 @@ const RULES={
  'Business Flex':{bag:'2 × 7 kg',chk:'2 × 32 kg',seat:'Free selection',chg:'Free',ref:'Fully refundable',mil:'225%',lng:'Lounge'}};
 const legCabs=l=>/ATR/.test(l.ac)?['Economy']:/737/.test(l.ac)?['Economy','Business']:['Economy','Premium','Business'];
 const farEnd=l=>l.from===HUB?l.to:l.from;
-function legEco(l){const blk=l.arr-l.dep,intl=CT[farEnd(l)].z==='I',base=intl?500000+blk*12500:250000+blk*9000,t=lp(l.dep,l.from),dout=t.day-TD;
- const tod=(t.min>=360&&t.min<=540)||(t.min>=1020&&t.min<=1200)?1.1:(t.min>=1320||t.min<300?0.9:1),adv=1+Math.max(0,14-dout)*0.028,dem=0.9+seeded(l.id+dout)*0.38;return base*tod*adv*dem}
+/* Pricing settings. The Pricing Lab (pricing-lab.html) reads and tunes these; the defaults are the live model. */
+const PRICE_DEFAULTS={base:{intlFixed:500000,intlPerMin:12500,domFixed:250000,domPerMin:9000},tod:{peak:1.1,off:0.9,peakFrom1:360,peakTo1:540,peakFrom2:1020,peakTo2:1200,offFrom:1320,offTo:300},adv:{window:14,perDay:0.028},demand:{min:0.9,range:0.38},fam:{lite:0.9,value:1,standard:1.15,flexi:1.4,premium:1.75,bizShort:2.6,bizMid:3.1,bizLong:3.6,bizFlex:1.18,bizMidMin:240,bizLongMin:600},pax:{child:0.75,infant:0.1},tax:{ppn:0.11},charges:{intl:85000,dom:40000},connection:{discount:0.94}};
+const PRICE_CFG=JSON.parse(JSON.stringify(PRICE_DEFAULTS));
+try{const sv=JSON.parse(localStorage.getItem('ga-pricing-cfg')||'null');if(sv)for(const g in sv)if(PRICE_CFG[g])Object.assign(PRICE_CFG[g],sv[g])}catch(e){}
+function todFactor(m,C=PRICE_CFG.tod){return (m>=C.peakFrom1&&m<=C.peakTo1)||(m>=C.peakFrom2&&m<=C.peakTo2)?C.peak:(m>=C.offFrom||m<C.offTo?C.off:1)}
+function legEcoDetail(l){const C=PRICE_CFG,blk=l.arr-l.dep,intl=CT[farEnd(l)].z==='I',base=intl?C.base.intlFixed+blk*C.base.intlPerMin:C.base.domFixed+blk*C.base.domPerMin,t=lp(l.dep,l.from),dout=t.day-TD;
+ const tod=todFactor(t.min),adv=1+Math.max(0,C.adv.window-dout)*C.adv.perDay,dem=C.demand.min+seeded(l.id+dout)*C.demand.range;return {blk,intl,base,tod,adv,dem,dout,localMin:t.min,eco:base*tod*adv*dem}}
+function legEco(l){return legEcoDetail(l).eco}
 let SOLD={};try{SOLD=JSON.parse(localStorage.getItem('ga-sold')||'{}')}catch(e){}
 const sold=(l,c)=>SOLD[l.id+'|'+l.dep+'|'+c]||0;
 function fares(it){const cabs=it.legs.map(legCabs).reduce((a,b)=>a.filter(x=>b.includes(x)));
- const eco=it.legs.reduce((s,l)=>s+legEco(l),0)*(it.stops?0.94:1),blk=it.legs.reduce((s,l)=>s+l.arr-l.dep,0),bk=blk>600?3.6:blk>240?3.1:2.6;
+ const C=PRICE_CFG,eco=it.legs.reduce((s,l)=>s+legEco(l),0)*(it.stops?C.connection.discount:1),blk=it.legs.reduce((s,l)=>s+l.arr-l.dep,0),bk=blk>C.fam.bizLongMin?C.fam.bizLong:blk>C.fam.bizMidMin?C.fam.bizMid:C.fam.bizShort;
  const F=(n,p)=>({n,p,r:RULES[n]});
- const cb=[{k:'Economy',fam:[F('Economy Lite',eco*0.9),F('Economy Value',eco),F('Economy Standard',eco*1.15),F('Economy Flexi',eco*1.4)]}];
- if(cabs.includes('Premium'))cb.push({k:'Premium',fam:[F('Premium Economy',eco*1.75)]});
- if(cabs.includes('Business'))cb.push({k:'Business',fam:[F('Business Saver',eco*bk),F('Business Flex',eco*bk*1.18)]});
+ const cb=[{k:'Economy',fam:[F('Economy Lite',eco*C.fam.lite),F('Economy Value',eco*C.fam.value),F('Economy Standard',eco*C.fam.standard),F('Economy Flexi',eco*C.fam.flexi)]}];
+ if(cabs.includes('Premium'))cb.push({k:'Premium',fam:[F('Premium Economy',eco*C.fam.premium)]});
+ if(cabs.includes('Business'))cb.push({k:'Business',fam:[F('Business Saver',eco*bk),F('Business Flex',eco*bk*C.fam.bizFlex)]});
  cb.forEach(c=>{c.left=Math.max(0,Math.min(...it.legs.map(l=>2+Math.floor(seeded(l.id+'|'+l.dep+'|'+c.k)*(c.k==='Economy'?9:5))-sold(l,c.k))))});
  return cb}
 const minEco=(o,d,X)=>{const r=search(o,d,X);return r.length?Math.min(...r.map(i=>fares(i)[0].fam[0].p)):null};
-const pmul=q=>q.a+q.c*0.75+q.i*0.1,seats=q=>q.a+q.c;
+const pmul=q=>q.a+q.c*PRICE_CFG.pax.child+q.i*PRICE_CFG.pax.infant,seats=q=>q.a+q.c;
 const paxTxt=q=>q.a+' adult'+(q.a>1?'s':'')+(q.c?' · '+q.c+' child'+(q.c>1?'ren':''):'')+(q.i?' · '+q.i+' infant'+(q.i>1?'s':''):'');
 const isIntl=legs=>legs.some(l=>CT[farEnd(l)].z==='I');
-function priceFor(it,fam,q=S.q){const fare=Math.round(fam.p*pmul(q)/1000)*1000,tax=Math.round(fare*.11/1000)*1000,chg=it.legs.reduce((v,l)=>v+(CT[farEnd(l)].z==='I'?85000:40000),0)*seats(q);return {fare,tax,chg,total:fare+tax+chg};}
+function priceFor(it,fam,q=S.q){const fare=Math.round(fam.p*pmul(q)/1000)*1000,tax=Math.round(fare*PRICE_CFG.tax.ppn/1000)*1000,chg=it.legs.reduce((v,l)=>v+(CT[farEnd(l)].z==='I'?PRICE_CFG.charges.intl:PRICE_CFG.charges.dom),0)*seats(q);return {fare,tax,chg,total:fare+tax+chg};}
 function priceSummary(sel,q=S.q){return sel.reduce((v,s)=>{const p=priceFor(s.it,s.fam,q);for(const k of ['fare','tax','chg','total'])v[k]+=p[k];return v},{sel,fare:0,tax:0,chg:0,total:0});}
 
 
@@ -744,6 +750,8 @@ const cabOfFam=n=>n.startsWith('Premium')?'Premium':n.startsWith('Business')?'Bu
 const lockFam=()=>S.step===1&&S.sel[0]?{cab:S.sel[0].cab,name:S.sel[0].fam.n}:null;
 const famIn=(it,cab,name)=>{const c=fares(it).find(x=>x.k===cab);if(!c)return null;const f=c.fam.find(x=>x.n===name);return f?{c,f}:null};
 let rmEpoch=0;const _rm=new Map();
+/* Hooks for the Pricing Lab */
+window.GA_PRICING={cfg:PRICE_CFG,defaults:PRICE_DEFAULTS,detail:legEcoDetail,clear(){for(const k in pcache)delete pcache[k];_rm.clear();rmEpoch++},save(){try{localStorage.setItem('ga-pricing-cfg',JSON.stringify(PRICE_CFG));return true}catch(e){return false}},reset(){for(const g in PRICE_DEFAULTS)Object.assign(PRICE_CFG[g],PRICE_DEFAULTS[g]);try{localStorage.removeItem('ga-pricing-cfg')}catch(e){}this.clear()},saved(){try{return !!localStorage.getItem('ga-pricing-cfg')}catch(e){return false}}};
 function retMin(cab,name){const q=S.q,k=[rmEpoch,q.to,q.from,q.d2,cab,name,S.step,S.sel[0]?S.sel[0].it.key:''].join('|');if(_rm.has(k))return _rm.get(k);let m=null;
  for(const it of search(q.to,q.from,q.d2).filter(returnEligible)){const x=famIn(it,cab,name);if(!x||x.c.left<seats(q))continue;const t=priceFor(it,x.f).total;if(m==null||t<m)m=t}
  _rm.set(k,m);return m}
