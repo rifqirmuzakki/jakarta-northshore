@@ -18,3 +18,18 @@
 /* User-controlled destination stories. */
 #v-home .home-carousel{min-height:200px}#v-home .home-carousel .home-empty{padding:20px 18px 46px}#v-home .home-carousel h2{max-width:280px;font-size:23px}#v-home .home-carousel .home-explore{display:inline-flex;align-items:center;gap:7px;margin-top:14px;min-height:42px;padding:0 15px;border-radius:9px;background:#fff;color:#164c62;font-size:12px;font-weight:500}#v-home .home-carousel .home-explore svg{width:13px;height:13px}#v-home .home-carousel-dots{position:absolute;bottom:2px;left:9px;display:flex;align-items:center}#v-home .home-carousel-dots button{width:44px;height:44px;display:grid;place-items:center}#v-home .home-carousel-dots span{display:block;width:6px;height:6px;background:#ffffff80;border-radius:8px}#v-home .home-carousel-dots [aria-current=true] span{width:18px;background:#fff}#v-home .home-finished-wrap{margin-top:24px}#v-home .home-finished-wrap .home-journey{margin-top:0}#v-home .home-shortcuts .home-book{margin:0}
 @media(min-width:900px){#v-home .home-carousel{min-height:205px}#v-home .home-carousel .home-empty{padding:26px 27px 48px}#v-home .home-carousel-dots{left:17px}#v-home .home-finished-wrap{grid-column:2;grid-row:3;margin-top:20px}#v-home .home-finished-wrap .home-journey{grid-column:auto;grid-row:auto}}
+/* Compact header: logo and bell on one row, greeting and miles beneath, no date line */
+#v-home .home-hero{padding-top:12px;padding-bottom:30px}
+#v-home .home-brand .home-logo{width:136px;max-width:calc(100% - 52px)}
+#v-home .home-brand .bell{width:38px;height:38px}
+#v-home .home-welcome{margin-top:12px}
+#v-home .home-welcome .home-date{display:none}
+#v-home .home-welcome h1{font-size:23px;line-height:1.15}
+#v-home .home-member{margin-top:7px;min-height:24px;font-size:11px}
+#v-home .home-wing{width:230px;height:165px;right:-92px;top:6px;opacity:.4}
+#v-home .home-journey{margin-top:-14px}
+@media(min-width:900px){#v-home .home-hero{padding-top:20px;padding-bottom:30px}}
+/* Destination photo: let the picture show, keep the text readable */
+#v-home .home-inspire::before{background:linear-gradient(90deg,rgba(6,45,67,.8) 0%,rgba(6,45,67,.5) 52%,rgba(6,45,67,.06) 100%),linear-gradient(0deg,rgba(6,45,67,.5) 0%,rgba(6,45,67,0) 46%)}
+#v-home .home-inspire>.destination-photo{filter:saturate(1.08) brightness(1.06)}
+#v-home .home-inspire h2,#v-home .home-inspire .home-eyebrow,#v-home .home-inspire p{text-shadow:0 1px 12px rgba(4,30,46,.45)}
