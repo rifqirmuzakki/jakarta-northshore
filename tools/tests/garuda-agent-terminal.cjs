@@ -73,5 +73,10 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  /* bookings tab shows all statuses; shift ignores held cancels */
  await p.click('[data-tab="books"]');const bt=await p.locator('#t-books').innerText();assert(/Cancelled/.test(bt)&&/Expired/.test(bt));
  await p.click('[data-tab="shift"]');assert(/Bookings issued\s*1/.test((await p.locator('#t-shift .stat').innerText()).replace(/\n/g,' ')));
+ /* A one-adult simulated award debits the demo balance only on issuance. */
+ await p.click('[data-tab="term"]');await run('IG');await run(`AN${ddmon(21)}JKTDPS`);await run('SS1Y1');await run('NM1WIJAYA/RINA MRS');await run('AP081234567890');await run('TKOK');await run('RFRINA');await run('ER');
+ assert(/12,480 MILES/.test(await last('AMRINA')));assert(/8,000/.test(await last('AWQ')));assert(/8,000 MILES/.test(await last('FQD')));assert(/12,480 MILES/.test(await last('AMRINA')));
+ await run('FPCC');assert(/AWARD  8,000 MILES/.test(await last('ET')));assert(/4,480 MILES/.test(await last('AMRINA')));assert(/MILES REINSTATEMENT REQUIRE MANUAL REVIEW/.test(await last('XI')));assert(/MANUAL CHANGE/.test(await last('RBM2')));
+ await run('IG');await run(`AN${ddmon(22)}JKTDPS`);await run('SS1Y1');await run('NM1WIJAYA/RINA MRS');await run('AP081234567890');await run('TKOK');await run('RFRINA');await run('ER');await run('AWQ');await run('FPCC');assert(/INSUFFICIENT MILES/.test(await last('ET')));assert(/4,480 MILES/.test(await last('AMRINA')));assert(/REMOVED/.test(await last('AWX')));
  assert.deepEqual(errors,[]);console.log('PASS: sales terminal: availability, sell, names, save, pay, ticket, print, retrieve, history, refund, queue, expiry');
 }finally{await b.close()}})().catch(e=>{console.error(e);process.exit(1)});
