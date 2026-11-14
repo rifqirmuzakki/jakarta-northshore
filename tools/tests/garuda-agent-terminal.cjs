@@ -25,7 +25,8 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  assert(/SEATS MUST MATCH/.test(await last('SS3Y2')));
  assert(/NEED +NAME/.test(await last('ER')));
  assert(/DOES NOT MATCH/.test(await last('NM3WIJAYA/RINA/BUDI/DEWI'.replace('/DEWI',''))));
- assert(/OK/.test(await last('NM2WIJAYA/RINA/BUDI')));
+ assert(/NOT ALLOWED FOR AN ADULT/.test(await last('NM1WIJAYA/X MSTR')));assert(/NOT ALLOWED FOR A CHILD/.test(await last('NM1WIJAYA/X MR(CHD/01JUN18)')));
+ assert(/1\.WIJAYA\/RINA MRS/.test(await last('NM1WIJAYA/RINA MRS')));assert(/2\.WIJAYA\/BUDI MR/.test(await last('NM1WIJAYA/BUDI MR')));
  assert(/NEED +CONTACT/.test(await last('ER')));
  await run('AP+628120000111');assert(/NEED +TICKETING/.test(await last('ER')));
  assert(/TIME LIMIT MUST BE/.test(await last(`TKTL${ddmon(40)}`)));
@@ -46,18 +47,18 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  assert(/ALREADY TICKETED/.test(await last('ET')));
  await p.evaluate(()=>{window.__pr=0;document.getElementById('eng').contentWindow.print=()=>{window.__pr++}});
  await run('EP');await p.waitForFunction(()=>window.__pr===1,null,{timeout:5000});
- const etk=await p.frameLocator('#eng').locator('#etk-sheet').innerText();assert(etk.includes(ref)&&etk.includes('Counter JKT-03'));
+ const etk=await p.frameLocator('#eng').locator('#etk-sheet').innerText();assert(etk.includes(ref)&&etk.includes('Counter JKT-03'));assert(etk.includes('MRS RINA WIJAYA')&&etk.includes('MR BUDI WIJAYA')&&etk.includes('Dear Mrs Wijaya'));
  /* retrieve, history, cancel with refund */
- await run('IG');assert(/TICKETED/.test(await last('RT'+ref))===true);assert(/FA PAX 126-/.test(await last('RT')));
+ await run('IG');assert(/TICKETED/.test(await last('RT'+ref))===true);o=await last('RT');assert(/FA PAX 126-\d{10}\/ETGA\/\w+\/JKT003 +WIJAYA\/RINA MRS/.test(o));
  assert(/TICKETED/.test(await last('RH'))&&/BOOKING CREATED/.test(await last('RH')));
  assert(/REFUND/.test(await last('XI')));o=await last('XIY');assert(/BOOKING CANCELLED/.test(o)&&/CANCELLED/.test(o));
  assert(/ALREADY CANCELLED/.test(await last('XI')));
  /* a held booking with a child and an infant, then it expires */
  await run('IG');await run(`AN${ddmon(25)}JKTDPS`);assert(/HK3/.test(await last('SS3Y1')));
- await run('NM2TAN/ALI/SITI');await run('NM1TAN/DINA(CHD/01JUN18)');assert(/OK/.test(await last('NM1TAN/BAYU(INF/20AUG25)')));
+ await run('NM2TAN/ALI MR/SITI MRS');assert(/TAN\/DINA MISS \(CHD/.test(await last('NM1TAN/DINA MISS(CHD/01JUN18)')));assert(/OK/.test(await last('NM1TAN/BAYU MSTR(INF/20AUG25)')));
  assert(/INVALID DATE OF BIRTH/.test(await last('NM1TAN/X(CHD/99XXX18)')));
  await run('AP081234567890');await run('TKOK');await run('RFALI');o=await last('FQD');assert(/2 ADT  1 CHD  1 INF/.test(o));
- o=await last('ER');const ref2=o.match(/RECORD LOCATOR (GA[0-9A-Z]{4})/)[1];
+ o=await last('ER');assert(/TAN\/ALI/.test(o));const ref2=o.match(/RECORD LOCATOR (GA[0-9A-Z]{4})/)[1];
  assert.deepEqual(await p.evaluate(()=>GA_AGENT.bookings()[0].pax),{a:2,c:1,i:1});
  assert(new RegExp(ref2).test(await last('QT')));
  await p.evaluate(()=>{GA_AGENT.bookings()[0].tl=Date.now()-1000;GA_AGENT.sweep()});

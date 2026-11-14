@@ -22,6 +22,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  await p.click('[data-act="to-pax"]');assert.equal(await p.locator('#work .px').count(),5);
  await p.click('[data-act="to-pay"]');assert((await p.locator('#work .msg').count())>=6);assert.equal(await p.locator('#work h2').first().innerText().then(t=>t.startsWith('Passengers')),true);
  const names=[['Rina','Wijaya','1985-04-12'],['Budi','Wijaya','1983-09-30'],['Sari','Wijaya','2018-06-01'],['Bayu','Wijaya','2025-08-20']];
+ const titles=['MRS','MR','MISS',''];for(let i=0;i<3;i++)await p.selectOption(`#p${i}t`,titles[i]);
  for(let i=0;i<4;i++){await p.fill(`#p${i}f`,names[i][0]);await p.fill(`#p${i}l`,names[i][1]);await p.fill(`#p${i}d`,names[i][2])}
  await p.fill('#c-phone','+62 812 0000 111');
  await p.click('[data-act="to-pay"]');assert(await p.locator('#work [data-pm]').count()===5);
@@ -35,7 +36,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  /* print: the e-ticket opens in the engine frame with the counter as place of issue */
  await p.evaluate(()=>{window.__pr=0;document.getElementById('eng').contentWindow.print=()=>{window.__pr++}});
  await p.click('[data-print]');await p.waitForFunction(()=>window.__pr===1,null,{timeout:5000});
- const etk=await p.frameLocator('#eng').locator('#etk-sheet').innerText();assert(etk.includes(ref));assert(etk.includes('Counter JKT-03'));assert.equal((etk.match(/126-\d{10}/g)||[]).length,4);assert(etk.includes('WIJAYA'));
+ const etk=await p.frameLocator('#eng').locator('#etk-sheet').innerText();assert(etk.includes(ref));assert(etk.includes('Counter JKT-03'));assert(etk.includes('MRS RINA WIJAYA')&&etk.includes('MISS SARI WIJAYA'));assert.equal((etk.match(/126-\d{10}/g)||[]).length,4);assert(etk.includes('WIJAYA'));
  /* bookings tab, persists across reload */
  await p.reload();await p.waitForSelector('#app:not([hidden])',{timeout:20000});assert.equal(await p.locator('#nb').innerText(),'1');
  await p.click('[data-tab="books"]');assert.equal(await p.locator('tr.row').count(),1);await p.fill('#bq','zzz');assert.equal(await p.locator('tr.row').count(),0);await p.fill('#bq',ref.toLowerCase());assert.equal(await p.locator('tr.row').count(),1);

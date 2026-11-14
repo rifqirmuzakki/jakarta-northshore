@@ -16,7 +16,8 @@
   try{allocateBookingSeats(b)}catch(e){}
   var legs=flat(b),people=b.names.map(function(n,i){return {n:n,i:i,t:tripPersonType(b,i)}});
   var issued=fmtDn(b.confirmedAt?lp(b.confirmedAt,HUB).day:TD,{day:'numeric',month:'short',year:'numeric'});
-  var lead=String(b.names[0]||'traveller').trim(),dearName=lead;
+  var ttl=function(i){var x=b.passengers&&b.passengers[i];return x&&x.title?x.title:''},TN={MR:'Mr',MRS:'Mrs',MS:'Ms',MISS:'Miss',MSTR:'Master'};
+  var lead=String(b.names[0]||'traveller').trim(),tc=function(t){return t===t.toUpperCase()?t.toLowerCase().replace(/(^|[\s'-])([a-z])/g,function(m,a,c){return a+c.toUpperCase()}):t},dearName=ttl(0)?TN[ttl(0)]+' '+tc(b.passengers[0].last||lead.split(' ').slice(-1)[0]):lead;
   var dirOf=function(l){return b.dirs.findIndex(function(d){return d.legs.indexOf(l)>=0})};
   var fams=[];b.dirs.forEach(function(d,i){var f=b.fams[i]||b.fams[0];if(!fams.some(function(x){return x.fam===f}))fams.push({fam:f,legs:[]});fams.find(function(x){return x.fam===f}).legs=fams.find(function(x){return x.fam===f}).legs.concat(d.legs.map(function(l){return l.id}))});
   var flights=legs.map(function(l,n){
@@ -33,7 +34,7 @@
    +'<tr><td>Seat selection</td><td></td><td>'+esc(r.seat)+'</td></tr><tr><td>Changes</td><td></td><td>'+esc(r.chg)+'</td></tr><tr><td>Cancellation and refund</td><td></td><td>'+esc(r.ref)+'</td></tr><tr><td>GarudaMiles</td><td>Miles earned</td><td>'+esc(r.mil)+' of flown miles</td></tr></tbody></table>'}).join('');
   $('#v-eticket').innerHTML=NAV('E-ticket')
    +'<div class="etk-sheet" id="etk-sheet"><div class="etk-hd"><div class="t">Travel itinerary &amp; receipt</div><img src="assets/garuda-logo-colour.png" alt="Garuda Indonesia" width="1200" height="285"></div>'
-   +'<div class="etk-top"><div><div class="etk-pn">'+people.map(function(p){return esc(String(p.n).toUpperCase())+(p.t==='i'?' (INFANT)':'')}).join('<br>')+'</div><div class="etk-hello">Dear '+esc(dearName)+',<br>Thank you for choosing Garuda Indonesia. Your itinerary and the conditions for your fare are below. Please keep this receipt with you when you travel.</div></div>'
+   +'<div class="etk-top"><div><div class="etk-pn">'+people.map(function(p){return esc((ttl(p.i)?ttl(p.i)+' ':'')+String(p.n).toUpperCase())+(p.t==='i'?' (INFANT)':'')}).join('<br>')+'</div><div class="etk-hello">Dear '+esc(dearName)+',<br>Thank you for choosing Garuda Indonesia. Your itinerary and the conditions for your fare are below. Please keep this receipt with you when you travel.</div></div>'
    +'<div class="etk-box"><div class="ref">BOOKING REFERENCE:<b>'+esc(b.ref)+'</b></div>'+people.map(function(p){return '<div class="r"><span>Ticket number'+(people.length>1?' '+(p.i+1):'')+':</span><b>'+ticketNo(b,p.i)+'</b></div>'}).join('')
    +'<div class="r"><span>Date of issue:</span><b>'+issued+'</b></div><div class="r"><span>Place of issue:</span><b>'+esc(b.place||'Online booking')+'</b></div><div class="r"><span>Payment:</span><b>'+esc(b.paymentMethod||'Demo booking')+'</b></div><div class="r"><span>Total paid:</span><b>'+idr(b.total)+'</b></div></div></div>'
    +flights+'<div class="etk-h2">Fare conditions</div>'+conditions

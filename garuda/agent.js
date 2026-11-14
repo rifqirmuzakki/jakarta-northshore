@@ -92,10 +92,10 @@ function actionHtml(p){
  return '<button type="button" class="pri" data-act="new">New sale</button>'}
 
 /* ---------- passengers ---------- */
-function mkPax(){var q=st.q,a=[];['a','c','i'].forEach(function(t){for(var n=0;n<q[t];n++)a.push({type:t,first:'',last:'',dob:'',lap:0})});st.pax=a}
+function mkPax(){var q=st.q,a=[];['a','c','i'].forEach(function(t){for(var n=0;n<q[t];n++)a.push({type:t,title:'',first:'',last:'',dob:'',lap:0})});st.pax=a}
 function age(dob,dn){if(!dob)return null;var b=new Date(dob+'T00:00:00Z'),t=new Date(dn*864e5),y=t.getUTCFullYear()-b.getUTCFullYear();if(t.getUTCMonth()<b.getUTCMonth()||(t.getUTCMonth()===b.getUTCMonth()&&t.getUTCDate()<b.getUTCDate()))y--;return y}
 function paxErrors(){var q=st.q,e={},last=q.type==='ret'?q.d2:q.d1,nm=/^[A-Za-z][A-Za-z .'-]*$/;
- st.pax.forEach(function(p,i){if(!p.first.trim())e['p'+i+'f']='Enter the given name.';else if(!nm.test(p.first.trim()))e['p'+i+'f']='Letters only.';
+ st.pax.forEach(function(p,i){if(p.type!=='i'&&!p.title)e['p'+i+'t']='Choose a title.';if(!p.first.trim())e['p'+i+'f']='Enter the given name.';else if(!nm.test(p.first.trim()))e['p'+i+'f']='Letters only.';
   if(!p.last.trim())e['p'+i+'l']='Enter the surname.';else if(!nm.test(p.last.trim()))e['p'+i+'l']='Letters only.';
   var a=age(p.dob,last),a0=age(p.dob,q.d1);if(p.type!=='a'&&!p.dob)e['p'+i+'d']='Date of birth is required.';else if(p.dob&&p.dob>iso(E.TD))e['p'+i+'d']='Date of birth is in the future.';
   else if(p.type==='c'&&p.dob&&(a<2||a>11))e['p'+i+'d']='A child is 2 to 11 on the travel date.';else if(p.type==='i'&&p.dob&&a>=2)e['p'+i+'d']='An infant is under 2 on the travel date.';else if(p.type==='a'&&p.dob&&a0<12)e['p'+i+'d']='An adult is 12 or over.'});
@@ -104,7 +104,7 @@ function field(id,label,val,attrs,err){return '<div><label for="'+id+'">'+label+
 function paxHtml(){if(!st.pax.length)mkPax();var e=st.showErr?paxErrors():{},ad=st.pax.map(function(p,i){return p.type==='a'?i:-1}).filter(function(i){return i>=0});
  var rows=st.pax.map(function(p,i){var n=st.pax.slice(0,i).filter(function(x){return x.type===p.type}).length+1;
   return '<div class="px"><h3>'+TYPE[p.type]+' '+n+'<span>'+(p.type==='a'?'12 years and over':p.type==='c'?'2 to 11 years':'under 2 · on an adult’s lap')+'</span></h3><div class="grid">'
-   +field('p'+i+'f','Given names',p.first,'data-p="'+i+':first" autocomplete="off"',e['p'+i+'f'])+field('p'+i+'l','Surname',p.last,'data-p="'+i+':last" autocomplete="off"',e['p'+i+'l'])
+   +'<div><label for="p'+i+'t">Title'+(p.type==='i'?' (optional)':'')+'</label><select id="p'+i+'t" data-p="'+i+':title"'+(e['p'+i+'t']?' class="bad" aria-invalid="true"':'')+'><option value="">Choose</option>'+(p.type==='a'?['MR','MRS','MS','MISS']:['MSTR','MISS']).map(function(x){return '<option'+(p.title===x?' selected':'')+'>'+x+'</option>'}).join('')+'</select>'+(e['p'+i+'t']?'<div class="msg">'+esc(e['p'+i+'t'])+'</div>':'')+'</div>'+field('p'+i+'f','Given names',p.first,'data-p="'+i+':first" autocomplete="off"',e['p'+i+'f'])+field('p'+i+'l','Surname',p.last,'data-p="'+i+':last" autocomplete="off"',e['p'+i+'l'])
    +field('p'+i+'d','Date of birth'+(p.type==='a'?' (optional)':''),p.dob,'type="date" data-p="'+i+':dob"',e['p'+i+'d'])
    +(p.type==='i'?'<div><label for="p'+i+'a">Travels with</label><select id="p'+i+'a" data-p="'+i+':lap">'+ad.map(function(x,k){return '<option value="'+k+'"'+(+p.lap===k?' selected':'')+'>Adult '+(k+1)+(st.pax[x].first?' · '+esc(st.pax[x].first):'')+'</option>'}).join('')+'</select></div>':'')+'</div></div>'}).join('');
  return stepsHtml()+'<div class="pane"><h2>Passengers <small>Names as shown on the passport or ID</small></h2>'+rows+'</div><div class="pane"><h2>Contact</h2><div class="px"><div class="grid">'+field('c-phone','Phone',st.contact.phone,'type="tel" data-c="phone"',e.phone)+field('c-email','Email (optional)',st.contact.email,'type="email" data-c="email"',e.email)+'</div></div></div>'}
@@ -125,7 +125,7 @@ function issue(){if(!allSelected()||!payValid())return;
  var q=st.q,p=pricing(),names=st.pax.map(function(x){return (x.first.trim()+' '+x.last.trim()).replace(/\s+/g,' ')}),sel=st.sel.slice(0,dirs());
  var bk=W.mkBooking(q,sel.map(function(s){return s.it}),sel.map(function(s){return {cab:s.cab,fam:s.fam}}),names);
  var adults=[];st.pax.forEach(function(x,i){if(x.type==='a')adults.push(i)});
- bk.confirmedAt=E.nowAbs();bk.passengers=st.pax.map(function(x,i){return {type:x.type,name:names[i],dob:x.dob||null,lapAdult:x.type==='i'?names[adults[+x.lap]]:null}});
+ bk.confirmedAt=E.nowAbs();bk.passengers=st.pax.map(function(x,i){return {type:x.type,name:names[i],first:x.first.trim(),last:x.last.trim(),title:x.title||'',dob:x.dob||null,lapAdult:x.type==='i'?names[adults[+x.lap]]:null}});
  bk.contactEmail=st.contact.email.trim();bk.contactPhone=st.contact.phone.trim();bk.paymentMethod=st.pay.m;bk.place=COUNTER;
  var tend=st.pay.m==='Cash'?+st.pay.tendered:p.total;bk.payment={method:st.pay.m,tendered:tend,change:tend-p.total,approval:st.pay.m==='Cash'?'':String(100000+E.hash(bk.ref+'AP')%900000)};
  bk.dirPrices=sel.map(function(s){return W.priceFor(s.it,s.fam,q)});bk.issuedMs=Date.now();
@@ -152,7 +152,7 @@ function refundRows(b){var seatsN=b.pax.a+b.pax.c,n=b.dirs.length,rows=[],tot=0;
   if(/^Not refundable/i.test(rule))fee=dp.fare;else if(/IDR\s*([\d,]+)\s*fee/i.test(rule))fee=+rule.match(/IDR\s*([\d,]+)/)[1].replace(/,/g,'')*seatsN;else if(/(\d+)%\s*fee/i.test(rule))fee=dp.fare*(+rule.match(/(\d+)%/)[1]/100);
   fee=Math.min(fee,paid);var ref=paid-fee;tot+=ref;rows.push({dir:d.legs[0].from+' → '+d.legs[d.legs.length-1].to,fam:famN,rule:rule,paid:paid,fee:fee,refund:ref})});return {rows:rows,total:tot}}
 function detailHtml(b){var cx=isCancelled(b),h='<div class="pane"><h2>'+esc(b.ref)+' <span class="tag '+statusOf(b)[1]+'">'+statusOf(b)[0]+'</span></h2><div class="in"><dl class="kv">';
- h+='<dt>Passengers</dt><dd>'+b.names.map(function(n,i){return esc(n.toUpperCase())+' <span class="t" style="color:var(--mute)">'+ticketNo(b,i)+'</span>'}).join('<br>')+'</dd>';
+ h+='<dt>Passengers</dt><dd>'+b.names.map(function(n,i){return esc(((b.passengers&&b.passengers[i]&&b.passengers[i].title?b.passengers[i].title+' ':'')+n).toUpperCase())+' <span class="t" style="color:var(--mute)">'+ticketNo(b,i)+'</span>'}).join('<br>')+'</dd>';
  b.dirs.forEach(function(d,i){h+='<dt>'+(b.dirs.length>1?(i?'Return':'Outbound'):'Flight')+'</dt><dd>'+d.legs.map(function(l){return '<b>'+esc(l.id)+'</b> '+l.from+' '+E.fT(l.dep,l.from)+' → '+l.to+' '+E.fT(l.arr,l.to)+' · '+dshort(W.lp(l.dep,l.from).day)}).join('<br>')+'<br><span style="color:var(--mute)">'+esc(b.fams[i]||b.fams[0])+'</span></dd>'});
  h+='<dt>Total</dt><dd><b>'+money(b.total)+'</b> <span style="color:var(--mute)">(fare '+num(b.fare)+', PPN '+num(b.tax)+', airport charges '+num(b.chg)+')</span></dd><dt>Paid by</dt><dd>'+(b.held?'Not paid. Ticketing time limit '+tlText(b.tl)+'. Ticket it in the Terminal with ET.':esc(b.paymentMethod||'')+(b.payment&&b.payment.approval?' · approval '+b.payment.approval:''))+'</dd><dt>Issued</dt><dd>'+esc(b.place||'Online')+(b.issuedMs?' · '+new Date(b.issuedMs).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'')+'</dd><dt>Contact</dt><dd>'+esc(b.contactPhone||'')+(b.contactEmail?' · '+esc(b.contactEmail):'')+'</dd>';
  if(cx&&b.cancelled.held)h+='<dt>'+(b.cancelled.expired?'Expired':'Cancelled')+'</dt><dd>Seats released '+(b.cancelled.at?new Date(b.cancelled.at).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'')+'</dd>';else if(cx)h+='<dt>Cancelled</dt><dd>Refund '+money(b.cancelled.refund)+' to '+esc(b.paymentMethod)+(b.cancelled.at?' · '+new Date(b.cancelled.at).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'')+'</dd>';

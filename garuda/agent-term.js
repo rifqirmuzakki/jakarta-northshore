@@ -25,7 +25,8 @@ function t4(abs,c){return E.fT(abs,c).replace(':','')}
 function legDay(l){return W.lp(l.dep,l.from).day}
 function dow(dn){return E.isoDow(dn)}
 function fn(id){return id.replace(/^([A-Z]{2})\s*/,'$1 ')}
-function nm(n){return (n.last+'/'+n.first).toUpperCase()}
+function nm(n){return (n.last+'/'+n.first+(n.title?' '+n.title:'')).toUpperCase()}
+function pn(b,i){var p=(b.passengers||[])[i],full=b.names[i]||'',w=full.split(' '),last=p&&p.last?p.last:w.slice(-1)[0],first=p&&p.last?p.first:w.slice(0,-1).join(' ');return (last+'/'+first+(p&&p.title?' '+p.title:'')).toUpperCase()}
 function endOfDay(dn){return (dn+1)*864e5-7*36e5-6e4}
 function tl(ms){return C.tlText(ms)}
 function tlShort(ms){var d=new Date(ms+7*36e5);return d.getUTCDate()+C.MON[d.getUTCMonth()]+'/'+p2(d.getUTCHours())+p2(d.getUTCMinutes())}
@@ -134,9 +135,10 @@ function parseDob(t){var m=t.match(/^(\d{1,2})([A-Z]{3})(\d{2})$/);if(!m)return 
 function addNames(up){if(T.cur)return out('BOOKING ALREADY SAVED - IGNORE WITH IG TO START A NEW ONE','e');
  var m=up.replace(/\s+/g,' ').match(/^NM ?(\d)\s*([A-Z' .-]+?)\/(.+)$/);if(!m)return out('INVALID FORMAT - EXAMPLE  NM1WIJAYA/RINA','e');
  var cnt=+m[1],sur=m[2].trim(),parts=m[3].split(/\/(?![^(]*\))/),add=[];if(parts.length!==cnt)return out('NUMBER IN NAME ('+cnt+') DOES NOT MATCH NAMES GIVEN ('+parts.length+')','e');
- for(var i=0;i<parts.length;i++){var x=parts[i].trim().match(/^([A-Z' .-]+?)(?:\s*(?:MRS|MR|MS|MSTR|MISS))?\s*(?:\((CHD|INF)\/(\d{1,2}[A-Z]{3}\d{2})\))?$/);if(!x||!/^[A-Z]/.test(x[1]))return out('INVALID NAME '+parts[i],'e');
-  var t=x[2]==='CHD'?'c':x[2]==='INF'?'i':'a',dob=null;if(t!=='a'){dob=parseDob(x[3]);if(!dob)return out('INVALID DATE OF BIRTH '+x[3],'e')}
-  add.push({first:x[1].trim(),last:sur,t:t,dob:dob?dob.iso:'',dn:dob?dob.dn:null})}
+ for(var i=0;i<parts.length;i++){var x=parts[i].trim().match(/^([A-Z' .-]+?)(?:\s+(MRS|MR|MS|MSTR|MISS))?\s*(?:\((CHD|INF)\/(\d{1,2}[A-Z]{3}\d{2})\))?$/);if(!x||!/^[A-Z]/.test(x[1]))return out('INVALID NAME '+parts[i],'e');
+  var t=x[3]==='CHD'?'c':x[3]==='INF'?'i':'a',dob=null;if(t!=='a'){dob=parseDob(x[4]);if(!dob)return out('INVALID DATE OF BIRTH '+x[4],'e')}
+  if(x[2]&&(t==='a'?x[2]==='MSTR':x[2]!=='MSTR'&&x[2]!=='MISS'))return out('TITLE '+x[2]+' NOT ALLOWED FOR '+(t==='a'?'AN ADULT':'A CHILD OR INFANT')+'  (ADULT MR MRS MS MISS, CHILD MSTR MISS)','e')
+  add.push({first:x[1].trim(),last:sur,title:x[2]||'',t:t,dob:dob?dob.iso:'',dn:dob?dob.dn:null})}
  var a=T.p.names.filter(function(n){return n.t==='a'}).length+add.filter(function(n){return n.t==='a'}).length,ii=T.p.names.filter(function(n){return n.t==='i'}).length+add.filter(function(n){return n.t==='i'}).length;
  if(a+T.p.names.filter(function(n){return n.t==='c'}).length+add.filter(function(n){return n.t==='c'}).length>9)return out('MAXIMUM 9 PASSENGERS WITH A SEAT','e');
  if(ii>a)return out('EACH INFANT NEEDS AN ADULT','e');
@@ -164,12 +166,12 @@ function elems(){var P=T.p,es=[],n=0;P.names.forEach(function(x,i){es.push({k:'n
  if(P.tk)es.push({k:'tk',line:lpad(++n,2)+' TK '+(P.tk.why==='TKOK'?'OK':'TL')+tlShort(P.tk.ms)});if(T.fp)es.push({k:'fp',line:lpad(++n,2)+' FP '+FPS[T.fp.k].toUpperCase()+(T.fp.amount?'/'+amt(T.fp.amount):'')});if(P.rf)es.push({k:'rf',line:lpad(++n,2)+' RF '+P.rf.toUpperCase()});return es}
 function bookingText(b){var l=[],n=0,st=C.statusOf(b)[0].toUpperCase();
  l.push('RP/'+OFFICE+'/'+OFFICE+'   '+b.ref+'   '+st+'   '+ddmony(E.TD));
- (b.passengers||[]).forEach(function(p,i){l.push(lpad(++n,2)+'.'+(p.name.split(' ').slice(-1)[0]+'/'+p.name.split(' ').slice(0,-1).join(' ')).toUpperCase()+(p.type==='c'?' (CHD/'+(p.dob?ddmony(E.dnOf?E.dnOf(p.dob):0):'')+')':p.type==='i'?' (INF)':''))});
+ (b.passengers||[]).forEach(function(p,i){l.push(lpad(++n,2)+'.'+pn(b,i)+(p.type==='c'?' (CHD/'+(p.dob?ddmony(E.dnOf?E.dnOf(p.dob):0):'')+')':p.type==='i'?' (INF)':''))});
  b.dirs.forEach(function(d,i){d.legs.forEach(function(g){l.push(lpad(++n,2)+'  '+pad(fn(g.id),7)+' '+classOf(b,i)+' '+pad(ddmon(legDay(g)),6)+dow(legDay(g))+' '+g.from+g.to+'  '+(g.status==='cancel'?'XX':'HK')+(b.pax.a+b.pax.c)+'   '+t4(g.dep,g.from)+' '+t4(g.arr,g.to))})});
  if(b.contactPhone)l.push(lpad(++n,2)+' AP '+b.contactPhone);if(b.contactEmail)l.push(lpad(++n,2)+' AP E-'+b.contactEmail.toUpperCase());
  if(b.held&&b.tl)l.push(lpad(++n,2)+' TK TL'+tlShort(b.tl));if(!b.held&&!b.cancelled&&b.payment)l.push(lpad(++n,2)+' FP '+b.paymentMethod.toUpperCase());
  if(b.rf)l.push(lpad(++n,2)+' RF '+b.rf.toUpperCase());
- if(!b.held&&b.issuedMs)b.names.forEach(function(x,i){l.push('    FA PAX '+C.ticketNo(b,i)+'/ETGA/'+ddmon(E.TD)+'/'+OFFICE+'   '+(x.split(' ').slice(-1)[0]+'/'+x.split(' ').slice(0,-1).join(' ')).toUpperCase())});
+ if(!b.held&&b.issuedMs)b.names.forEach(function(x,i){l.push('    FA PAX '+C.ticketNo(b,i)+'/ETGA/'+ddmon(E.TD)+'/'+OFFICE+'   '+pn(b,i))});
  return l.join('\n')}
 function classOf(b,i){if(b.classes&&b.classes[i])return b.classes[i];var f=b.fams[i]||b.fams[0],o={'Economy Flexi':'Y','Economy Standard':'M','Economy Value':'Q','Economy Lite':'T','Premium Economy':'W','Business Saver':'D','Business Flex':'J'};return o[f]||'Y'}
 function showCurrent(){if(T.cur)return out(bookingText(T.cur),'');var es=elems();out(es.length?'RP/'+OFFICE+'/'+OFFICE+'   NOT SAVED   '+ddmony(E.TD)+'\n'+es.map(function(e){return e.line}).join('\n'):'NO BOOKING IN PROGRESS','')}
@@ -201,7 +203,7 @@ function er(){if(T.cur){C.store.set(C.KEY,BKS);return out('BOOKING '+T.cur.ref+'
  for(var s=0;s<P.segs.length;s++){var rw=classRow(P.segs[s].it).find(function(x){return x.k===P.segs[s].cls});if(!rw||rw.left<P.segs[0].n)return out('CLASS '+P.segs[s].cls+' IS NO LONGER AVAILABLE ON SEGMENT '+(s+1)+' - REBOOK WITH RB OR SELL AGAIN','e')}
  var names=P.names.map(function(x){return (x.first+' '+x.last).replace(/\s+/g,' ')}),adults=[];P.names.forEach(function(x,i){if(x.t==='a')adults.push(i)});var used={};
  var bk=W.mkBooking(q,B.sel.map(function(s){return s.it}),P.segs.map(function(s){return {cab:s.cab,fam:s.fam}}),names);
- bk.passengers=P.names.map(function(x,i){var lap=null;if(x.t==='i'){for(var k=0;k<adults.length;k++)if(!used[adults[k]]){used[adults[k]]=1;lap=names[adults[k]];break}}return {type:x.t,name:names[i],dob:x.dob||null,lapAdult:lap}});
+ bk.passengers=P.names.map(function(x,i){var lap=null;if(x.t==='i'){for(var k=0;k<adults.length;k++)if(!used[adults[k]]){used[adults[k]]=1;lap=names[adults[k]];break}}return {type:x.t,name:names[i],first:x.first,last:x.last,title:x.title||'',dob:x.dob||null,lapAdult:lap}});
  bk.classes=P.segs.map(function(x){return x.cls});bk.contactPhone=P.phone;bk.contactEmail=P.email;bk.place=C.COUNTER;bk.rf=P.rf;bk.held=true;bk.tl=P.tk.ms;bk.dirPrices=B.sel.map(function(s){return W.priceFor(s.it,s.fam,q)});bk.savedMs=Date.now();bk.hist=[{at:Date.now(),t:'BOOKING CREATED RF '+P.rf.toUpperCase()+', SEATS HELD, TL '+tl(P.tk.ms)}];
  B.sel.forEach(function(s,i){s.it.legs.forEach(function(l){W.adjustSold(l,P.segs[i].cab,P.segs[0].n)})});C.P.clear();
  E.S.bookings.unshift(bk);BKS.unshift(bk);store.set(C.KEY,BKS);T.cur=bk;T.p=fresh();
@@ -211,7 +213,7 @@ function et(){var b=T.cur;if(!b){return out(T.p.segs.length?'SAVE THE BOOKING WI
  var method=FPS[T.fp.k],tend=T.fp.k==='CASH'?(T.fp.amount||b.total):b.total;if(tend<b.total)return out('AMOUNT SHORT BY IDR '+amt(b.total-tend),'e');
  b.held=false;b.tl=null;b.confirmedAt=E.nowAbs();b.issuedMs=Date.now();b.paymentMethod=method;b.payment={method:method,tendered:tend,change:tend-b.total,approval:T.fp.k==='CASH'?'':String(100000+E.hash(b.ref+'AP')%900000)};
  (b.hist=b.hist||[]).push({at:Date.now(),t:'TICKETED, '+method.toUpperCase()+' IDR '+amt(b.total)});store.set(C.KEY,BKS);T.fp=null;
- out('OK  TICKETS ISSUED\n'+b.names.map(function(x,i){return '  '+C.ticketNo(b,i)+'  '+(x.split(' ').slice(-1)[0]+'/'+x.split(' ').slice(0,-1).join(' ')).toUpperCase()}).join('\n')+'\nTOTAL IDR '+amt(b.total)+'  '+method.toUpperCase()+(b.payment.approval?'  APPROVAL '+b.payment.approval:'')+(b.payment.change>0?'  CHANGE IDR '+amt(b.payment.change):'')+'\nEP PRINTS THE E-TICKET','ok')}
+ out('OK  TICKETS ISSUED\n'+b.names.map(function(x,i){return '  '+C.ticketNo(b,i)+'  '+pn(b,i)}).join('\n')+'\nTOTAL IDR '+amt(b.total)+'  '+method.toUpperCase()+(b.payment.approval?'  APPROVAL '+b.payment.approval:'')+(b.payment.change>0?'  CHANGE IDR '+amt(b.payment.change):'')+'\nEP PRINTS THE E-TICKET','ok')}
 function ep(){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','e');if(b.held)return out('NOT TICKETED - USE FP AND ET FIRST','e');if(b.cancelled)return out('BOOKING IS CANCELLED','e');C.printTicket(b.ref);out('E-TICKET SENT TO THE PRINTER','sys')}
 
 /* ---------- retrieve, cancel, queues, history ---------- */
@@ -219,7 +221,7 @@ function rt(c){var m;if(c==='RT')return showCurrent();
  if(m=c.match(/^RT(\d{1,2})$/)){if(!T.list)return out('NO LIST TO PICK FROM','e');var b=T.list[+m[1]-1];if(!b)return out('NO SUCH LINE','e');return load(b)}
  m=c.match(/^RT(.+)$/)[1];var b2=BKS.find(function(x){return x.ref===m});if(b2)return load(b2);
  var up=m,hits=BKS.filter(function(x){return x.names.some(function(n){return n.toUpperCase().replace(/\s+/g,'').indexOf(up)>=0})});if(!hits.length)return out('NO BOOKING FOUND  '+m,'e');if(hits.length===1)return load(hits[0]);
- T.list=hits;out(hits.map(function(x,i){return lpad(i+1,3)+'  '+x.ref+'  '+pad((x.names[0].split(' ').slice(-1)[0]+'/'+x.names[0].split(' ').slice(0,-1).join(' ')).toUpperCase()+(x.names.length>1?' +'+(x.names.length-1):''),22)+pad(x.dirs[0].legs[0].from+x.dirs[0].legs[x.dirs[0].legs.length-1].to,8)+C.statusOf(x)[0].toUpperCase()}).join('\n')+'\nSELECT WITH RT<LINE>','')}
+ T.list=hits;out(hits.map(function(x,i){return lpad(i+1,3)+'  '+x.ref+'  '+pad(pn(x,0)+(x.names.length>1?' +'+(x.names.length-1):''),22)+pad(x.dirs[0].legs[0].from+x.dirs[0].legs[x.dirs[0].legs.length-1].to,8)+C.statusOf(x)[0].toUpperCase()}).join('\n')+'\nSELECT WITH RT<LINE>','')}
 function load(b){T.cur=b;T.p=fresh();T.fp=null;T.xi=null;out(bookingText(b),'')}
 function rb(c){var m=c.match(/^RB([A-Z])(\d{1,2})$/);if(!m)return out('INVALID FORMAT - EXAMPLE  RBT3  (REBOOK ELEMENT 3 INTO CLASS T)','e');var k=m[1],n=+m[2];
  if(ORDER.indexOf(k)<0)return out('UNKNOWN CLASS '+k,'e');
@@ -242,7 +244,7 @@ function xi(confirm){if(!T.cur){if(T.p.segs.length){T.p.segs=[];return out('ITIN
   return out('CANCEL '+b.ref+' - REFUND BY FARE RULES\n'+r.rows.map(function(x){return '  '+pad(x.dir,10)+pad(x.fam.toUpperCase(),20)+' PAID '+lpad(amt(x.paid),11)+'  FEE '+lpad(amt(x.fee),10)+'  REFUND '+lpad(amt(x.refund),11)}).join('\n')+'\nREFUND TO '+b.paymentMethod.toUpperCase()+'  IDR '+amt(r.total)+'.  ENTER XIY TO CONFIRM','e')}
  if(T.xi!==b.ref)return out('ENTER XI FIRST','e');T.xi=null;C.cancelBooking(b.ref);out('OK  BOOKING CANCELLED'+(b.cancelled.held?', SEATS RELEASED':'  REFUND IDR '+amt(b.cancelled.refund)+' TO '+b.paymentMethod.toUpperCase())+'\n'+bookingText(b),'ok')}
 function qt(){var h=BKS.filter(function(b){return b.held&&!b.cancelled}).sort(function(a,b){return a.tl-b.tl});if(!h.length)return out('QUEUE EMPTY - NO HELD BOOKINGS','sys');
- out('HELD BOOKINGS BY TICKETING TIME LIMIT\n'+h.map(function(b,i){return lpad(i+1,3)+'  '+b.ref+'  TL '+pad(tlShort(b.tl),12)+pad((b.names[0].split(' ').slice(-1)[0]+'/'+b.names[0].split(' ').slice(0,-1).join(' ')).toUpperCase(),20)+pad(b.dirs[0].legs[0].from+b.dirs[0].legs[b.dirs[0].legs.length-1].to,8)+'IDR '+amt(b.total)}).join('\n')+'\nSELECT WITH RT<REF>','');T.list=h}
+ out('HELD BOOKINGS BY TICKETING TIME LIMIT\n'+h.map(function(b,i){return lpad(i+1,3)+'  '+b.ref+'  TL '+pad(tlShort(b.tl),12)+pad(pn(b,0),20)+pad(b.dirs[0].legs[0].from+b.dirs[0].legs[b.dirs[0].legs.length-1].to,8)+'IDR '+amt(b.total)}).join('\n')+'\nSELECT WITH RT<REF>','');T.list=h}
 function rh(){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','e');out('HISTORY '+b.ref+'\n'+(b.hist||[]).map(function(h){var d=new Date(h.at+7*36e5);return '  '+ddmon(Math.floor(d/864e5))+' '+p2(d.getUTCHours())+p2(d.getUTCMinutes())+'  '+h.t}).join('\n'),'')}
 
 /* ---------- side panel: the booking in progress and what to type next ---------- */
