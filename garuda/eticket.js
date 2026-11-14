@@ -3,7 +3,7 @@
  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
  var typeName={a:'Adult',c:'Child',i:'Infant'};
  window.etkAvailable=function(b){return !!b&&flat(b).some(function(l){return l.status!=='cancel'})};
- var ticketNo=function(b,i){return '126-'+String(hash(b.ref+'T'+i)%1e10).padStart(10,'0')};
+ var ticketNo=function(b,i){return '126-'+String(hash(b.ref+'T'+i+(b.tv?'R'+b.tv:''))%1e10).padStart(10,'0')};
  var letter=function(fam){return /^Premium/.test(fam)?'W':/^Business/.test(fam)?'J':'Y'};
  var term=function(l,end){var c=end==='to'?l.to:l.from;return c===HUB?'Jakarta International, Terminal '+l.term.slice(1):'Terminal: confirm at airport'};
  function status(l){
@@ -36,7 +36,7 @@
    +'<div class="etk-sheet" id="etk-sheet"><div class="etk-hd"><div class="t">Travel itinerary &amp; receipt</div><img src="assets/garuda-logo-colour.png" alt="Garuda Indonesia" width="1200" height="285"></div>'
    +'<div class="etk-top"><div><div class="etk-pn">'+people.map(function(p){return esc((ttl(p.i)?ttl(p.i)+' ':'')+String(p.n).toUpperCase())+(p.t==='i'?' (INFANT)':'')}).join('<br>')+'</div><div class="etk-hello">Dear '+esc(dearName)+',<br>Thank you for choosing Garuda Indonesia. Your itinerary and the conditions for your fare are below. Please keep this receipt with you when you travel.</div></div>'
    +'<div class="etk-box"><div class="ref">BOOKING REFERENCE:<b>'+esc(b.ref)+'</b></div>'+people.map(function(p){return '<div class="r"><span>Ticket number'+(people.length>1?' '+(p.i+1):'')+':</span><b>'+ticketNo(b,p.i)+'</b></div>'}).join('')
-   +'<div class="r"><span>Date of issue:</span><b>'+issued+'</b></div><div class="r"><span>Place of issue:</span><b>'+esc(b.place||'Online booking')+'</b></div><div class="r"><span>Payment:</span><b>'+esc(b.paymentMethod||'Demo booking')+'</b></div><div class="r"><span>Total paid:</span><b>'+idr(b.total)+'</b></div></div></div>'
+   +'<div class="r"><span>Date of issue:</span><b>'+issued+'</b></div><div class="r"><span>Place of issue:</span><b>'+esc(b.place||'Online booking')+'</b></div><div class="r"><span>Payment:</span><b>'+esc(b.paymentMethod||'Demo booking')+'</b></div><div class="r"><span>Total paid:</span><b>'+idr(b.paid||b.total)+'</b></div></div></div>'
    +flights+'<div class="etk-h2">Fare conditions</div>'+conditions
    +'<div class="etk-note">Online check-in opens 48 hours before departure and closes 60 minutes before international and 45 minutes before domestic departures. Times are local to each airport. Carriage is subject to the airline’s conditions of carriage. This is a simulated document for the Jakarta Northshore concept: no booking was made and nothing was charged.</div>'
    +'<div class="etk-foot"><div class="etk-sim">SIMULATED – NOT VALID FOR TRAVEL</div><br>Contact us &nbsp;|&nbsp; FAQs &nbsp;|&nbsp; Baggage &nbsp;|&nbsp; Terms and Conditions<br>Garuda Indonesia concept, simulated and not affiliated with Garuda Indonesia</div></div>'
