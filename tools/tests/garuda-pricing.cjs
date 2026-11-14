@@ -8,6 +8,9 @@ const root=path.resolve(__dirname,'../..');
  await p.goto('https://garuda.test/garuda/?s=search');await p.waitForFunction(()=>window.GA_PRICING);
  const live=await p.evaluate(()=>{const it=search('JKT','KIX',TD+30)[0],f=fares(it)[0],ratio=f.fam.map(x=>Math.round(x.p/f.fam[1].p*100)/100);return {ratio,child:pmul({a:1,c:1,i:1}),tax:priceFor(it,f.fam[1],{a:1,c:0,i:0}).tax/priceFor(it,f.fam[1],{a:1,c:0,i:0}).fare}});
  assert.deepEqual(live.ratio,[0.9,1,1.15,1.4]);assert.equal(live.child,1.85);assert(Math.abs(live.tax-0.11)<0.001);
+ // 1b. Seat inventory: booked seats raise the load, the price and shrink what is left; a full cabin shows none left
+ const inv=await p.evaluate(()=>{const it=()=>search('JKT','KIX',TD+14).find(i=>i.legs[0].id==='GA 856'),l=it().legs[0],snap=()=>{const f=fares(it())[0];return {p:f.fam[1].p,left:f.left,frac:f.frac}},a=snap();adjustSold(l,'Economy',40);const b=snap();adjustSold(l,'Economy',900);const c=snap();adjustSold(l,'Economy',-940);const d=snap();localStorage.removeItem('ga-sold');return {a,b,c,d,cap:cabinCap(l,'Economy')}});
+ assert(inv.cap>150&&inv.cap<300);assert(inv.b.p>inv.a.p);assert(inv.b.left<inv.a.left);assert.equal(inv.c.left,0);assert(inv.c.p>inv.b.p);assert(Math.abs(inv.d.p-inv.a.p)<1e-6||inv.d.p<=inv.a.p);
  // 2. The lab
  await p.goto('https://garuda.test/garuda/pricing-lab.html');await p.waitForSelector('#lab:not([hidden])',{timeout:15000});
  assert.equal(await p.textContent('#state'),'Default settings');

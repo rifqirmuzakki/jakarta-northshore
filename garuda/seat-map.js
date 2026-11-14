@@ -1,10 +1,11 @@
 /* Shared simulated cabin inventory. All assignments are scoped to flight + date + cabin. */
 function bookingCabin(b,l){const di=tripDirectionIndex(b,l),fare=b.fams[di]||b.fams[0]||'';return b.cabs?.[di]||(/^Business/.test(fare)?'Business':/^Premium/.test(fare)?'Premium':'Economy');}
-function seatModel(b,l){const cabin=bookingCabin(b,l),atr=/ATR/.test(l.ac),narrow=/737/.test(l.ac);let banks,start,rows;
- if(cabin==='Business'){banks=narrow?['AC','DF']:['A','DG','K'];start=1;rows=/1000/.test(l.ac)?10:narrow?3:8;}
+function seatLayout(ac,cabin){const atr=/ATR/.test(ac),narrow=/737/.test(ac);let banks,start,rows;
+ if(cabin==='Business'){banks=narrow?['AC','DF']:['A','DG','K'];start=1;rows=/1000/.test(ac)?10:narrow?3:8;}
  else if(cabin==='Premium'){banks=['AC','DEG','HK'];start=12;rows=4;}
- else{banks=atr?['AC','DF']:narrow?['ABC','DEF']:/A330/.test(l.ac)?['AC','DEFG','HK']:['ABC','DEF','HJK'];start=atr?1:narrow?10:20;rows=atr?18:narrow?27:/1000/.test(l.ac)?38:/A350/.test(l.ac)?32:30;}
- const seats=Array.from({length:rows},(_,r)=>banks.join('').split('').map(c=>(r+start)+c)).flat();return{cabin,banks,start,rows,seats};}
+ else{banks=atr?['AC','DF']:narrow?['ABC','DEF']:/A330/.test(ac)?['AC','DEFG','HK']:['ABC','DEF','HJK'];start=atr?1:narrow?10:20;rows=atr?18:narrow?27:/1000/.test(ac)?38:/A350/.test(ac)?32:30;}
+ const seats=Array.from({length:rows},(_,r)=>banks.join('').split('').map(c=>(r+start)+c)).flat();return{banks,start,rows,seats};}
+function seatModel(b,l){const cabin=bookingCabin(b,l);return{cabin,...seatLayout(l.ac,cabin)};}
 function seatBlocked(l,seat){return hash(l.id+'|'+l.dep+'|'+seat)%11===0;}
 function seatFlightKey(b,l){return [l.id,l.dep,l.ac,bookingCabin(b,l)].join('|');}
 function sameSeatFlight(a,b){return a.id===b.id&&a.dep===b.dep;}
