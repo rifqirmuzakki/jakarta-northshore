@@ -432,12 +432,18 @@ const RULES={
 const legCabs=l=>/ATR/.test(l.ac)?['Economy']:/737/.test(l.ac)?['Economy','Business']:['Economy','Premium','Business'];
 const farEnd=l=>l.from===HUB?l.to:l.from;
 /* Pricing settings. The Pricing Lab (pricing-lab.html) reads and tunes these; the defaults are the live model. */
-const PRICE_DEFAULTS={base:{intlFixed:500000,intlPerMin:12500,domFixed:250000,domPerMin:9000},tod:{peak:1.1,off:0.9,peakFrom1:360,peakTo1:540,peakFrom2:1020,peakTo2:1200,offFrom:1320,offTo:300},adv:{window:14,perDay:0.028},demand:{min:0.9,range:0.38},fam:{lite:0.9,value:1,standard:1.15,flexi:1.4,premium:1.75,bizShort:2.6,bizMid:3.1,bizLong:3.6,bizFlex:1.18,bizMidMin:240,bizLongMin:600},pax:{child:0.75,infant:0.1},tax:{ppn:0.11},charges:{intl:85000,dom:40000},connection:{discount:0.94}};
+const PRICE_DEFAULTS={base:{intlFixed:500000,intlPerMin:12500,domFixed:250000,domPerMin:9000},tod:{peak:1.1,off:0.9,peakFrom1:360,peakTo1:540,peakFrom2:1020,peakTo2:1200,offFrom:1320,offTo:300},curve:{d0:1.75,d1:1.65,d3:1.45,d7:1.25,d14:1.08,d21:1,d30:0.95,d60:0.9},dow:{mon:1,tue:0.96,wed:0.96,thu:1,fri:1.07,sat:1.02,sun:1.08},season:{xmas:1.25,cny:1.1,lebaran:1.4,school:1.15},demand:{min:0.95,range:0.1},fam:{lite:0.9,value:1,standard:1.15,flexi:1.4,premium:1.75,bizShort:2.6,bizMid:3.1,bizLong:3.6,bizFlex:1.18,bizMidMin:240,bizLongMin:600},pax:{child:0.75,infant:0.1},tax:{ppn:0.11},charges:{intl:85000,dom:40000},connection:{discount:0.94}};
 const PRICE_CFG=JSON.parse(JSON.stringify(PRICE_DEFAULTS));
 try{const sv=JSON.parse(localStorage.getItem('ga-pricing-cfg')||'null');if(sv)for(const g in sv)if(PRICE_CFG[g])Object.assign(PRICE_CFG[g],sv[g])}catch(e){}
 function todFactor(m,C=PRICE_CFG.tod){return (m>=C.peakFrom1&&m<=C.peakTo1)||(m>=C.peakFrom2&&m<=C.peakTo2)?C.peak:(m>=C.offFrom||m<C.offTo?C.off:1)}
+/* Holiday windows (illustrative dates, edit here). Each has a multiplier in PRICE_CFG.season. */
+const SEASON_WINDOWS=[{k:'xmas',label:'Year-end holidays',from:'2026-12-19',to:'2027-01-04'},{k:'cny',label:'Chinese New Year',from:'2027-02-03',to:'2027-02-10'},{k:'lebaran',label:'Lebaran (Idul Fitri), approximate',from:'2027-03-03',to:'2027-03-16'},{k:'school',label:'Mid-year school holidays',from:'2027-06-19',to:'2027-07-18'}].map(w=>({...w,a:dnOf(w.from),b:dnOf(w.to)}));
+const DOW_KEYS=['mon','tue','wed','thu','fri','sat','sun'];
+function seasonOf(day,C=PRICE_CFG.season){let best=null;for(const w of SEASON_WINDOWS)if(day>=w.a&&day<=w.b&&(!best||C[w.k]>best.f))best={f:C[w.k],label:w.label};return best||{f:1,label:''}}
+/* Booking curve: piecewise linear between these days-before-departure points */
+function curveF(d,C=PRICE_CFG.curve){const P=[[0,C.d0],[1,C.d1],[3,C.d3],[7,C.d7],[14,C.d14],[21,C.d21],[30,C.d30],[60,C.d60]];if(d<=0)return P[0][1];for(let i=1;i<P.length;i++)if(d<=P[i][0]){const a=P[i-1],b=P[i];return a[1]+(b[1]-a[1])*(d-a[0])/(b[0]-a[0])}return P[P.length-1][1]}
 function legEcoDetail(l){const C=PRICE_CFG,blk=l.arr-l.dep,intl=CT[farEnd(l)].z==='I',base=intl?C.base.intlFixed+blk*C.base.intlPerMin:C.base.domFixed+blk*C.base.domPerMin,t=lp(l.dep,l.from),dout=t.day-TD;
- const tod=todFactor(t.min),adv=1+Math.max(0,C.adv.window-dout)*C.adv.perDay,dem=C.demand.min+seeded(l.id+dout)*C.demand.range;return {blk,intl,base,tod,adv,dem,dout,localMin:t.min,eco:base*tod*adv*dem}}
+ const tod=todFactor(t.min),adv=curveF(dout),dow=C.dow[DOW_KEYS[isoDow(t.day)-1]],sea=seasonOf(t.day),dem=C.demand.min+seeded(l.id+dout)*C.demand.range;return {blk,intl,base,tod,adv,dow,season:sea.f,seasonLabel:sea.label,dem,dout,localMin:t.min,eco:base*tod*adv*dow*sea.f*dem}}
 function legEco(l){return legEcoDetail(l).eco}
 let SOLD={};try{SOLD=JSON.parse(localStorage.getItem('ga-sold')||'{}')}catch(e){}
 const sold=(l,c)=>SOLD[l.id+'|'+l.dep+'|'+c]||0;

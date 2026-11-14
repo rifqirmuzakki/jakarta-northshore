@@ -24,6 +24,7 @@ label{display:block;font-size:12px;color:var(--mute);margin-bottom:3px}
 input[type=text],input[type=number],input[type=time],select{width:100%;height:34px;border:1px solid #b9c7ce;padding:0 8px;background:#fff;border-radius:2px}
 input.chg{border-color:#c4890a;background:#fff9ee}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+.presets{display:flex;gap:8px;margin-bottom:8px}.presets button{height:30px;padding:0 12px;border:1px solid #b9c7ce;background:#fff;cursor:pointer;font-size:12.5px}.presets button:hover{border-color:var(--teal)}
 .set .g{margin-bottom:12px}.set .g h4{margin:0 0 6px;font-size:12.5px;font-weight:700;border-bottom:1px solid var(--line);padding-bottom:3px}
 .set .f{display:grid;grid-template-columns:1fr 104px;gap:8px;align-items:center;margin-bottom:6px}.set .f span{font-size:12.5px}.set .f small{display:block;color:var(--mute);font-size:11px}
 .tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:12px;flex-wrap:wrap}
@@ -53,7 +54,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#f1f8fa}
    <div class="row3" style="margin-top:10px"><div><label for="na">Adults</label><input id="na" type="number" min="1" max="9" value="1"></div><div><label for="nc">Children</label><input id="nc" type="number" min="0" max="8" value="0"></div><div><label for="ni">Infants</label><input id="ni" type="number" min="0" max="8" value="0"></div></div>
    <label for="fam">Fare type for the breakdown</label><select id="fam"></select>
   </section>
-  <section class="card set" id="settings"><h2>Settings</h2><p class="note">Change a value and every table and chart updates. Changed values are highlighted. “Save to this browser” makes the app use them on this device.</p></section>
+  <section class="card set" id="settings"></section>
  </aside>
  <section>
   <nav class="tabs" role="tablist"><button data-t="break" class="on">Price breakdown</button><button data-t="curve">Booking curve</button><button data-t="cal">Calendar</button><button data-t="routes">Routes</button></nav>
@@ -74,8 +75,10 @@ eng.addEventListener('load',boot);if(eng.contentDocument&&eng.contentDocument.re
 var SCHEMA=[
  ['Base fare',[['base.intlFixed','International: fixed part (IDR)','idr'],['base.intlPerMin','International: per minute in the air (IDR)','idr'],['base.domFixed','Domestic: fixed part (IDR)','idr'],['base.domPerMin','Domestic: per minute in the air (IDR)','idr']]],
  ['Time of day (local departure)',[['tod.peak','Peak multiplier','x'],['tod.off','Late night multiplier','x'],['tod.peakFrom1','Morning peak from','time'],['tod.peakTo1','Morning peak to','time'],['tod.peakFrom2','Evening peak from','time'],['tod.peakTo2','Evening peak to','time'],['tod.offFrom','Late night from','time'],['tod.offTo','Late night until','time']]],
- ['How soon you fly',[['adv.window','Premium starts this many days out','int'],['adv.perDay','Extra per day inside that window (%)','pct']]],
- ['Demand',[['demand.min','Lowest demand factor','x'],['demand.range','Spread above the lowest','x']]],
+ ['Booking curve (× the fare, by days before departure)',[['curve.d0','Day of departure','x'],['curve.d1','1 day before','x'],['curve.d3','3 days before','x'],['curve.d7','7 days before','x'],['curve.d14','14 days before','x'],['curve.d21','21 days before','x'],['curve.d30','30 days before','x'],['curve.d60','60 days or more','x']]],
+ ['Day of week (departure day)',[['dow.mon','Monday','x'],['dow.tue','Tuesday','x'],['dow.wed','Wednesday','x'],['dow.thu','Thursday','x'],['dow.fri','Friday','x'],['dow.sat','Saturday','x'],['dow.sun','Sunday','x']]],
+ ['Holiday seasons',[['season.xmas','Year-end holidays, 19 Dec to 4 Jan','x'],['season.cny','Chinese New Year, 3 to 10 Feb','x'],['season.lebaran','Lebaran (approximate), 3 to 16 Mar','x'],['season.school','Mid-year school holidays, 19 Jun to 18 Jul','x']]],
+ ['Demand noise (random per flight and day)',[['demand.min','Lowest factor','x'],['demand.range','Spread above the lowest','x']]],
  ['Fare types (× the Value fare)',[['fam.lite','Economy Lite','x'],['fam.value','Economy Value','x'],['fam.standard','Economy Standard','x'],['fam.flexi','Economy Flexi','x'],['fam.premium','Premium Economy','x'],['fam.bizShort','Business, short flights','x'],['fam.bizMid','Business, mid flights','x'],['fam.bizLong','Business, long flights','x'],['fam.bizFlex','Business Flex over Saver','x'],['fam.bizMidMin','Mid flights start at (hours)','hrs'],['fam.bizLongMin','Long flights start at (hours)','hrs']]],
  ['Passengers',[['pax.child','Child pays (% of adult)','pct'],['pax.infant','Infant pays (% of adult)','pct']]],
  ['Taxes and charges',[['tax.ppn','PPN on the fare (%)','pct'],['charges.intl','Airport charge, international (IDR per leg)','idr'],['charges.dom','Airport charge, domestic (IDR per leg)','idr']]],
@@ -85,7 +88,7 @@ function setv(o,p,v){var a=p.split('.');o[a[0]][a[1]]=v}
 function toDisp(v,t){if(t==='pct')return +(v*100).toFixed(3);if(t==='off')return +((1-v)*100).toFixed(3);if(t==='hrs')return +(v/60).toFixed(2);if(t==='time'){var m=Math.round(v);return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}return v}
 function fromDisp(s,t){if(t==='time'){var m=/^(\d+):(\d+)$/.exec(s);return m?(+m[1])*60+(+m[2]):NaN}var n=parseFloat(s);if(isNaN(n))return NaN;if(t==='pct')return n/100;if(t==='off')return 1-n/100;if(t==='hrs')return n*60;return n}
 function buildSettings(){
- var h='<h2>Settings</h2><p class="note">Change a value and every table and chart updates. Changed values are highlighted. “Save to this browser” makes the app use them on this device.</p>';
+ var h='<h2>Settings</h2><div class="presets"><button data-preset="cal">Calendar model</button><button data-preset="orig">Original model</button></div><p class="note">Change a value and every table and chart updates. Changed values are highlighted. “Save to this browser” makes the app use them on this device. The two buttons set the booking curve, weekday, holiday and demand values; “Original model” reproduces the earlier prices.</p>';
  SCHEMA.forEach(function(g){h+='<div class="g"><h4>'+g[0]+'</h4>';g[1].forEach(function(f){var t=f[2];h+='<div class="f"><span>'+f[1]+'</span><input data-p="'+f[0]+'" data-t="'+t+'" type="'+(t==='time'?'text':'number')+'"'+(t==='time'?' inputmode="numeric" placeholder="HH:MM" pattern="[0-9]{1,2}:[0-9]{2}"':' step="'+(t==='idr'?'500':t==='x'?'0.01':t==='int'?'1':'0.1')+'"')+' value="'+toDisp(get(P.cfg,f[0]),t)+'"></div>'});h+='</div>'});
  $('#settings').innerHTML=h}
 function same(){return JSON.stringify(P.cfg)===JSON.stringify(P.defaults)}
@@ -98,6 +101,7 @@ function init(){
  $('#codes').innerHTML=Object.keys(E.CT).sort().map(function(c){return '<option value="'+c+'">'+E.CT[c].n+'</option>'}).join('');
  buildSettings();markState();
  $('#loading').hidden=true;$('#lab').hidden=false;render();
+ $('#settings').addEventListener('click',function(e){var b=e.target.closest('button[data-preset]');if(!b)return;var pr=b.dataset.preset==='orig'?{curve:{d0:1.392,d1:1.364,d3:1.308,d7:1.196,d14:1,d21:1,d30:1,d60:1},dow:{mon:1,tue:1,wed:1,thu:1,fri:1,sat:1,sun:1},season:{xmas:1,cny:1,lebaran:1,school:1},demand:{min:0.9,range:0.38}}:{curve:P.defaults.curve,dow:P.defaults.dow,season:P.defaults.season,demand:P.defaults.demand};for(var g in pr)Object.assign(P.cfg[g],pr[g]);P.clear();buildSettings();markState();render()});
  $('#settings').addEventListener('input',function(e){var i=e.target.closest('input[data-p]');if(!i)return;var v=fromDisp(i.value,i.dataset.t);if(isNaN(v))return;setv(P.cfg,i.dataset.p,v);P.clear();markState();later()});
  ['from','to','days','na','nc','ni','fam'].forEach(function(id){$('#'+id).addEventListener('input',function(){if(id==='from'||id==='to')this.value=this.value.toUpperCase();later()})});
  document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('button[data-t]');if(!b)return;tab=b.dataset.t;document.querySelectorAll('.tabs button').forEach(function(x){x.classList.toggle('on',x===b)});render()});
@@ -124,11 +128,11 @@ function breakdown(r,n){
  if(sel>=its.length)sel=0;
  var h='<h3 style="margin-top:0">'+r[0]+' to '+r[1]+' · '+E.fmtDn(E.TD+n,{weekday:'long',day:'numeric',month:'long'})+'</h3><div class="its">'+its.map(function(it,i){return '<label class="'+(i===sel?'on':'')+'"><input type="radio" name="it" value="'+i+'" '+(i===sel?'checked':'')+'> <b>'+it.legs.map(function(l){return l.id}).join(' + ')+'</b> <span>'+E.fT(it.dep,it.legs[0].from)+' → '+E.fT(it.arr,it.legs[it.legs.length-1].to)+'</span> <span class="pill">'+(it.stops?'1 stop':'Nonstop')+'</span> <span style="margin-left:auto">Value IDR '+IDR(valueOf(it))+'</span></label>'}).join('')+'</div>';
  var it=its[sel],C=P.cfg;
- h+='<h3>1 · Each flight</h3><table><thead><tr><th>Flight</th><th class="n">Minutes</th><th>Sector</th><th class="n">Base</th><th class="n">× Time of day</th><th class="n">× How soon</th><th class="n">× Demand</th><th class="n">= Flight fare</th></tr></thead><tbody>';
- var sum=0;it.legs.forEach(function(l){var d=P.detail(l);sum+=d.eco;h+='<tr><td>'+l.id+' '+l.from+'–'+l.to+'<div class="note" style="margin:0">'+E.fmtDn(E.lp(l.dep,l.from).day,{day:'numeric',month:'short'})+' '+E.fT(l.dep,l.from)+' local</div></td><td class="n">'+d.blk+'</td><td>'+(d.intl?'International':'Domestic')+'</td><td class="n">'+IDR(d.base)+'</td><td class="n">'+d.tod.toFixed(2)+'</td><td class="n">'+d.adv.toFixed(3)+'</td><td class="n">'+d.dem.toFixed(3)+'</td><td class="n">'+IDR(d.eco)+'</td></tr>'});
+ h+='<h3>1 · Each flight</h3><table><thead><tr><th>Flight</th><th class="n">Minutes</th><th>Sector</th><th class="n">Base</th><th class="n">× Time of day</th><th class="n">× Days out</th><th class="n">× Weekday</th><th class="n">× Holiday</th><th class="n">× Demand</th><th class="n">= Flight fare</th></tr></thead><tbody>';
+ var sum=0;it.legs.forEach(function(l){var d=P.detail(l);sum+=d.eco;h+='<tr><td>'+l.id+' '+l.from+'–'+l.to+'<div class="note" style="margin:0">'+E.fmtDn(E.lp(l.dep,l.from).day,{day:'numeric',month:'short'})+' '+E.fT(l.dep,l.from)+' local</div></td><td class="n">'+d.blk+'</td><td>'+(d.intl?'International':'Domestic')+'</td><td class="n">'+IDR(d.base)+'</td><td class="n">'+d.tod.toFixed(2)+'</td><td class="n">'+d.adv.toFixed(3)+'</td><td class="n">'+d.dow.toFixed(2)+'</td><td class="n">'+d.season.toFixed(2)+(d.seasonLabel?'<div class="note" style="margin:0">'+d.seasonLabel+'</div>':'')+'</td><td class="n">'+d.dem.toFixed(3)+'</td><td class="n">'+IDR(d.eco)+'</td></tr>'});
  var eco=sum*(it.stops?C.connection.discount:1);
- if(it.stops)h+='<tr class="sub"><td colspan="7">Flights added, then × '+C.connection.discount.toFixed(2)+' for the connection</td><td class="n">'+IDR(eco)+'</td></tr>';
- h+='<tr class="tot"><td colspan="7">Value fare per adult (base for every fare type)</td><td class="n">'+IDR(eco)+'</td></tr></tbody></table>';
+ if(it.stops)h+='<tr class="sub"><td colspan="9">Flights added, then × '+C.connection.discount.toFixed(2)+' for the connection</td><td class="n">'+IDR(eco)+'</td></tr>';
+ h+='<tr class="tot"><td colspan="9">Value fare per adult (base for every fare type)</td><td class="n">'+IDR(eco)+'</td></tr></tbody></table>';
  var cabins=E.fares(it);
  h+='<h3>2 · Fare types, per adult</h3><table><thead><tr><th>Fare</th><th class="n">× Value</th><th class="n">Price</th><th>Seats left</th></tr></thead><tbody>';
  cabins.forEach(function(c){c.fam.forEach(function(f){h+='<tr><td>'+f.n+'</td><td class="n">'+(f.p/eco).toFixed(2)+'</td><td class="n">'+IDR(f.p)+'</td><td>'+c.left+' ('+c.k+')</td></tr>'})});h+='</tbody></table>';
@@ -146,7 +150,7 @@ function breakdown(r,n){
 function curve(r){
  var N=120,pts=[],mid=P.cfg.demand.min+P.cfg.demand.range/2;
  for(var n=0;n<=N;n++){var b=cheapest(r[0],r[1],n);if(!b){pts.push(null);continue}
-  var sm=0;b.it.legs.forEach(function(l){var d=P.detail(l);sm+=d.base*d.tod*d.adv*mid});sm*=(b.it.stops?P.cfg.connection.discount:1)*P.cfg.fam.value;pts.push({n:n,p:b.p,s:sm})}
+  var sm=0;b.it.legs.forEach(function(l){var d=P.detail(l);sm+=d.eco/d.dem*mid});sm*=(b.it.stops?P.cfg.connection.discount:1)*P.cfg.fam.value;pts.push({n:n,p:b.p,s:sm})}
  var valid=pts.filter(Boolean),p=$('#panel');
  if(!valid.length){p.innerHTML='<p class="note">No flights on this route in the next 120 days.</p>';return}
  var W0=820,H0=320,L=58,R=14,T=14,B=34,max=Math.max.apply(null,valid.map(function(x){return Math.max(x.p,x.s)}))*1.06,min=Math.min.apply(null,valid.map(function(x){return Math.min(x.p,x.s)}))*0.94;
@@ -165,7 +169,7 @@ function cal(r){
  var lead=E.isoDow(E.TD+1)-1,h='<h3 style="margin-top:0">Cheapest Value fare each day · '+r[0]+' to '+r[1]+'</h3><div class="legend"><span>'+M(lo)+'M</span><i></i><span>'+M(hi)+'M</span></div><div class="heat">'+['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(function(d){return '<div class="h">'+d+'</div>'}).join('');
  for(var i=0;i<lead;i++)h+='<div style="border:0"></div>';
  cells.forEach(function(c){var t=c.p==null?0:(c.p-lo)/((hi-lo)||1);h+='<div style="background:'+(c.p==null?'#f6f8f9':sc(c.p))+';color:'+(t>.55?'#fff':'#14262f')+'" title="'+E.fmtDn(E.TD+c.n,{weekday:'long',day:'numeric',month:'long'})+(c.p?': IDR '+IDR(c.p):': no flights')+'"><b>'+E.fmtDn(E.TD+c.n,{day:'numeric',month:'short'})+'</b><i>'+(c.p==null?'—':M(c.p))+'</i></div>'});
- p.innerHTML=h+'</div><p class="note">Colour runs from the cheapest to the most expensive day shown. With the default settings the pattern is the booking curve plus the random demand factor. There is no weekday or holiday effect yet.</p>'}
+ var sw=W.eval('SEASON_WINDOWS').map(function(w){return w.label+' ('+w.from+' to '+w.to+') × '+P.cfg.season[w.k]}).join(' · ');p.innerHTML=h+'</div><p class="note">Colour runs from the cheapest to the most expensive day shown. The pattern is the booking curve, the weekday effect, the holiday windows and a small random factor. Holiday windows: '+sw+'. The dates are illustrative.</p>'}
 function routes(){
  var hub='JKT',list=['SUB','DPS','KNO','SIN','KUL','HKG','KIX','HND','SYD','DXB','AMS','LHR'].filter(function(c){return E.CT[c]}).map(function(c){return [hub,c]}).concat([['SUB','DPS'],['DPS','KIX'],['SYD','CDG']].filter(function(x){return E.CT[x[0]]&&E.CT[x[1]]}));
  var days=[60,30,14,7,3,1],h='<h3 style="margin-top:0">Value fare by route and days out</h3><p class="note">Cheapest Value fare, IDR millions per adult. Click a row to open its breakdown.</p><table><thead><tr><th>Route</th><th class="n">Hours</th>'+days.map(function(d){return '<th class="n">'+d+'d</th>'}).join('')+'<th class="n">1d ÷ 30d</th><th class="n">Lite 30d</th><th class="n">Flexi 30d</th><th class="n">Business 30d</th></tr></thead><tbody>';
