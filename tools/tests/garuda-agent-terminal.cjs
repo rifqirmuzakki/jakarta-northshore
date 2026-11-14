@@ -11,6 +11,8 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  const run=async c=>{await p.fill('#tin',c);await p.press('#tin','Enter');return p.evaluate(()=>GA_TERM.lines().join('\n'))};
  const last=async c=>{const all=await run(c);const i=all.lastIndexOf('> '+c.toUpperCase());return all.slice(i)};
  assert(/SALES TERMINAL/.test(await p.locator('#tout').innerText()));
+ await p.click('#term-help');assert(/AVAILABILITY/.test(await p.locator('#tout').innerText()));
+ await p.fill('#tin','unfinished draft');await p.press('#tin','ArrowUp');await p.press('#tin','ArrowDown');assert.equal(await p.inputValue('#tin'),'unfinished draft');
  assert(/AVAILABILITY/.test(await last('HE')));
  assert(/INVALID ENTRY/.test(await last('ZZZ')));
  assert(/NO AVAILABILITY/.test(await last('SS2Y1')));
@@ -26,7 +28,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  assert(/NEED +NAME/.test(await last('ER')));
  assert(/DOES NOT MATCH/.test(await last('NM3WIJAYA/RINA/BUDI/DEWI'.replace('/DEWI',''))));
  assert(/NOT ALLOWED FOR AN ADULT/.test(await last('NM1WIJAYA/X MSTR')));assert(/NOT ALLOWED FOR A CHILD/.test(await last('NM1WIJAYA/X MR(CHD/01JUN18)')));
- assert(/1\.WIJAYA\/RINA MRS/.test(await last('NM1WIJAYA/RINA MRS')));assert(/2\.WIJAYA\/BUDI MR/.test(await last('NM1WIJAYA/BUDI MR')));
+ assert(/1\.WIJAYA\/RINA MRS/.test(await last('NM1WIJAYA/RINA MRS')));assert.match(await p.locator('#tside').innerText(),/1 of 2 seat-holding passengers named/);assert(/2\.WIJAYA\/BUDI MR/.test(await last('NM1WIJAYA/BUDI MR')));
  assert(/NEED +CONTACT/.test(await last('ER')));
  await run('AP+628120000111');assert(/NEED +TICKETING/.test(await last('ER')));
  assert(/TIME LIMIT MUST BE/.test(await last(`TKTL${ddmon(40)}`)));
@@ -39,7 +41,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  assert(/HELD/.test(o)&&/WIJAYA\/RINA/.test(o)&&/HK2/.test(o));
  assert(/ALREADY SAVED/.test(await last('NM1X/Y')));
  /* the held booking uses up seats */
- assert.equal(await p.evaluate(()=>GA_AGENT.bookings()[0].held),true);
+ assert.equal(await p.evaluate(()=>GA_AGENT.bookings()[0].held),true);assert.match(await p.locator('#tside').innerText(),/review the total/);
  /* pay and ticket */
  assert(/NEED FORM OF PAYMENT/.test(await last('ET')));
  assert(/SHORT BY/.test(await (async()=>{await run('FPCASH/1000');return last('ET')})()));
@@ -54,7 +56,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  assert(/REFUND/.test(await last('XI')));o=await last('XIY');assert(/BOOKING CANCELLED/.test(o)&&/CANCELLED/.test(o));
  assert(/ALREADY CANCELLED/.test(await last('XI')));
  /* a held booking with a child and an infant, then it expires */
- await run('IG');await run(`AN${ddmon(25)}JKTDPS`);assert(/HK3/.test(await last('SS3Y1')));
+ await run('IG');await run(`AN${ddmon(25)}JKTDPS`);await run('SS1Y1');assert(/UNSAVED BOOKING IN PROGRESS/.test(await last('RT'+ref)));assert.match(await p.locator('#tside').innerText(),/HK1/);await run('IG');await run(`AN${ddmon(25)}JKTDPS`);assert(/HK3/.test(await last('SS3Y1')));
  await run('NM2TAN/ALI MR/SITI MRS');assert(/TAN\/DINA MISS \(CHD/.test(await last('NM1TAN/DINA MISS(CHD/01JUN18)')));assert(/OK/.test(await last('NM1TAN/BAYU MSTR(INF/20AUG25)')));
  assert(/INVALID DATE OF BIRTH/.test(await last('NM1TAN/X(CHD/99XXX18)')));
  await run('AP081234567890');await run('TKOK');await run('RFALI');o=await last('FQD');assert(/2 ADT  1 CHD  1 INF/.test(o));

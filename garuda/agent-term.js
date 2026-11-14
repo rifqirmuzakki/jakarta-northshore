@@ -11,7 +11,7 @@ var OFFICE='JKT003';
 var ORDER='JCDIZWPSYBMEHQNKTLG';
 var FPS={CASH:'Cash',CC:'Credit card',DC:'Debit card',QRIS:'QRIS',TRF:'Bank transfer'};
 var AC={'A350-1000':'351','A350-900':'359','787-9':'789','A330-900':'339','737-800':'738','ATR 72-600':'AT7'};
-var T={lines:[],hist:[],hi:0,av:null,list:null,p:fresh(),cur:null,fp:null,xi:null,ri:null,started:false};
+var T={lines:[],hist:[],hi:0,draft:'',av:null,list:null,p:fresh(),cur:null,fp:null,xi:null,ri:null,started:false};
 function fresh(){return {names:[],segs:[],phone:'',email:'',tk:null,rf:'',extras:[]}}
 var $=function(id){return document.getElementById(id)};
 var pad=function(s,n){s=String(s);return s.length>=n?s:s+' '.repeat(n-s.length)},lpad=function(s,n){s=String(s);return s.length>=n?s:' '.repeat(n-s.length)+s};
@@ -35,8 +35,9 @@ function tlShort(ms){var d=new Date(ms+7*36e5);return d.getUTCDate()+C.MON[d.get
 function paint(){var o=$('tout');if(!o)return;var h='';T.lines.forEach(function(l){h+='<div class="ln'+(l.c?' '+l.c:'')+'">'+C.esc(l.t||' ')+'</div>'});o.innerHTML=h;o.scrollTop=o.scrollHeight;side()}
 function start(){
  var f=$('tform'),i=$('tin');
- f.addEventListener('submit',function(e){e.preventDefault();var v=i.value.trim();i.value='';if(!v)return;T.hist.push(v);T.hi=T.hist.length;out('> '+v.toUpperCase(),'cmd');try{run(v)}catch(err){out('SYSTEM ERROR '+err.message,'e')}side();if(C.st.tab!=='term')C.renderAll()});
- i.addEventListener('keydown',function(e){if(e.key==='ArrowUp'){e.preventDefault();if(T.hi>0)i.value=T.hist[--T.hi]||''}else if(e.key==='ArrowDown'){e.preventDefault();T.hi=Math.min(T.hist.length,T.hi+1);i.value=T.hist[T.hi]||''}else if(e.key==='Escape')i.value=''});
+ $('term-help').addEventListener('click',function(){GA_TERM.run('HE');i.focus()});
+ f.addEventListener('submit',function(e){e.preventDefault();var v=i.value.trim();i.value='';if(!v)return;T.hist.push(v);T.hi=T.hist.length;T.draft='';out('> '+v.toUpperCase(),'cmd');try{run(v)}catch(err){out('SYSTEM ERROR '+err.message,'e')}side();if(C.st.tab!=='term')C.renderAll()});
+ i.addEventListener('keydown',function(e){if(e.key==='ArrowUp'){e.preventDefault();if(T.hi===T.hist.length)T.draft=i.value;if(T.hi>0)i.value=T.hist[--T.hi]||''}else if(e.key==='ArrowDown'){e.preventDefault();T.hi=Math.min(T.hist.length,T.hi+1);i.value=T.hi===T.hist.length?T.draft:T.hist[T.hi]}else if(e.key==='Escape')i.value=''});
  $('scr').addEventListener('click',function(e){if(!window.getSelection().toString())i.focus()});
  $('tside').addEventListener('click',function(e){var b=e.target.closest('[data-cmd]');if(b){i.value=b.dataset.cmd;i.focus()}});
  if(!T.started){T.started=true;out('GARUDA INDONESIA SALES TERMINAL  -  '+C.COUNTER.toUpperCase()+'  -  OFFICE '+OFFICE+'\nSIGNED IN  '+ddmony(E.TD)+'  '+t4(E.nowAbs(),E.HUB)+' WIB\nTYPE HE FOR HELP.   EXAMPLE:  AN21DECJKTSIN','sys')}
@@ -251,7 +252,7 @@ function rt(c){var m;if(c==='RT')return showCurrent();
  m=c.match(/^RT(.+)$/)[1];var b2=BKS.find(function(x){return x.ref===m});if(b2)return load(b2);
  var up=m,hits=BKS.filter(function(x){return x.names.some(function(n){return n.toUpperCase().replace(/\s+/g,'').indexOf(up)>=0})});if(!hits.length)return out('NO BOOKING FOUND  '+m,'e');if(hits.length===1)return load(hits[0]);
  T.list=hits;out(hits.map(function(x,i){return lpad(i+1,3)+'  '+x.ref+'  '+pad(pn(x,0)+(x.names.length>1?' +'+(x.names.length-1):''),22)+pad(x.dirs[0].legs[0].from+x.dirs[0].legs[x.dirs[0].legs.length-1].to,8)+C.statusOf(x)[0].toUpperCase()}).join('\n')+'\nSELECT WITH RT<LINE>','')}
-function load(b){T.cur=b;T.p=fresh();T.fp=null;T.xi=null;T.ri=null;out(bookingText(b),'')}
+function load(b){if(!T.cur&&(T.p.segs.length||T.p.names.length||T.p.phone||T.p.email||T.p.tk||T.p.rf||T.p.extras.length))return out('UNSAVED BOOKING IN PROGRESS - SAVE WITH ER OR DISCARD WITH IG BEFORE RETRIEVING','e');T.cur=b;T.p=fresh();T.fp=null;T.xi=null;T.ri=null;out(bookingText(b),'')}
 function buildLeg(l){var row=12+E.hash(l.id+l.dep)%20,col=E.hash(l.id+'c'+l.dep)%5;return Object.assign({},l,{gate:(l.term==='T2'?'K':'C')+(2+E.hash(l.id)%10),row:row,col:col,status:'ok',delay:0,rebooked:null})}
 function chgRule(b,di){var r=(E.RULES[b.fams[di]||b.fams[0]]||{}).chg||'';return /^Not allowed/i.test(r)?{no:true,text:r}:/IDR\s*([\d,]+)\s*fee/i.test(r)?{fee:+r.match(/IDR\s*([\d,]+)/)[1].replace(/,/g,''),text:r}:{fee:0,text:r||'Free'}}
 function seqOk(spans,i,dep,arr){for(var k=0;k<spans.length;k++){if(k<i&&spans[k][1]>dep)return false;if(k>i&&spans[k][0]<arr)return false}return true}
@@ -346,10 +347,10 @@ function rh(){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','
 /* ---------- side panel: the booking in progress and what to type next ---------- */
 function side(){var s=$('tside');if(!s)return;var h='<div class="pane"><h2>Booking in progress <small>'+(T.cur?C.statusOf(T.cur)[0]:T.p.names.length||T.p.segs.length?'Not saved':'Empty')+'</small></h2><div class="in">';
  var txt=T.cur?bookingText(T.cur):elems().map(function(e){return e.line}).join('\n');h+=txt?'<pre class="pnr">'+C.esc(txt)+'</pre>':'<div class="note" style="margin:0">Nothing yet. Start with AN to check availability.</div>';
- var B=!T.cur&&build();if(B)h+='<div class="q-row" style="padding:8px 0 0"><span>Quote'+(B.assumed?' (1 adult assumed)':'')+'</span><b>IDR '+amt(B.sum.total)+'</b></div>';
+ var B=!T.cur&&build();if(B)h+='<div class="q-row" style="padding:8px 0 0"><span>Estimate'+(B.assumed?' (1 adult assumed)':'')+'</span><b>IDR '+amt(B.sum.total)+'</b></div>';
  h+='</div></div><div class="pane"><h2>Next</h2><div class="in">'+nextHtml()+'</div></div><div class="pane"><h2>Quick keys</h2><div class="in keys">'+['HE','AN','FQD','ER','ET','RT','QT','IG'].map(function(k){return '<button type="button" class="ghost" data-cmd="'+k+'">'+k+'</button>'}).join('')+'</div></div>';s.innerHTML=h}
 function nextHtml(){var P=T.p,b=T.cur,tip=function(c,t){return '<div class="nx"><button type="button" class="ghost" data-cmd="'+C.esc(c)+'">'+C.esc(c)+'</button> '+C.esc(t)+'</div>'};
- if(b){if(b.cancelled)return '<div class="note" style="margin:0">Booking cancelled. IG clears the screen of it.</div>';if(b.held)return tip('FPCASH','form of payment')+tip('ET','issue the tickets')+tip('SM3','seat map')+tip('RBT3','rebook into class T')+tip('XI','cancel and release seats');if(T.ri&&T.ri.ref===b.ref)return tip('FPCASH','form of payment')+tip('ET','collect and reissue');return tip('SM3','seat map')+tip('EP','print the e-ticket')+tip('RBT3','change class')+tip('XI','cancel and refund')}
- if(!P.segs.length)return tip('AN21DECJKTSIN','check availability')+tip('SS2Y1','sell from the last display');if(!P.names.length)return tip('NM1SURNAME/GIVEN','add the passengers');if(!P.phone)return tip('AP+628123456789','contact phone');if(!P.tk)return tip('TKOK','ticketing arrangement');if(!P.rf)return tip('RFNAME','received from');
+ if(b){if(b.cancelled)return '<div class="note" style="margin:0">Booking cancelled. IG clears the screen of it.</div>';if(b.held)return (T.fp?tip('ET','issue tickets · IDR '+amt(b.total)):tip('FQD','review the total')+tip('FQN','review fare rules')+tip('FPCASH','set form of payment'))+tip('SM3','seat map')+tip('RBT3','rebook into class T')+tip('XI','cancel and release seats');if(T.ri&&T.ri.ref===b.ref)return tip('FPCASH','form of payment')+tip('ET','collect and reissue');return tip('SM3','seat map')+tip('EP','print the e-ticket')+tip('RBT3','change class')+tip('XI','cancel and refund')}
+ if(!P.segs.length)return tip('AN'+ddmon(E.TD+21)+'JKTSIN','check availability')+(T.av?tip('SS1Y1','sell from the last display'):'');if(!P.names.length)return tip('NM1SURNAME/GIVEN','add the passengers');var named=P.names.filter(function(n){return n.t!=='i'}).length;if(named!==P.segs[0].n)return '<div class="note">'+named+' of '+P.segs[0].n+' seat-holding passengers named. Add or correct names before saving.</div>'+tip('NM1SURNAME/GIVEN','add a passenger');if(!P.phone)return tip('AP+628123456789','contact phone');if(!P.tk)return tip('TKOK','ticketing arrangement');if(!P.rf)return tip('RFNAME','received from');
  return tip('FQD','check the fare')+tip('RBT3','rebook a flight into class T')+tip('ER','save the booking')}
 })();
