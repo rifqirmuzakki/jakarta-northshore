@@ -305,9 +305,13 @@ Services are scoped to the selected flight and traveller. Eligible seat changes 
 
 Run `node tools/tests/garuda-trips.cjs` for actual booking grouping and identity, timeline/connection states, contextual actions, traveller/flight preference isolation, draft cancellation, infant/past handling, unique seats and 320–1280px layouts. Home, Search, Results, Review and Confirmation browser suites also pass.
 
+### Desktop web layout
+
+The Garuda app adapts to desktop screens with a branded top navigation bar, wider journey content and appropriately sized dialogs. Booking, check-in, trip management and updates use the same session and flows as the mobile layout. Mobile navigation and screen layouts remain available on smaller screens.
+
 ### Journey updates
 
-Home, Trips, Inbox and boarding passes show flight-specific delay, gate and cancellation updates. The update screen compares scheduled and revised local times or gates, flags affected connections, and offers an explicit choice to keep a delayed flight or change to an available same-cabin flight when the rest of the itinerary permits it. A changed flight requires check-in again. Inbox messages identify their booking and flight, including when an older message refers to a flight that has since changed.
+Home, Trips, Inbox and boarding passes show flight-specific delay, gate and cancellation updates. The update screen compares scheduled and revised local times or gates, flags affected connections, and offers an explicit choice to keep a delayed flight. Short delays show the booked fare’s change rule and a possible fare difference; cancellations and simulated delays of at least three hours offer a same-cabin change with charges waived when the rest of the itinerary permits it. Waiting assistance varies with delay length, and compensation is described as dependent on the circumstances and applicable rules, not guaranteed. These thresholds and waivers are illustrative simulation policy, not legal eligibility determinations. A changed flight requires check-in again. Inbox messages identify their booking and flight, including when an older message refers to a flight that has since changed.
 
 Refund information shows the booked fare rule without promising an amount or processing time. These actions and messages use session-local simulation data; no real booking change, refund or notification is sent. Run `node tools/tests/garuda-updates.cjs` for disruption consistency, choices, replacement-flight checks, notification identity and responsive layouts.
 
