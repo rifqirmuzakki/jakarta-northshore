@@ -432,7 +432,7 @@ const RULES={
 const legCabs=l=>/ATR/.test(l.ac)?['Economy']:/737/.test(l.ac)?['Economy','Business']:['Economy','Premium','Business'];
 const farEnd=l=>l.from===HUB?l.to:l.from;
 /* Pricing settings. The Pricing Lab (pricing-lab.html) reads and tunes these; the defaults are the live model. */
-const PRICE_DEFAULTS={base:{intlFixed:500000,intlPerMin:12500,domFixed:250000,domPerMin:9000},tod:{peak:1.1,off:0.9,peakFrom1:360,peakTo1:540,peakFrom2:1020,peakTo2:1200,offFrom:1320,offTo:300},curve:{d0:1.75,d1:1.65,d3:1.45,d7:1.25,d14:1.08,d21:1,d30:0.95,d60:0.9},dow:{mon:1,tue:0.96,wed:0.96,thu:1,fri:1.07,sat:1.02,sun:1.08},season:{xmas:1.25,cny:1.1,lebaran:1.4,school:1.15},demand:{min:0.95,range:0.1},fam:{lite:0.9,value:1,standard:1.15,flexi:1.4,premium:1.75,bizShort:2.6,bizMid:3.1,bizLong:3.6,bizFlex:1.18,bizMidMin:240,bizLongMin:600},pax:{child:0.75,childDom:1,infant:0.1},tax:{ppn:0.11,ppnIntl:0.11},charges:{hubIntl:255000,hubDom:85000,domOther:75000,foreign:150000},connection:{discount:0.94,through:1},roundTrip:{discount:0.05,shortNights:2,shortPremium:0.06,longNights:30,longPremium:0.04,satDiscount:0.03}};
+const PRICE_DEFAULTS={base:{intlFixed:500000,intlPerMin:12500,domFixed:250000,domPerMin:9000},tod:{peak:1.1,off:0.9,peakFrom1:360,peakTo1:540,peakFrom2:1020,peakTo2:1200,offFrom:1320,offTo:300},curve:{d0:1.75,d1:1.65,d3:1.45,d7:1.25,d14:1.08,d21:1,d30:0.95,d60:0.9},dow:{mon:1,tue:0.96,wed:0.96,thu:1,fri:1.07,sat:1.02,sun:1.08},season:{xmas:1.25,cny:1.1,lebaran:1.4,school:1.15},demand:{min:0.95,range:0.1},fam:{lite:0.9,value:1,standard:1.15,flexi:1.4,premium:1.75,bizShort:2.6,bizMid:3.1,bizLong:3.6,bizFlex:1.18,bizMidMin:240,bizLongMin:600},pax:{child:0.75,childDom:1,infant:0.1},tax:{ppn:0.11,ppnIntl:0.11},charges:{hubIntl:255000,hubDom:85000,domOther:75000,foreign:150000},connection:{discount:0.94,through:1},roundTrip:{dom:0.05,regional:0.08,long:0.12,longHours:5,openJaw:0.08,circle:0.08,shortNights:2,shortPremium:0.06,longNights:30,longPremium:0.04,satDiscount:0.07}};
 const PRICE_CFG=JSON.parse(JSON.stringify(PRICE_DEFAULTS));
 try{const sv=JSON.parse(localStorage.getItem('ga-pricing-cfg')||'null');if(sv)for(const g in sv)if(PRICE_CFG[g])Object.assign(PRICE_CFG[g],sv[g])}catch(e){}
 function todFactor(m,C=PRICE_CFG.tod){return (m>=C.peakFrom1&&m<=C.peakTo1)||(m>=C.peakFrom2&&m<=C.peakTo2)?C.peak:(m>=C.offFrom||m<C.offTo?C.off:1)}
@@ -468,10 +468,12 @@ const pmul=(q,intl=true)=>q.a+q.c*(intl?PRICE_CFG.pax.child:PRICE_CFG.pax.childD
 const paxTxt=q=>q.a+' adult'+(q.a>1?'s':'')+(q.c?' · '+q.c+' child'+(q.c>1?'ren':''):'')+(q.i?' · '+q.i+' infant'+(q.i>1?'s':''):'');
 const isIntl=legs=>legs.some(l=>CT[farEnd(l)].z==='I');
 /* Round trip: a base discount, dearer for very short stays (business travel), cheaper when the stay covers a Saturday night, dearer for very long stays */
-function rtDetail(q){const C=PRICE_CFG.roundTrip;if(q.type!=='ret')return {f:1,parts:[],nights:null};const parts=[['Round trip',-C.discount]],nights=q.d1!=null&&q.d2!=null?q.d2-q.d1:null;
+function rtDetail(q,it){const C=PRICE_CFG.roundTrip;if(q.type!=='ret')return {f:1,parts:[],nights:null};
+ let rate=C.dom,cls='domestic';if(it&&itinIntl(it)){const blk=it.legs.reduce((a,l)=>a+l.arr-l.dep,0);if(blk>C.longHours*60){rate=C.long;cls='long-haul'}else{rate=C.regional;cls='regional international'}}
+ const parts=[['Round trip, '+cls,-rate]],nights=q.d1!=null&&q.d2!=null?q.d2-q.d1:null;
  if(nights!=null){if(nights<=C.shortNights)parts.push(['Short stay, '+nights+(nights===1?' night':' nights'),C.shortPremium]);if(nights>C.longNights)parts.push(['Long stay, '+nights+' nights',C.longPremium]);for(let n=q.d1;n<q.d2;n++)if(isoDow(n)===6){parts.push(['Saturday night away',-C.satDiscount]);break}}
  return {f:Math.max(0.7,1+parts.reduce((a,x)=>a+x[1],0)),parts,nights}}
-function priceFor(it,fam,q=S.q){const C=PRICE_CFG,intl=itinIntl(it),rt=rtDetail(q).f,fare=Math.round(fam.p*pmul(q,intl)*rt/1000)*1000,tax=Math.round(fare*(intl?C.tax.ppnIntl:C.tax.ppn)/1000)*1000,chg=it.legs.reduce((v,l)=>v+legCharge(l),0)*seats(q);return {fare,tax,chg,total:fare+tax+chg};}
+function priceFor(it,fam,q=S.q){const C=PRICE_CFG,intl=itinIntl(it),rt=rtDetail(q,it).f,fare=Math.round(fam.p*pmul(q,intl)*rt/1000)*1000,tax=Math.round(fare*(intl?C.tax.ppnIntl:C.tax.ppn)/1000)*1000,chg=it.legs.reduce((v,l)=>v+legCharge(l),0)*seats(q);return {fare,tax,chg,total:fare+tax+chg};}
 function priceSummary(sel,q=S.q){return sel.reduce((v,s)=>{const p=priceFor(s.it,s.fam,q);for(const k of ['fare','tax','chg','total'])v[k]+=p[k];return v},{sel,fare:0,tax:0,chg:0,total:0});}
 
 
