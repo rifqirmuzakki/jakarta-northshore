@@ -307,7 +307,7 @@ Run `node tools/tests/garuda-trips.cjs` for actual booking grouping and identity
 
 ### Garuda Home
 
-Home uses a compact Garuda header and a journey card with the destination photograph behind readable flight details. Book, trips, check-in and journey updates are available in both booked and unbooked states. Home keeps the next journey and its relevant check-in, boarding-pass or disruption action prominent. Checked-in departures display known terminal and gate details. Booking, check-in, trip management and journey updates are accessible from Home, including an unread update count. With no upcoming booking, check-in opens Trips rather than implying that a real booking can be retrieved in this session-only prototype. On desktop, the journey and travel essentials appear side by side.
+Home uses a compact Garuda header and a journey card with the destination photograph behind readable flight details. When there is no upcoming flight, a manually controlled destination carousel presents four local-photo stories and links directly to flight search; recent searches can influence its order and featured cities are excluded from the separate discovery list. Book, trips, check-in and journey updates are available in both booked and unbooked states. Home keeps the next journey and its relevant check-in, boarding-pass or disruption action prominent. Checked-in departures display known terminal and gate details. Booking, check-in, trip management and journey updates are accessible from Home, including an unread update count. With no upcoming booking, check-in opens Trips rather than implying that a real booking can be retrieved in this session-only prototype. On desktop, the journey and travel essentials appear side by side.
 
 ### Desktop web layout
 
