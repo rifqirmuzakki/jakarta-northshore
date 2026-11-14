@@ -328,7 +328,7 @@ Check-in has four draft steps: travellers, seat selection, baggage review and co
 
 Boarding passes use the shared Switzer/blue-and-white design and official logo. Flight and traveller selectors, previous/next controls, checked-in counts and a remaining-travellers action support families and connecting/return flights. The pass keeps the traveller name in its original order and shows the local departure date/time, flight, seat, boarding time, fare and booking reference. Jakarta gates/terminals use the simulator values; other departure airports remain unconfirmed. Baggage is accessible below the pass. The inactive Wallet button is removed.
 
-A decorative code appears only for a checked-in traveller on a non-cancelled flight that has not departed; it is explicitly marked **DEMO — NOT VALID FOR TRAVEL**. Cancelled/departed passes are inactive, unchecked travellers see a check-in state, and rebooking clears the previous flight’s check-in. The 48-hour opening window and domestic/international cutoffs are rechecked at confirmation. Check-in/pass state remains session-local, with no real airline integration or travel document issuance.
+A static demo QR code appears only for a checked-in traveller on a non-cancelled flight that has not departed. It contains a generic demo message, no passenger data, and is explicitly marked **DEMO — NOT VALID FOR TRAVEL**. Cancelled/departed passes are inactive, unchecked travellers see a check-in state, and rebooking clears the previous flight’s check-in. The 48-hour opening window and domestic/international cutoffs are rechecked at confirmation. Check-in/pass state remains session-local, with no real airline integration or travel document issuance.
 
 Run `node tools/tests/garuda-checkin.cjs` for partial issuance, cancelled drafts, zero selection, adult/infant linkage, seat/baggage review, traveller/flight switching, live delay/gate updates, cancellation/departure/rebooking states, cutoff revalidation, long names and 320–1280px layouts. The existing seven passenger browser suites also pass, with Home and Trips covering the guided check-in entry.
 
@@ -344,3 +344,10 @@ The map shows rows, seat letters, aisles, window/aisle positions, available seat
 Run `node tools/tests/garuda-guided-journeys.cjs` for separated checkout steps, draft/back persistence, four-step check-in, all aircraft/cabin models, seat changes/cancellation, occupancy conflict recovery, fare restrictions, keyboard navigation, contact actions, booking tabs and 320–1280px layouts. The eight surrounding passenger suites also pass. `tools/tests/garuda-flow-helpers.cjs` advances the explicit steps in end-to-end fixtures.
 
 The guided flow also preserves the Economy cabin-experience page and its four Economy fare families (Lite, Value, Standard and Flexi). Its trip seat action opens the current flight’s actual seat map. Outbound round-trip pricing, additional-fare return selection and layovers up to 18 hours remain as defined in the latest timetable/search flow.
+
+
+### Passenger journey refinements
+
+The Economy fare selector links to the cabin experience through a compact photo preview for widebodies and an icon for aircraft without representative cabin photography. Booking management uses a simpler route header and grouped service actions. Flight/traveller selectors appear when a choice exists.
+
+Seat maps keep their traveller/seat summary in the fixed footer instead of covering scrolling rows. Single-traveller seat selection avoids an unnecessary dropdown; selectors for groups and multi-leg journeys use a clearly sized, keyboard-accessible control. Boarding passes omit selectors when there is only one traveller and flight, and show the static demo QR code described above. Search, fare rules, seat assignment and traveller/pass switching behaviour remain covered by the existing browser suites.
