@@ -333,6 +333,7 @@ h2{margin:0;font-size:12px;font-weight:600;color:var(--mute);letter-spacing:.08e
 <link rel="stylesheet" href="flows.css">
 <link rel="stylesheet" href="journey-updates.css">
 <link rel="stylesheet" href="desktop.css">
+<link rel="stylesheet" href="home-airline.css">
 </head>
 <body>
 <div class="stage"><div class="phone" id="app">
@@ -513,25 +514,28 @@ function homeTripState(l,now=nowAbs()){
  if(minutes<=cutoff)return {tone:'warn',message:'Online check-in is closed. Please visit the airport counter.',label:'View trip details',action:'trip'};
  return {tone:'',message:'Online check-in opens '+fT(l.dep-48*60,l.from)+' on '+fmtDn(lp(l.dep-48*60,l.from).day,{day:'numeric',month:'short'})+'.',label:'View trip details',action:'trip'};
 }
-function homeJourney(x){if(!x)return `<section class="home-journey" aria-label="Your next journey"><div class="home-empty"><h2>Your next journey starts here.</h2><p>A familiar city or somewhere new. Find your next flight with Garuda.</p></div></section>`;
- const {b,bi,l}=x,ps=lp(eD(l),l.from),pa=lp(eA(l),l.to),state=homeTripState(l),dayOffset=pa.day-ps.day;
+function homeJourney(x){if(!x)return `<section class="home-journey home-journey-empty" aria-label="Your next journey"><div class="home-empty"><span class="home-eyebrow">YOUR JOURNEYS</span><h2>Your next journey starts here.</h2><p>Book a flight to see your itinerary, check-in and updates here.</p></div></section>`;
+ const {b,bi,l}=x,ps=lp(eD(l),l.from),pa=lp(eA(l),l.to),state=homeTripState(l),dayOffset=pa.day-ps.day,airport=airportDeparture(l);
  return `<section class="home-journey" aria-label="Your next journey">${destinationVisual(b.dirs.find(d=>d.legs.includes(l)).legs.at(-1).to,'home','Next stop')}<div class="home-trip-head"><span class="home-eyebrow">Your next journey</span><span class="home-flight">${l.id}</span></div>
  <div class="home-route"><div><strong>${l.from}</strong><small>${cname(l.from)}</small></div>${AR}<div class="end"><strong>${l.to}</strong><small>${cname(l.to)}</small></div></div>
  <div class="home-schedule"><div><small>Departure date</small><b>${fmtDn(ps.day,{day:'numeric',month:'short'})}</b></div><div><small>Departs · ${l.from}</small><b>${hm(ps.min)}</b></div><div><small>Arrives · ${l.to}</small><b>${hm(pa.min)}${sup(dayOffset)}</b></div></div>
+ ${l.checkedIn&&l.status!=='cancel'&&eD(l)>nowAbs()?`<div class="home-airport"><span>Departure airport</span><b>${airport.terminal}${airport.gate!=='—'?' · Gate '+airport.gate:''}</b></div>`:''}
  <div class="home-state ${state.tone}" role="status"><i></i><span>${state.message}</span></div><button class="home-cta" data-home-action="${state.action}" data-bk="${bi}" data-leg="${flat(b).indexOf(l)}">${state.action==='pass'||state.action==='checkin'?IC.ci:IC.info}${state.label}</button>
  <button class="home-secondary" data-go="trip" data-bk="${bi}">Trip details · ${b.ref}</button></section>`;
 }
 function renderHome(){const localNow=lp(nowAbs(),HUB),hr=Math.floor(localNow.min/60),greeting=hr<11?'Good morning':hr<17?'Good afternoon':'Good evening',x=nextHomeTrip();
+ const unread=S.msgs.filter(m=>m.unread).length;
  const destinations=[{code:'DPS',name:'Bali',tag:'A little closer to nature'},{code:'AMS',name:'Amsterdam',tag:'Take the scenic route'}].filter(d=>CT[d.code]);
  $('#v-home').innerHTML=`<header class="home-hero">${HOME_WING}<div class="home-brand"><img class="home-logo" src="assets/garuda-logo-white.svg" alt="Garuda Indonesia" width="178" height="41"><button class="bell" data-go="inbox" aria-label="Open inbox">${IC.bell}<span class="dot" id="dot1"></span></button></div>
  <div class="home-welcome"><div class="home-date">${fmtDn(localNow.day,{weekday:'long',day:'numeric',month:'long'})} · Jakarta</div><h1>${greeting}, Rina.</h1><p>A little care, every step of your journey.</p></div><button class="home-member" data-go="me" aria-label="View your GarudaMiles membership"><i></i>GarudaMiles Silver <span aria-hidden="true">·</span> 12,480 miles ${HOME_CHEVRON}</button></header>
  <main class="home-main">${homeJourney(x)}
- <button class="home-book" data-go="search"><span class="home-book-icon">${IC.srch}</span><span><b>Where would you like to go?</b><small>Book your next flight with Garuda</small></span>${HOME_CHEVRON}</button>
- <div class="home-shortcuts"><button data-go="trips">${IC.bag}Manage trips</button><button data-home-status>${IC.info}Journey updates</button></div>
+ <button class="home-book" data-go="search"><span class="home-book-icon">${IC.srch}</span><span><b>Book a flight</b><small>Find your next destination</small></span>${HOME_CHEVRON}</button>
+ <section class="home-tools" aria-label="Travel services"><div class="home-tools-heading"><h2>Travel essentials</h2><span>Everything for your journey</span></div><div class="home-shortcuts"><button data-home-checkin><span class="home-tool-icon">${IC.ci}</span><span><b>Check in</b><small>${x?'For your next flight':'View your trips'}</small></span>${HOME_CHEVRON}</button><button data-go="trips"><span class="home-tool-icon">${IC.bag}</span><span><b>My trips</b><small>Manage your booking</small></span>${HOME_CHEVRON}</button><button data-home-status><span class="home-tool-icon">${IC.bell}</span><span><b>Journey updates${unread?` <i class="home-unread">${unread}</i>`:''}</b><small>${unread?unread+' unread update'+(unread===1?'':'s'):'Messages and flight updates'}</small></span>${HOME_CHEVRON}</button></div></section>
  <section aria-labelledby="home-explore-title"><div class="home-section-head"><h2 id="home-explore-title">A change of scenery</h2><button data-go="search">Explore flights</button></div><div class="home-destinations">${destinations.map(d=>`<button class="home-destination" data-ex="${d.code}" aria-label="Explore flights to ${d.name}">${destinationImage(d.code)}<span><small>${d.tag}</small><b>${d.name}</b><em>Explore ${cname(d.code)} →</em></span></button>`).join('')}</div></section>
  <footer><div class="home-footer"><span>Feel welcome. Travel with confidence.</span><button data-home-help>Need a hand?</button></div><p class="home-fine">A Garuda concept for Jakarta Northshore. Simulated journeys; no real bookings or payments.</p></footer></main>`;badge()}
 $('#v-home').addEventListener('click',e=>{const x=e.target.closest('[data-ex]');if(x){S.q.from=HUB;S.q.to=x.dataset.ex;go('search');return}
  const a=e.target.closest('[data-home-action]');if(a){S.bk=+a.dataset.bk;S.pl=+a.dataset.leg;const b=BK(),l=flat(b)[S.pl];if(a.dataset.homeAction==='checkin'){homeCheckin(b,l);return}if(a.dataset.homeAction==='update')setNoticeLeg(b,l);go(a.dataset.homeAction==='pass'?'pass':a.dataset.homeAction==='update'?'notice':'trip');return}
+ if(e.target.closest('[data-home-checkin]')){const x=nextHomeTrip();if(!x){go('trips');return}S.bk=x.bi;S.pl=flat(x.b).indexOf(x.l);if(x.l.status==='cancel'){setNoticeLeg(x.b,x.l);go('notice');return}homeCheckin(x.b,x.l);return}
  if(e.target.closest('[data-home-status]'))go('inbox');
  if(e.target.closest('[data-home-help]')){$('#sheet').innerHTML='<div class="grab"></div><h1 style="font-size:23px">A little help, right here.</h1><p class="sub">Open Trips for your flight details, or the bell for journey updates.</p><p class="fine" style="padding:12px 0">This is a simulated passenger app. For real travel support, use Garuda Indonesia’s official channels.</p><button class="btn t" data-close>Got it</button>';openSheet()}});
 function checkedTravellers(b,l){return Array.isArray(l.checkedInPassengers)?l.checkedInPassengers.filter(i=>Number.isInteger(i)&&i>=0&&i<b.names.length):l.checkedIn?b.names.map((_,i)=>i):[];}
