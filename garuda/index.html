@@ -488,7 +488,12 @@ const pmul=(q,intl=true)=>q.a+q.c*(intl?PRICE_CFG.pax.child:PRICE_CFG.pax.childD
 const paxTxt=q=>q.a+' adult'+(q.a>1?'s':'')+(q.c?' · '+q.c+' child'+(q.c>1?'ren':''):'')+(q.i?' · '+q.i+' infant'+(q.i>1?'s':''):'');
 const isIntl=legs=>legs.some(l=>CT[farEnd(l)].z==='I');
 /* Round trip: a base discount, dearer for very short stays (business travel), cheaper when the stay covers a Saturday night, dearer for very long stays */
-function rtDetail(q,it){const C=PRICE_CFG.roundTrip;if(q.type!=='ret')return {f:1,parts:[],nights:null};
+/* Trip shape of an ordered list of itineraries: one-way, return, open jaw (exactly one end matches), circle (continuous chain back to the start), or multi-city (no discount) */
+function tripType(its){const n=its.length;if(n<2)return 'one';const o=its.map(i=>i.legs[0].from),d=its.map(i=>i.legs.at(-1).to);
+ if(n===2){const a=o[1]===d[0],z=d[1]===o[0];return a&&z?'ret':a!==z?'oj':'multi'}
+ for(let i=1;i<n;i++)if(o[i]!==d[i-1])return 'multi';return d[n-1]===o[0]?'circle':'multi'}
+const TRIP_NAME={ret:'Round trip',oj:'Open jaw',circle:'Circle trip',multi:'Multi-city',one:'One way'};
+function rtDetail(q,it){const C=PRICE_CFG.roundTrip;if(q.type==='oj'||q.type==='circle'){const r=q.type==='oj'?C.openJaw:C.circle;return {f:Math.max(0.7,1-r),parts:[[TRIP_NAME[q.type],-r]],nights:null}}if(q.type!=='ret')return {f:1,parts:[],nights:null};
  let rate=C.dom,cls='domestic';if(it&&itinIntl(it)){const blk=it.legs.reduce((a,l)=>a+l.arr-l.dep,0);if(blk>C.longHours*60){rate=C.long;cls='long-haul'}else{rate=C.regional;cls='regional international'}}
  const parts=[['Round trip, '+cls,-rate]],nights=q.d1!=null&&q.d2!=null?q.d2-q.d1:null;
  if(nights!=null){if(nights<=C.shortNights)parts.push(['Short stay, '+nights+(nights===1?' night':' nights'),C.shortPremium]);if(nights>C.longNights)parts.push(['Long stay, '+nights+' nights',C.longPremium]);for(let n=q.d1;n<q.d2;n++)if(isoDow(n)===6){parts.push(['Saturday night away',-C.satDiscount]);break}}
@@ -791,7 +796,7 @@ const lockFam=()=>S.step===1&&S.sel[0]?{cab:S.sel[0].cab,name:S.sel[0].fam.n}:nu
 const famIn=(it,cab,name)=>{const c=fares(it).find(x=>x.k===cab);if(!c)return null;const f=c.fam.find(x=>x.n===name);return f?{c,f}:null};
 let rmEpoch=0;const _rm=new Map();
 /* Hooks for the Pricing Lab */
-window.GA_PRICING={cfg:PRICE_CFG,defaults:PRICE_DEFAULTS,detail:legEcoDetail,through:throughDetail,rt:rtDetail,load:loadInfo,legCharge:legCharge,itinIntl:itinIntl,clear(){for(const k in pcache)delete pcache[k];_rm.clear();rmEpoch++},save(){try{localStorage.setItem('ga-pricing-cfg',JSON.stringify(PRICE_CFG));return true}catch(e){return false}},reset(){for(const g in PRICE_DEFAULTS)Object.assign(PRICE_CFG[g],PRICE_DEFAULTS[g]);try{localStorage.removeItem('ga-pricing-cfg')}catch(e){}this.clear()},saved(){try{return !!localStorage.getItem('ga-pricing-cfg')}catch(e){return false}}};
+window.GA_PRICING={tripType:tripType,tripName:TRIP_NAME,cfg:PRICE_CFG,defaults:PRICE_DEFAULTS,detail:legEcoDetail,through:throughDetail,rt:rtDetail,load:loadInfo,legCharge:legCharge,itinIntl:itinIntl,clear(){for(const k in pcache)delete pcache[k];_rm.clear();rmEpoch++},save(){try{localStorage.setItem('ga-pricing-cfg',JSON.stringify(PRICE_CFG));return true}catch(e){return false}},reset(){for(const g in PRICE_DEFAULTS)Object.assign(PRICE_CFG[g],PRICE_DEFAULTS[g]);try{localStorage.removeItem('ga-pricing-cfg')}catch(e){}this.clear()},saved(){try{return !!localStorage.getItem('ga-pricing-cfg')}catch(e){return false}}};
 function retMin(cab,name){const q=S.q,k=[rmEpoch,q.to,q.from,q.d2,cab,name,S.step,S.sel[0]?S.sel[0].it.key:''].join('|');if(_rm.has(k))return _rm.get(k);let m=null;
  for(const it of search(q.to,q.from,q.d2).filter(returnEligible)){const x=famIn(it,cab,name);if(!x||x.c.left<seats(q))continue;const t=priceFor(it,x.f).total;if(m==null||t<m)m=t}
  _rm.set(k,m);return m}

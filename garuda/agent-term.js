@@ -179,16 +179,17 @@ function showCurrent(){if(T.cur)return out(bookingText(T.cur),'');var es=elems()
 
 /* ---------- fare quote ---------- */
 function build(){var P=T.p;if(!P.segs.length)return null;var a=0,c=0,i=0;P.names.forEach(function(n){if(n.t==='a')a++;else if(n.t==='c')c++;else i++});var its=P.segs.map(function(s){return s.it}),f=its[0].legs[0],z=its[0].legs[its[0].legs.length-1],d1=legDay(f),dl=legDay(its[its.length-1].legs[0]);
- var rev=its.length===2&&its[1].legs[0].from===z.to&&its[1].legs[its[1].legs.length-1].to===f.from;
- var q={from:f.from,to:z.to,type:rev?'ret':'one',d1:d1,d2:rev?dl:d1,a:a||1,c:c,i:i,cab:'Economy'},sel=P.segs.map(function(s){return {it:s.it,fam:s.fam}});
- return {q:q,sel:sel,sum:W.priceSummary(sel,q),assumed:!a,rev:rev,multi:its.length>1&&!rev}}
+ var tt=W.tripType(its),rev=tt==='ret';
+ var q={from:f.from,to:z.to,type:(tt==='ret'||tt==='oj'||tt==='circle')?tt:'one',d1:d1,d2:rev?dl:d1,a:a||1,c:c,i:i,cab:'Economy'},sel=P.segs.map(function(s){return {it:s.it,fam:s.fam}});
+ return {q:q,sel:sel,sum:W.priceSummary(sel,q),assumed:!a,rev:rev,tt:tt,multi:tt==='multi'}}
 function fqd(){if(T.cur){var b=T.cur,L=['FQD  '+b.ref+'   PRICED AT BOOKING','PAX  '+b.pax.a+' ADT'+(b.pax.c?'  '+b.pax.c+' CHD':'')+(b.pax.i?'  '+b.pax.i+' INF':'')];
+  if(b.dirs.length>1){var tq=(b.q&&b.q.type)||'multi';L.push('TRIP TYPE  '+({ret:'ROUND TRIP',oj:'OPEN JAW',circle:'CIRCLE TRIP'}[tq]||'MULTI-CITY'))}
   b.dirs.forEach(function(d,i){var dp=b.dirPrices&&b.dirPrices[i];L.push(lpad(i+1,2)+'  '+pad(d.legs.map(function(g){return fn(g.id)}).join('/'),14)+classOf(b,i)+'   '+pad((b.fams[i]||b.fams[0]).toUpperCase(),20)+lpad(dp?amt(dp.total):'',12))});
   L.push('FARE        '+lpad(amt(b.fare),12),'PPN         '+lpad(amt(b.tax),12),'AIRPORT CHG '+lpad(amt(b.chg),12),'TOTAL IDR   '+lpad(amt(b.total),12));return out(L.join('\n'),'')}
  var B=build();if(!B)return out('NO ITINERARY - SELL A FLIGHT WITH SS FIRST','e');var q=B.q,S=B.sum,L=['FQD','PAX  '+q.a+' ADT'+(q.c?'  '+q.c+' CHD':'')+(q.i?'  '+q.i+' INF':'')+(B.assumed?'   (NO NAMES YET - ASSUMING 1 ADT)':'')];
  L.push(' LN FLIGHT        CL FARE                     AMOUNT');B.sel.forEach(function(s,i){var pr=W.priceFor(s.it,s.fam,q);L.push(lpad(i+1,3)+' '+pad(s.it.legs.map(function(g){return fn(g.id)}).join('/'),14)+pad(T.p.segs[i].cls,3)+pad(s.fam.n.toUpperCase(),22)+lpad(amt(pr.total),12))});
  L.push('FARE        '+lpad(amt(S.fare),12),'PPN         '+lpad(amt(S.tax),12),'AIRPORT CHG '+lpad(amt(S.chg),12),'TOTAL IDR   '+lpad(amt(S.total),12));
- if(B.rev)W.rtDetail(q,B.sel[0].it).parts.forEach(function(x){L.push(x[0].toUpperCase()+'  '+(x[1]>0?'+':'-')+Math.round(Math.abs(x[1])*100)+'%')});if(B.multi)L.push('NOT A ROUND TRIP - EACH ITINERARY PRICED AS A ONE-WAY');
+ if(B.sel.length>1)L.push('TRIP TYPE  '+C.P.tripName[B.tt].toUpperCase()+(B.tt==='multi'?' - EACH ITINERARY PRICED AS A ONE-WAY, NO DISCOUNT':''));if(B.tt==='ret'||B.tt==='oj'||B.tt==='circle')W.rtDetail(q,B.sel[0].it).parts.forEach(function(x){L.push(x[0].toUpperCase()+'  '+(x[1]>0?'+':'-')+Math.round(Math.abs(x[1])*100)+'%')});
  var sn=T.p.segs[0].n,ps=q.a+q.c;if(!B.assumed&&sn!==ps)L.push('WARNING  '+sn+' SEAT(S) SOLD BUT '+ps+' PASSENGER(S) NEED A SEAT');out(L.join('\n'),'')}
 function fqn(){var fams=[];if(T.cur)T.cur.fams.forEach(function(f){if(fams.indexOf(f)<0)fams.push(f)});else T.p.segs.forEach(function(s){if(fams.indexOf(s.fam.n)<0)fams.push(s.fam.n)});if(!fams.length)return out('NO FARE SELECTED','e');
  out(fams.map(function(f){var r=E.RULES[f];return 'FARE FAMILY '+f.toUpperCase()+'\n  CABIN BAG   '+r.bag.toUpperCase()+'\n  CHECKED BAG '+r.chk.toUpperCase()+'\n  SEAT        '+r.seat.toUpperCase()+'\n  CHANGES     '+r.chg.toUpperCase()+'\n  REFUND      '+r.ref.toUpperCase()+'\n  MILES       '+r.mil}).join('\n'),'')}
