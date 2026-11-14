@@ -32,3 +32,33 @@ Expanded city library (13 November 2026, all under the Unsplash licence above):
 | Paris / CDG | `paris.jpg` | [Unsplash source image — Eiffel Tower and Seine](https://images.unsplash.com/photo-1502602898657-3e91760cbb34) |
 
 Each added file is a compressed 1000 × 600 JPEG below 200 KB, served locally. These eight additions bring the catalogue to 15 distinct city photographs. The compact Search/Results treatment and existing larger journey covers share this catalogue.
+
+
+Destination photography batch (14 November 2026). Each image was resized and cropped to 1000 × 600; source and licence are listed below. Attribution is also available to app visitors via Photo credits.
+
+| Destination | Photograph and photographer | Licence |
+| --- | --- | --- |
+| manado | [Sunset at Bunaken Island, Sulawesi, 2016.jpg](https://commons.wikimedia.org/wiki/File:Sunset_at_Bunaken_Island,_Sulawesi,_2016.jpg) — Niek van Son | [CC BY 2.0](https://creativecommons.org/licenses/by/2.0) |
+| lombok | [Lombok, Island beach in the bay, Indonesia.jpg](https://commons.wikimedia.org/wiki/File:Lombok,_Island_beach_in_the_bay,_Indonesia.jpg) — Vyacheslav Argenberg | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0) |
+| palembang | [LRT Palembang Ampera Bridge.jpg](https://commons.wikimedia.org/wiki/File:LRT_Palembang_Ampera_Bridge.jpg) — Gaudi Renanda | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| semarang | [Semarang - Lawang Sewu 01.jpg](https://commons.wikimedia.org/wiki/File:Semarang_-_Lawang_Sewu_01.jpg) — P. Hughes | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0) |
+| padang | [An afternoon view from Gado-Gado Hill, Padang City, West Sumatra, Indonesia.jpg](https://commons.wikimedia.org/wiki/File:An_afternoon_view_from_Gado-Gado_Hill,_Padang_City,_West_Sumatra,_Indonesia.jpg) — Dave Is Killa | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| batam | [Barelang Bridge in Indonesia.jpg](https://commons.wikimedia.org/wiki/File:Barelang_Bridge_in_Indonesia.jpg) — Cabajar | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| pontianak | [Pontianak Kapuas Bridge.jpg](https://commons.wikimedia.org/wiki/File:Pontianak_Kapuas_Bridge.jpg) — Liuzhary | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| solo | [Keraton Kasunanan Surakarta Hadiningrat.jpg](https://commons.wikimedia.org/wiki/File:Keraton_Kasunanan_Surakarta_Hadiningrat.jpg) — Jo Chryst | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| melbourne | [Melbourne Docklands - Yarras Edge - marina panorama.jpg](https://commons.wikimedia.org/wiki/File:Melbourne_Docklands_-_Yarras_Edge_-_marina_panorama.jpg) — Diliff | [CC BY 2.5](https://creativecommons.org/licenses/by/2.5) |
+| perth | [Perth (AU), View from Kings Park -- 2019 -- 0525-30.jpg](https://commons.wikimedia.org/wiki/File:Perth_(AU),_View_from_Kings_Park_--_2019_--_0525-30.jpg) — Dietmar Rabich | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| dubai | [Dubai Skyline mit Burj Khalifa (18241030269).jpg](https://commons.wikimedia.org/wiki/File:Dubai_Skyline_mit_Burj_Khalifa_(18241030269).jpg) — Tim Reckmann from Hamm, Deutschland | [CC BY 2.0](https://creativecommons.org/licenses/by/2.0) |
+| manila | [Manila Skyline March 2020.jpg](https://commons.wikimedia.org/wiki/File:Manila_Skyline_March_2020.jpg) — Lawrence Ruiz | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| taipei | [Taipei Taiwan Taipei-101-Tower-01.jpg](https://commons.wikimedia.org/wiki/File:Taipei_Taiwan_Taipei-101-Tower-01.jpg) — CEphoto, Uwe Aranas | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) |
+| shanghai | [Pudong Shanghai November 2017 panorama.jpg](https://commons.wikimedia.org/wiki/File:Pudong_Shanghai_November_2017_panorama.jpg) — King of Hearts | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| beijing | [Sunset of the Forbidden City 2006.JPG](https://commons.wikimedia.org/wiki/File:Sunset_of_the_Forbidden_City_2006.JPG) — User:kallgan | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) |
+| ho-chi-minh-city | [Ho Chi Minh City Skyline at Night.jpg](https://commons.wikimedia.org/wiki/File:Ho_Chi_Minh_City_Skyline_at_Night.jpg) — Tran Van Ngoc | [CC0](https://creativecommons.org/publicdomain/zero/1.0/deed.en) |
+| seoul | [Gyeonghoeru (Royal Banquet Hall) at Gyeongbokgung Palace, Seoul.jpg](https://commons.wikimedia.org/wiki/File:Gyeonghoeru_(Royal_Banquet_Hall)_at_Gyeongbokgung_Palace,_Seoul.jpg) — Frank Schulenburg | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| banda-aceh | [Masjid Raya Baiturrahman di Banda Aceh.jpg](https://commons.wikimedia.org/wiki/File:Masjid_Raya_Baiturrahman_di_Banda_Aceh.jpg) — Felianiwiki | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0) |
+| istanbul | [Hagia Sophia Mars 2013.jpg](https://commons.wikimedia.org/wiki/File:Hagia_Sophia_Mars_2013.jpg) — Arild Vågen | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) |
+| labuan-bajo | [Padar Island, Komodo National Park, Indonesia, 20250822 0929 2659.jpg](https://commons.wikimedia.org/wiki/File:Padar_Island,_Komodo_National_Park,_Indonesia,_20250822_0929_2659.jpg) — Jakub Hałun | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0) |
+| makassar | [Pantai Losari Makassar.jpg](https://commons.wikimedia.org/wiki/File:Pantai_Losari_Makassar.jpg) — Fhikri Latifi | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0) |
+| balikpapan | [2018-02-18 Pantai Kemala Balikpapan.jpg](https://commons.wikimedia.org/wiki/File:2018-02-18_Pantai_Kemala_Balikpapan.jpg) — consigliere ivan from Bontang, Indonesia | [CC0](https://creativecommons.org/publicdomain/zero/1.0/deed.en) |
+| jeddah | [Jeddah waterfront.jpg](https://commons.wikimedia.org/wiki/File:Jeddah_waterfront.jpg) — SUAAD | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| phuket | [Patong Beach (1).jpg](https://commons.wikimedia.org/wiki/File:Patong_Beach_(1).jpg) — Wolfgang Holzem | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |

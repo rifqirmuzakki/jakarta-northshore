@@ -555,7 +555,7 @@ function renderHome(){const localNow=lp(nowAbs(),HUB),hr=Math.floor(localNow.min
  ${recents.length?`<div class="home-recent" role="group" aria-label="Recent searches"><span>Recent</span>${recents.map(k=>`<button data-home-recent="${k}">${k.slice(0,3)} <i>→</i> ${k.slice(4)}</button>`).join('')}</div>`:''}
  ${homePrep(x)}
  <section aria-labelledby="home-explore-title"><div class="home-section-head"><h2 id="home-explore-title">Discover somewhere new</h2><button data-go="search">Explore flights</button></div><p class="home-fare-note">Example one-way fares from Jakarta · ${fmtDn(TD+7,{day:'numeric',month:'short'})} · 1 adult</p><div class="home-destinations">${destinations.map(d=>`<button class="home-destination" data-ex="${d.code}" aria-label="Explore flights to ${d.name}">${destinationImage(d.code)}<span><small>${d.tag}</small><b>${d.name}</b><em>${(p=>p?'From '+idr(p):'Explore →')(homeExampleFare(d.code))}</em></span></button>`).join('')}</div></section>
- <footer><div class="home-footer"><span>Feel welcome. Travel with confidence.</span><button data-home-help>Need a hand?</button></div><p class="home-fine">A Garuda concept for Jakarta Northshore. Simulated journeys; no real bookings or payments.</p></footer></main>`;badge()}
+ <footer><div class="home-footer"><span>Feel welcome. Travel with confidence.</span><span class="home-footer-links"><a href="photo-credits.html">Photo credits</a><button data-home-help>Need a hand?</button></span></div><p class="home-fine">A Garuda concept for Jakarta Northshore. Simulated journeys; no real bookings or payments.</p></footer></main>`;badge()}
 $('#v-home').addEventListener('click',e=>{const x=e.target.closest('[data-ex]');if(x){S.q.from=HUB;S.q.to=x.dataset.ex;go('search');return}
  const rc=e.target.closest('[data-home-recent]');if(rc){const [a,z]=rc.dataset.homeRecent.split('-');S.q.from=a;S.q.to=z;go('search');return}
  const rb=e.target.closest('[data-home-rebook]');if(rb){const f=S.bookings[+rb.dataset.homeRebook];if(f){const d0=f.dirs[0].legs,a=d0[0].from,z=d0.at(-1).to,one=f.dirs.length===1;S.q.from=one?z:a;S.q.to=one?a:z;S.q.type=one?'one':'ret';S.q.d1=TD+(one?7:21);S.q.d2=S.q.d1+5}go('search');return}
@@ -608,7 +608,32 @@ const DESTINATION_IMAGES={
  SIN:{file:'singapore',alt:'Marina Bay waterfront in Singapore',position:'50% 50%'},
  LHR:{file:'london',alt:'The River Thames and Tower Bridge in London',position:'50% 55%'},
  LGW:{file:'london',alt:'The River Thames and Tower Bridge in London',position:'50% 55%'},
- SYD:{file:'sydney',alt:'Sydney Opera House and harbour',position:'50% 50%'}
+ SYD:{file:'sydney',alt:'Sydney Opera House and harbour',position:'50% 50%'},
+ UPG:{file:'makassar',alt:'Losari waterfront in Makassar',position:'50% 50%'},
+ BPN:{file:'balikpapan',alt:'Kemala Beach in Balikpapan',position:'50% 50%'},
+ MDC:{file:'manado',alt:'Sunset over Bunaken Island near Manado',position:'50% 50%'},
+ LOP:{file:'lombok',alt:'A coastal bay in Lombok',position:'50% 50%'},
+ LBJ:{file:'labuan-bajo',alt:'Padar Island in Komodo National Park near Labuan Bajo',position:'50% 50%'},
+ PLM:{file:'palembang',alt:'Ampera Bridge in Palembang',position:'50% 50%'},
+ SRG:{file:'semarang',alt:'Lawang Sewu in Semarang',position:'50% 50%'},
+ PDG:{file:'padang',alt:'Coastline of Padang, West Sumatra',position:'50% 50%'},
+ BTJ:{file:'banda-aceh',alt:'Baiturrahman Grand Mosque in Banda Aceh',position:'50% 50%'},
+ BTH:{file:'batam',alt:'Barelang Bridge near Batam',position:'50% 50%'},
+ PNK:{file:'pontianak',alt:'Kapuas Bridge in Pontianak',position:'50% 50%'},
+ SOC:{file:'solo',alt:'Surakarta palace in Solo',position:'50% 50%'},
+ ICN:{file:'seoul',alt:'Gyeonghoeru pavilion in Seoul',position:'50% 50%'},
+ MEL:{file:'melbourne',alt:'Melbourne waterfront at night',position:'50% 50%'},
+ PER:{file:'perth',alt:'Perth skyline from Kings Park',position:'50% 50%'},
+ DXB:{file:'dubai',alt:'Dubai skyline and Burj Khalifa',position:'50% 50%'},
+ JED:{file:'jeddah',alt:'Jeddah waterfront at sunset',position:'50% 50%'},
+ MNL:{file:'manila',alt:'Manila waterfront skyline',position:'50% 50%'},
+ TPE:{file:'taipei',alt:'Taipei skyline and Taipei 101',position:'50% 50%'},
+ PVG:{file:'shanghai',alt:'Shanghai Pudong skyline',position:'50% 50%'},
+ PEK:{file:'beijing',alt:'The Forbidden City in Beijing',position:'50% 50%'},
+ PKX:{file:'beijing',alt:'The Forbidden City in Beijing',position:'50% 50%'},
+ SGN:{file:'ho-chi-minh-city',alt:'Ho Chi Minh City skyline at night',position:'50% 50%'},
+ HKT:{file:'phuket',alt:'Patong Beach in Phuket',position:'50% 50%'},
+ IST:{file:'istanbul',alt:'Hagia Sophia in Istanbul',position:'50% 50%'}
 };
 function destinationImage(code,lazy=true){const photo=DESTINATION_IMAGES[code];return photo?`<img class="destination-photo" src="assets/${photo.file}.jpg" alt="${photo.alt}" width="1000" height="600" style="object-position:${photo.position}" loading="${lazy?'lazy':'eager'}" decoding="async">`:'';}
 function destinationThumbnail(code){return `<span class="destination-thumb" data-destination="${code}">${destinationImage(code,false)}<span class="destination-placeholder" aria-hidden="true">${IC.pin}</span></span>`;}
