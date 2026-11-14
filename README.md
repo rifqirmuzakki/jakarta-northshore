@@ -379,3 +379,13 @@ All fare constants live in one object, `PRICE_CFG`, in `garuda/index.html` (defa
 
 ### Seat inventory and load
 Each flight has a seat capacity per cabin, taken from the cabin layouts in `garuda/seat-map.js` (`seatLayout`, less the seats the map blocks). Every flight and date gets an expected final load factor (by cabin, raised by peak times, weekdays and holidays, with a little random spread) and a share of that load that is sold by each day before departure. The cabin's sold share moves along a price ladder, so a flight that is filling costs more than an empty one, and a last-minute premium sits on top. Seats booked in the app (and seats moved by a rebooking or a cancellation) change the sold count, so booking a flight makes it dearer and "Full" appears when the cabin is sold out. "Left at this fare" is the number of seats before the next price step. The Pricing Lab shows capacity, expected load, seats sold and the ladder for each flight, and the settings let you tune them; the "Original model" button switches the load model off.
+
+## Sales counter (`garuda/agent.html`, `garuda/agent.css`, `garuda/agent.js`)
+A desktop tool for staff who sell and issue tickets in person (a ticket office or airport counter). It is deliberately plain and dense, unlike the passenger app.
+- **Sell**: quick entry (`JKT SIN 12DEC 19DEC 2A1C`, press `/` to focus it) or a form; one table per direction with all fare families side by side, seats left and "seats at this fare"; a price strip for the days either side; a sticky quote with the fare, PPN, airport charges, round-trip adjustments and the fare rules to read to the customer; then passengers, payment (cash with change, EDC card, QRIS, bank transfer) and issue, with the e-ticket printed from the engine frame (place of issue shows the counter).
+- **Bookings**: find by reference, name or route; print the e-ticket; cancel and refund by the fare rules (seats go back on sale).
+- **Shift**: sales, refunds and net by payment method, a cash drawer with opening float, expected cash and difference, and close shift.
+- **Shared with the passenger app**: it loads `index.html` in a hidden frame and uses its pricing engine, seat inventory (`ga-sold`) and e-ticket, so a seat sold here changes prices there. The Pricing Lab settings apply too.
+- **Storage**: counter bookings are in this browser (`ga-agent-bookings`, `ga-agent-shift`, `ga-agent-closed`). The passenger app keeps its own bookings in memory only, so counter bookings do not yet appear in its "Trips". A shared backend (Supabase) is the planned next step.
+- Not built yet: sign-in, seat selection at the counter, changes and reissues, discount overrides with approval, commissions, multi-city.
+- Test: `tools/tests/garuda-agent.cjs`.

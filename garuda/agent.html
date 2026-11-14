@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sales counter · Garuda concept</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://api.fontshare.com"><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700&display=swap">
+<link rel="stylesheet" href="agent.css?v=1">
+</head>
+<body>
+<header class="top">
+ <div class="brand"><img src="assets/garuda-logo-white.svg" alt="Garuda Indonesia" height="26"><span>Sales counter</span></div>
+ <nav class="tabs" id="tabs" aria-label="Sections">
+  <button data-tab="sell" class="on">Sell</button><button data-tab="books">Bookings <i id="nb"></i></button><button data-tab="shift">Shift</button>
+ </nav>
+ <div class="who"><span id="clock"></span><span>Counter JKT-03</span><a href="pricing-lab.html">Pricing Lab</a><a href="index.html">Passenger app</a></div>
+</header>
+<div id="boot" class="boot">Starting the pricing engine…</div>
+<main id="app" hidden>
+ <section id="t-sell">
+  <form class="cmd" id="cmdform" autocomplete="off">
+   <label for="cmd">Quick entry</label>
+   <input id="cmd" placeholder="JKT SIN 12DEC 19DEC 2A1C   (from, to, depart, return, travellers, Y W J)" spellcheck="false">
+   <button type="submit" class="ghost">Fill form</button>
+  </form>
+  <form class="sform" id="sform" autocomplete="off">
+   <div class="f"><label for="f-from">From</label><input id="f-from" list="cities" required></div>
+   <div class="f"><label for="f-to">To</label><input id="f-to" list="cities" required></div>
+   <div class="f sm"><label for="f-d1">Depart</label><input id="f-d1" type="date" required></div>
+   <div class="f sm"><label for="f-d2">Return <small>(blank for one way)</small></label><input id="f-d2" type="date"></div>
+   <div class="f xs"><label for="f-a">Adults</label><input id="f-a" type="number" min="1" max="9" value="1"></div>
+   <div class="f xs"><label for="f-c">Children</label><input id="f-c" type="number" min="0" max="8" value="0"></div>
+   <div class="f xs"><label for="f-i">Infants</label><input id="f-i" type="number" min="0" max="4" value="0"></div>
+   <button class="pri" type="submit">Search</button>
+  </form>
+  <datalist id="cities"></datalist>
+  <p class="err" id="serr" role="alert"></p>
+  <div class="sale">
+   <div class="work" id="work"></div>
+   <aside class="quote" id="quote" aria-label="Quote"></aside>
+  </div>
+ </section>
+ <section id="t-books" hidden></section>
+ <section id="t-shift" hidden></section>
+</main>
+<iframe id="eng" src="index.html" title="Pricing engine" aria-hidden="true" tabindex="-1" style="position:absolute;left:-10000px;top:0;width:390px;height:844px;border:0"></iframe>
+<script src="agent.js?v=1"></script>
+</body>
+</html>
