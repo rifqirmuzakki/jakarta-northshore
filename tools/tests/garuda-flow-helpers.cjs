@@ -2,4 +2,5 @@ async function bookingToPeople(p){if(await p.locator('[data-booking-continue]').
 async function bookingToPayment(p){await bookingToPeople(p);if(await p.locator('[data-booking-continue]').count())await p.locator('[data-booking-continue]').click();}
 async function checkinToReview(p){if(await p.locator('[data-checkin-review]').count())await p.locator('[data-checkin-review]').click();if(await p.locator('[data-checkin-seats-next]').count())await p.locator('[data-checkin-seats-next]').click();if(await p.locator('[data-checkin-baggage]').count())await p.locator('[data-checkin-baggage]').check();if(await p.locator('[data-checkin-baggage-next]').count())await p.locator('[data-checkin-baggage-next]').click();}
 async function checkinToTravellers(p){for(let i=0;i<3&&await p.locator('[data-checkin-person]').count()===0;i++)await p.locator('[data-checkin-back]').click();}
-module.exports={bookingToPeople,bookingToPayment,checkinToReview,checkinToTravellers};
+async function selectReturn(p,index=0){const direct=p.locator('[data-select-return="'+index+'"]');if(await direct.count())await direct.click();else{await p.locator('[data-expand="'+index+'"]').click();await p.locator('[data-result-continue="'+index+'"]').click();}}
+module.exports={selectReturn,bookingToPeople,bookingToPayment,checkinToReview,checkinToTravellers};
