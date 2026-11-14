@@ -29,7 +29,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  const b1=await p.evaluate(()=>{const b=GA_AGENT.bookings()[0];return {flt:b.dirs[0].legs[0].id,total:b.total,paid:b.paid,paid0:b.paid0,tickets:b.names.map((n,i)=>GA_AGENT.ctx.ticketNo(b,i)),tv:b.tv,cls:b.classes[0],re:b.reissues.length,seats:Object.values(b.dirs[0].legs[0].seats||{}).length}});
  assert.equal(b1.tv,1);assert.equal(b1.re,1);assert.equal(b1.cls,'M');assert.notEqual(b1.flt,b0.flt);assert.equal(b1.paid,b0.paid+collect);assert.equal(b1.paid0,b0.paid);assert(b1.tickets.every((t,i)=>t!==b0.tickets[i]));assert.equal(b1.seats,2);
  const sold1=await p.evaluate(()=>JSON.parse(localStorage.getItem('ga-sold')));assert(Object.keys(sold1).some(k=>(sold1[k]||0)<(sold0[k]||0)),'old flight released');assert(Object.keys(sold1).some(k=>(sold1[k]||0)>(sold0[k]||0)),'new flight taken');
- assert(/REISSUED/.test(await last('RH')));assert(/ M /.test(await last('RT')));
+ assert.equal(await p.evaluate(()=>GA_AGENT.bookings()[0].ticketHistory.length),2);assert(await p.evaluate(()=>GA_AGENT.bookings()[0].ticketHistory.every(t=>t.coupons.every(c=>c.status==='EXCHANGED'))));assert(/OPEN/.test(await last('TWD')));assert(/REISSUED/.test(await last('RH')));assert(/ M /.test(await last('RT')));
  /* the new e-ticket and the shift */
  await p.evaluate(()=>{window.__pr=0;document.getElementById('eng').contentWindow.print=()=>{window.__pr++}});
  await run('EP');await p.waitForFunction(()=>window.__pr===1,null,{timeout:5000});

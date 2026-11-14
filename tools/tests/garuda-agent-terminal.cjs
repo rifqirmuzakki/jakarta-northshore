@@ -47,6 +47,11 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  assert(/SHORT BY/.test(await (async()=>{await run('FPCASH/1000');return last('ET')})()));
  await run('FPCC');o=await last('ET');assert(/TICKETS ISSUED/.test(o));assert.equal((o.match(/126-\d{10}/g)||[]).length,2);assert(/APPROVAL \d{6}/.test(o));
  assert(/ALREADY TICKETED/.test(await last('ET')));
+ o=await last('TWD');assert(/E-TICKET COUPONS/.test(o)&&/OPEN/.test(o));
+ await p.evaluate(()=>GA_AGENT.bookings()[0].tickets.forEach(t=>t.coupons.filter(c=>c.d===0).forEach(c=>c.status='FLOWN')));
+ assert(/FLOWN/.test(await last('TWD')));assert(/FLOWN OR PARTLY USED/.test(await last('RBM3')));
+ const refund=await last('XI');assert(!/JKT → SIN/.test(refund)&&/SIN → JKT/.test(refund),refund);
+ await p.evaluate(()=>GA_AGENT.bookings()[0].tickets.forEach(t=>t.coupons.filter(c=>c.d===0).forEach(c=>c.status='OPEN')));await run('RT');
  await p.evaluate(()=>{window.__pr=0;document.getElementById('eng').contentWindow.print=()=>{window.__pr++}});
  await run('EP');await p.waitForFunction(()=>window.__pr===1,null,{timeout:5000});
  const etk=await p.frameLocator('#eng').locator('#etk-sheet').innerText();assert(etk.includes(ref)&&etk.includes('Counter JKT-03'));assert(etk.includes('MRS RINA WIJAYA')&&etk.includes('MR BUDI WIJAYA')&&etk.includes('Dear Mrs Wijaya'));

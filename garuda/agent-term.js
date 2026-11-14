@@ -49,6 +49,7 @@ function run(raw){var up=raw.trim().toUpperCase(),c=up.replace(/\s+/g,''),m;
  if(T.xi&&c!=='XIY')T.xi=null;
  if(c==='HE'||c==='HELP'||c==='?')return help();
  if(c==='CL'||c==='CLR'||c==='CLEAR'){T.lines=[];return paint()}
+ if(c==='TWD')return ticketDisplay();
  if(c==='JD')return out(dayName(E.TD)+' '+ddmony(E.TD)+'  '+t4(E.nowAbs(),E.HUB)+' WIB','sys');
  if(m=up.match(/^DAC\s*([A-Z]{3})$/))return dac(m[1]);
  if(m=up.match(/^DAN\s*(.{2,})$/))return dan(m[1].trim());
@@ -105,6 +106,7 @@ function help(){out([
 '  ER                   save the booking, get the record locator, seats held',
 '  FPCASH  FPCASH/2000000  FPCC  FPDC  FPQRIS  FPTRF    form of payment',
 '  ET                   issue tickets       EP  print the e-ticket',
+'  TWD                  display ticket coupons and statuses',
 'RETRIEVE AND CHANGE',
 '  RTGA1234  RTWIJAYA   retrieve by locator or surname    RT  redisplay',
 '  XI  then  XIY        cancel the booking (refund or release seats)',
@@ -235,15 +237,16 @@ function et(){var b=T.cur;if(b&&T.ri&&T.ri.ref===b.ref)return reissue();if(!b){r
  if(b.cancelled)return out('BOOKING IS CANCELLED','e');if(!b.held)return out('ALREADY TICKETED','e');if(!T.fp)return out('NEED FORM OF PAYMENT - FPCASH FPCC FPDC FPQRIS FPTRF','e');
  var method=FPS[T.fp.k],tend=T.fp.k==='CASH'?(T.fp.amount||b.total):b.total;if(tend<b.total)return out('AMOUNT SHORT BY IDR '+amt(b.total-tend),'e');
  b.held=false;b.tl=null;b.paid0=b.total;b.paid=b.total;b.confirmedAt=E.nowAbs();b.issuedMs=Date.now();b.paymentMethod=method;b.payment={method:method,tendered:tend,change:tend-b.total,approval:T.fp.k==='CASH'?'':String(100000+E.hash(b.ref+'AP')%900000)};
- (b.hist=b.hist||[]).push({at:Date.now(),t:'TICKETED, '+method.toUpperCase()+' IDR '+amt(b.total)});store.set(C.KEY,BKS);T.fp=null;
+ C.issueTickets(b);(b.hist=b.hist||[]).push({at:Date.now(),t:'TICKETED, '+method.toUpperCase()+' IDR '+amt(b.total)});store.set(C.KEY,BKS);T.fp=null;
  out('OK  TICKETS ISSUED\n'+b.names.map(function(x,i){return '  '+C.ticketNo(b,i)+'  '+pn(b,i)}).join('\n')+'\nTOTAL IDR '+amt(b.total)+'  '+method.toUpperCase()+(b.payment.approval?'  APPROVAL '+b.payment.approval:'')+(b.payment.change>0?'  CHANGE IDR '+amt(b.payment.change):'')+'\nEP PRINTS THE E-TICKET','ok')}
 function reissue(){var b=T.cur,r=T.ri;if(r.collect>0&&!T.fp)return out('NEED FORM OF PAYMENT - FPCASH FPCC FPDC FPQRIS FPTRF','e');
  var method=r.collect>0?FPS[T.fp.k]:'',tend=r.collect>0?(T.fp.k==='CASH'?(T.fp.amount||r.collect):r.collect):0;if(tend<r.collect)return out('AMOUNT SHORT BY IDR '+amt(r.collect-tend),'e');
  var cc=W.fares(r.it).find(function(x){return x.k===r.row.cab.k}),rw=classRow(r.it).find(function(x){return x.k===r.k}),n=b.pax.a+b.pax.c;if(!rw||rw.left<n)return out('CLASS '+r.k+' IS NO LONGER AVAILABLE - REPEAT THE RB ENTRY','e');
- var oldFlt=b.dirs[r.di].legs.map(function(l){return l.id}).join('/');applyChange(b,r.di,r.it,rw,famAt(rw),W.priceFor(r.it,famAt(rw),r.q),r.q,r.k);
- b.paid=(b.paid||b.paid0||0)+r.collect;b.tv=(b.tv||0)+1;(b.reissues=b.reissues||[]).push({at:Date.now(),collected:r.collect,fee:r.fee,diff:r.diff,method:method,note:oldFlt+' '+r.old+' TO '+r.it.legs.map(function(l){return l.id}).join('/')+' '+r.k});
+ if(C.directionState(b,r.di)!=='OPEN')return out('COUPONS NO LONGER OPEN - REISSUE REQUIRES REVIEW','e');var prior=C.ensureTickets(b);var oldFlt=b.dirs[r.di].legs.map(function(l){return l.id}).join('/');applyChange(b,r.di,r.it,rw,famAt(rw),W.priceFor(r.it,famAt(rw),r.q),r.q,r.k);
+ prior.forEach(function(t){t.coupons.forEach(function(c){if(C.couponStatus(c)==='OPEN')c.status='EXCHANGED'})});(b.ticketHistory=b.ticketHistory||[]).push.apply(b.ticketHistory,prior);b.paid=(b.paid||b.paid0||0)+r.collect;b.tv=(b.tv||0)+1;C.issueTickets(b,prior);(b.reissues=b.reissues||[]).push({at:Date.now(),collected:r.collect,fee:r.fee,diff:r.diff,method:method,note:oldFlt+' '+r.old+' TO '+r.it.legs.map(function(l){return l.id}).join('/')+' '+r.k});
  (b.hist=b.hist||[]).push({at:Date.now(),t:'REISSUED '+oldFlt+' '+r.old+' TO '+r.it.legs.map(function(l){return l.id}).join('/')+' '+r.k+', COLLECTED '+amt(r.collect)+(method?' '+method.toUpperCase():'')});store.set(C.KEY,BKS);T.ri=null;T.fp=null;
  out('OK  REISSUED'+(r.collect?'   COLLECTED IDR '+amt(r.collect)+'  '+method.toUpperCase()+(T.fp?'':''):'   NOTHING TO COLLECT')+'\nNEW TICKETS\n'+b.names.map(function(x,i){return '  '+C.ticketNo(b,i)+'  '+pn(b,i)}).join('\n')+'\nEP PRINTS THE NEW E-TICKET','ok')}
+function ticketDisplay(){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','e');if(b.held)return out('NO TICKET ISSUED','e');var ts=C.ensureTickets(b);if(!ts.length)return out('NO TICKET RECORD AVAILABLE','e');out('E-TICKET COUPONS  '+b.ref+'\n'+(b.ticketHistory||[]).concat(ts).map(function(t){return t.number+'  '+pn(b,t.passenger)+'\n'+t.coupons.map(function(c,i){return '  '+(i+1)+'  '+fn(c.flight)+'  '+c.from+c.to+'  '+ddmony(Math.floor(c.dep/1440))+'  '+C.couponStatus(c)+(C.couponStatus(c)==='FLOWN'&&c.status==='OPEN'?' (SIMULATED FROM ARRIVAL TIME)':'')}).join('\n')}).join('\n')+'\nSIMULATED COUPON STATUS; FLOWN IS INFERRED FROM ARRIVAL TIME','sys')}
 function ep(){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','e');if(b.held)return out('NOT TICKETED - USE FP AND ET FIRST','e');if(b.cancelled)return out('BOOKING IS CANCELLED','e');C.printTicket(b.ref);out('E-TICKET SENT TO THE PRINTER','sys')}
 
 /* ---------- retrieve, cancel, queues, history ---------- */
@@ -262,7 +265,7 @@ function rb(c){var m=c.match(/^RB([A-Z])(\d{1,2})(?:\/(\d{1,2}))?$/);if(!m)retur
  var b=T.cur,di,old,spans,seatsN;
  if(!b){var e=elems()[n-1];if(!e||e.k!=='seg')return out('ELEMENT '+n+' IS NOT A FLIGHT SEGMENT','e');di=e.i;var sg=T.p.segs[di];old={it:sg.it,cls:sg.cls};seatsN=sg.n;spans=T.p.segs.map(function(x){return [x.it.dep,x.it.arr]})}
  else{if(b.cancelled)return out('BOOKING IS CANCELLED','e');var idx=n-1-b.names.length,li=0;di=-1;for(var d=0;d<b.dirs.length;d++){if(idx>=0&&idx<li+b.dirs[d].legs.length){di=d;break}li+=b.dirs[d].legs.length}if(di<0)return out('ELEMENT '+n+' IS NOT A FLIGHT SEGMENT','e');
-  var dir=b.dirs[di],f0=dir.legs[0],key=dir.legs.map(function(l){return l.id+'|'+l.dep}).join('>'),cur=W.search(f0.from,dir.legs[dir.legs.length-1].to,legDay(f0)).find(function(x){return x.key===key});
+  if(!b.held&&C.directionState(b,di)!=='OPEN')return out('COUPONS ARE FLOWN OR PARTLY USED - MANUAL REVIEW REQUIRED','e');var dir=b.dirs[di],f0=dir.legs[0],key=dir.legs.map(function(l){return l.id+'|'+l.dep}).join('>'),cur=W.search(f0.from,dir.legs[dir.legs.length-1].to,legDay(f0)).find(function(x){return x.key===key});
   old={it:cur||{legs:dir.legs,key:key,stops:dir.legs.length-1,dep:f0.dep,arr:dir.legs[dir.legs.length-1].arr},cls:classOf(b,di)};seatsN=b.pax.a+b.pax.c;spans=b.dirs.map(function(x){return [x.legs[0].dep,x.legs[x.legs.length-1].arr]})}
  var target=newIt||old.it,sameFlight=target.key===old.it.key;
  if(!sameFlight){var o0=old.it.legs[0].from,d0=old.it.legs[old.it.legs.length-1].to;if(target.legs[0].from!==o0||target.legs[target.legs.length-1].to!==d0)return out('THE NEW FLIGHT MUST GO '+o0+' TO '+d0,'e');if(!seqOk(spans,di,target.dep,target.arr))return out('SEGMENTS OUT OF SEQUENCE','e')}
@@ -337,7 +340,7 @@ function st(c){var m=c.match(/^ST\/?(\d{1,2}[A-K])\/P(\d{1,2})(?:\/S(\d{1,2}))?$
  out('OK  SEAT '+seat+'  '+pn(b,pi)+'  '+fn(l.id)+' '+ddmon(legDay(l))+(was?'   (WAS '+was+')':''),'ok')}
 function xi(confirm){if(!T.cur){if(T.p.segs.length){T.p.segs=[];return out('ITINERARY CANCELLED','sys')}return out('NO BOOKING','e')}
  var b=T.cur;if(b.cancelled)return out('BOOKING IS ALREADY CANCELLED','e');
- if(!confirm){T.xi=b.ref;if(b.held)return out('CANCEL '+b.ref+' AND RELEASE THE SEATS.  NOTHING WAS PAID.  ENTER XIY TO CONFIRM','e');var r=C.refundRows(b);
+ if(!b.held&&C.refundBlocked(b))return out('PARTLY FLOWN DIRECTION - MANUAL REFUND REVIEW REQUIRED','e');if(!confirm){T.xi=b.ref;if(b.held)return out('CANCEL '+b.ref+' AND RELEASE THE SEATS.  NOTHING WAS PAID.  ENTER XIY TO CONFIRM','e');var r=C.refundRows(b);
   return out('CANCEL '+b.ref+' - REFUND BY FARE RULES\n'+r.rows.map(function(x){return '  '+pad(x.dir,10)+pad(x.fam.toUpperCase(),20)+' PAID '+lpad(amt(x.paid),11)+'  FEE '+lpad(amt(x.fee),10)+'  REFUND '+lpad(amt(x.refund),11)}).join('\n')+'\nREFUND TO '+b.paymentMethod.toUpperCase()+'  IDR '+amt(r.total)+'.  ENTER XIY TO CONFIRM','e')}
  if(T.xi!==b.ref)return out('ENTER XI FIRST','e');T.xi=null;C.cancelBooking(b.ref);out('OK  BOOKING CANCELLED'+(b.cancelled.held?', SEATS RELEASED':'  REFUND IDR '+amt(b.cancelled.refund)+' TO '+b.paymentMethod.toUpperCase())+'\n'+bookingText(b),'ok')}
 function qt(){var h=BKS.filter(function(b){return b.held&&!b.cancelled}).sort(function(a,b){return a.tl-b.tl});if(!h.length)return out('QUEUE EMPTY - NO HELD BOOKINGS','sys');
@@ -350,7 +353,7 @@ function side(){var s=$('tside');if(!s)return;var h='<div class="pane"><h2>Booki
  var B=!T.cur&&build();if(B)h+='<div class="q-row" style="padding:8px 0 0"><span>Estimate'+(B.assumed?' (1 adult assumed)':'')+'</span><b>IDR '+amt(B.sum.total)+'</b></div>';
  h+='</div></div><div class="pane"><h2>Next</h2><div class="in">'+nextHtml()+'</div></div><div class="pane"><h2>Quick keys</h2><div class="in keys">'+['HE','AN','FQD','ER','ET','RT','QT','IG'].map(function(k){return '<button type="button" class="ghost" data-cmd="'+k+'">'+k+'</button>'}).join('')+'</div></div>';s.innerHTML=h}
 function nextHtml(){var P=T.p,b=T.cur,tip=function(c,t){return '<div class="nx"><button type="button" class="ghost" data-cmd="'+C.esc(c)+'">'+C.esc(c)+'</button> '+C.esc(t)+'</div>'};
- if(b){if(b.cancelled)return '<div class="note" style="margin:0">Booking cancelled. IG clears the screen of it.</div>';if(b.held)return (T.fp?tip('ET','issue tickets · IDR '+amt(b.total)):tip('FQD','review the total')+tip('FQN','review fare rules')+tip('FPCASH','set form of payment'))+tip('SM3','seat map')+tip('RBT3','rebook into class T')+tip('XI','cancel and release seats');if(T.ri&&T.ri.ref===b.ref)return tip('FPCASH','form of payment')+tip('ET','collect and reissue');return tip('SM3','seat map')+tip('EP','print the e-ticket')+tip('RBT3','change class')+tip('XI','cancel and refund')}
+ if(b){if(b.cancelled)return '<div class="note" style="margin:0">Booking cancelled. IG clears the screen of it.</div>';if(b.held)return (T.fp?tip('ET','issue tickets · IDR '+amt(b.total)):tip('FQD','review the total')+tip('FQN','review fare rules')+tip('FPCASH','set form of payment'))+tip('SM3','seat map')+tip('RBT3','rebook into class T')+tip('XI','cancel and release seats');if(T.ri&&T.ri.ref===b.ref)return tip('FPCASH','form of payment')+tip('ET','collect and reissue');return tip('TWD','ticket coupons')+tip('SM3','seat map')+tip('EP','print the e-ticket')+tip('RBT3','change class')+tip('XI','cancel and refund')}
  if(!P.segs.length)return tip('AN'+ddmon(E.TD+21)+'JKTSIN','check availability')+(T.av?tip('SS1Y1','sell from the last display'):'');if(!P.names.length)return tip('NM1SURNAME/GIVEN','add the passengers');var named=P.names.filter(function(n){return n.t!=='i'}).length;if(named!==P.segs[0].n)return '<div class="note">'+named+' of '+P.segs[0].n+' seat-holding passengers named. Add or correct names before saving.</div>'+tip('NM1SURNAME/GIVEN','add a passenger');if(!P.phone)return tip('AP+628123456789','contact phone');if(!P.tk)return tip('TKOK','ticketing arrangement');if(!P.rf)return tip('RFNAME','received from');
  return tip('FQD','check the fare')+tip('RBT3','rebook a flight into class T')+tip('ER','save the booking')}
 })();
