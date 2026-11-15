@@ -14,7 +14,6 @@ window.SSR_NAMES={VGML:'Vegetarian meal',MOML:'Muslim meal',CHML:'Child meal',BB
  }
  window.renderETicket=function(){
   var b=BK();if(!b||!etkAvailable(b)){go('trips',false);return}
-  try{allocateBookingSeats(b)}catch(e){}
   var legs=flat(b),people=b.names.map(function(n,i){return {n:n,i:i,t:tripPersonType(b,i)}});
   var issued=fmtDn(b.confirmedAt?lp(b.confirmedAt,HUB).day:TD,{day:'numeric',month:'short',year:'numeric'});
   var fq=function(i){var x=(b.extras||[]).find(function(y){return y.k==='ssr'&&y.code==='FQTV'&&y.p===i});return x?' · GarudaMiles '+esc(x.text):''},ttl=function(i){var x=b.passengers&&b.passengers[i];return x&&x.title?x.title:''},TN={MR:'Mr',MRS:'Mrs',MS:'Ms',MISS:'Miss',MSTR:'Master'};
