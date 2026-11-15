@@ -27,6 +27,7 @@ const root=path.resolve(__dirname,'../..');
  await run('XI');const xi=await last('XIY');assert(/CANCEL|REFUND/i.test(xi),xi);
  assert(await p.evaluate(r=>!!GA_AGENT.bookings().find(b=>b.ref===r).cancelled,active));
  const soldAfter=await p.evaluate(()=>GA_AGENT.ctx.W.eval('Object.values(SOLD).reduce((a,x)=>a+x,0)'));assert(soldAfter<soldBefore,soldBefore+' '+soldAfter);
+ dd=await last(`DD${pick.id}/${pick.date}/Y`);assert(new RegExp(active+'  .*XX CXL +!').test(dd),dd.slice(0,1500));
  /* unknown or not-yet-booked references */
  assert(/NO BOOKING FOUND/.test(await last('RT0000000')));
  /* remembered after a reload, and the customer app does not import it */

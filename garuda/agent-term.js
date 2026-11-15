@@ -355,15 +355,15 @@ function seatReason(b,l){if(l.status==='cancel')return 'THE FLIGHT IS CANCELLED'
 function dd(fid,dstr,cabCode){var dn=C.parseDate(dstr);if(dn==null)return out('INVALID DATE','e');if(!W.GA_DEMAND)return out('DEMAND MODEL NOT LOADED','e');
  var id=fid.replace(/^GA/,'GA '),l=W.GA_DEMAND.findLeg(id,dn);if(!l)return out('NO '+id+' ON '+ddmon(dn),'e');
  var cabs=W.GA_DEMAND.cabinsOf(l),want=cabCode?{Y:'Economy',W:'Premium',C:'Business'}[cabCode]:null;if(want&&cabs.indexOf(want)<0)return out('CABIN NOT ON THIS AIRCRAFT','e');
- var L=['DEMAND  '+id+'  '+l.from+'-'+l.to+'  '+ddmon(dn)+'  '+l.ac.toUpperCase()+'   SIMULATED, MODEL V'+W.GA_DEMAND.VERSION,''],rows=[],more=0;
- cabs.forEach(function(cab){if(want&&cab!==want)return;var s=W.GA_DEMAND.summary(l,cab),pct=Math.round(s.loadFactor*1000)/10;
+ var L=['DEMAND  '+id+'  '+l.from+'-'+l.to+'  '+ddmon(dn)+'  '+l.ac.toUpperCase()+'   SIMULATED, MODEL V'+W.GA_DEMAND.VERSION,''],rows=[],idx=W.GA_DEMAND.storeIndex();
+ cabs.forEach(function(cab){if(want&&cab!==want)return;var s=W.GA_DEMAND.summary(l,cab,null,idx),pct=Math.round(s.loadFactor*1000)/10;
   L.push(cab.toUpperCase()+'   SOLD '+s.sold+'/'+s.cap+'   LF '+pct+'%   REVENUE IDR '+amt(Math.round(s.revenue))+'   CANCELLED '+s.cancelledPax+'   CHANGED '+s.changedPax+(s.noShow||s.flown?'   NO-SHOW '+s.noShow:''));
-  W.GA_DEMAND.history(l,cab).forEach(function(b){rows.push(b)})});
+  W.GA_DEMAND.book(l,cab,null,idx).forEach(function(b){rows.push(b)})});
  L.push('');rows.sort(function(a,b){return a.bookedAt-b.bookedAt});
- rows.slice(0,60).forEach(function(b,i){var st=b.status==='XX'&&b.cancel.dout>=(W.lp(l.dep,l.from).day-Math.floor(E.nowAbs()/1440))?(b.cancel.reason==='CHANGE'?'XX CHG':'XX CXL'):'HK';
-  L.push(lpad(i+1,3)+'  '+b.ref+'  '+pad(b.pax[0].name.toUpperCase()+(b.pax.length>1?' +'+(b.pax.length-1):''),24)+pad(b.cabin[0]+'/'+b.cls,5)+pad(b.channel.toUpperCase(),13)+pad(st,7)+lpad(amt(b.total),12))});
- more=rows.length-60;if(more>0)L.push('... '+more+' MORE - NARROW WITH /Y /W OR /C');
- L.push('','RETRIEVE ONE WITH RT<REF>, FOR EXAMPLE  RT'+(rows[0]?rows[0].ref:''));out(L.join('\n'),'')}
+ var STATE={ACTIVE:'HK',CANCELLED:'XX CXL',CHANGED:'XX CHG'};
+ rows.slice(0,60).forEach(function(b,i){L.push(lpad(i+1,3)+'  '+pad(b.ref,7)+'  '+pad(b.name+(b.pax>1?' +'+(b.pax-1):''),24)+pad(b.cabin[0]+'/'+b.cls,5)+pad(b.channel.toUpperCase(),13)+pad(STATE[b.state]+(b.source==='SIM'?'':b.source==='REAL'?' *':' !'),9)+lpad(amt(b.total),12))});
+ var more=rows.length-60;if(more>0)L.push('... '+more+' MORE - NARROW WITH /Y /W OR /C');
+ L.push('','* REAL BOOKING   ! SIMULATED BOOKING CHANGED AT THE TERMINAL','RETRIEVE ONE WITH RT<REF>, FOR EXAMPLE  RT'+(rows[0]?rows[0].ref:''));out(L.join('\n'),'')}
 function sm(c){var m=c.match(/^SM(\d{1,2})?$/);if(!m)return out('INVALID FORMAT - EXAMPLE  SM3  (SEAT MAP OF THE FLIGHT IN ELEMENT 3)','e');
  var b=T.cur;if(!b)return out(T.p.segs.length?'SAVE THE BOOKING WITH ER FIRST - SEATS ARE ASSIGNED WHEN IT IS SAVED':'NO BOOKING - RETRIEVE ONE WITH RT','e');if(b.cancelled)return out('BOOKING IS CANCELLED','e');
  var tg=m[1]?legOfElement(b,+m[1]):oneLeg(b);if(!tg)return out(m[1]?'ELEMENT '+m[1]+' IS NOT A FLIGHT SEGMENT':'SEVERAL FLIGHTS - USE SM<ELEMENT>, FOR EXAMPLE SM3','e');

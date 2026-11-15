@@ -99,23 +99,50 @@
   if(cancelledBy(rec,dn)){var cx=rec.cancel,cms=(cx.at-420)*6e4;b.dirs[0].legs.forEach(function(x){x.status='cancel'});b.cancelled={at:cms,refund:Math.round(cx.refund),rows:[],held:false,expired:false,simulated:true,reason:cx.reason};b.hist.push({at:cms,t:(cx.reason==='CHANGE'?'CHANGED TO ANOTHER FLIGHT, FEE ':'CANCELLED, REFUND ')+Math.round(cx.reason==='CHANGE'?cx.retained:cx.refund)})}
   return b}
  function bump(o,k,seats,rev){var c=o[k]||(o[k]={bookings:0,pax:0,revenue:0});c.bookings++;c.pax+=seats;c.revenue+=rev}
- /* Revenue is what the airline keeps: active bookings in full, cancellations net of refunds, changes at their fee, and after departure
-    no-shows at what their fare rules do not refund. Taxes and airport charges are included, as in the booking total. */
- function summary(l,cabin,now){var t=now==null?nowAbs():now,dn=dnowOf(l,t),departed=l.dep<=t,cap=cabinCap(l,cabin),
+ /* What the terminal and the customer app have stored: simulated bookings someone has touched (they replace the generated record) and
+    real bookings (counter and online). Built once per call into maps keyed for fast lookup by flight, so a whole day stays quick. */
+ function storeIndex(){var rows=GA_STORE.get('ga-agent-bookings',[]),ovr={},real={};if(!Array.isArray(rows))rows=[];
+  rows.forEach(function(b){if(!b||!Array.isArray(b.dirs))return;if(b.gen)ovr[b.ref]=b;
+   b.dirs.forEach(function(d,di){d.legs.forEach(function(l){var k=l.id+'|'+l.dep+'|'+((b.cabs&&b.cabs[di])||b.cab);(real[k]||(real[k]=[])).push({b:b,di:di,legs:d.legs.length})})})});
+  return{ovr:ovr,real:real}}
+ function lead(names){return String(names&&names[0]||'').toUpperCase()}
+ /* Every booking on a flight cabin as of the scenario day, with what happened to it:
+    generated bookings (SIM), generated bookings someone changed in the terminal (OVR) and real ones (REAL). */
+ function book(l,cabin,now,idx){var t=now==null?nowAbs():now,dn=dnowOf(l,t),ix=idx||storeIndex(),out=[];
+  generate(l,cabin).forEach(function(b){if(b.dout<dn)return;
+   var ov=ix.ovr[b.ref],e={ref:b.ref,source:'SIM',name:lead(b.pax.map(function(p){return p.name})),pax:b.pax.length,seats:b.seats,cabin:cabin,cls:b.cls,channel:b.channel,bookedAt:b.bookedAt,total:b.total,state:'ACTIVE',reason:'',refund:0,retained:0,noShow:b.noShow?b.noShow.retained:null};
+   if(ov&&!(ov.cancelled&&ov.cancelled.simulated)){
+    var leg=ov.dirs[0].legs[0];e.source='OVR';
+    if(ov.cancelled){var paid=ov.paid||ov.total;e.state='CANCELLED';e.reason='USER';e.refund=ov.cancelled.refund||0;e.retained=Math.max(0,paid-e.refund)}
+    else if(leg.id!==l.id||leg.dep!==l.dep||((ov.cabs&&ov.cabs[0])||ov.cab)!==cabin){e.state='CHANGED';e.reason='MOVED';e.refund=0;e.retained=0}
+    else{e.seats=ov.pax.a+ov.pax.c;e.total=ov.total;e.cls=(ov.classes&&ov.classes[0])||e.cls}
+    out.push(e);return}
+   if(cancelledBy(b,dn)){e.state=b.cancel.reason==='CHANGE'?'CHANGED':'CANCELLED';e.reason=b.cancel.reason;e.refund=b.cancel.refund;e.retained=b.cancel.retained}
+   out.push(e)});
+  (ix.real[l.id+'|'+l.dep+'|'+cabin]||[]).forEach(function(r){var b=r.b;
+   if(b.gen&&generate(l,cabin).some(function(g){return g.ref===b.ref}))return;/* already counted above as the changed simulated booking */
+   var dp=(b.dirPrices&&b.dirPrices[r.di])||{total:b.total/b.dirs.length},share=dp.total/r.legs,seatsN=b.pax.a+b.pax.c,paid=b.held?0:share,
+    e={ref:b.ref,source:'REAL',name:lead(b.names),pax:b.names.length,seats:seatsN,cabin:cabin,cls:(b.classes&&b.classes[r.di])||'',channel:b.place&&b.place!=='Counter JKT-03'?b.place:'Counter',bookedAt:b.confirmedAt||Math.round((b.issuedMs||b.savedMs||0)/6e4)+420,total:paid,state:'ACTIVE',reason:'',refund:0,retained:0,noShow:null};
+   if(b.cancelled){var rf=b.cancelled.held?0:(b.cancelled.refund||0)/b.dirs.length/r.legs;e.state='CANCELLED';e.reason='USER';e.refund=rf;e.retained=Math.max(0,paid-rf);e.total=paid}
+   out.push(e)});
+  return out.sort(function(a,b){return a.bookedAt-b.bookedAt})}
+ /* Revenue is what the airline keeps: active bookings in full, cancellations net of refunds, moves and changes at what is kept, and after
+    departure no-shows at what their fare rules do not refund. Taxes and airport charges are included, as in the booking total. */
+ function summary(l,cabin,now,idx){var t=now==null?nowAbs():now,departed=l.dep<=t,cap=cabinCap(l,cabin),
    s={cap:cap,sold:0,flown:0,noShow:0,loadFactor:0,revenue:0,soldRevenue:0,cancelledPax:0,changedPax:0,refunded:0,feeRevenue:0,bookings:0,byChannel:{},byClass:{}};
-  history(l,cabin,t).forEach(function(b){
-   if(cancelledBy(b,dn)){var ch=b.cancel.reason==='CHANGE';s[ch?'changedPax':'cancelledPax']+=b.seats;s.refunded+=b.cancel.refund;s.feeRevenue+=b.cancel.retained;s.revenue+=b.cancel.retained;return}
-   s.bookings++;s.sold+=b.seats;s.soldRevenue+=b.total;bump(s.byChannel,b.channel,b.seats,b.total);s.byClass[b.cls]=(s.byClass[b.cls]||0)+b.seats;
-   if(departed&&b.noShow){s.noShow+=b.seats;s.revenue+=b.noShow.retained}else{s.revenue+=b.total;if(departed)s.flown+=b.seats}});
-  s.loadFactor=cap?s.sold/cap:0;return s}
+  book(l,cabin,t,idx).forEach(function(e){
+   if(e.state!=='ACTIVE'){s[e.state==='CHANGED'?'changedPax':'cancelledPax']+=e.seats;s.refunded+=e.refund;s.feeRevenue+=e.retained;s.revenue+=e.retained;return}
+   s.bookings++;s.sold+=e.seats;s.soldRevenue+=e.total;bump(s.byChannel,e.channel,e.seats,e.total);s.byClass[e.cls]=(s.byClass[e.cls]||0)+e.seats;
+   if(departed&&e.noShow!=null){s.noShow+=e.seats;s.revenue+=e.noShow}else{s.revenue+=e.total;if(departed)s.flown+=e.seats}});
+  s.loadFactor=cap?Math.min(1,s.sold/cap):0;return s}
  function add(a,b){['cap','sold','flown','noShow','revenue','soldRevenue','cancelledPax','changedPax','refunded','feeRevenue','bookings'].forEach(function(k){a[k]+=b[k]});
   ['byChannel'].forEach(function(g){for(var c in b[g]){var x=a[g][c]||(a[g][c]={bookings:0,pax:0,revenue:0});x.bookings+=b[g][c].bookings;x.pax+=b[g][c].pax;x.revenue+=b[g][c].revenue}});
   for(var c2 in b.byClass)a.byClass[c2]=(a.byClass[c2]||0)+b.byClass[c2]}
  function empty(){return{cap:0,sold:0,flown:0,noShow:0,loadFactor:0,revenue:0,soldRevenue:0,cancelledPax:0,changedPax:0,refunded:0,feeRevenue:0,bookings:0,byChannel:{},byClass:{}}}
  /* one flight, all its cabins */
- function flightSummary(l,now){var t=empty(),by={};legCabs(l).forEach(function(c){var s=summary(l,c,now);by[c]=s;add(t,s)});t.loadFactor=t.cap?t.sold/t.cap:0;t.cabins=by;t.flight=l.id;t.dep=l.dep;return t}
+ function flightSummary(l,now,idx){var ix=idx||storeIndex(),t=empty(),by={};legCabs(l).forEach(function(c){var s=summary(l,c,now,ix);by[c]=s;add(t,s)});t.loadFactor=t.cap?t.sold/t.cap:0;t.cabins=by;t.flight=l.id;t.dep=l.dep;return t}
  /* every flight departing on a local Jakarta day (default: today) */
- function daySummary(day,now){var X=day==null?TD:day,t=empty(),flights=[],seen={};Object.keys(DEP).forEach(function(o){legsDep(o,X).forEach(function(l){var k=l.id+'|'+l.dep;if(seen[k])return;seen[k]=1;var f=flightSummary(l,now);flights.push(f);add(t,f)})});
+ function daySummary(day,now,idx){var ix=idx||storeIndex(),X=day==null?TD:day,t=empty(),flights=[],seen={};Object.keys(DEP).forEach(function(o){legsDep(o,X).forEach(function(l){var k=l.id+'|'+l.dep;if(seen[k])return;seen[k]=1;var f=flightSummary(l,now,ix);flights.push(f);add(t,f)})});
   t.loadFactor=t.cap?t.sold/t.cap:0;t.day=X;t.flights=flights.sort(function(a,b){return a.dep-b.dep});return t}
- window.GA_DEMAND={VERSION:VERSION,encodeRef:encodeRef,decodeRef:decodeRef,generate:generate,legBookings:legBookings,cabinsOf:legCabs,resolveLeg:resolveLeg,findLeg:findLeg,retrieve:retrieve,visible:visible,history:history,resolve:resolve,summary:summary,flightSummary:flightSummary,daySummary:daySummary,refundFor:refundFor,fareAt:fareAt,clear:function(){memo.clear()}};
+ window.GA_DEMAND={VERSION:VERSION,encodeRef:encodeRef,decodeRef:decodeRef,generate:generate,legBookings:legBookings,cabinsOf:legCabs,resolveLeg:resolveLeg,findLeg:findLeg,retrieve:retrieve,visible:visible,history:history,book:book,storeIndex:storeIndex,resolve:resolve,summary:summary,flightSummary:flightSummary,daySummary:daySummary,refundFor:refundFor,fareAt:fareAt,clear:function(){memo.clear()}};
 })();
