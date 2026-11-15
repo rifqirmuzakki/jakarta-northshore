@@ -103,3 +103,6 @@ tr.row{cursor:pointer}tr.row:hover td{background:#f2f7f9}tr.row.on td{background
 
 .termbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 16px;border-bottom:1px solid #1b4a5a;color:#b9d5db;font:600 11px/1.4 Switzer,Arial,sans-serif;letter-spacing:.06em}
 .termbar small{font-size:10px;color:#8fb7c4}.termbar button{border:0;background:transparent;color:#c5e2e7;font:500 12px Switzer,Arial,sans-serif}.termbar button:hover{text-decoration:underline}.termbar kbd{margin-left:5px;padding:2px 5px;border:1px solid #477380;border-radius:3px;font:11px ui-monospace,monospace}
+
+.agent-print-record{display:none}
+@media print{body>*:not(.agent-print-record){display:none!important}.agent-print-record{display:block!important;margin:0;color:#000;background:#fff;white-space:pre-wrap;overflow-wrap:anywhere;font:10pt/1.5 ui-monospace,monospace}@page{size:auto;margin:15mm}}
