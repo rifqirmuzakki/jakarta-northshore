@@ -57,7 +57,7 @@ function allSelected(){for(var d=0;d<dirs();d++)if(!st.sel[d])return false;retur
 
 /* ---------- results ---------- */
 function stepsHtml(){var S=['Flights','Passengers','Payment','Ticket'],ix={search:0,pax:1,pay:2,done:3}[st.step];return '<div class="steps">'+S.map(function(s,i){return '<span class="'+(i===ix?'on':i<ix?'done':'')+'">'+(i+1)+'. '+s+'</span>'}).join('')+'</div>'}
-function bestFrom(o,d,dn){var r=W.search(o,d,dn);if(!r.length)return null;var q=st.q,m=null;r.forEach(function(it){var p=W.priceFor(it,W.fares(it)[0].fam[0],q).total;if(m==null||p<m)m=p});return m}
+function bestFrom(o,d,dn){var r=W.search(o,d,dn);if(!r.length)return null;var q=st.q,m=null;r.forEach(function(it){var p=W.priceFor(it,W.openFam(W.fares(it)[0]),q).total;if(m==null||p<m)m=p});return m}
 function daysHtml(d){var q=st.q,r=dirRoute(d),base=d===0?q.d1:q.d2,h='';for(var k=-3;k<=3;k++){var dn=base+k;if(dn<=E.TD||(d===1&&dn<q.d1))continue;var p=bestFrom(r[0],r[1],dn);h+='<button type="button" data-day="'+d+':'+dn+'" class="'+(k===0?'on':'')+'"><b>'+dshort(dn)+'</b><span>'+(p?'from '+num(p):'no flights')+'</span></button>'}return '<div class="days">'+h+'</div>'}
 function flightsOf(it){return it.legs.map(function(l){return esc(l.id)}).join(' + ')}
 function timesHtml(it){var a=it.legs[0],z=it.legs[it.legs.length-1],dd=W.lp(z.arr,z.to).day-W.lp(a.dep,a.from).day;return '<span class="t">'+E.fT(a.dep,a.from)+'</span> → <span class="t">'+E.fT(z.arr,z.to)+(dd>0?'<sup>+'+dd+'</sup>':'')+'</span>'}
@@ -66,7 +66,7 @@ function dirTable(d){var q=st.q,r=dirRoute(d),its=st.res[d]||[],need=E.seats(q),
  var rows=its.map(function(it,ix){var fs=W.fares(it),via=it.stops?'via '+it.legs[0].to+', '+E.dur(it.legs[1].dep-it.legs[0].arr)+' wait':'Non-stop',isSel=cur&&cur.it.key===it.key;
   var cells=FAMS.map(function(f,ci){var first=ci===0||FAMS[ci-1][0]!==f[0],cab=fs.find(function(c){return c.k===f[0]}),fam=cab&&cab.fam.find(function(x){return x.n===f[1]});
    if(!cab||!fam)return '<td class="fc'+(first?' first':'')+'"><span class="fare" style="color:#9aa9b1">—</span></td>';
-   var avail=cab.left>=need,pr=W.priceFor(it,fam,q).total,on=isSel&&cur.fam.n===fam.n,low=avail&&cab.atFare<=4&&cab.atFare<cab.left,note=!avail?'Full':(cab.left>9?'9+ left':cab.left+' left')+(low?' · '+cab.atFare+' at fare':'');
+   var avail=cab.left>=need&&!fam.out,pr=W.priceFor(it,fam,q).total,on=isSel&&cur.fam.n===fam.n,low=avail&&cab.atFare<=4&&cab.atFare<cab.left,note=fam.out?'Sold out':!avail?'Full':(cab.left>9?'9+ left':cab.left+' left')+(low?' · '+cab.atFare+' at fare':'');
    return '<td class="fc'+(first?' first':'')+'"><button type="button" class="fare'+(on?' on':'')+(low?' low':'')+'" '+(avail?'':'disabled ')+'data-pick="'+d+':'+ix+':'+ci+'"><b>'+num(pr)+'</b><small>'+note+'</small></button></td>'}).join('');
   return '<tr'+(isSel?' class="sel"':'')+'><td class="fl"><b>'+flightsOf(it)+'</b><small>'+esc(it.legs.map(function(l){return l.ac}).filter(function(x,i,a){return a.indexOf(x)===i}).join(' / '))+'</small></td><td>'+timesHtml(it)+'</td><td>'+E.dur(it.dur)+'<small style="display:block;color:var(--mute);font-size:12px">'+esc(via)+'</small></td>'+cells+'</tr>'}).join('');
  return '<div class="pane"><h2><span>'+(q.type==='ret'?(d===0?'Outbound':'Return')+' · ':'')+esc(E.cname(r[0]))+' ('+r[0]+') to '+esc(E.cname(r[1]))+' ('+r[1]+') · '+dshort(d===0?q.d1:q.d2)+'</span><small>'+its.length+' option'+(its.length===1?'':'s')+' · prices are the total for '+paxTxt(q)+'</small></h2>'+daysHtml(d)

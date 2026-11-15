@@ -5,6 +5,7 @@ const MON=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DE
 const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate()+MON[d.getUTCMonth()]};
 (async()=>{const b=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args:['--no-sandbox','--disable-dev-shm-usage']});try{
  const ctx=await b.newContext({viewport:{width:1440,height:900}}),p=await ctx.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));
+ await ctx.addInitScript(()=>{try{if(!localStorage.getItem('ga-pricing-cfg'))localStorage.setItem('ga-pricing-cfg',JSON.stringify({heat:{hot:0}}))}catch(e){}});/* ordinary demand, so every class is open on the test flight */
  await ctx.route('https://garuda.test/**',r=>{let f=path.join(root,new URL(r.request().url()).pathname);if(f.endsWith('/'))f+='index.html';if(!fs.existsSync(f))return r.fulfill({status:404,body:''});const t={'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'}[path.extname(f)]||'application/octet-stream';r.fulfill({status:200,contentType:t,body:fs.readFileSync(f)})});
  await p.goto('https://garuda.test/garuda/agent.html');await p.waitForSelector('#app:not([hidden])',{timeout:20000});await p.waitForFunction(()=>window.GA_TERM&&GA_TERM.state().started);
  const run=async c=>{await p.fill('#tin',c);await p.press('#tin','Enter');return p.evaluate(()=>GA_TERM.lines().join('\n'))};
@@ -22,7 +23,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  const priceOf=async cls=>{await run('IG');await run(`AN${ddmon(30)}JKTDPS`);assert(/HK1/.test(await last(`SS1${cls}1`)));return total(await last('FXX'))};
  const g=await priceOf('G'),l=await priceOf('L'),t=await priceOf('T'),y=await priceOf('Y');assert(g<l&&l<t&&t<y,[g,l,t,y].join(' '));
  /* cheaper classes close as the cabin fills */
- const closed=await eng(()=>{const it=search('JKT','DPS',TD+30)[1],l=it.legs[0],cap=cabinCap(l,'Economy');adjustSold(l,'Economy',Math.ceil(cap*0.30));GA_PRICING.clear();const f=fares(it)[0];return {cap,subs:f.fam.map(x=>[x.n,x.sub,x.subs.map(s=>s.k+s.left).join(' ')])}});
+ const closed=await eng(()=>{const it=search('JKT','DPS',TD+30)[1],l=it.legs[0],cap=cabinCap(l,'Economy');const cl=subClose(l,'Economy Lite');adjustSold(l,'Economy',Math.ceil(cap*(cl[1]+cl[2])/2)-loadInfo(l,'Economy').sold);/* between where L and T close */GA_PRICING.clear();const f=fares(it)[0];return {cap,subs:f.fam.map(x=>[x.n,x.sub,x.subs.map(s=>s.k+s.left).join(' ')])}});
  const lite=closed.subs.find(x=>x[0]==='Economy Lite'),flexi=closed.subs.find(x=>x[0]==='Economy Flexi');assert.equal(lite[1],'T');assert(/G0 L0 T\d+/.test(lite[2]));assert.equal(flexi[1],'B');
  o=await last(`AN${ddmon(30)}JKTDPS`);const row2=o.split('\n').find(l=>/GA 402/.test(l));assert(/G0/.test(row2)&&/L0/.test(row2));
  await run('IG');assert(/CLASS G CLOSED/.test(await last('SS1G2')));assert(/HK1/.test(await last('SS1T2')));

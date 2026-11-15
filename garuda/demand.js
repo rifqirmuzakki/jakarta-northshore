@@ -41,8 +41,10 @@
   var adults=seatsN-kids,types=[],names=[],a;for(a=0;a<seatsN+inf;a++)types.push(a<adults?'a':a<seatsN?'c':'i');
   var last=LAST[hash(tag+'|ln')%LAST.length];
   for(a=0;a<types.length;a++){var nm=FIRST[hash(tag+'|fn'+a)%FIRST.length]+' '+(a===0||R(tag+'|fam'+a)<0.8?last:LAST[hash(tag+'|ln'+a)%LAST.length]);names.push(nm==='Rina Wijaya'?'Rina Wijayanti':nm)}/* never the demo passenger, whose bookings the customer app imports */
-  var fam=pick(tag+'|fam',FAMS[cabin]),rows=subRows(fam),sub={k:rows[rows.length-1][0],close:rows[rows.length-1][1],ratio:rows[rows.length-1][2]},r;
-  for(r=0;r<rows.length-1;r++)if(Math.floor(info.cap*rows[r][1])-pos>0){sub={k:rows[r][0],close:rows[r][1],ratio:rows[r][2]};break}
+  var fam=pick(tag+'|fam',FAMS[cabin]),sub=null,fi,r,cl,rows;
+  /* the class a seat is sold in is the cheapest one still open at that point of the fill; when a whole family has closed the customer moves up to the next one */
+  for(fi=Math.max(0,FAMS[cabin].map(function(x){return x[0]}).indexOf(fam));fi<FAMS[cabin].length&&!sub;fi++){fam=FAMS[cabin][fi][0];rows=subRows(fam);cl=subClose(l,fam);
+   for(r=0;r<rows.length;r++)if(Math.floor(info.cap*cl[r])-pos>0||(r===rows.length-1&&fi===FAMS[cabin].length-1)){sub={k:rows[r][0],close:cl[r],ratio:rows[r][2]};break}}
   var chW=CHANNELS[cabin].map(function(c){var w=c[1];if(dout>=45&&(c[0]==='Travel agent'||c[0]==='Corporate'))w*=1.5;if(dout<=2&&(c[0]==='Counter'||c[0]==='Online'))w*=1.5;return[c[0],w]});
   var adultFare=fareAt(l,cabin,fam,sub,pos,dout),price=priceFor({legs:[l]},{p:adultFare},{a:adults,c:kids,i:inf,type:'ow'}),
    minute=dout===0?Math.floor(R(tag+'|t')*Math.max(1,ctx.tm-60)):Math.floor(R(tag+'|t')*1440);
