@@ -140,7 +140,7 @@
   for(var c2 in b.byClass)a.byClass[c2]=(a.byClass[c2]||0)+b.byClass[c2]}
  function empty(){return{cap:0,sold:0,flown:0,noShow:0,loadFactor:0,revenue:0,soldRevenue:0,cancelledPax:0,changedPax:0,refunded:0,feeRevenue:0,bookings:0,byChannel:{},byClass:{}}}
  /* one flight, all its cabins */
- function flightSummary(l,now,idx){var ix=idx||storeIndex(),t=empty(),by={};legCabs(l).forEach(function(c){var s=summary(l,c,now,ix);by[c]=s;add(t,s)});t.loadFactor=t.cap?t.sold/t.cap:0;t.cabins=by;t.flight=l.id;t.dep=l.dep;return t}
+ function flightSummary(l,now,idx){var ix=idx||storeIndex(),t=empty(),by={};legCabs(l).forEach(function(c){var s=summary(l,c,now,ix);by[c]=s;add(t,s)});t.loadFactor=t.cap?t.sold/t.cap:0;t.cabins=by;t.flight=l.id;t.dep=l.dep;t.from=l.from;t.to=l.to;t.ac=l.ac;return t}
  /* every flight departing on a local Jakarta day (default: today) */
  function daySummary(day,now,idx){var ix=idx||storeIndex(),X=day==null?TD:day,t=empty(),flights=[],seen={};Object.keys(DEP).forEach(function(o){legsDep(o,X).forEach(function(l){var k=l.id+'|'+l.dep;if(seen[k])return;seen[k]=1;var f=flightSummary(l,now,ix);flights.push(f);add(t,f)})});
   t.loadFactor=t.cap?t.sold/t.cap:0;t.day=X;t.flights=flights.sort(function(a,b){return a.dep-b.dep});return t}
