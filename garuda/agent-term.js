@@ -306,7 +306,7 @@ function applyChange(b,di,it,row,fam,pr,q,k){var n=b.pax.a+b.pax.c,oldCab=(b.cab
  b.dirs[di].legs.forEach(function(l){W.adjustSold(l,oldCab,-n)});C.P.clear();var legs=it.legs.map(buildLeg);legs.forEach(function(l){W.adjustSold(l,row.cab.k,n)});C.P.clear();
  b.dirPrices=b.dirPrices||b.dirs.map(function(d,i){return {fare:b.fare/b.dirs.length,tax:b.tax/b.dirs.length,chg:b.chg/b.dirs.length,total:b.total/b.dirs.length}});b.cabs=b.cabs||b.dirs.map(function(){return b.cab});b.classes=b.classes||b.dirs.map(function(x,i){return classOf(b,i)});
  b.dirs[di]={legs:legs};b.extras=(b.extras||[]).filter(function(x){return !(x.d===di&&x.l!=null&&x.l>=legs.length)});b.fams[di]=fam.n;b.cabs[di]=row.cab.k;if(di===0)b.cab=row.cab.k;b.classes[di]=k;b.dirPrices[di]=pr;['fare','tax','chg','total'].forEach(function(x){b[x]=b.dirPrices.reduce(function(a,y){return a+y[x]},0)});b.q=q;
- try{W.allocateBookingSeats(b)}catch(e){}}
+ }
 
 /* ---------- special services and remarks ---------- */
 function sr(up){var m=up.match(/^SR\s*([A-Z]{4})(?:-([^\/]+))?((?:\/[PS]\d{1,2})*)$/);if(!m)return out('INVALID FORMAT - EXAMPLE  SRVGML/P1   OR   SRVGML/P1/S3','e');
@@ -341,7 +341,7 @@ function seatReason(b,l){if(l.status==='cancel')return 'THE FLIGHT IS CANCELLED'
 function sm(c){var m=c.match(/^SM(\d{1,2})?$/);if(!m)return out('INVALID FORMAT - EXAMPLE  SM3  (SEAT MAP OF THE FLIGHT IN ELEMENT 3)','e');
  var b=T.cur;if(!b)return out(T.p.segs.length?'SAVE THE BOOKING WITH ER FIRST - SEATS ARE ASSIGNED WHEN IT IS SAVED':'NO BOOKING - RETRIEVE ONE WITH RT','e');if(b.cancelled)return out('BOOKING IS CANCELLED','e');
  var tg=m[1]?legOfElement(b,+m[1]):oneLeg(b);if(!tg)return out(m[1]?'ELEMENT '+m[1]+' IS NOT A FLIGHT SEGMENT':'SEVERAL FLIGHTS - USE SM<ELEMENT>, FOR EXAMPLE SM3','e');
- var l=tg.leg;try{W.allocateBookingSeats(b,l)}catch(e){}var mod=W.seatModel(b,l),other=W.otherSeatClaims(b,l),mine={};(b.passengers||[]).forEach(function(p,i){if(p.type!=='i'&&l.seats&&l.seats[i])mine[l.seats[i]]=i+1});
+ var l=tg.leg;var mod=W.seatModel(b,l),other=W.otherSeatClaims(b,l),mine={};(b.passengers||[]).forEach(function(p,i){if(p.type!=='i'&&l.seats&&l.seats[i])mine[l.seats[i]]=i+1});
  var L=['SEAT MAP  '+fn(l.id)+'  '+l.from+'-'+l.to+'  '+ddmon(legDay(l))+'  '+l.ac.toUpperCase()+'  '+mod.cabin.toUpperCase(),'','      '+mod.banks.map(function(bk){return bk.split('').join(' ')}).join('   ')];
  for(var r=0;r<mod.rows;r++){var row=r+mod.start;L.push(lpad(row,3)+'   '+mod.banks.map(function(bk){return bk.split('').map(function(ch){var seat=row+ch;return mine[seat]?String(mine[seat]):(W.seatBlocked(l,seat)||other.has(seat))?'X':'.'}).join(' ')}).join('   '))}
  L.push('','. FREE   X TAKEN   1 2 3 YOUR PASSENGERS','');(b.passengers||[]).forEach(function(p,i){L.push('  P'+(i+1)+'  '+pn(b,i)+'   '+(p.type==='i'?'INFANT ON LAP':(l.seats&&l.seats[i])||'NOT ASSIGNED'))});
