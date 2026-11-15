@@ -5,7 +5,7 @@
    loadInfo(l,cabin).model, so this module explains the aggregate sold count with individual records.
    Loaded after the main script in index.html, whose globals (loadInfo, soldShare, SUBCLASSES, ...) it reads. */
 (function(){
- var VERSION=1,HORIZON=330,DAY0=dnOf('2026-01-01'),CABINS=['Economy','Premium','Business'];
+ var VERSION=2,HORIZON=330,DAY0=dnOf('2026-01-01'),CABINS=['Economy','Premium','Business'];
  var BITS=33n,MOD=1n<<BITS,MUL=0x9E3779B97n|1n;
  function inv(a,m){var t=0n,nt=1n,r=m,nr=a%m;while(nr){var q=r/nr;[t,nt]=[nt,t-q*nt];[r,nr]=[nr,r-q*nr]}return(t%m+m)%m}
  var MULINV=inv(MUL,MOD);
@@ -30,34 +30,75 @@
   if(cabin==='Premium')return core*C.fam.premium*sub.ratio;
   var blk=l.arr-l.dep,bk=blk>C.fam.bizLongMin?C.fam.bizLong:blk>C.fam.bizMidMin?C.fam.bizMid:C.fam.bizShort;return core*bk*(fam==='Business Flex'?C.fam.bizFlex:1)*sub.ratio}
  function subRows(fam){return SUBCLASSES[fam]||[['',1,1]]}
+ /* fare rules, read from the same RULES text the terminal refunds and reissues by */
+ function refundFor(fam,fare,total,seats){var rule=(RULES[fam]||{}).ref||'',fee=0,m;
+  if(/^Not refundable/i.test(rule))fee=fare;else if(m=rule.match(/IDR\s*([\d,]+)\s*fee/i))fee=+m[1].replace(/,/g,'')*seats;else if(m=rule.match(/(\d+)%\s*fee/i))fee=fare*(+m[1]/100);
+  fee=Math.min(fee,total);return{fee:fee,refund:total-fee}}
+ function changeFee(fam,seats){var rule=(RULES[fam]||{}).chg||'',m;if(/^Not allowed/i.test(rule))return null;if(m=rule.match(/IDR\s*([\d,]+)\s*fee/i))return +m[1].replace(/,/g,'')*seats;return 0}
+ var CANCEL_RATE={'Economy Lite':0.03,'Economy Value':0.05,'Economy Standard':0.08,'Economy Flexi':0.14,'Premium Economy':0.09,'Business Saver':0.07,'Business Flex':0.12},NOSHOW_RATE={Economy:0.035,Premium:0.03,Business:0.025};
+ /* one booking: `pos` is the cabin's sold count when it was made, `dout` the days out it was made */
+ function makeBooking(l,cabin,info,ctx,idx,tag,pos,dout,seatsN,inf,kids,extra){
+  var adults=seatsN-kids,types=[],names=[],a;for(a=0;a<seatsN+inf;a++)types.push(a<adults?'a':a<seatsN?'c':'i');
+  var last=LAST[hash(tag+'|ln')%LAST.length];
+  for(a=0;a<types.length;a++)names.push(FIRST[hash(tag+'|fn'+a)%FIRST.length]+' '+(a===0||R(tag+'|fam'+a)<0.8?last:LAST[hash(tag+'|ln'+a)%LAST.length]));
+  var fam=pick(tag+'|fam',FAMS[cabin]),rows=subRows(fam),sub={k:rows[rows.length-1][0],close:rows[rows.length-1][1],ratio:rows[rows.length-1][2]},r;
+  for(r=0;r<rows.length-1;r++)if(Math.floor(info.cap*rows[r][1])-pos>0){sub={k:rows[r][0],close:rows[r][1],ratio:rows[r][2]};break}
+  var chW=CHANNELS[cabin].map(function(c){var w=c[1];if(dout>=45&&(c[0]==='Travel agent'||c[0]==='Corporate'))w*=1.5;if(dout<=2&&(c[0]==='Counter'||c[0]==='Online'))w*=1.5;return[c[0],w]});
+  var adultFare=fareAt(l,cabin,fam,sub,pos,dout),price=priceFor({legs:[l]},{p:adultFare},{a:adults,c:kids,i:inf,type:'ow'}),
+   minute=dout===0?Math.floor(R(tag+'|t')*Math.max(1,ctx.tm-60)):Math.floor(R(tag+'|t')*1440);
+  var rec={ref:encodeRef(ctx.fnum,ctx.D,ctx.ci,idx),gen:true,v:VERSION,flight:l.id,dep:l.dep,from:l.from,to:l.to,cabin:cabin,idx:idx,
+   seats:seatsN,pax:names.map(function(n,x){return{name:n,type:types[x]}}),channel:pick(tag+'|ch',chW),family:fam,cls:sub.k,
+   dout:dout,bookedAt:l.dep-ctx.tm-dout*1440+minute,fare:price.fare,tax:price.tax,chg:price.chg,total:price.total,status:'HK',pos:pos};
+  if(extra)for(var k in extra)rec[k]=extra[k];
+  if(R(tag+'|ns')<NOSHOW_RATE[cabin]){var rf=refundFor(fam,price.fare,price.total,seatsN);rec.noShow={retained:price.total-rf.refund}}
+  return rec}
+ /* Active bookings follow the load model exactly. Some later cancel or change; every cancelled seat is resold at the moment it is
+    released, so seats sold stay equal to the model on every day. Resales are appended after the originals, so references never shift. */
  function generate(l,cabin){var key=l.id+'|'+l.dep+'|'+cabin,hit=memo.get(key);if(hit)return hit;
   var ci=CABINS.indexOf(cabin),fnum=+String(l.id).replace(/\D/g,''),f0=FLS.find(function(f){return f.id===l.id}),D=Math.round((l.dep-(f0?f0.dep:0))/1440);
-  var info=ladderFrac(l,cabin),Nx=info.cap*info.lf,N=Math.round(Nx),Dk=new Array(N),k=0,d,m;
+  var info=ladderFrac(l,cabin),Nx=info.cap*info.lf,N=Math.round(Nx),Dk=new Array(N),k=0,d,m,ctx={fnum:fnum,D:D,ci:ci,tm:lp(l.dep,l.from).min};
   for(d=HORIZON;d>=0&&k<N;d--){m=Math.min(N,Math.round(Nx*soldShare(d)));while(k<m)Dk[k++]=d}
-  var out=[],i=0,idx=0,legIt={legs:[l]};
+  var out=[],i=0,idx=0,shapes=[];
   while(i<N){var tag=key+'|'+idx,size=pick(tag+'|n',[[1,52],[2,28],[3,8],[4,8],[5,2],[6,2]]),j=i;while(j<N&&j-i<size&&Dk[j]===Dk[i])j++;
-   var seatsN=j-i,dout=Dk[i],names=[],types=[],a;
-   var inf=seatsN>=1&&R(tag+'|inf')<0.04?1:0,kids=seatsN>=3&&R(tag+'|kid')<0.5?1:0,adults=seatsN-kids;
-   for(a=0;a<seatsN+inf;a++)types.push(a<adults?'a':a<seatsN?'c':'i');
-   var last=LAST[hash(tag+'|ln')%LAST.length];
-   for(a=0;a<types.length;a++)names.push((FIRST[hash(tag+'|fn'+a)%FIRST.length]+' '+(a===0||R(tag+'|fam'+a)<0.8?last:LAST[hash(tag+'|ln'+a)%LAST.length])));
-   var fam=pick(tag+'|fam',FAMS[cabin]),rows=subRows(fam),sub=rows[rows.length-1],r;
-   for(r=0;r<rows.length-1;r++)if(Math.floor(info.cap*rows[r][1])-i>0){sub={k:rows[r][0],close:rows[r][1],ratio:rows[r][2]};break}
-   if(!sub.k||sub.ratio==null)sub={k:rows[rows.length-1][0],close:rows[rows.length-1][1],ratio:rows[rows.length-1][2]};
-   var chW=CHANNELS[cabin].map(function(c){var w=c[1];if(dout>=45&&(c[0]==='Travel agent'||c[0]==='Corporate'))w*=1.5;if(dout<=2&&(c[0]==='Counter'||c[0]==='Online'))w*=1.5;return[c[0],w]});
-   var adultFare=fareAt(l,cabin,fam,sub,i,dout),q1={a:adults,c:kids,i:inf,type:'ow'},price=priceFor(legIt,{p:adultFare},q1),
-    tm=lp(l.dep,l.from).min,minute=dout===0?Math.floor(R(tag+'|t')*Math.max(1,tm-60)):Math.floor(R(tag+'|t')*1440);
-   out.push({ref:encodeRef(fnum,D,ci,idx),gen:true,v:VERSION,flight:l.id,dep:l.dep,from:l.from,to:l.to,cabin:cabin,idx:idx,
-    seats:seatsN,pax:names.map(function(n,x){return{name:n,type:types[x]}}),channel:pick(tag+'|ch',chW),family:fam,cls:sub.k,
-    dout:dout,bookedAt:l.dep-tm-dout*1440+minute,fare:price.fare,tax:price.tax,chg:price.chg,total:price.total,status:'HK'});
-   i=j;idx++}
+   var seatsN=j-i,inf=R(tag+'|inf')<0.04?1:0,kids=seatsN>=3&&R(tag+'|kid')<0.5?1:0;
+   shapes.push({seatsN:seatsN,inf:inf,kids:kids});out.push(makeBooking(l,cabin,info,ctx,idx,tag,i,Dk[i],seatsN,inf,kids));i=j;idx++}
+  var base=out.length;
+  for(var x=0;x<base&&out.length<512;x++){var o=out[x],tg=key+'|'+x+'|fate';
+   if(o.dout<1||R(tg)>=CANCEL_RATE[o.family])continue;
+   var c=Math.min(o.dout-1,Math.floor(o.dout*Math.pow(R(tg+'|c'),2))),cf=changeFee(o.family,o.seats),isChange=cf!=null&&R(tg+'|chg')<0.35,rf=refundFor(o.family,o.fare,o.total,o.seats);
+   o.status='XX';o.cancel={dout:c,at:l.dep-ctx.tm-c*1440+Math.floor(R(tg+'|t')*1440),reason:isChange?'CHANGE':'CANCEL',
+    refund:isChange?o.total:rf.refund,retained:isChange?cf:o.total-rf.refund};
+   delete o.noShow;
+   var sh=shapes[x],ridx=out.length;out.push(makeBooking(l,cabin,info,ctx,ridx,key+'|'+ridx+'|resale',o.pos,c,sh.seatsN,sh.inf,sh.kids,{resaleOf:o.ref}))}
   memo.set(key,out);return out}
  function legBookings(l){var r=[];legCabs(l).forEach(function(c){r.push.apply(r,generate(l,c))});return r}
- /* Bookings made by the scenario day (default: today), which is what the live load model counts as sold. The load model works in whole
-    days out, so a booking is visible once its day has arrived; bookedAt only orders bookings within and across days. */
- function visible(l,cabin,now){var t=now==null?nowAbs():now,dnow=lp(l.dep,l.from).day-Math.floor(t/1440);return generate(l,cabin).filter(function(b){return b.dout>=dnow})}
+ /* The load model works in whole days out, so a booking exists once its day has arrived. */
+ function dnowOf(l,now){return lp(l.dep,l.from).day-Math.floor((now==null?nowAbs():now)/1440)}
+ function cancelledBy(b,dnow){return b.status==='XX'&&b.cancel.dout>=dnow}
+ /* seats sold: made by the scenario day and not yet cancelled; equals the live load model's baseline */
+ function visible(l,cabin,now){var dn=dnowOf(l,now);return generate(l,cabin).filter(function(b){return b.dout>=dn&&!cancelledBy(b,dn)})}
+ /* everything made by the scenario day, cancelled ones included */
+ function history(l,cabin,now){var dn=dnowOf(l,now);return generate(l,cabin).filter(function(b){return b.dout>=dn})}
  function resolve(ref){var c=decodeRef(String(ref).toUpperCase());if(!c||c.ci>2)return null;var f=FLS.find(function(x){return +String(x.id).replace(/\D/g,'')===c.fnum&&runs(x,c.D)});if(!f)return null;
   var l=mkLeg(f,c.D),cabin=CABINS[c.ci];if(legCabs(l).indexOf(cabin)<0)return null;var list=generate(l,cabin);return list[c.idx]||null}
- function summary(l,cabin,now){var v=visible(l,cabin,now),s={pax:0,revenue:0,bookings:v.length,byChannel:{},byClass:{}};v.forEach(function(b){s.pax+=b.seats;s.revenue+=b.total;var c=s.byChannel[b.channel]||(s.byChannel[b.channel]={bookings:0,pax:0,revenue:0});c.bookings++;c.pax+=b.seats;c.revenue+=b.total;s.byClass[b.cls]=(s.byClass[b.cls]||0)+b.seats});return s}
- window.GA_DEMAND={VERSION:VERSION,encodeRef:encodeRef,decodeRef:decodeRef,generate:generate,legBookings:legBookings,visible:visible,resolve:resolve,summary:summary,fareAt:fareAt,clear:function(){memo.clear()}};
+ function bump(o,k,seats,rev){var c=o[k]||(o[k]={bookings:0,pax:0,revenue:0});c.bookings++;c.pax+=seats;c.revenue+=rev}
+ /* Revenue is what the airline keeps: active bookings in full, cancellations net of refunds, changes at their fee, and after departure
+    no-shows at what their fare rules do not refund. Taxes and airport charges are included, as in the booking total. */
+ function summary(l,cabin,now){var t=now==null?nowAbs():now,dn=dnowOf(l,t),departed=l.dep<=t,cap=cabinCap(l,cabin),
+   s={cap:cap,sold:0,flown:0,noShow:0,loadFactor:0,revenue:0,soldRevenue:0,cancelledPax:0,changedPax:0,refunded:0,feeRevenue:0,bookings:0,byChannel:{},byClass:{}};
+  history(l,cabin,t).forEach(function(b){
+   if(cancelledBy(b,dn)){var ch=b.cancel.reason==='CHANGE';s[ch?'changedPax':'cancelledPax']+=b.seats;s.refunded+=b.cancel.refund;s.feeRevenue+=b.cancel.retained;s.revenue+=b.cancel.retained;return}
+   s.bookings++;s.sold+=b.seats;s.soldRevenue+=b.total;bump(s.byChannel,b.channel,b.seats,b.total);s.byClass[b.cls]=(s.byClass[b.cls]||0)+b.seats;
+   if(departed&&b.noShow){s.noShow+=b.seats;s.revenue+=b.noShow.retained}else{s.revenue+=b.total;if(departed)s.flown+=b.seats}});
+  s.loadFactor=cap?s.sold/cap:0;return s}
+ function add(a,b){['cap','sold','flown','noShow','revenue','soldRevenue','cancelledPax','changedPax','refunded','feeRevenue','bookings'].forEach(function(k){a[k]+=b[k]});
+  ['byChannel'].forEach(function(g){for(var c in b[g]){var x=a[g][c]||(a[g][c]={bookings:0,pax:0,revenue:0});x.bookings+=b[g][c].bookings;x.pax+=b[g][c].pax;x.revenue+=b[g][c].revenue}});
+  for(var c2 in b.byClass)a.byClass[c2]=(a.byClass[c2]||0)+b.byClass[c2]}
+ function empty(){return{cap:0,sold:0,flown:0,noShow:0,loadFactor:0,revenue:0,soldRevenue:0,cancelledPax:0,changedPax:0,refunded:0,feeRevenue:0,bookings:0,byChannel:{},byClass:{}}}
+ /* one flight, all its cabins */
+ function flightSummary(l,now){var t=empty(),by={};legCabs(l).forEach(function(c){var s=summary(l,c,now);by[c]=s;add(t,s)});t.loadFactor=t.cap?t.sold/t.cap:0;t.cabins=by;t.flight=l.id;t.dep=l.dep;return t}
+ /* every flight departing on a local Jakarta day (default: today) */
+ function daySummary(day,now){var X=day==null?TD:day,t=empty(),flights=[],seen={};Object.keys(DEP).forEach(function(o){legsDep(o,X).forEach(function(l){var k=l.id+'|'+l.dep;if(seen[k])return;seen[k]=1;var f=flightSummary(l,now);flights.push(f);add(t,f)})});
+  t.loadFactor=t.cap?t.sold/t.cap:0;t.day=X;t.flights=flights.sort(function(a,b){return a.dep-b.dep});return t}
+ window.GA_DEMAND={VERSION:VERSION,encodeRef:encodeRef,decodeRef:decodeRef,generate:generate,legBookings:legBookings,visible:visible,history:history,resolve:resolve,summary:summary,flightSummary:flightSummary,daySummary:daySummary,refundFor:refundFor,fareAt:fareAt,clear:function(){memo.clear()}};
 })();
