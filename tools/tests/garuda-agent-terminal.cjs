@@ -13,7 +13,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  assert(/SALES TERMINAL/.test(await p.locator('#tout').innerText()));
  await p.click('#term-help');assert(/AVAILABILITY/.test(await p.locator('#tout').innerText()));
  await p.fill('#tin','unfinished draft');await p.press('#tin','ArrowUp');await p.press('#tin','ArrowDown');assert.equal(await p.inputValue('#tin'),'unfinished draft');
- assert(/AVAILABILITY/.test(await last('HE')));
+ assert(/AVAILABILITY/.test(await last('HE')));assert(/CITY PAIR/.test(await last('FQD')));assert(/SIMULATED FARE DISPLAY/.test(await last('FQDJKTDPS')));assert(/NO ITINERARY/.test(await last('FXX')));
  assert(/INVALID ENTRY/.test(await last('ZZZ')));
  assert(/NO AVAILABILITY/.test(await last('SS2Y1')));
  assert(/INCOMPLETE/.test(await last('ER')));
@@ -35,7 +35,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  assert(/TICKETING TIME LIMIT/.test(await last(`TKTL${ddmon(3)}`)));
  assert(/NEED +RECEIVED FROM/.test(await last('ER')));
  await run('RFRINA');
- o=await last('FQD');assert(/TOTAL IDR/.test(o)&&/ROUND TRIP/.test(o)&&/2 ADT/.test(o));
+ o=await last('FXX');assert(/TOTAL IDR/.test(o)&&/ROUND TRIP/.test(o)&&/2 ADT/.test(o));
  assert(/RULES|FARE FAMILY/.test(await last('FQN')));
  o=await last('ER');assert(/RECORD LOCATOR GA[0-9A-Z]{4}/.test(o));const ref=o.match(/RECORD LOCATOR (GA[0-9A-Z]{4})/)[1];
  assert(/HELD/.test(o)&&/WIJAYA\/RINA/.test(o)&&/HK2/.test(o));
@@ -45,7 +45,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  /* pay and ticket */
  assert(/NEED FORM OF PAYMENT/.test(await last('ET')));
  assert(/SHORT BY/.test(await (async()=>{await run('FPCASH/1000');return last('ET')})()));
- await run('FPCC');o=await last('ET');assert(/TICKETS ISSUED/.test(o));assert.equal((o.match(/126-\d{10}/g)||[]).length,2);assert(/APPROVAL \d{6}/.test(o));
+ await run('FPCC');o=await last('TTP');assert(/TICKETS ISSUED/.test(o));assert.equal((o.match(/126-\d{10}/g)||[]).length,2);assert(/APPROVAL \d{6}/.test(o));
  assert(/ALREADY TICKETED/.test(await last('ET')));
  o=await last('TWD');assert(/E-TICKET COUPONS/.test(o)&&/OPEN/.test(o));
  await p.evaluate(()=>GA_AGENT.bookings()[0].tickets.forEach(t=>t.coupons.filter(c=>c.d===0).forEach(c=>c.status='FLOWN')));
@@ -64,7 +64,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  await run('IG');await run(`AN${ddmon(25)}JKTDPS`);await run('SS1Y1');assert(/UNSAVED BOOKING IN PROGRESS/.test(await last('RT'+ref)));assert.match(await p.locator('#tside').innerText(),/HK1/);await run('IG');await run(`AN${ddmon(25)}JKTDPS`);assert(/HK3/.test(await last('SS3Y1')));
  await run('NM2TAN/ALI MR/SITI MRS');assert(/TAN\/DINA MISS \(CHD/.test(await last('NM1TAN/DINA MISS(CHD/01JUN18)')));assert(/OK/.test(await last('NM1TAN/BAYU MSTR(INF/20AUG25)')));
  assert(/INVALID DATE OF BIRTH/.test(await last('NM1TAN/X(CHD/99XXX18)')));
- await run('AP081234567890');await run('TKOK');await run('RFALI');o=await last('FQD');assert(/2 ADT  1 CHD  1 INF/.test(o));
+ await run('AP081234567890');await run('TKOK');await run('RFALI');o=await last('FXX');assert(/2 ADT  1 CHD  1 INF/.test(o));
  o=await last('ER');assert(/TAN\/ALI/.test(o));const ref2=o.match(/RECORD LOCATOR (GA[0-9A-Z]{4})/)[1];
  assert.deepEqual(await p.evaluate(()=>GA_AGENT.bookings()[0].pax),{a:2,c:1,i:1});
  assert(new RegExp(ref2).test(await last('QT')));
@@ -75,7 +75,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  await p.click('[data-tab="shift"]');assert(/Bookings issued\s*1/.test((await p.locator('#t-shift .stat').innerText()).replace(/\n/g,' ')));
  /* A one-adult simulated award debits the demo balance only on issuance. */
  await p.click('[data-tab="term"]');await run('IG');await run(`AN${ddmon(21)}JKTDPS`);await run('SS1Y1');await run('NM1WIJAYA/RINA MRS');await run('AP081234567890');await run('TKOK');await run('RFRINA');await run('ER');
- assert(/12,480 MILES/.test(await last('AMRINA')));assert(/8,000/.test(await last('AWQ')));assert(/8,000 MILES/.test(await last('FQD')));assert(/12,480 MILES/.test(await last('AMRINA')));
+ assert(/12,480 MILES/.test(await last('AMRINA')));assert(/8,000/.test(await last('AWQ')));assert(/8,000 MILES/.test(await last('FXX')));assert(/12,480 MILES/.test(await last('AMRINA')));
  const passenger=await ctx.newPage();await passenger.goto('https://garuda.test/garuda/index.html');assert.match(await passenger.locator('#v-home').innerText(),/12,480 miles/);const heldRef=await p.evaluate(()=>GA_TERM.state().cur.ref);assert.equal(await passenger.evaluate(ref=>S.bookings.some(b=>b.ref===ref),heldRef),false);
  await run('FPCC');assert(/AWARD  8,000 MILES/.test(await last('ET')));await passenger.waitForFunction(ref=>S.bookings.some(b=>b.ref===ref),heldRef);await passenger.waitForFunction(()=>document.querySelector('#v-home').textContent.includes('4,480 miles'));await passenger.reload();await passenger.waitForFunction(ref=>S.bookings.some(b=>b.ref===ref),heldRef);assert.match(await passenger.locator('#v-home').innerText(),/4,480 miles/);await passenger.evaluate(()=>go('me'));assert.match(await passenger.locator('#v-me').innerText(),/4,480/);await passenger.close();assert(/4,480 MILES/.test(await last('AMRINA')));assert(/MILES REINSTATEMENT REQUIRE MANUAL REVIEW/.test(await last('XI')));assert(/MANUAL CHANGE/.test(await last('RBM2')));
  await run('IG');await run(`AN${ddmon(22)}JKTDPS`);await run('SS1Y1');await run('NM1WIJAYA/RINA MRS');await run('AP081234567890');await run('TKOK');await run('RFRINA');await run('ER');await run('AWQ');await run('FPCC');assert(/INSUFFICIENT MILES/.test(await last('ET')));assert(/4,480 MILES/.test(await last('AMRINA')));assert(/REMOVED/.test(await last('AWX')));
