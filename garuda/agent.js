@@ -27,6 +27,7 @@ function init(){
  $('f-from').value=E.HUB;$('f-d1').min=iso(E.TD+1);$('f-d2').min=iso(E.TD+1);
  $('boot').hidden=true;$('app').hidden=false;
  GA_AGENT.ctx={W:W,P:P,E:E,BKS:BKS,store:store,KEY:KEY,COUNTER:COUNTER,num:num,money:money,esc:esc,dshort:dshort,iso:iso,parseDate:parseDate,ticketNo:ticketNo,ensureTickets:ensureTickets,issueTickets:issueTickets,couponStatus:couponStatus,directionState:directionState,refundBlocked:refundBlocked,refundRows:refundRows,printTicket:printTicket,cancelBooking:cancelBooking,renderAll:renderAll,statusOf:statusOf,tlText:tlText,MON:MON,st:st};
+ window.addEventListener('storage',function(e){if(e.key!==KEY)return;var cur=window.GA_TERM&&GA_TERM.state().cur,ref=cur&&cur.ref;BKS.length=0;store.get(KEY,[]).forEach(function(b){BKS.push(b)});E.S.bookings.length=0;BKS.forEach(function(b){E.S.bookings.push(b)});if(window.GA_TERM){var T=GA_TERM.state();if(ref)T.cur=BKS.filter(function(b){return b.ref===ref})[0]||null;GA_TERM.refresh()}renderAll()});
  sweepHeld();setInterval(function(){if(sweepHeld()&&window.GA_TERM)GA_TERM.refresh()},60000);
  wire();tick();setInterval(tick,30000);renderAll();document.dispatchEvent(new Event('ga-agent-ready'));
  var qs=new URLSearchParams(location.search).get('cmd');if(qs){st.tab='sell';renderAll();$('cmd').value=qs;fillFromCmd(qs);runSearch()}
