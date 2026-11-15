@@ -1,6 +1,6 @@
 /* Sales counter. A desktop tool for agents who sell and issue tickets in person.
    It borrows the pricing engine, seat inventory and e-ticket from the passenger app by loading it in a hidden frame,
-   so a seat sold here is a seat gone there. Bookings are kept in this browser (localStorage) until a shared backend is added. */
+   so a seat sold here is a seat gone there. Bookings are kept in this browser through GA_STORE (store.js) until a shared backend is added. */
 (function(){
 'use strict';
 var KEY='ga-agent-bookings',SKEY='ga-agent-shift',CKEY='ga-agent-closed',COUNTER='Counter JKT-03';
@@ -12,7 +12,7 @@ var money=function(n){return 'IDR '+num(n)};
 var FAMS=[['Economy','Economy Lite','Lite'],['Economy','Economy Value','Value'],['Economy','Economy Standard','Standard'],['Economy','Economy Flexi','Flexi'],['Premium','Premium Economy','Premium Eco'],['Business','Business Saver','Biz Saver'],['Business','Business Flex','Biz Flex']];
 var PAYS=[['Cash','Cash'],['Debit card','EDC terminal shows approved'],['Credit card','EDC terminal shows approved'],['QRIS','QRIS payment received'],['Bank transfer','Transfer received in the bank statement']];
 var TYPE={a:'Adult',c:'Child',i:'Infant'};
-var store={get:function(k,d){try{var v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}},set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
+var store=GA_STORE;
 
 /* ---------- start-up: wait for the engine frame ---------- */
 var tries=0,timer=setInterval(function(){tries++;var ready=false;try{W=$('eng').contentWindow;ready=!!(W&&W.GA_PRICING&&W.search&&W.eval('typeof CT')==='object'&&W.eval('typeof priceSummary')==='function')}catch(e){}if(ready){clearInterval(timer);init()}
@@ -27,7 +27,7 @@ function init(){
  $('f-from').value=E.HUB;$('f-d1').min=iso(E.TD+1);$('f-d2').min=iso(E.TD+1);
  $('boot').hidden=true;$('app').hidden=false;
  GA_AGENT.ctx={W:W,P:P,E:E,BKS:BKS,store:store,KEY:KEY,COUNTER:COUNTER,num:num,money:money,esc:esc,dshort:dshort,iso:iso,parseDate:parseDate,ticketNo:ticketNo,ensureTickets:ensureTickets,issueTickets:issueTickets,couponStatus:couponStatus,directionState:directionState,refundBlocked:refundBlocked,refundRows:refundRows,printTicket:printTicket,cancelBooking:cancelBooking,renderAll:renderAll,statusOf:statusOf,tlText:tlText,MON:MON,st:st};
- window.addEventListener('storage',function(e){if(e.key!==KEY)return;var cur=window.GA_TERM&&GA_TERM.state().cur,ref=cur&&cur.ref;BKS.length=0;store.get(KEY,[]).forEach(function(b){BKS.push(b)});E.S.bookings.length=0;BKS.forEach(function(b){E.S.bookings.push(b)});if(window.GA_TERM){var T=GA_TERM.state();if(ref)T.cur=BKS.filter(function(b){return b.ref===ref})[0]||null;GA_TERM.refresh()}renderAll()});
+ GA_STORE.onChange(KEY,function(){var cur=window.GA_TERM&&GA_TERM.state().cur,ref=cur&&cur.ref;BKS.length=0;store.get(KEY,[]).forEach(function(b){BKS.push(b)});E.S.bookings.length=0;BKS.forEach(function(b){E.S.bookings.push(b)});if(window.GA_TERM){var T=GA_TERM.state();if(ref)T.cur=BKS.filter(function(b){return b.ref===ref})[0]||null;GA_TERM.refresh()}renderAll()});
  sweepHeld();setInterval(function(){if(sweepHeld()&&window.GA_TERM)GA_TERM.refresh()},60000);
  wire();tick();setInterval(tick,30000);renderAll();document.dispatchEvent(new Event('ga-agent-ready'));
  var qs=new URLSearchParams(location.search).get('cmd');if(qs){st.tab='sell';renderAll();$('cmd').value=qs;fillFromCmd(qs);runSearch()}

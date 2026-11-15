@@ -370,6 +370,7 @@ h2{margin:0;font-size:12px;font-weight:600;color:var(--mute);letter-spacing:.08e
 </div></div>
 
 <script src="network.js"></script>
+<script src="store.js"></script>
 <script src="seat-map.js?v=4"></script>
 <script>
 /* ================= brand + art ================= */
@@ -437,7 +438,7 @@ const farEnd=l=>l.from===HUB?l.to:l.from;
 /* Pricing settings. The Pricing Lab (pricing-lab.html) reads and tunes these; the defaults are the live model. */
 const PRICE_DEFAULTS={base:{intlFixed:500000,intlPerMin:12500,domFixed:250000,domPerMin:9000},tod:{peak:1.1,off:0.9,peakFrom1:360,peakTo1:540,peakFrom2:1020,peakTo2:1200,offFrom:1320,offTo:300},curve:{d0:1.75,d1:1.65,d3:1.45,d7:1.25,d14:1.08,d21:1,d30:0.95,d60:0.9},dow:{mon:1,tue:0.96,wed:0.96,thu:1,fri:1.07,sat:1.02,sun:1.08},season:{xmas:1.25,cny:1.1,lebaran:1.4,school:1.15},demand:{min:0.95,range:0.1},fam:{lite:0.9,value:1,standard:1.15,flexi:1.4,premium:1.75,bizShort:2.6,bizMid:3.1,bizLong:3.6,bizFlex:1.18,bizMidMin:240,bizLongMin:600},pax:{child:0.75,childDom:1,infant:0.1},tax:{ppn:0.11,ppnIntl:0.11},charges:{hubIntl:255000,hubDom:85000,domOther:75000,foreign:150000},connection:{discount:0.94,through:1},load:{on:1,lfEconomy:0.78,lfPremium:0.68,lfBusiness:0.58,sens:0.6,noise:0.06,lfMin:0.35,lfMax:0.98,s1:0.98,s3:0.92,s7:0.8,s14:0.62,s30:0.32,s60:0.1,f0:0.85,f30:0.95,f50:1,f70:1.18,f85:1.45,f95:1.85,f100:2.3,bucket:0.05,urgency:0.3,urgencyDays:21},roundTrip:{dom:0.05,regional:0.08,long:0.12,longHours:5,openJaw:0.08,circle:0.08,shortNights:2,shortPremium:0.06,longNights:30,longPremium:0.04,satDiscount:0.07}};
 const PRICE_CFG=JSON.parse(JSON.stringify(PRICE_DEFAULTS));
-try{const sv=JSON.parse(localStorage.getItem('ga-pricing-cfg')||'null');if(sv)for(const g in sv)if(PRICE_CFG[g])Object.assign(PRICE_CFG[g],sv[g])}catch(e){}
+try{const sv=GA_STORE.get('ga-pricing-cfg',null);if(sv)for(const g in sv)if(PRICE_CFG[g])Object.assign(PRICE_CFG[g],sv[g])}catch(e){}
 function todFactor(m,C=PRICE_CFG.tod){return (m>=C.peakFrom1&&m<=C.peakTo1)||(m>=C.peakFrom2&&m<=C.peakTo2)?C.peak:(m>=C.offFrom||m<C.offTo?C.off:1)}
 /* Holiday windows (illustrative dates, edit here). Each has a multiplier in PRICE_CFG.season. */
 const SEASON_WINDOWS=[{k:'xmas',label:'Year-end holidays',from:'2026-12-19',to:'2027-01-04'},{k:'cny',label:'Chinese New Year',from:'2027-02-03',to:'2027-02-10'},{k:'lebaran',label:'Lebaran (Idul Fitri), approximate',from:'2027-03-03',to:'2027-03-16'},{k:'school',label:'Mid-year school holidays',from:'2027-06-19',to:'2027-07-18'}].map(w=>({...w,a:dnOf(w.from),b:dnOf(w.to)}));
@@ -457,12 +458,12 @@ function loadInfo(l,cabin){const C=PRICE_CFG,L=C.load,t=lp(l.dep,l.from),dout=t.
  return {cap,lf,model,extra,sold:soldN,frac,mult:ladderF(frac),left:Math.max(0,cap-soldN),atFare,dout}}
 const urgencyF=(d,L=PRICE_CFG.load)=>1+L.urgency*Math.pow(Math.max(0,L.urgencyDays-Math.max(d,0))/L.urgencyDays,1.5);
 /* Sold counts are shared by the customer app and the agent terminal: re-read before each change so one never overwrites the other. */
-function adjustSold(l,cab,n){loadSold();const k=l.id+'|'+l.dep+'|'+cab;SOLD[k]=(SOLD[k]||0)+n;try{localStorage.setItem('ga-sold',JSON.stringify(SOLD))}catch(e){}}
+function adjustSold(l,cab,n){loadSold();const k=l.id+'|'+l.dep+'|'+cab;SOLD[k]=(SOLD[k]||0)+n;GA_STORE.set('ga-sold',SOLD)}
 function legEcoDetail(l){const C=PRICE_CFG,blk=l.arr-l.dep,intl=CT[farEnd(l)].z==='I',base=intl?C.base.intlFixed+blk*C.base.intlPerMin:C.base.domFixed+blk*C.base.domPerMin,t=lp(l.dep,l.from),dout=t.day-TD;
  const tod=todFactor(t.min),dow=C.dow[DOW_KEYS[isoDow(t.day)-1]],sea=seasonOf(t.day),ld=C.load.on?loadInfo(l,'Economy'):null,adv=ld?ld.mult*urgencyF(dout):curveF(dout),dem=ld?1:C.demand.min+seeded(l.id+dout)*C.demand.range;return {blk,intl,base,tod,adv,dow,season:sea.f,seasonLabel:sea.label,dem,dout,localMin:t.min,load:ld,eco:base*tod*adv*dow*sea.f*dem}}
 function legEco(l){return legEcoDetail(l).eco}
-let SOLD={};function loadSold(){try{SOLD=JSON.parse(localStorage.getItem('ga-sold')||'{}')||{}}catch(e){SOLD={}}}loadSold();
-window.addEventListener('storage',e=>{if(e.key!=='ga-sold')return;loadSold();if(window===window.top&&typeof render==='function')render(S.stack[S.stack.length-1])});
+let SOLD={};function loadSold(){SOLD=GA_STORE.get('ga-sold',{})}loadSold();
+GA_STORE.onChange('ga-sold',()=>{loadSold();if(window===window.top&&typeof render==='function')render(S.stack[S.stack.length-1])});
 const sold=(l,c)=>SOLD[l.id+'|'+l.dep+'|'+c]||0;
 /* Through fares: a connection is priced on the whole trip (great-circle distance, shaped like a nonstop), never above the two flights added and never below its longest flight. */
 function gcKm(a,b){const t=x=>x*Math.PI/180,dl=t(b[0]-a[0]),dn=t(b[1]-a[1]),h=Math.sin(dl/2)**2+Math.cos(t(a[0]))*Math.cos(t(b[0]))*Math.sin(dn/2)**2;return 2*6371*Math.asin(Math.sqrt(h))}
@@ -520,18 +521,18 @@ function reset(){S.bookings=[];S.past=[];S.msgs=[];S.sel=[];S.bk=0;S.pl=0;S.step
 reset();
 /* The passenger demo represents Rina. Only issued counter bookings containing her
    are imported; other customers' records and unpaid holds stay in the terminal. */
-function counterRecords(){try{const rows=JSON.parse(localStorage.getItem('ga-agent-bookings')||'[]');return Array.isArray(rows)?rows:[]}catch(e){return []}}
+function counterRecords(){const rows=GA_STORE.get('ga-agent-bookings',[]);return Array.isArray(rows)?rows:[]}
 function demoMiles(){return 12480-counterRecords().reduce((n,b)=>n+(b.award?.issued&&b.award.member==='RINA WIJAYA'?Number(b.award.miles)||0:0),0)}
 function isDemoPassengerBooking(b){return !b.held&&!!b.issuedMs&&Array.isArray(b.names)&&b.names.some(n=>String(n).trim().replace(/\s+/g,' ').toUpperCase()==='RINA WIJAYA')&&Array.isArray(b.dirs)&&b.dirs.length&&b.dirs.every(d=>Array.isArray(d.legs)&&d.legs.length)}
 /* Other customers' counter bookings are not Rina's trips, but their seats are still sold. */
 function counterSeatRecords(){return counterRecords().filter(b=>!b.cancelled&&Array.isArray(b.dirs)&&b.dirs.every(d=>Array.isArray(d.legs)))}
 /* Write Rina's seat and check-in changes back so the agent terminal sees them. */
-function persistCounterBookings(){try{const mine=new Map(S.bookings.filter(b=>b._counterImport).map(b=>[b.ref,b])),rows=counterRecords().map(r=>mine.get(r.ref)||r);localStorage.setItem('ga-agent-bookings',JSON.stringify(rows))}catch(e){}}
+function persistCounterBookings(){try{const mine=new Map(S.bookings.filter(b=>b._counterImport).map(b=>[b.ref,b])),rows=counterRecords().map(r=>mine.get(r.ref)||r);GA_STORE.set('ga-agent-bookings',rows)}catch(e){}}
 /* An online purchase is a real, issued record in the shared store, so the agent terminal can find, change and refund it. */
-function saveOnlineBooking(bk){bk.passengers.forEach(p=>{const w=String(p.name).trim().split(/\s+/);p.last=w.length>1?w.pop():w[0];p.first=w.join(' ')||p.last;p.title=p.title||''});bk.paid0=bk.paid=bk.total;bk.place='Online';bk.held=false;bk.issuedMs=Date.now();bk.payment={method:bk.paymentMethod,tendered:bk.total,change:0,approval:String(100000+hash(bk.ref+'AP')%900000)};bk._counterImport=true;try{localStorage.setItem('ga-agent-bookings',JSON.stringify([bk,...counterRecords().filter(r=>r.ref!==bk.ref)]))}catch(e){}}
+function saveOnlineBooking(bk){bk.passengers.forEach(p=>{const w=String(p.name).trim().split(/\s+/);p.last=w.length>1?w.pop():w[0];p.first=w.join(' ')||p.last;p.title=p.title||''});bk.paid0=bk.paid=bk.total;bk.place='Online';bk.held=false;bk.issuedMs=Date.now();bk.payment={method:bk.paymentMethod,tendered:bk.total,change:0,approval:String(100000+hash(bk.ref+'AP')%900000)};bk._counterImport=true;GA_STORE.set('ga-agent-bookings',[bk,...counterRecords().filter(r=>r.ref!==bk.ref)])}
 function syncCounterBookings(){const rows=counterRecords().filter(isDemoPassengerBooking),selected=S.bookings[S.bk]?.ref;const imported=new Set(rows.map(b=>b.ref));S.bookings=S.bookings.filter(b=>!b._counterImport||imported.has(b.ref));for(const b of rows){b._counterImport=true;const i=S.bookings.findIndex(x=>x.ref===b.ref);if(i>=0)S.bookings[i]=b;else S.bookings.push(b)}const next=S.bookings.findIndex(b=>b.ref===selected);S.bk=next<0?0:next}
 syncCounterBookings();
-window.addEventListener('storage',e=>{if(e.key!=='ga-agent-bookings')return;syncCounterBookings();if(window===window.top){const view=S.stack[S.stack.length-1];if(typeof render==='function')render(view)}});
+GA_STORE.onChange('ga-agent-bookings',()=>{syncCounterBookings();if(window===window.top){const view=S.stack[S.stack.length-1];if(typeof render==='function')render(view)}});
 const B0=()=>S.bookings[0]||null,BK=()=>S.bookings[Math.min(Math.max(0,S.bk),S.bookings.length-1)]||null;
 const countdown=l=>{const ms=(eD(l)-nowAbs())*6e4;if(ms<=0)return 'Departed';const h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4);return h>=48?'in '+Math.floor(h/24)+' days':h>=24?'in 1 day '+(h-24)+' h':h>=1?'in '+h+' h '+m+' min':'in '+m+' min'};
 const stat=l=>l.status==='cancel'?['bad','Cancelled','Rebook to continue']:l.status==='delay'?['warn','Delayed','now '+fT(eD(l),l.from)]:l.status==='boarding'?['ok','Boarding','Gate '+l.gate]:['ok','On time','Check-in open'];
@@ -599,8 +600,8 @@ function homePrep(x){if(!x)return '';const {b,bi,l}=x,st=homeTripState(l);if(st.
  const rows=[['checkin',IC.ci,'Check in',ck[0],ck[1]],['seat',IC.seat,'Seat',travellerSeat(b,l,0),''],['meal',IC.meal,'Meal preference',meal||'Not set',meal?'done':''],['bag',IC.bag,'Baggage',rules.chk==='Not included'?'Cabin bag only':rules.chk+' checked',''],eco?['cabin',IC.info,'About your Economy cabin',acName(l.ac),'']:null].filter(Boolean);
  return `<section class="home-prep" aria-labelledby="home-prep-title"><div class="home-section-head"><h2 id="home-prep-title">Get ready for ${l.id}</h2></div><div class="home-prep-list">${rows.map(([k,ic,t,v,c])=>`<button data-home-prep="${k}"><span class="home-tool-icon">${ic}</span><span><b>${t}</b></span><em class="${c}">${v}</em>${HOME_CHEVRON}</button>`).join('')}</div></section>`}
 /* Recent searches */
-S.recent=(()=>{try{return JSON.parse(localStorage.getItem('ga-recent')||'[]').filter(k=>/^[A-Z]{3}-[A-Z]{3}$/.test(k))}catch(e){return []}})();
-function recordRecent(){const q=S.q;if(!CT[q.from]||!CT[q.to]||q.from===q.to)return;const k=q.from+'-'+q.to;S.recent=[k,...S.recent.filter(x=>x!==k)].slice(0,3);try{localStorage.setItem('ga-recent',JSON.stringify(S.recent))}catch(e){}}
+S.recent=(()=>{const r=GA_STORE.get('ga-recent',[]);return Array.isArray(r)?r.filter(k=>/^[A-Z]{3}-[A-Z]{3}$/.test(k)):[]})();
+function recordRecent(){const q=S.q;if(!CT[q.from]||!CT[q.to]||q.from===q.to)return;const k=q.from+'-'+q.to;S.recent=[k,...S.recent.filter(x=>x!==k)].slice(0,3);GA_STORE.set('ga-recent',S.recent)}
 document.addEventListener('click',e=>{if(e.target.closest('#goRes'))recordRecent()},true);
 const HOME_INSPIRATION=[
  {code:'LBJ',tag:'ISLAND ESCAPES',title:'A little closer to Komodo',copy:'Island views and clear blue water await.'},
@@ -812,7 +813,7 @@ const lockFam=()=>S.step===1&&S.sel[0]?{cab:S.sel[0].cab,name:S.sel[0].fam.n}:nu
 const famIn=(it,cab,name)=>{const c=fares(it).find(x=>x.k===cab);if(!c)return null;const f=c.fam.find(x=>x.n===name);return f?{c,f}:null};
 let rmEpoch=0;const _rm=new Map();
 /* Hooks for the Pricing Lab */
-window.GA_PRICING={tripType:tripType,tripName:TRIP_NAME,cfg:PRICE_CFG,defaults:PRICE_DEFAULTS,detail:legEcoDetail,through:throughDetail,rt:rtDetail,load:loadInfo,legCharge:legCharge,itinIntl:itinIntl,clear(){for(const k in pcache)delete pcache[k];_rm.clear();rmEpoch++},save(){try{localStorage.setItem('ga-pricing-cfg',JSON.stringify(PRICE_CFG));return true}catch(e){return false}},reset(){for(const g in PRICE_DEFAULTS)Object.assign(PRICE_CFG[g],PRICE_DEFAULTS[g]);try{localStorage.removeItem('ga-pricing-cfg')}catch(e){}this.clear()},saved(){try{return !!localStorage.getItem('ga-pricing-cfg')}catch(e){return false}}};
+window.GA_PRICING={tripType:tripType,tripName:TRIP_NAME,cfg:PRICE_CFG,defaults:PRICE_DEFAULTS,detail:legEcoDetail,through:throughDetail,rt:rtDetail,load:loadInfo,legCharge:legCharge,itinIntl:itinIntl,clear(){for(const k in pcache)delete pcache[k];_rm.clear();rmEpoch++},save(){return GA_STORE.set('ga-pricing-cfg',PRICE_CFG)},reset(){for(const g in PRICE_DEFAULTS)Object.assign(PRICE_CFG[g],PRICE_DEFAULTS[g]);GA_STORE.remove('ga-pricing-cfg');this.clear()},saved(){return GA_STORE.has('ga-pricing-cfg')}};
 function retMin(cab,name){const q=S.q,k=[rmEpoch,q.to,q.from,q.d2,cab,name,S.step,S.sel[0]?S.sel[0].it.key:''].join('|');if(_rm.has(k))return _rm.get(k);let m=null;
  for(const it of search(q.to,q.from,q.d2).filter(returnEligible)){const x=famIn(it,cab,name);if(!x||x.c.left<seats(q))continue;const t=priceFor(it,x.f).total;if(m==null||t<m)m=t}
  _rm.set(k,m);return m}
