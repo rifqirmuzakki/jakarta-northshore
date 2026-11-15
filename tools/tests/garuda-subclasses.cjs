@@ -19,7 +19,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  let o=await last(`AN${ddmon(30)}JKTDPS`);const row=o.split('\n').find(l=>/GA 402/.test(l));assert(row,'GA 402 line');assert(/J\d C\d D\d I\d Z\d/.test(row)&&/Y\d B\d/.test(row)&&/M\d E\d H\d/.test(row)&&/Q\d N\d K\d/.test(row)&&/T\d L\d G\d/.test(row));
  assert(row.search(/ J\d/)<row.search(/ Y\d/)&&row.search(/ Y\d/)<row.search(/ G\d/));
  /* different classes, different prices */
- const priceOf=async cls=>{await run('IG');await run(`AN${ddmon(30)}JKTDPS`);assert(/HK1/.test(await last(`SS1${cls}1`)));return total(await last('FQD'))};
+ const priceOf=async cls=>{await run('IG');await run(`AN${ddmon(30)}JKTDPS`);assert(/HK1/.test(await last(`SS1${cls}1`)));return total(await last('FXX'))};
  const g=await priceOf('G'),l=await priceOf('L'),t=await priceOf('T'),y=await priceOf('Y');assert(g<l&&l<t&&t<y,[g,l,t,y].join(' '));
  /* cheaper classes close as the cabin fills */
  const closed=await eng(()=>{const it=search('JKT','DPS',TD+30)[1],l=it.legs[0],cap=cabinCap(l,'Economy');adjustSold(l,'Economy',Math.ceil(cap*0.30));GA_PRICING.clear();const f=fares(it)[0];return {cap,subs:f.fam.map(x=>[x.n,x.sub,x.subs.map(s=>s.k+s.left).join(' ')])}});
@@ -28,7 +28,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  await run('IG');assert(/CLASS G CLOSED/.test(await last('SS1G2')));assert(/HK1/.test(await last('SS1T2')));
  /* rebook an unsaved segment, then a held booking, including across cabins */
  await run('NM1TAN/ALI');assert(/NOT OFFERED/.test(await last('RBW2')));assert(/UNKNOWN CLASS/.test(await last('RBX2')));
- const before=total(await last('FQD'));assert(/OK  REBOOKED T TO Y/.test(await last('RBY2')));assert(total(await last('FQD'))>before);
+ const before=total(await last('FXX'));assert(/OK  REBOOKED T TO Y/.test(await last('RBY2')));assert(total(await last('FXX'))>before);
  assert(/ALREADY CLASS Y/.test(await last('RBY2')));assert(/NOT A FLIGHT SEGMENT/.test(await last('RBY1')));
  await run('AP+628120000111');await run('TKOK');await run('RFALI');let er=await last('ER');const ref=er.match(/RECORD LOCATOR (GA[0-9A-Z]{4})/)[1];assert(/ Y /.test(er));
  const sold0=await p.evaluate(()=>JSON.parse(localStorage.getItem('ga-sold')));
