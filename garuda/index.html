@@ -456,11 +456,13 @@ function loadInfo(l,cabin){const C=PRICE_CFG,L=C.load,t=lp(l.dep,l.from),dout=t.
  bs=L.bucket,nextB=(Math.floor(frac/bs+1e-9)+1)*bs,atFare=frac>=1?0:Math.max(1,Math.min(cap-soldN,Math.ceil((nextB-frac)*cap-1e-9)));
  return {cap,lf,model,extra,sold:soldN,frac,mult:ladderF(frac),left:Math.max(0,cap-soldN),atFare,dout}}
 const urgencyF=(d,L=PRICE_CFG.load)=>1+L.urgency*Math.pow(Math.max(0,L.urgencyDays-Math.max(d,0))/L.urgencyDays,1.5);
-function adjustSold(l,cab,n){const k=l.id+'|'+l.dep+'|'+cab;SOLD[k]=(SOLD[k]||0)+n;try{localStorage.setItem('ga-sold',JSON.stringify(SOLD))}catch(e){}}
+/* Sold counts are shared by the customer app and the agent terminal: re-read before each change so one never overwrites the other. */
+function adjustSold(l,cab,n){loadSold();const k=l.id+'|'+l.dep+'|'+cab;SOLD[k]=(SOLD[k]||0)+n;try{localStorage.setItem('ga-sold',JSON.stringify(SOLD))}catch(e){}}
 function legEcoDetail(l){const C=PRICE_CFG,blk=l.arr-l.dep,intl=CT[farEnd(l)].z==='I',base=intl?C.base.intlFixed+blk*C.base.intlPerMin:C.base.domFixed+blk*C.base.domPerMin,t=lp(l.dep,l.from),dout=t.day-TD;
  const tod=todFactor(t.min),dow=C.dow[DOW_KEYS[isoDow(t.day)-1]],sea=seasonOf(t.day),ld=C.load.on?loadInfo(l,'Economy'):null,adv=ld?ld.mult*urgencyF(dout):curveF(dout),dem=ld?1:C.demand.min+seeded(l.id+dout)*C.demand.range;return {blk,intl,base,tod,adv,dow,season:sea.f,seasonLabel:sea.label,dem,dout,localMin:t.min,load:ld,eco:base*tod*adv*dow*sea.f*dem}}
 function legEco(l){return legEcoDetail(l).eco}
-let SOLD={};try{SOLD=JSON.parse(localStorage.getItem('ga-sold')||'{}')}catch(e){}
+let SOLD={};function loadSold(){try{SOLD=JSON.parse(localStorage.getItem('ga-sold')||'{}')||{}}catch(e){SOLD={}}}loadSold();
+window.addEventListener('storage',e=>{if(e.key!=='ga-sold')return;loadSold();if(window===window.top&&typeof render==='function')render(S.stack[S.stack.length-1])});
 const sold=(l,c)=>SOLD[l.id+'|'+l.dep+'|'+c]||0;
 /* Through fares: a connection is priced on the whole trip (great-circle distance, shaped like a nonstop), never above the two flights added and never below its longest flight. */
 function gcKm(a,b){const t=x=>x*Math.PI/180,dl=t(b[0]-a[0]),dn=t(b[1]-a[1]),h=Math.sin(dl/2)**2+Math.cos(t(a[0]))*Math.cos(t(b[0]))*Math.sin(dn/2)**2;return 2*6371*Math.asin(Math.sqrt(h))}
@@ -928,7 +930,7 @@ $('#v-review').addEventListener('submit',e=>{e.preventDefault();if(e.target.id==
  if(soldIndex>=0){S.step=soldIndex;S.sel=S.sel.slice(0,soldIndex);resetResultChoices();toast('This cabin is no longer available','Choose another flight or cabin. Your traveller details are saved.');openReviewResults();return;}
  reviewDraft.busy=true;$('#payBtn').disabled=true;$('#payBtn').setAttribute('aria-busy','true');const sel=S.sel.filter(Boolean),bk=mkBooking(q,sel.map(s=>s.it),sel.map(s=>({cab:s.cab,fam:s.fam})),names);
  bk.confirmedAt=nowAbs();bk.passengers=people.map((p,i)=>({type:p.type,name:names[i],dob:p.draft.dob||null,lapAdult:p.type==='i'?names[p.n]:null}));bk.contactEmail=reviewDraft.email.trim();bk.paymentMethod=['QRIS','Credit card','GoPay'][S.pay];
- sel.forEach(s=>s.it.legs.forEach(l=>{const k=l.id+'|'+l.dep+'|'+s.cab;SOLD[k]=(SOLD[k]||0)+seats(q)}));try{localStorage.setItem('ga-sold',JSON.stringify(SOLD))}catch(x){}
+ sel.forEach(s=>s.it.legs.forEach(l=>adjustSold(l,s.cab,seats(q))));
  S.bookings.unshift(bk);S.bk=0;const l0=bk.dirs[0].legs[0];S.msgs.unshift({id:Date.now(),kind:'info',t:'Booking confirmed',bookingRef:bk.ref,p:`${cname(l0.from)} to ${cname(bk.dirs[0].legs.at(-1).to)}, ${fmtDn(lp(l0.dep,l0.from).day)}. Reference ${bk.ref}.`,at:'now',unread:true,go:'trip'});S.sel=[];reviewDraft.submitted=false;reviewDraft.touched={};S.stack=['trips'];go('done',false);
 });
 function confirmationJourney(b,d,i){const a=d.legs[0],z=d.legs.at(-1),dep=lp(eD(a),a.from),arr=lp(eA(z),z.to);return `<article class="confirmation-journey"><div class="confirmation-direction"><b>${b.dirs.length>1?(i?'Return':'Outbound'):'Your flight'}</b><span>${fmtDn(dep.day,{weekday:'short',day:'numeric',month:'short'})}</span></div><div class="confirmation-route"><strong>${a.from}</strong>${AR}<strong>${z.to}</strong></div><div class="confirmation-times"><span>${fT(eD(a),a.from)} · ${cname(a.from)}</span><span>${fT(eA(z),z.to)}${sup(arr.day-dep.day)} · ${cname(z.to)}</span></div><div class="confirmation-flight-info"><span>${d.legs.map(l=>l.id).join(' + ')} · ${d.legs.length>1?'1 stop in Jakarta':'Nonstop'}${arr.day!==dep.day?' · arrives '+fmtDn(arr.day,{day:'numeric',month:'short'}):''}</span><b>${b.fams[i]||b.fams[0]}</b></div></article>`;}
