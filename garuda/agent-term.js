@@ -66,6 +66,8 @@ function run(raw){var up=raw.trim().toUpperCase(),c=up.replace(/\s+/g,''),m;
  if(/^SR/.test(c))return sr(up);
  if(/^(RM|RC)/.test(c))return rm(up);
  if(/^OS/.test(c))return os(up);
+ if(m=c.match(/^DD(GA\d{1,4})\/(\d{1,2}[A-Z]{3}(?:\d{2})?)(?:\/([YWC]))?$/))return dd(m[1],m[2],m[3]);
+ if(/^DD/.test(c))return out('INVALID FORMAT - EXAMPLE  DDGA202/16NOV  (ADD /Y ECONOMY, /W PREMIUM OR /C BUSINESS)','e');
  if(/^SM/.test(c))return sm(c);
  if(/^ST/.test(c))return st(c);
  if(/^FP/.test(c))return fp(c);
@@ -99,6 +101,9 @@ function help(){out([
 '  XE4  XE2-3           delete elements      IG  ignore the whole booking',
 '  RBT3  RBT3/2         rebook element 3 into class T, or onto line 2 of the last AN (class, flight or date)',
 '                       ticketed: you get a reissue quote, then FP<METHOD> and TTP',
+'SIMULATED DEMAND',
+'  DDGA202/16NOV        demand for a flight: seats sold, load factor, revenue, cancellations and its bookings (add /Y, /W or /C for one cabin)',
+'  RT<REF>              retrieve a simulated booking from that list; whatever you do to it is then remembered',
 'SEATS, SERVICES AND REMARKS',
 '  SM3                  seat map of the flight in element 3 (saved bookings)',
 '  ST12A/P1/S3          seat 12A for passenger 1 on the flight in element 3 (S3 optional with one flight)',
@@ -278,6 +283,7 @@ function ep(){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','
 function rt(c){var m;if(c==='RT')return showCurrent();
  if(m=c.match(/^RT(\d{1,2})$/)){if(!T.list)return out('NO LIST TO PICK FROM','e');var b=T.list[+m[1]-1];if(!b)return out('NO SUCH LINE','e');return load(b)}
  m=c.match(/^RT(.+)$/)[1];var b2=BKS.find(function(x){return x.ref===m});if(b2)return load(b2);
+ var g=/^[0-9A-Z]{7}$/.test(m)&&W.GA_DEMAND&&W.GA_DEMAND.retrieve(m);if(g){if(!T.cur&&(T.p.segs.length||T.p.names.length||T.p.phone||T.p.email||T.p.tk||T.p.rf||T.p.extras.length))return out('UNSAVED BOOKING IN PROGRESS - SAVE WITH ER OR DISCARD WITH IG BEFORE RETRIEVING','e');E.S.bookings.unshift(g);BKS.unshift(g);store.set(C.KEY,BKS);return load(g)}
  var up=m,hits=BKS.filter(function(x){return x.names.some(function(n){return n.toUpperCase().replace(/\s+/g,'').indexOf(up)>=0})});if(!hits.length)return out('NO BOOKING FOUND  '+m,'e');if(hits.length===1)return load(hits[0]);
  T.list=hits;out(hits.map(function(x,i){return lpad(i+1,3)+'  '+x.ref+'  '+pad(pn(x,0)+(x.names.length>1?' +'+(x.names.length-1):''),22)+pad(x.dirs[0].legs[0].from+x.dirs[0].legs[x.dirs[0].legs.length-1].to,8)+C.statusOf(x)[0].toUpperCase()}).join('\n')+'\nSELECT WITH RT<LINE>','')}
 function load(b){if(!T.cur&&(T.p.segs.length||T.p.names.length||T.p.phone||T.p.email||T.p.tk||T.p.rf||T.p.extras.length))return out('UNSAVED BOOKING IN PROGRESS - SAVE WITH ER OR DISCARD WITH IG BEFORE RETRIEVING','e');T.cur=b;T.p=fresh();T.fp=null;T.xi=null;T.ri=null;out(bookingText(b),'')}
@@ -345,6 +351,19 @@ function legOfElement(b,n){var e=bookElems(b).filter(function(x){return x.num})[
 function oneLeg(b){var segs=bookElems(b).filter(function(e){return e.k==='seg'});return segs.length===1?{d:segs[0].d,l:segs[0].l,leg:b.dirs[segs[0].d].legs[segs[0].l]}:null}
 function seatReason(b,l){if(l.status==='cancel')return 'THE FLIGHT IS CANCELLED';if(l.dep+(l.delay||0)<=E.nowAbs())return 'THE FLIGHT HAS DEPARTED';var cut=E.CT[E.farEnd(l)].z==='I'?60:45;if(l.dep+(l.delay||0)-E.nowAbs()<=cut)return 'SEAT CHANGES CLOSE '+cut+' MINUTES BEFORE DEPARTURE';
  var f=(b.fams[W.tripDirectionIndex(b,l)]||b.fams[0]);return 'FARE RULE: SEAT SELECTION IS AT CHECK-IN ONLY ('+f.toUpperCase()+')'}
+/* ---------- simulated demand ---------- */
+function dd(fid,dstr,cabCode){var dn=C.parseDate(dstr);if(dn==null)return out('INVALID DATE','e');if(!W.GA_DEMAND)return out('DEMAND MODEL NOT LOADED','e');
+ var id=fid.replace(/^GA/,'GA '),l=W.GA_DEMAND.findLeg(id,dn);if(!l)return out('NO '+id+' ON '+ddmon(dn),'e');
+ var cabs=W.GA_DEMAND.cabinsOf(l),want=cabCode?{Y:'Economy',W:'Premium',C:'Business'}[cabCode]:null;if(want&&cabs.indexOf(want)<0)return out('CABIN NOT ON THIS AIRCRAFT','e');
+ var L=['DEMAND  '+id+'  '+l.from+'-'+l.to+'  '+ddmon(dn)+'  '+l.ac.toUpperCase()+'   SIMULATED, MODEL V'+W.GA_DEMAND.VERSION,''],rows=[],more=0;
+ cabs.forEach(function(cab){if(want&&cab!==want)return;var s=W.GA_DEMAND.summary(l,cab),pct=Math.round(s.loadFactor*1000)/10;
+  L.push(cab.toUpperCase()+'   SOLD '+s.sold+'/'+s.cap+'   LF '+pct+'%   REVENUE IDR '+amt(Math.round(s.revenue))+'   CANCELLED '+s.cancelledPax+'   CHANGED '+s.changedPax+(s.noShow||s.flown?'   NO-SHOW '+s.noShow:''));
+  W.GA_DEMAND.history(l,cab).forEach(function(b){rows.push(b)})});
+ L.push('');rows.sort(function(a,b){return a.bookedAt-b.bookedAt});
+ rows.slice(0,60).forEach(function(b,i){var st=b.status==='XX'&&b.cancel.dout>=(W.lp(l.dep,l.from).day-Math.floor(E.nowAbs()/1440))?(b.cancel.reason==='CHANGE'?'XX CHG':'XX CXL'):'HK';
+  L.push(lpad(i+1,3)+'  '+b.ref+'  '+pad(b.pax[0].name.toUpperCase()+(b.pax.length>1?' +'+(b.pax.length-1):''),24)+pad(b.cabin[0]+'/'+b.cls,5)+pad(b.channel.toUpperCase(),13)+pad(st,7)+lpad(amt(b.total),12))});
+ more=rows.length-60;if(more>0)L.push('... '+more+' MORE - NARROW WITH /Y /W OR /C');
+ L.push('','RETRIEVE ONE WITH RT<REF>, FOR EXAMPLE  RT'+(rows[0]?rows[0].ref:''));out(L.join('\n'),'')}
 function sm(c){var m=c.match(/^SM(\d{1,2})?$/);if(!m)return out('INVALID FORMAT - EXAMPLE  SM3  (SEAT MAP OF THE FLIGHT IN ELEMENT 3)','e');
  var b=T.cur;if(!b)return out(T.p.segs.length?'SAVE THE BOOKING WITH ER FIRST - SEATS ARE ASSIGNED WHEN IT IS SAVED':'NO BOOKING - RETRIEVE ONE WITH RT','e');if(b.cancelled)return out('BOOKING IS CANCELLED','e');
  var tg=m[1]?legOfElement(b,+m[1]):oneLeg(b);if(!tg)return out(m[1]?'ELEMENT '+m[1]+' IS NOT A FLIGHT SEGMENT':'SEVERAL FLIGHTS - USE SM<ELEMENT>, FOR EXAMPLE SM3','e');

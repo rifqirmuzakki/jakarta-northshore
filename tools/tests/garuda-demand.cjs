@@ -30,6 +30,7 @@ const root=path.resolve(__dirname,'../..');
     out.refs.add(x.ref);
     const back=GA_DEMAND.resolve(x.ref);
     if(!back||back.ref!==x.ref||back.total!==x.total||back.flight!==x.flight)out.bad.push('resolve '+x.ref);
+    if(x.pax.some(q=>q.name.toUpperCase()==='RINA WIJAYA'))out.bad.push('demo passenger name '+x.ref);
     if(!(x.total>0&&x.fare>0))out.bad.push('price '+x.ref);
     if(x.bookedAt>x.dep||x.bookedAt<x.dep-340*1440)out.bad.push('booked after dep '+x.ref);
     out.chan[x.channel]=(out.chan[x.channel]||0)+x.seats;
