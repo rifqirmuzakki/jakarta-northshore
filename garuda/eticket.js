@@ -31,12 +31,29 @@ window.SSR_NAMES={VGML:'Vegetarian meal',MOML:'Muslim meal',CHML:'Child meal',BB
   o.push(/^Not refundable/i.test(f)?'NONREF':/IDR\s*([\d,]+)\s*fee/i.test(f)?'REFUND FEE IDR'+f.match(/IDR\s*([\d,]+)/)[1].replace(/,/g,'')+' PER PAX':/(\d+)%\s*fee/i.test(f)?'REFUND FEE '+f.match(/(\d+)%/)[1]+' PCT':/^Fully/i.test(f)?'FULLY REFUNDABLE':String(f).toUpperCase());
   o.push(/^At check-in/i.test(r.seat||'')?'SEAT AT CHECK-IN':'SEAT SELECTION FREE');return o.join(' · ')}
  var NOTICES='<p><b>CONDITIONS OF CONTRACT.</b> Carriage and other services provided by the airline are subject to its conditions of carriage, which are incorporated by reference and may be inspected at any of its offices or on its website. This itinerary and receipt, with the attached notice, constitute the passenger ticket and baggage check for the purposes of the Warsaw Convention or the Montreal Convention where applicable.</p><p><b>FLIGHT SCHEDULES</b> are subject to change without notice. Please reconfirm the departure time of your flight before each departure. Please cooperate to ensure the flight leaves on time.</p><p><b>TERMINAL INDICATORS.</b> T plus a number means the terminal number. D means domestic. I means international. Please note that the number 1 and the letter I look alike.</p><p><b>HAZARDOUS MATERIALS.</b> The carriage of certain hazardous materials, like aerosols, fireworks and flammable liquids, aboard the aircraft is forbidden. If you do not understand these restrictions, further information may be obtained from your airline.</p><p><b>DATA PROTECTION.</b> Your personal data will be processed in accordance with the applicable privacy policy and, if your booking is made via a reservation system, with the policies of that system.</p><p><b>FARE RULES.</b> A lower fare on a changed flight is not refunded. Taxes and charges are refunded unless the fee is larger. Unused coupons are valid for one year from the date of issue unless the fare says otherwise.</p>';
+
+ /* receipt numbers are worked out from the booking, nothing extra is stored */
+ function receiptNo(b,k,pre){var place=b.place||'Online booking',online=place==='Online booking'||place==='Online',office=online?'WEB':String(place).replace(/^Counter\s*/,'').replace(/[^A-Z0-9]/gi,'').toUpperCase();return (pre||'RCT')+'-'+office+'-'+String(100000+hash(b.ref+(pre||'RCT')+k)%900000)}
+ window.etkReceipt=receiptNo;
+ /* fare, PPN and airport charges for every passenger, so each ticket shows its own and they add up to what was charged */
+ function splitFare(b){var legs=flat(b),people=b.names.map(function(n,i){return {i:i,t:tripPersonType(b,i)}}),aw=!!b.award;
+  var intl=legs.some(function(l){return CT[farEnd(l)].z==='I'}),PX=PRICE_CFG.pax,wt=function(t){return t==='c'?(intl?PX.child:PX.childDom):t==='i'?PX.infant:1};
+  var W=people.map(function(p){return wt(p.t)}),WS=W.reduce(function(a,x){return a+x},0)||1;
+  var split=function(total,round){var a=W.map(function(w){return Math.round(total*w/WS/round)*round}),d=total-a.reduce(function(s,x){return s+x},0);a[0]+=d;return a};
+  var seatPeople=people.filter(function(p){return p.t!=='i'}).length||1,chgEach=Math.round((b.chg||0)/seatPeople),ports={},portSum=0;legs.forEach(function(l){var c=legCharge(l);ports[l.from]=(ports[l.from]||0)+c;portSum+=c});
+  return {people:people,W:W,WS:WS,fareP:split(b.fare||0,1000),ppnP:split(b.tax||0,1000),chgEach:chgEach,ports:ports,portOk:portSum===chgEach,milesP:aw?split(b.award.miles||0,100):[],seatPeople:seatPeople}}
+ /* the simplified fare calculation line, from the booking's own fare (simulated) */
+ function fareCalc(b,FS){var aw=!!b.award,route=function(d){var c=[d.legs[0].from];d.legs.forEach(function(l){c.push(l.to)});return c};
+  var fq0=function(i){var d=b.dirPrices&&b.dirPrices[i]?b.dirPrices[i].fare:(b.fare||0)/b.dirs.length;return Math.round(d*FS.W[0]/FS.WS/1000)*1000};
+  return aw?route(b.dirs[0]).join(' GA ')+' '+(b.award.dirs&&b.award.dirs[0]?String(b.award.dirs[0].level).toUpperCase()+' ':'')+Math.round(b.award.miles).toLocaleString('en-US')+' MILES END'
+   :b.dirs.map(function(d,i){var r=route(d),seg=[];for(var k=0;k<r.length-1;k++)seg.push((k===0&&i===0?r[0]+' ':'')+'GA '+r[k+1]);return seg.join(' ')+' '+fq0(i).toFixed(2)}).join(' ')+' IDR'+FS.fareP[0].toFixed(2)+'END ROE1.000000'}
+ window.etkFareSplit=splitFare;window.etkFareCalc=function(b){return fareCalc(b,splitFare(b))};window.etkEndorse=function(b,fam,di){return endorse(b,fam,di)};
  window.renderETicket=function(){
   var b=BK();if(!b||!etkAvailable(b)){go('trips',false);return}
   var legs=flat(b),people=b.names.map(function(n,i){return {n:n,i:i,t:tripPersonType(b,i)}}),cx=!!(b.cancelled&&!b.cancelled.held),rs=b.reissues||[],last=rs.length?rs[rs.length-1]:null,aw=!!b.award;
   var online=!b.place||b.place==='Online booking'||b.place==='Online',place=b.place||'Online booking',office=online?'WEB':String(place).replace(/^Counter\s*/,'').replace(/[^A-Z0-9]/gi,'').toUpperCase();
   var issuedDay=b.issuedMs?msDay(b.issuedMs):(b.confirmedAt?lp(b.confirmedAt,HUB).day:TD),issuedFull=b.issuedMs?dmy(issuedDay)+' '+msHm(b.issuedMs):dmy(issuedDay);
-  var rcpt=function(k,pre){return (pre||'RCT')+'-'+office+'-'+String(100000+hash(b.ref+(pre||'RCT')+k)%900000)};
+  var rcpt=function(k,pre){return receiptNo(b,k,pre)};
   var ttl=function(i){var x=b.passengers&&b.passengers[i];return x&&x.title?x.title:''};
   var gds=function(i){var x=b.passengers&&b.passengers[i],full=String(b.names[i]||'').trim(),w=full.split(/\s+/),last=x&&x.last?x.last:w.slice(-1)[0],first=x&&x.last?x.first:w.slice(0,-1).join(' ');return (last+'/'+first+(ttl(i)?' '+ttl(i):'')).toUpperCase()};
   var fqNo=function(i){var x=(b.extras||[]).find(function(y){return y.k==='ssr'&&y.code==='FQTV'&&y.p===i});return x?x.text:''};
@@ -44,12 +61,7 @@ window.SSR_NAMES={VGML:'Vegetarian meal',MOML:'Muslim meal',CHML:'Child meal',BB
   var dirOf=function(l){return b.dirs.findIndex(function(d){return d.legs.indexOf(l)>=0})};
   var famOf=function(l){return b.fams[dirOf(l)]||b.fams[0]};
   /* --- fare split by passenger, so every ticket shows its own fare, PPN and charges --- */
-  var intl=legs.some(function(l){return CT[farEnd(l)].z==='I'}),PX=PRICE_CFG.pax,wt=function(t){return t==='c'?(intl?PX.child:PX.childDom):t==='i'?PX.infant:1};
-  var W=people.map(function(p){return wt(p.t)}),WS=W.reduce(function(a,x){return a+x},0)||1;
-  var split=function(total,round){var a=W.map(function(w){return Math.round(total*w/WS/round)*round}),d=total-a.reduce(function(s,x){return s+x},0);a[0]+=d;return a};
-  var fareP=split(b.fare||0,1000),ppnP=split(b.tax||0,1000),seatPeople=people.filter(function(p){return p.t!=='i'}).length||1;
-  var chgEach=Math.round((b.chg||0)/seatPeople),ports={},portSum=0;legs.forEach(function(l){var c=legCharge(l);ports[l.from]=(ports[l.from]||0)+c;portSum+=c});
-  var portOk=portSum===chgEach,milesP=aw?split(b.award.miles||0,100):[];
+  var FS=splitFare(b),W=FS.W,WS=FS.WS,fareP=FS.fareP,ppnP=FS.ppnP,chgEach=FS.chgEach,ports=FS.ports,portOk=FS.portOk,milesP=FS.milesP;
   /* --- who and when --- */
   var greet,box;
   if(cx)greet='<p>Your booking was cancelled at your request and your seats were released. The refund is worked out below and was returned the way you paid.</p><p>We are sorry you will not be travelling with us this time, and hope to welcome you on board again soon.</p>';
@@ -79,10 +91,7 @@ window.SSR_NAMES={VGML:'Vegetarian meal',MOML:'Muslim meal',CHML:'Child meal',BB
   var portCols=portOk?Object.keys(ports).map(function(a){return '<span>'+N(ports[a])+' '+a+'</span>'}):['<span>'+N(chgEach)+' CHG</span>'];
   var fareRows=people.map(function(p){var infant=p.t==='i',tax='<div class="etk-tx"><span>'+N(ppnP[p.i])+' ID</span>'+(infant?'':portCols.join(''))+'</div>',tot=fareP[p.i]+ppnP[p.i]+(infant?0:chgEach);return '<tr><td>'+esc(gds(p.i))+(p.t==='i'?' (INFANT)':'')+'</td><td class="n">'+(aw?'AWARD '+N(milesP[p.i])+' MILES':N(fareP[p.i]))+'</td><td>'+tax+'</td><td class="n b">'+N(tot)+'</td></tr>'}).join('');
   var fareTbl='<div class="etk-sc"><table class="etk-tb"><thead><tr><th>Passenger</th><th class="n">'+(aw?'Fare':'Fare IDR')+'</th><th>Taxes / fees / charges IDR</th><th class="n">'+(aw?'Total cash IDR':'Total IDR')+'</th></tr></thead><tbody>'+fareRows+'<tr class="tot"><td>Total</td><td class="n">'+(aw?'AWARD '+N(b.award.miles)+' MILES':N(b.fare||0))+'</td><td>'+N(b.tax||0)+' PPN · '+N(b.chg||0)+' airport charges</td><td class="n">'+N(b.total||0)+'</td></tr></tbody></table></div>';
-  var fq0=function(i){var d=b.dirPrices&&b.dirPrices[i]?b.dirPrices[i].fare:(b.fare||0)/b.dirs.length;return Math.round(d*W[0]/WS/1000)*1000};
-  var route=function(d){var c=[d.legs[0].from];d.legs.forEach(function(l){c.push(l.to)});return c};
-  var fcalc=aw?route(b.dirs[0]).join(' GA ')+' '+(b.award.dirs&&b.award.dirs[0]?String(b.award.dirs[0].level).toUpperCase()+' ':'')+N(b.award.miles)+' MILES END'
-   :b.dirs.map(function(d,i){var r=route(d),seg=[];for(var k=0;k<r.length-1;k++)seg.push((k===0&&i===0?r[0]+' ':'')+'GA '+r[k+1]);return seg.join(' ')+' '+fq0(i).toFixed(2)}).join(' ')+' IDR'+fareP[0].toFixed(2)+'END ROE1.000000';
+  var fcalc=fareCalc(b,FS);
   /* --- form of payment: how it was paid, in the words of the till --- */
   var pm=b.payment||{},fop=function(){var m=esc(String(b.paymentMethod||'').toUpperCase()||'NOT RECORDED');if(aw)m='MILES '+esc((b.award.memberId||'')+'')+' + '+m;var bits=[m];if(pm.approval)bits.push('approval '+esc(pm.approval));if(String(b.paymentMethod||'').toLowerCase()==='cash'&&pm.tendered&&pm.tendered>pm.change){bits.push('received '+N(pm.tendered));bits.push('change '+N(pm.change||0))}return '<b>'+bits[0]+'</b>'+(bits.length>1?' · '+bits.slice(1).join(' · '):'')+' · charged <b>IDR '+N(b.paid0||b.total)+'</b>'};
   /* --- GarudaMiles block --- */

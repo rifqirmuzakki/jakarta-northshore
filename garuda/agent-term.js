@@ -42,13 +42,15 @@ function start(){
  $('tside').addEventListener('click',function(e){var b=e.target.closest('[data-cmd]');if(b){i.value=b.dataset.cmd;i.focus()}});
  if(!T.started){T.started=true;out('GARUDA INDONESIA SALES TERMINAL  -  '+C.COUNTER.toUpperCase()+'  -  OFFICE '+OFFICE+'\nSIGNED IN  '+ddmony(E.TD)+'  '+t4(E.nowAbs(),E.HUB)+' WIB\nTYPE HE FOR HELP.   EXAMPLE:  AN21DECJKTSIN','sys')}
  paint();GA_TERM.show()}
-window.GA_TERM={show:function(){if(!C)return;var i=$('tin');if(i)setTimeout(function(){i.focus({preventScroll:true})},0);side()},refresh:function(){if(C)paint()},run:function(v){out('> '+v.toUpperCase(),'cmd');run(v);side()},state:function(){return T},lines:function(){return T.lines.map(function(l){return l.t})}};
+window.GA_TERM={show:function(){if(!C)return;var i=$('tin');if(i)setTimeout(function(){i.focus({preventScroll:true})},0);side()},refresh:function(){if(C)paint()},run:function(v){out('> '+v.toUpperCase(),'cmd');run(v);side()},state:function(){return T},lines:function(){return T.lines.map(function(l){return l.t})},itineraryText:function(ref){var b=BKS.find(function(x){return x.ref===ref});return b?ipLines(b).join('\n'):''},printItinerary:function(ref){var b=BKS.find(function(x){return x.ref===ref});if(b&&!b.cancelled)ipPrint(b)}};
 
 /* ---------- command router ---------- */
 function run(raw){var up=raw.trim().toUpperCase(),c=up.replace(/\s+/g,''),m;
  if(T.xi&&c!=='XIY')T.xi=null;
  if(c==='HE'||c==='HELP'||c==='?')return help();
  if(c==='CL'||c==='CLR'||c==='CLEAR'){T.lines=[];return paint()}
+ if(c==='IP')return ip(false);
+ if(c==='IPP')return ip(true);
  if(c==='TWD')return ticketDisplay();
  if(c==='TWP')return printRecord();
  if(m=up.match(/^AM\s*(.*)$/))return member(m[1]);
@@ -118,6 +120,7 @@ function help(){out([
 '  FPCASH  FPCASH/2000000  FPCC  FPDC  FPQRIS  FPTRF    form of payment',
 '  TTP                  issue tickets       EP  print the e-ticket',
 '  ET                   legacy alias for TTP (simulation)',
+'  IP  IPP              display / print the itinerary: plain-text counter copy (held bookings show the time limit and fare rules)',
 '  TWD                  display simulated e-ticket record',
 '  TWP                  print agent copy of the e-ticket record (simulation)',
 'AWARD REDEMPTION - GARUDAMILES SIMULATION',
@@ -295,7 +298,7 @@ function recordText(b){var ts=C.ensureTickets(b),history=b.ticketHistory||[],lin
  ts.forEach(function(t){show(t,'CURRENT')});history.forEach(function(t){show(t,'PREVIOUS')});
  lines.push('BOOKING FINANCIAL SUMMARY - ALL PASSENGERS');if(b.award&&b.award.issued)lines.push('AWARD      '+milesTxt(W.awardNet(b))+' MILES  MEMBER '+b.award.member,'CASH TAXES AND CHARGES IDR '+amt(b.total));else lines.push('FARE       IDR '+amt(b.fare),'PPN        IDR '+amt(b.tax),'AIRPORT CHG IDR '+amt(b.chg),'BOOKING TOTAL IDR '+amt(b.total));lines.push('FORM OF PAYMENT  '+String(b.paymentMethod||'NOT RECORDED').toUpperCase());if(b.reissues&&b.reissues.length)lines.push('TOTAL COLLECTED IDR '+amt(b.paid||0),'REISSUES  '+b.reissues.length+' - TOTALS ARE CURRENT BOOKING VALUES');lines.push('','SIMULATED RECORD - NOT VALID FOR TRAVEL','FLOWN STATUS MAY BE INFERRED FROM ARRIVAL TIME');return lines.join('\n')}
 function ticketDisplay(){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','e');if(b.held)return out('NO TICKET ISSUED','e');if(!C.ensureTickets(b).length)return out('NO TICKET RECORD AVAILABLE','e');out(recordText(b)+'\nTWP PRINTS AGENT COPY  |  EP PRINTS CUSTOMER RECEIPT','sys')}
-function printRecord(){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','e');if(b.held||!C.ensureTickets(b).length)return out('NO TICKET ISSUED','e');var pane=$('agent-print-record');pane.textContent=recordText(b);try{window.print();out('AGENT RECORD SENT TO PRINT - SIMULATED','sys')}catch(e){out('PRINT UNAVAILABLE - USE BROWSER PRINT','e')}}
+function printRecord(){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','e');if(b.held||!C.ensureTickets(b).length)return out('NO TICKET ISSUED','e');var pane=$('agent-print-record'),ip0=$('agent-print-itin');if(ip0)ip0.innerHTML='';pane.textContent=recordText(b);try{window.print();out('AGENT RECORD SENT TO PRINT - SIMULATED','sys')}catch(e){out('PRINT UNAVAILABLE - USE BROWSER PRINT','e')}}
 function ep(){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','e');if(b.held)return out('NOT TICKETED - USE FP AND TTP FIRST','e');if(b.cancelled&&b.cancelled.held)return out('BOOKING WAS CANCELLED BEFORE TICKETING - NOTHING TO PRINT','e');C.printTicket(b.ref);out(b.cancelled?'REFUND RECEIPT SENT TO THE PRINTER':'E-TICKET SENT TO THE PRINTER','sys')}
 
 /* ---------- retrieve, cancel, queues, history ---------- */
@@ -421,13 +424,95 @@ function qt(){var h=BKS.filter(function(b){return b.held&&!b.cancelled}).sort(fu
  out('HELD BOOKINGS BY TICKETING TIME LIMIT\n'+h.map(function(b,i){return lpad(i+1,3)+'  '+b.ref+'  TL '+pad(tlShort(b.tl),12)+pad(pn(b,0),20)+pad(b.dirs[0].legs[0].from+b.dirs[0].legs[b.dirs[0].legs.length-1].to,8)+'IDR '+amt(b.total)}).join('\n')+'\nSELECT WITH RT<REF>','');T.list=h}
 function rh(){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','e');out('HISTORY '+b.ref+'\n'+(b.hist||[]).map(function(h){var d=new Date(h.at+7*36e5);return '  '+ddmon(Math.floor(d/864e5))+' '+p2(d.getUTCHours())+p2(d.getUTCMinutes())+'  '+h.t}).join('\n'),'')}
 
+
+/* ---------- itinerary printout: the counter's plain-text document, in the style of a reservation system print ---------- */
+var CCODE={'Asia/Jakarta':'ID','Asia/Makassar':'ID','Asia/Jayapura':'ID','Asia/Pontianak':'ID','Europe/Copenhagen':'DK','Asia/Shanghai':'CN','Europe/Lisbon':'PT','Europe/Berlin':'DE','Europe/Vienna':'AT','Asia/Tokyo':'JP','Europe/London':'GB','Asia/Dubai':'AE','Europe/Oslo':'NO','Europe/Athens':'GR','Asia/Hong_Kong':'HK','Europe/Stockholm':'SE','Europe/Helsinki':'FI','Europe/Budapest':'HU','Asia/Muscat':'OM','Europe/Prague':'CZ','Europe/Brussels':'BE','Africa/Casablanca':'MA','Australia/Melbourne':'AU','Australia/Brisbane':'AU','Australia/Darwin':'AU','Australia/Sydney':'AU','Australia/Perth':'AU','Australia/Adelaide':'AU','Europe/Istanbul':'TR','Asia/Macau':'MO','Asia/Taipei':'TW','Pacific/Auckland':'NZ','Asia/Riyadh':'SA','Asia/Baku':'AZ','Asia/Singapore':'SG','Asia/Manila':'PH','Asia/Kuala_Lumpur':'MY','Asia/Kuching':'MY','Asia/Ho_Chi_Minh':'VN','Asia/Bangkok':'TH','Indian/Maldives':'MV','Asia/Kathmandu':'NP','Asia/Kolkata':'IN','Asia/Amman':'JO','America/Los_Angeles':'US','Pacific/Honolulu':'US','Asia/Seoul':'KR','Africa/Addis_Ababa':'ET','Europe/Rome':'IT','Europe/Zurich':'CH','Asia/Brunei':'BN','Europe/Paris':'FR','Europe/Amsterdam':'NL','Asia/Qatar':'QA','Africa/Johannesburg':'ZA','Asia/Dhaka':'BD','Africa/Nairobi':'KE','Asia/Colombo':'LK'};
+var WDS=['MON','TUE','WED','THU','FRI','SAT','SUN'];
+function ipCity(c){return (E.cname(c)+' '+(CCODE[E.CT[c]&&E.CT[c].tz]||'')).trim().toUpperCase()}
+function ipPort(c){return c===E.HUB?'JAKARTA INTERNATIONAL':(E.cname(c)+' AIRPORT').toUpperCase()}
+function ipTerm(l,end){var c=end==='to'?l.to:l.from;return c===E.HUB?'TERMINAL '+String(l.term||'T3').slice(1):(E.CT[c]&&E.CT[c].z==='D'?'DOMESTIC TERMINAL':'')}
+function ipEquip(ac){ac=String(ac||'');return /^A\d/.test(ac)?'AIRBUS INDUSTRIE '+ac:/^(73|74|77|78)/.test(ac)?'BOEING '+ac:ac.toUpperCase()}
+function ipMeal(l,cab){var blk=l.arr-l.dep,t=W.lp(l.dep,l.from).min;if(blk<100)return 'SNACK';return cab==='Business'?'MEAL SERVICE':t>=240&&t<600?'BREAKFAST':t>=600&&t<960?'LUNCH':t>=960&&t<1380?'DINNER':'LIGHT MEAL'}
+function ipDur(l){var m=l.arr-l.dep;return p2(Math.floor(m/60))+':'+p2(m%60)}
+function ipWrap(prefix,text,width){var ind=new Array(prefix.length+1).join(' '),words=String(text).split(' '),L=[],cur=prefix;words.forEach(function(w){if((cur+w).length>width&&cur.trim()){L.push(cur.replace(/\s+$/,''));cur=ind}cur+=w+' '});L.push(cur.replace(/\s+$/,''));return L}
+function ipLines(b){var held=!!b.held,L=[],n=function(x){return Math.round(x).toLocaleString('en-US')},FS=W.etkFareSplit(b),aw=!!b.award,people=b.names.map(function(x,i){return {i:i,t:(b.passengers&&b.passengers[i]&&b.passengers[i].type)||'a'}});
+ var fqNo=function(i){var x=(b.extras||[]).find(function(y){return y.k==='ssr'&&y.code==='FQTV'&&y.p===i});return x?x.text:''};
+ var hd=function(left,right){L.push(pad(left,54)+right)};
+ hd('GARUDA INDONESIA',held?'ITINERARY - NOT TICKETED':'ETKT RECEIPT / ITINERARY');
+ hd(String(b.place||C.COUNTER).toUpperCase()+' JAKARTA   OFFICE '+OFFICE,'DATE '+ddmony(E.TD)+' '+t4(E.nowAbs(),E.HUB));
+ hd('JAKARTA INTERNATIONAL AIRPORT, TERMINAL 3','BOOKING REF '+b.ref);
+ if(held&&b.tl)hd('','TIME LIMIT '+tlShort(b.tl).replace('/',' '));else if(!held)hd('','RECEIPT '+W.etkReceipt(b,'0','RCT'));
+ L.push('');
+ people.forEach(function(p){var s=pn(b,p.i)+(p.t==='i'?' (INF)':'');L.push(pad(s,24)+(held?'':'ETKT '+C.ticketNo(b,p.i)+'  ')+(fqNo(p.i)?'FQTV '+fqNo(p.i):''))});
+ if(!held&&b.reissues&&b.reissues.length){var lr=b.reissues[b.reissues.length-1];if(lr.prev)L.push('ISSUED IN EXCHANGE FOR  '+lr.prev.join('  '))}
+ L.push('');
+ L.push(pad('SERVICE',17)+pad('FROM',24)+pad('TO',24)+pad('DEPART',8)+'ARRIVAL');
+ L.push(pad('---------------',17)+pad('----------------------',24)+pad('----------------------',24)+pad('------',8)+'-------');
+ b.dirs.forEach(function(d,di){d.legs.forEach(function(l){var dn=legDay(l),cab=(b.cabs&&b.cabs[di])||b.cab,k=classOf(b,di),cabName=(/^Award/.test(b.fams[di]||'')?(b.fams[di].replace(/^Award /,'').replace(/ (Saver|Advantage)$/,'')+' AWARD '+(b.fams[di].match(/(Saver|Advantage)$/)||[''])[0]):(cab==='Premium'?'Premium Economy':cab)).toUpperCase();
+  L.push('GARUDA - '+fn(l.id));
+  L.push(pad('',17)+pad(ipCity(l.from),24)+pad(ipCity(l.to),24)+pad(t4(l.dep,l.from),8)+t4(l.arr,l.to));
+  L.push(pad(WDS[dow(dn)-1]+' '+ddmon(dn),17)+pad(ipPort(l.from),24)+ipPort(l.to));
+  L.push(pad('NON STOP',17)+pad(ipTerm(l,'from'),24)+pad(ipTerm(l,'to'),24)+'DURATION '+ipDur(l));
+  L.push(pad('',17)+(held?'RESERVATION CONFIRMED - ':'TICKETED - ')+k+' '+cabName+(held?'':'   NVB '+ddmony(dn)+' NVA '+ddmony(dn)));
+  L.push(pad('',17)+'ON BOARD: '+ipMeal(l,cab));
+  L.push(pad('',17)+'AIRCRAFT OWNER: GA GARUDA INDONESIA');
+  L.push(pad('',17)+'EQUIPMENT: '+ipEquip(l.ac));
+  var seats=people.filter(function(p){return p.t!=='i'}).map(function(p){var s=W.travellerSeat(b,l,p.i);return s&&!/^(Not|Lap)/.test(s)?s+'/P'+(p.i+1):''}).filter(Boolean);
+  var rl=E.RULES[b.fams[di]||b.fams[0]]||{};
+  L.push(pad('',17)+'SEATS: '+(seats.length?seats.join(' '):'NOT ASSIGNED')+'   BAGGAGE: '+(/^Not/.test(rl.chk||'')?'CABIN ONLY':String(rl.chk||'').replace(/ kg/i,'K').toUpperCase()+' + 7K CABIN'));
+  L.push('')})});
+ /* special services (remarks never print) */
+ var sv=(b.extras||[]).filter(function(x){return x.k==='ssr'&&x.code!=='FQTV'});if(sv.length){L.push('SPECIAL SERVICES');sv.forEach(function(x){L.push('  '+x.code+' '+String((W.SSR_NAMES||{})[x.code]||'').toUpperCase()+(x.text?' - '+String(x.text).toUpperCase():'')+'  P'+((x.p||0)+1))});L.push('')}
+ /* fare */
+ var adult=people.findIndex(function(p){return p.t==='a'});if(adult<0)adult=0;
+ var per=function(i){return FS.fareP[i]+FS.ppnP[i]+(people[i].t==='i'?0:FS.chgEach)};
+ if(aw){L.push('AWARD  '+n(FS.milesP[adult])+' MILES PER PAX  + IDR '+n(per(adult))+' CASH TAXES AND CHARGES');L.push('  MEMBER '+b.award.member+' '+(b.award.memberId||'')+'  NO FARE OR PPN ON AN AWARD')}
+ else if(held){var ports=Object.keys(FS.ports).map(function(a){return 'ID '+a+' '+n(FS.ports[a])}).join('  ');
+  L.push('FARE IDR'+n(per(adult))+' PER PAX INCL TAXES PER '+ddmon(E.TD)+(held?' SUBJECT TO CHANGE':''));
+  people.forEach(function(p,i){if(p.t!=='a'&&(i!==adult)&&!people.slice(0,i).some(function(q){return q.t===p.t}))L.push('FARE IDR'+n(per(i))+' PER '+(p.t==='c'?'CHD':'INF'))});
+  L.push('  FARE '+n(FS.fareP[adult])+'  ID PPN '+n(FS.ppnP[adult])+'  '+ports)}
+ if(held&&b.tl)L.push('X TIME LIMIT '+tlShort(b.tl)+' AUTO CANCEL');
+ L.push('');
+ if(!held){
+  L.push(pad('FARE AND TAXES',30)+lpad('FARE',12)+lpad('ID PPN',12)+lpad('AIRPORT CHG',13)+lpad('TOTAL',12));
+  var tf=0,tp=0,tc=0;people.forEach(function(p,i){var c=p.t==='i'?0:FS.chgEach;tf+=FS.fareP[i];tp+=FS.ppnP[i];tc+=c;L.push(pad('  '+pn(b,i)+(p.t==='i'?' (INF)':''),30)+lpad(aw?'AWARD':n(FS.fareP[i]),12)+lpad(n(FS.ppnP[i]),12)+lpad(n(c),13)+lpad(n(per(i)),12))});
+  L.push(pad('  TOTAL IDR',30)+lpad(aw?'AWARD':n(tf),12)+lpad(n(tp),12)+lpad(n(tc),13)+lpad(n(b.total),12));
+  L.push('');
+  ipWrap('FARE CALC  ',W.etkFareCalc(b),80).forEach(function(x){L.push(x)});
+  var pm=b.payment||{},m=String(b.paymentMethod||'NOT RECORDED').toUpperCase(),cash=/^CASH$/i.test(b.paymentMethod||'');
+  L.push('FOP        '+(aw?'MILES '+(b.award.memberId||'')+' + ':'')+m+(cash&&pm.tendered?'   RECEIVED '+n(pm.tendered)+'   CHANGE '+n(pm.change||0):'')+(pm.approval?'   APPROVAL '+pm.approval:'')+'   CHARGED '+n(b.paid0||b.total));
+  var fams=[];b.dirs.forEach(function(d,i){var f=b.fams[i]||b.fams[0];if(fams.indexOf(f)<0)fams.push(f)});
+  ipWrap('ENDORSEMENTS  ',fams.map(function(f,i){return W.etkEndorse(b,f,i)}).join(' / ').replace(/ · /g,' / '),80).forEach(function(x){L.push(x)});
+  L.push('ISSUED     '+String(b.place||C.COUNTER).toUpperCase()+' / AGENT '+OFFICE+' / '+(b.issuedMs?ddmony(Math.floor((b.issuedMs+7*36e5)/864e5))+' '+(function(d){return p2(d.getUTCHours())+p2(d.getUTCMinutes())})(new Date(b.issuedMs+7*36e5)):ddmony(E.TD)));
+  L.push('')}
+ /* fare rules */
+ var f0=b.fams[0],rr=E.RULES[f0]||{};
+ L.push('FARE RULES - '+String(f0).toUpperCase()+' ('+classOf(b,0)+')');
+ L.push('  CHANGES         '+String(rr.chg||'').toUpperCase().replace(/ FEE$/,' FEE PER PAX').replace(/^FREE$/,'FREE OF CHARGE'));
+ L.push('  REFUND          '+String(rr.ref||'').toUpperCase().replace(/(IDR [\d,]+) FEE$/,'$1 FEE PER PAX'));
+ L.push('  BAGGAGE         '+String(rr.chk||'').toUpperCase().replace(/ KG/g,'K')+' CHECKED, '+String(rr.bag||'').toUpperCase().replace(/ KG CABIN BAG/,'K CABIN').replace(/ CABIN BAG/,' CABIN'));
+ L.push('  SEATS           '+String(rr.seat||'').toUpperCase());
+ L.push('  MILES           '+String(rr.mil||'').toUpperCase()+' OF FLOWN MILES');
+ if(held)L.push('  FARE IS NOT GUARANTEED UNTIL TICKETED');
+ L.push('');
+ if(!held){L.push('CHECK-IN OPENS 48 HRS BEFORE DEPARTURE - CLOSES 45 MIN DOMESTIC, 60 INTL');L.push('CARRY PHOTO ID. CARRIAGE SUBJECT TO CONDITIONS OF CARRIAGE.')}
+ else if(b.contactPhone||b.contactEmail)L.push('CONTACT  '+(b.contactPhone?'AP '+b.contactPhone:'')+(b.contactEmail?'   APE '+b.contactEmail.toUpperCase():''));
+ L.push('AGENT RECEIPT - NOT VALID FOR TRAVEL - SIMULATED - NOT AFFILIATED WITH GARUDA');
+ return L.map(function(x){return x.replace(/\s+$/,'')})}
+function ipPrint(b){var pane=$('agent-print-itin'),rec=$('agent-print-record');if(!pane)return false;if(rec)rec.textContent='';
+ pane.innerHTML='<img src="assets/garuda-logo-colour.png" alt="" style="height:34px;display:block;margin:0 0 10px"><div style="font-size:9pt;font-weight:bold;border:1.5px solid #000;display:inline-block;padding:2px 8px;margin:0 0 10px">COUNTER COPY · '+(b.held?'NOT A TICKET':'TICKETED')+'</div><pre style="margin:0;font:9pt/1.38 \'Courier New\',Courier,monospace;white-space:pre">'+C.esc(ipLines(b).join('\n'))+'</pre>';
+ try{window.print();return true}catch(e){return false}}
+function ip(doPrint){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','e');if(b.cancelled)return out('BOOKING IS CANCELLED - NO ITINERARY TO PRINT','e');
+ if(doPrint){var ok=ipPrint(b);return out(ok?'ITINERARY SENT TO PRINT - SIMULATED':'PRINT UNAVAILABLE - USE BROWSER PRINT',ok?'sys':'e')}
+ out(ipLines(b).join('\n')+'\nIPP PRINTS THE ITINERARY','')}
+
 /* ---------- side panel: the booking in progress and what to type next ---------- */
 function side(){var s=$('tside');if(!s)return;var h='<div class="pane"><h2>Booking in progress <small>'+(T.cur?C.statusOf(T.cur)[0]:T.p.names.length||T.p.segs.length?'Not saved':'Empty')+'</small></h2><div class="in">';
  var txt=T.cur?bookingText(T.cur):elems().map(function(e){return e.line}).join('\n');h+=txt?'<pre class="pnr">'+C.esc(txt)+'</pre>':'<div class="note" style="margin:0">Nothing yet. Start with AN to check availability.</div>';
  var B=!T.cur&&build();if(B)h+='<div class="q-row" style="padding:8px 0 0"><span>Estimate'+(B.assumed?' (1 adult assumed)':'')+'</span><b>IDR '+amt(B.sum.total)+'</b></div>';
  h+='</div></div><div class="pane"><h2>Next</h2><div class="in">'+nextHtml()+'</div></div><div class="pane"><h2>Quick keys</h2><div class="in keys">'+['HE','AN','FXX','ER','TTP','RT','QT','IG'].map(function(k){return '<button type="button" class="ghost" data-cmd="'+k+'">'+k+'</button>'}).join('')+'</div></div>';s.innerHTML=h}
 function nextHtml(){var P=T.p,b=T.cur,tip=function(c,t){return '<div class="nx"><button type="button" class="ghost" data-cmd="'+C.esc(c)+'">'+C.esc(c)+'</button> '+C.esc(t)+'</div>'};
- if(b){if(b.cancelled)return '<div class="note" style="margin:0">Booking cancelled. IG clears the screen of it.</div>';if(b.held)return (T.fp?tip('TTP','issue tickets · IDR '+amt(b.total)):tip('FXX','review the total')+tip('FQN','review fare rules')+tip('FPCASH','set form of payment'))+tip('SM3','seat map')+tip('RBT3','rebook into class T')+tip('XI','cancel and release seats');if(T.ri&&T.ri.ref===b.ref)return tip('FPCASH','form of payment')+tip('TTP','collect and reissue');return tip('TWD','display ticket record')+tip('TWP','print agent copy')+tip('SM3','seat map')+tip('EP','print the e-ticket')+tip('RBT3','change class')+tip('XI','cancel and refund')}
+ if(b){if(b.cancelled)return '<div class="note" style="margin:0">Booking cancelled. IG clears the screen of it.</div>';if(b.held)return (T.fp?tip('TTP','issue tickets · IDR '+amt(b.total)):tip('FXX','review the total')+tip('FQN','review fare rules')+tip('FPCASH','set form of payment'))+tip('IPP','print the itinerary for the customer')+tip('SM3','seat map')+tip('RBT3','rebook into class T')+tip('XI','cancel and release seats');if(T.ri&&T.ri.ref===b.ref)return tip('FPCASH','form of payment')+tip('TTP','collect and reissue');return tip('TWD','display ticket record')+tip('IPP','print the counter itinerary')+tip('TWP','print agent copy')+tip('SM3','seat map')+tip('EP','print the e-ticket')+tip('RBT3','change class')+tip('XI','cancel and refund')}
  if(!P.segs.length)return tip('AN'+ddmon(E.TD+21)+'JKTSIN','check availability')+tip('AW'+ddmon(E.TD+21)+'JKTSIN','award seats')+(T.av?tip('SS1Y1','sell from the last display'):'');if(!P.names.length)return tip('NM1SURNAME/GIVEN','add the passengers');var named=P.names.filter(function(n){return n.t!=='i'}).length;if(named!==P.segs[0].n)return '<div class="note">'+named+' of '+P.segs[0].n+' seat-holding passengers named. Add or correct names before saving.</div>'+tip('NM1SURNAME/GIVEN','add a passenger');if(!P.phone)return tip('AP+628123456789','contact phone');if(!P.tk)return tip('TKOK','ticketing arrangement');if(!P.rf)return tip('RFNAME','received from');
  if(P.segs[0].award&&!P.member)return tip('AMGA123456789','select the GarudaMiles member by number');
  return tip('FXX','check the fare')+tip('RBT3','rebook a flight into class T')+tip('ER','save the booking')}
