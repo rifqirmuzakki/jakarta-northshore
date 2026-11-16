@@ -18,7 +18,7 @@ var pad=function(s,n){s=String(s);return s.length>=n?s:s+' '.repeat(n-s.length)}
 var n0=function(n){return Math.round(n/1000)*1000};
 var amt=function(n){return n0(n).toLocaleString('en-US')};
 var p2=function(n){return String(n).padStart(2,'0')};
-function out(t,cls){String(t).split('\n').forEach(function(l){T.lines.push({t:l,c:cls||''})});if(T.lines.length>800)T.lines.splice(0,T.lines.length-800);paint()}
+function out(t,cls){if(T.quiet){T.last={t:String(t),c:cls||''};return}String(t).split('\n').forEach(function(l){T.lines.push({t:l,c:cls||''})});if(T.lines.length>800)T.lines.splice(0,T.lines.length-800);paint()}
 function ddmon(dn){var d=new Date(dn*864e5);return d.getUTCDate()+C.MON[d.getUTCMonth()]}
 function ddmony(dn){var d=new Date(dn*864e5);return p2(d.getUTCDate())+C.MON[d.getUTCMonth()]+p2(d.getUTCFullYear()%100)}
 function t4(abs,c){return E.fT(abs,c).replace(':','')}
@@ -42,7 +42,7 @@ function start(){
  $('tside').addEventListener('click',function(e){var b=e.target.closest('[data-cmd]');if(b){i.value=b.dataset.cmd;i.focus()}});
  if(!T.started){T.started=true;out('GARUDA INDONESIA SALES TERMINAL  -  '+C.COUNTER.toUpperCase()+'  -  OFFICE '+OFFICE+'\nSIGNED IN  '+ddmony(E.TD)+'  '+t4(E.nowAbs(),E.HUB)+' WIB\nTYPE HE FOR HELP.   EXAMPLE:  AN21DECJKTSIN','sys')}
  paint();GA_TERM.show()}
-window.GA_TERM={show:function(){if(!C)return;var i=$('tin');if(i)setTimeout(function(){i.focus({preventScroll:true})},0);side()},refresh:function(){if(C)paint()},run:function(v){out('> '+v.toUpperCase(),'cmd');run(v);side()},state:function(){return T},lines:function(){return T.lines.map(function(l){return l.t})},itineraryText:function(ref){var b=BKS.find(function(x){return x.ref===ref});return b?ipLines(b).join('\n'):''},printItinerary:function(ref){var b=BKS.find(function(x){return x.ref===ref});if(b&&!b.cancelled)ipPrint(b)}};
+window.GA_TERM={show:function(){if(!C)return;var i=$('tin');if(i)setTimeout(function(){i.focus({preventScroll:true})},0);side()},refresh:function(){if(C)paint()},run:function(v){out('> '+v.toUpperCase(),'cmd');run(v);side()},state:function(){return T},lines:function(){return T.lines.map(function(l){return l.t})},changeOptions:changeOptions,changeQuote:changeQuote,changeCommit:changeCommit,itineraryText:function(ref){var b=BKS.find(function(x){return x.ref===ref});return b?ipLines(b).join('\n'):''},printItinerary:function(ref){var b=BKS.find(function(x){return x.ref===ref});if(b&&!b.cancelled)ipPrint(b)}};
 
 /* ---------- command router ---------- */
 function run(raw){var up=raw.trim().toUpperCase(),c=up.replace(/\s+/g,''),m;
@@ -330,13 +330,13 @@ function rb(c){var m=c.match(/^RB([A-Z])(\d{1,2})(?:\/(\d{1,2}))?$/);if(!m)retur
  var q=Object.assign({},b.q),pr0=null;var spanQ=function(){q.d1=legDay(di===0?target.legs[0]:b.dirs[0].legs[0]);if(b.dirs.length>1)q.d2=legDay(di===1?target.legs[0]:b.dirs[1].legs[0])};spanQ();
  var pr=W.priceFor(target,fam,q),oldPr=(b.dirPrices&&b.dirPrices[di])||{total:b.total/b.dirs.length};
  if(b.award){var AC=W.GA_PRICING.cfg.award,od=(b.award.dirs||[])[di]||{level:'Saver',miles:b.award.miles},nm=W.awardPartyMiles(target,row.cab.k,row.award.level,q),newDir={k:k,level:row.award.level,cab:row.cab.k,miles:nm},bal=W.memberBalance(W.awardMember(b)),total2=b.award.miles-od.miles+nm;
-  if(b.held){if(total2>bal)return out('INSUFFICIENT MILES  NEED '+milesTxt(total2)+'  BALANCE '+milesTxt(bal),'e');applyChange(b,di,target,row,fam,pr,q,k);b.award.dirs[di]=newDir;b.award.miles=total2;b.award.cash=b.total;(b.hist=b.hist||[]).push({at:Date.now(),t:'REBOOKED '+old.cls+' TO '+k+(sameFlight?'':' ON '+target.legs.map(function(l){return l.id}).join('/'))+', MILES '+milesTxt(total2)});store.set(C.KEY,BKS);W.awardReset();
+  if(b.held){if(total2>bal)return out('INSUFFICIENT MILES  NEED '+milesTxt(total2)+'  BALANCE '+milesTxt(bal),'e');if(T.dry){T.plan={held:true,award:{oldMiles:od.miles,newMiles:nm,total:total2,balance:bal},old:old.cls,k:k,target:target,oldTotal:b.total,newTotal:b.total};return out('DRY','sys')}applyChange(b,di,target,row,fam,pr,q,k);b.award.dirs[di]=newDir;b.award.miles=total2;b.award.cash=b.total;(b.hist=b.hist||[]).push({at:Date.now(),t:'REBOOKED '+old.cls+' TO '+k+(sameFlight?'':' ON '+target.legs.map(function(l){return l.id}).join('/'))+', MILES '+milesTxt(total2)});store.set(C.KEY,BKS);W.awardReset();
    return out('OK  REBOOKED '+old.cls+' TO '+k+(sameFlight?'':' ON '+target.legs.map(function(l){return fn(l.id)}).join('/'))+'   MILES '+milesTxt(total2)+'\n'+bookingText(b),'ok')}
   if(!sameFlight||true){var feeM=Math.round(od.miles*(od.level==='Advantage'?AC.changeFeeAdv:AC.changeFeeSaver)/100)*100,diffM=Math.max(0,nm-od.miles),due=feeM+diffM,cashDiff=Math.max(0,pr.total-oldPr.total);
    if(due>bal)return out('INSUFFICIENT MILES  NEED '+milesTxt(due)+' TO CHANGE  BALANCE '+milesTxt(bal),'e');
    T.ri={ref:b.ref,di:di,it:target,row:row,fam:fam,pr:pr,q:q,k:k,fee:0,diff:cashDiff,collect:cashDiff,oldPr:oldPr,old:old.cls,award:{newDir:newDir,feeM:feeM,diffM:diffM,due:due}};
    return out('AWARD REISSUE QUOTE  '+b.ref+'  '+b.award.member+'\n  OLD  '+old.it.legs.map(function(l){return fn(l.id)}).join('/')+'  '+old.cls+'  '+pad(od.level.toUpperCase(),10)+lpad(milesTxt(od.miles),9)+' MILES\n  NEW  '+target.legs.map(function(l){return fn(l.id)}).join('/')+'  '+k+'  '+pad(row.award.level.toUpperCase(),10)+lpad(milesTxt(nm),9)+' MILES\n  MILES DIFFERENCE'+lpad(milesTxt(diffM),14)+(nm<od.miles?'   (FEWER MILES ARE NOT RETURNED)':'')+'\n  CHANGE FEE '+(od.level==='Advantage'?Math.round(AC.changeFeeAdv*100):Math.round(AC.changeFeeSaver*100))+'%'+lpad(milesTxt(feeM),19)+' MILES\n  TOTAL MILES TO DEBIT '+milesTxt(due)+'   BALANCE '+milesTxt(bal)+'\n  CASH TO COLLECT IDR '+amt(cashDiff)+'\n'+(cashDiff?'ENTER FP<METHOD> THEN TTP TO REISSUE':'ENTER TTP TO REISSUE'),'sys')}}
- if(b.held){applyChange(b,di,target,row,fam,pr,q,k);var was=b.total;(b.hist=b.hist||[]).push({at:Date.now(),t:'REBOOKED '+old.cls+' TO '+k+(sameFlight?'':' ON '+target.legs.map(function(l){return l.id}).join('/'))+', TOTAL '+amt(oldTotalOf(b,oldPr,pr))+' TO '+amt(b.total)});store.set(C.KEY,BKS);
+ if(b.held){if(T.dry){T.plan={held:true,old:old.cls,k:k,target:target,oldTotal:b.total,newTotal:oldTotalOf(b,oldPr,pr)};return out('DRY','sys')}applyChange(b,di,target,row,fam,pr,q,k);var was=b.total;(b.hist=b.hist||[]).push({at:Date.now(),t:'REBOOKED '+old.cls+' TO '+k+(sameFlight?'':' ON '+target.legs.map(function(l){return l.id}).join('/'))+', TOTAL '+amt(oldTotalOf(b,oldPr,pr))+' TO '+amt(b.total)});store.set(C.KEY,BKS);
   return out('OK  REBOOKED '+old.cls+' TO '+k+(sameFlight?'':' ON '+target.legs.map(function(l){return fn(l.id)}).join('/'))+'   TOTAL IDR '+amt(oldTotalOf(b,oldPr,pr))+' TO '+amt(b.total)+'\n'+bookingText(b),'ok')}
  /* ticketed: a reissue quote, collected with FP and ET */
  var rule=chgRule(b,di);if(rule.no)return out('FARE RULE: CHANGES NOT ALLOWED ('+(b.fams[di]||b.fams[0]).toUpperCase()+').  USE XI TO CANCEL INSTEAD','e');
@@ -424,6 +424,37 @@ function qt(){var h=BKS.filter(function(b){return b.held&&!b.cancelled}).sort(fu
  out('HELD BOOKINGS BY TICKETING TIME LIMIT\n'+h.map(function(b,i){return lpad(i+1,3)+'  '+b.ref+'  TL '+pad(tlShort(b.tl),12)+pad(pn(b,0),20)+pad(b.dirs[0].legs[0].from+b.dirs[0].legs[b.dirs[0].legs.length-1].to,8)+'IDR '+amt(b.total)}).join('\n')+'\nSELECT WITH RT<REF>','');T.list=h}
 function rh(){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','e');out('HISTORY '+b.ref+'\n'+(b.hist||[]).map(function(h){var d=new Date(h.at+7*36e5);return '  '+ddmon(Math.floor(d/864e5))+' '+p2(d.getUTCHours())+p2(d.getUTCMinutes())+'  '+h.t}).join('\n'),'')}
 
+
+
+/* ---------- change flight from the Bookings tab: the same rules as RB and the reissue, driven quietly ---------- */
+var FPK={'Cash':'CASH','Credit card':'CC','Debit card':'DC','QRIS':'QRIS','Bank transfer':'TRF'};
+function chgFind(ref){return BKS.find(function(x){return x.ref===ref})}
+function chgBusy(){return !T.cur&&(T.p.segs.length||T.p.names.length||T.p.phone||T.p.email||T.p.tk||T.p.rf||T.p.extras.length)}
+function chgWith(b,fn){var s={cur:T.cur,p:T.p,av:T.av,ri:T.ri,fp:T.fp,xi:T.xi,quiet:T.quiet,dry:T.dry,last:T.last,plan:T.plan};
+ try{T.cur=b;T.p=fresh();T.fp=null;T.xi=null;T.quiet=true;T.dry=false;T.last=null;T.plan=null;return fn()}finally{T.cur=s.cur;T.p=s.p;T.av=s.av;T.ri=s.ri;T.fp=s.fp;T.xi=s.xi;T.quiet=s.quiet;T.dry=s.dry;T.last=s.last;T.plan=s.plan}}
+function chgQ(b,di,target){var q=Object.assign({},b.q);q.d1=legDay(di===0?target.legs[0]:b.dirs[0].legs[0]);if(b.dirs.length>1)q.d2=legDay(di===1?target.legs[0]:b.dirs[1].legs[0]);return q}
+function changeOptions(ref,di,dn){var b=chgFind(ref);if(!b||b.cancelled)return {err:'BOOKING NOT FOUND OR CANCELLED'};if(chgBusy())return {err:'FINISH OR IGNORE (IG) THE BOOKING IN PROGRESS IN THE TERMINAL FIRST'};
+ var dir=b.dirs[di],o=dir.legs[0].from,d=dir.legs[dir.legs.length-1].to,seatsN=b.pax.a+b.pax.c,aw=!!b.award,cur=dir.legs.map(function(l){return l.id+'|'+l.dep}).join('>');
+ if(dn<=E.TD)return {err:'CHOOSE A DATE FROM TOMORROW'};
+ var its=W.search(o,d,dn).map(function(it){var q=chgQ(b,di,it),rows=classRow(it,true).filter(function(r){return !!r.award===aw}).map(function(r){var f=famAt(r);return {k:r.k,name:r.fam.n,left:r.left,ok:r.left>=seatsN,total:W.priceFor(it,f,q).total,miles:r.award?W.awardPartyMiles(it,r.cab.k,r.award.level,q):0,cab:r.cab.k}});
+  return {key:it.key,current:it.key===cur,flt:it.legs.map(function(l){return fn(l.id)}).join('/'),dep:t4(it.dep,it.legs[0].from),arr:t4(it.arr,it.legs[it.legs.length-1].to),via:it.stops?it.legs[0].to:'',rows:rows}});
+ return {its:its,cls:classOf(b,di),o:o,d:d}}
+function changeQuote(ref,di,itKey,k,dn){var b=chgFind(ref);if(!b)return {ok:false,err:'BOOKING NOT FOUND'};if(chgBusy())return {ok:false,err:'FINISH OR IGNORE (IG) THE BOOKING IN PROGRESS IN THE TERMINAL FIRST'};
+ return chgWith(b,function(){var dir=b.dirs[di],o=dir.legs[0].from,d=dir.legs[dir.legs.length-1].to,its=W.search(o,d,dn),ln=its.findIndex(function(x){return x.key===itKey})+1;if(!ln)return {ok:false,err:'FLIGHT NO LONGER ON SALE'};
+  var li=0;for(var x=0;x<di;x++)li+=b.dirs[x].legs.length;var n=b.names.length+li+1;T.av={o:o,d:d,dn:dn,its:its,award:!!b.award};T.ri=null;T.dry=true;
+  rb('RB'+k+n+'/'+ln);var last=T.last;
+  if(T.plan){var pl=T.plan;return {ok:true,quote:{kind:'held',oldFlt:dir.legs.map(function(l){return fn(l.id)}).join('/'),newFlt:pl.target.legs.map(function(l){return fn(l.id)}).join('/'),oldCls:pl.old,newCls:pl.k,oldTotal:pl.oldTotal,newTotal:pl.newTotal,award:pl.award||null}}}
+  if(T.ri&&T.ri.ref===b.ref){var ri=T.ri,rule=chgRule(b,di);return {ok:true,ri:ri,quote:{kind:'ticketed',oldFlt:dir.legs.map(function(l){return fn(l.id)}).join('/'),newFlt:ri.it.legs.map(function(l){return fn(l.id)}).join('/'),oldCls:ri.old,newCls:ri.k,oldFare:ri.oldPr.total,newFare:ri.pr.total,fee:ri.fee,diff:ri.diff,collect:ri.collect,rule:rule.text,pax:b.pax.a+b.pax.c,
+   award:ri.award?{oldMiles:(b.award.dirs[di]||{}).miles,newMiles:ri.award.newDir.miles,feeM:ri.award.feeM,diffM:ri.award.diffM,due:ri.award.due,balance:W.memberBalance(W.awardMember(b))}:null}}}
+  return {ok:false,err:last?last.t.replace(/\n[\s\S]*$/,''):'CANNOT CHANGE THIS FLIGHT'}})}
+function changeCommit(ref,di,itKey,k,dn,method,tend){var b=chgFind(ref);if(!b)return {ok:false,err:'BOOKING NOT FOUND'};if(chgBusy())return {ok:false,err:'FINISH OR IGNORE (IG) THE BOOKING IN PROGRESS IN THE TERMINAL FIRST'};
+ return chgWith(b,function(){var dir=b.dirs[di],o=dir.legs[0].from,d=dir.legs[dir.legs.length-1].to,its=W.search(o,d,dn),ln=its.findIndex(function(x){return x.key===itKey})+1;if(!ln)return {ok:false,err:'FLIGHT NO LONGER ON SALE'};
+  var li=0;for(var x=0;x<di;x++)li+=b.dirs[x].legs.length;var n=b.names.length+li+1;T.av={o:o,d:d,dn:dn,its:its,award:!!b.award};T.ri=null;T.dry=false;
+  rb('RB'+k+n+'/'+ln);
+  if(b.held){var l0=T.last;return l0&&l0.c==='ok'?{ok:true,msg:'Flight changed. The booking is still held.'}:{ok:false,err:l0?l0.t.replace(/\n[\s\S]*$/,''):'COULD NOT CHANGE'}}
+  if(!T.ri||T.ri.ref!==b.ref)return {ok:false,err:T.last?T.last.t.replace(/\n[\s\S]*$/,''):'COULD NOT QUOTE THE CHANGE'};
+  var need=T.ri.collect;if(need>0){var key=FPK[method]||'CASH';T.fp={k:key,amount:key==='CASH'&&tend?+tend:null}}T.last=null;reissue();var l1=T.last;
+  return l1&&l1.c==='ok'?{ok:true,msg:'Reissued. New ticket numbers are on the e-ticket.'}:{ok:false,err:l1?l1.t.replace(/\n[\s\S]*$/,''):'COULD NOT REISSUE'}})}
 
 /* ---------- itinerary printout: the counter's plain-text document, in the style of a reservation system print ---------- */
 var CCODE={'Asia/Jakarta':'ID','Asia/Makassar':'ID','Asia/Jayapura':'ID','Asia/Pontianak':'ID','Europe/Copenhagen':'DK','Asia/Shanghai':'CN','Europe/Lisbon':'PT','Europe/Berlin':'DE','Europe/Vienna':'AT','Asia/Tokyo':'JP','Europe/London':'GB','Asia/Dubai':'AE','Europe/Oslo':'NO','Europe/Athens':'GR','Asia/Hong_Kong':'HK','Europe/Stockholm':'SE','Europe/Helsinki':'FI','Europe/Budapest':'HU','Asia/Muscat':'OM','Europe/Prague':'CZ','Europe/Brussels':'BE','Africa/Casablanca':'MA','Australia/Melbourne':'AU','Australia/Brisbane':'AU','Australia/Darwin':'AU','Australia/Sydney':'AU','Australia/Perth':'AU','Australia/Adelaide':'AU','Europe/Istanbul':'TR','Asia/Macau':'MO','Asia/Taipei':'TW','Pacific/Auckland':'NZ','Asia/Riyadh':'SA','Asia/Baku':'AZ','Asia/Singapore':'SG','Asia/Manila':'PH','Asia/Kuala_Lumpur':'MY','Asia/Kuching':'MY','Asia/Ho_Chi_Minh':'VN','Asia/Bangkok':'TH','Indian/Maldives':'MV','Asia/Kathmandu':'NP','Asia/Kolkata':'IN','Asia/Amman':'JO','America/Los_Angeles':'US','Pacific/Honolulu':'US','Asia/Seoul':'KR','Africa/Addis_Ababa':'ET','Europe/Rome':'IT','Europe/Zurich':'CH','Asia/Brunei':'BN','Europe/Paris':'FR','Europe/Amsterdam':'NL','Asia/Qatar':'QA','Africa/Johannesburg':'ZA','Asia/Dhaka':'BD','Africa/Nairobi':'KE','Asia/Colombo':'LK'};

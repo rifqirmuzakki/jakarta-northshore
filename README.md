@@ -412,3 +412,9 @@ A GDS-style command screen (Amadeus, Sabre and Galileo flavour) on the same engi
 - **Special services and remarks**: `SRVGML/P1` (all flights of the booking, or `/S3` for one), codes VGML MOML CHML BBML DBML GFML SFML WCHR WCHS WCHC BSCT BLND DEAF MEDA PETC FQTV (BBML and BSCT only for infants, CHML for children, MEDA and PETC need text, FQTV is the GarudaMiles number `SRFQTV-GA123456789/P1`), `RM text` remark, `RC text` confidential remark, `OSGA text` message to the airline. They work before and after saving (after saving they are kept in `b.extras` and written to the history); `XE` deletes SSR and remark elements of a saved booking. Services, the GarudaMiles number and the seat print on the e-ticket; remarks, confidential remarks and OSI never do. Test: `tools/tests/garuda-seats-remarks.cjs`.
 - Not built yet: work areas, sign-in, adding passengers to a saved booking, ticketing queues beyond `QT`, SSR and remarks elements.
 - Test: `tools/tests/garuda-agent-terminal.cjs`.
+
+## Change flight (Bookings tab)
+
+Open a booking and press **Change flight…**. Pick the direction (if more than one can still be changed), a new date, a flight and a class. The panel shows the quote; for a ticketed booking that is the fare difference, the change fee from the fare rule and the total to collect, plus a payment method (and cash received). Confirm to reissue. A held booking is rebooked with no fee. Award bookings use miles for the difference and fee.
+
+The button drives the same rebook and reissue code as the terminal (`RB`, `ET`), so fare rules and errors (for example Lite, "changes not allowed") are identical. It refuses while the terminal has an unsaved booking in progress. It is hidden for cancelled bookings and for flown directions. Test: `tools/tests/garuda-change-flight.cjs`.

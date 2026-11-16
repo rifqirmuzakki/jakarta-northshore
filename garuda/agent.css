@@ -122,3 +122,9 @@ tr.row{cursor:pointer}tr.row:hover td{background:#f2f7f9}tr.row.on td{background
  .tside{position:static}
  .termbar{padding:8px 10px}
 }
+
+/* change flight panel in the Bookings tab */
+.chgp{margin-top:12px;border:1px solid var(--teal2)}.chgp h3{margin:0 0 8px;font-size:14px}.chgp h3 small{font-weight:400;color:var(--mute);margin-left:6px}
+.chgl{display:flex;flex-direction:column;gap:4px;margin:8px 0}.chgl button{display:flex;gap:10px;align-items:baseline;text-align:left;border:1px solid var(--line);background:#fff;padding:7px 10px;border-radius:2px;font-size:13px}.chgl button span{margin-left:auto;font-variant-numeric:tabular-nums}.chgl button.on{border-color:var(--teal2);background:var(--sel)}.chgl button:hover{border-color:var(--teal2)}
+.chgq table{width:100%;border-collapse:collapse;margin:8px 0}.chgq td,.chgq th{padding:4px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}.chgq .n{text-align:right}.chgq tr.tot td{border-top:2px solid var(--ink);border-bottom:0}
+@media(max-width:760px){.chgl button{flex-wrap:wrap}}
