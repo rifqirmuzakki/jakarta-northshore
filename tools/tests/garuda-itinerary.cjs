@@ -19,7 +19,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  let it=await last('IP');
  assert(/ITINERARY - NOT TICKETED/.test(it)&&/COUNTER JKT-03 JAKARTA\s+OFFICE JKT003/.test(it)&&/BOOKING REF GA[0-9A-Z]{4}/.test(it)&&/TIME LIMIT \d+[A-Z]{3} \d{4}/.test(it));
  assert(/WIJAYA\/RINA MRS\s+FQTV GA123456789/.test(it)&&/WIJAYA\/BUDI MR/.test(it)&&/WIJAYA\/SARI/.test(it));
- assert(/GARUDA - GA \d+/.test(it)&&/JAKARTA ID\s+DENPASAR ID/.test(it)&&/DENPASAR ID\s+JAKARTA ID/.test(it)&&/RESERVATION CONFIRMED - M ECONOMY/.test(it)&&/ON BOARD: [A-Z ]+/.test(it)&&/AIRCRAFT OWNER: GA GARUDA INDONESIA/.test(it)&&/EQUIPMENT: (AIRBUS INDUSTRIE|BOEING|ATR)/.test(it)&&/DURATION \d\d:\d\d/.test(it)&&/NON STOP/.test(it)&&/SEATS: /.test(it));
+ assert(/I GUSTI NGURAH RAI INTL/.test(it)&&/DOMESTIC TERMINAL/.test(it),'airport name from the table');assert(/GARUDA INDONESIA - GA \d+/.test(it)&&/JAKARTA ID\s+DENPASAR ID/.test(it)&&/DENPASAR ID\s+JAKARTA ID/.test(it)&&/RESERVATION CONFIRMED - M ECONOMY/.test(it)&&/ON BOARD: [A-Z ]+/.test(it)&&/AIRCRAFT OWNER: GA GARUDA INDONESIA/.test(it)&&/EQUIPMENT: (AIRBUS INDUSTRIE|BOEING|ATR)/.test(it)&&/DURATION \d\d:\d\d/.test(it)&&/NON STOP/.test(it)&&/SEATS: /.test(it));
  assert(/FARE IDR[\d,]+ PER PAX INCL TAXES PER \d+[A-Z]{3} SUBJECT TO CHANGE/.test(it)&&/FARE IDR[\d,]+ PER CHD/.test(it)&&/X TIME LIMIT \d+[A-Z]{3}\/\d{4} AUTO CANCEL/.test(it));
  assert(/FARE RULES - ECONOMY STANDARD \(M\)/.test(it)&&/CHANGES\s+IDR 250,000 FEE PER PAX/.test(it)&&/REFUND\s+IDR 750,000 FEE PER PAX/.test(it)&&/FARE IS NOT GUARANTEED UNTIL TICKETED/.test(it));
  assert(/SPECIAL SERVICES/.test(it)&&/VGML VEGETARIAN MEAL/.test(it)&&/CONTACT\s+AP 081234567890\s+APE RINA@MAIL.COM/.test(it));
@@ -45,7 +45,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  await p.evaluate(()=>{document.getElementById('agent-print-itin').innerHTML='<b>old</b>'});await run('TWP');assert.equal(await p.evaluate(()=>document.getElementById('agent-print-itin').innerHTML),'');
  /* ---- international: country codes ---- */
  await run('IG');await run(`AN${ddmon(30)}JKTSIN`);await run('SS1Y1');await run('NM1WIJAYA/RINA MRS');await run('AP081234567890');await run('TKOK');await run('RFRINA');assert(/BOOKING SAVED/.test(await last('ER')));
- it=await last('IP');assert(/SINGAPORE SG/.test(it)&&/JAKARTA ID/.test(it)&&/GARUDA - GA \d+/.test(it)&&/FARE IDR[\d,]+ PER PAX/.test(it));
+ it=await last('IP');assert(/SINGAPORE CHANGI/.test(it)&&/TERMINAL 3/.test(it),'real airport name and terminal');assert(/AGENT RECEIPT - NOT VALID FOR TRAVEL - SIMULATED\n.*NOT AFFILIATED WITH GARUDA INDONESIA/.test(it));assert(/SINGAPORE SG/.test(it)&&/JAKARTA ID/.test(it)&&/GARUDA INDONESIA - GA \d+/.test(it)&&/FARE IDR[\d,]+ PER PAX/.test(it));
  await run('XI');await run('XIY');
  /* ---- an award: miles, no fare ---- */
  await run('IG');await run(`AW${ddmon(30)}JKTDPS`);const aw=await last(`AW${ddmon(30)}JKTDPS`);const line=aw.split('\n').filter(l=>/^\s*\d+\s+GA/.test(l)).findIndex(l=>/\bX[1-9]/.test(l))+1;assert(line>0);

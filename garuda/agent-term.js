@@ -429,8 +429,9 @@ function rh(){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','
 var CCODE={'Asia/Jakarta':'ID','Asia/Makassar':'ID','Asia/Jayapura':'ID','Asia/Pontianak':'ID','Europe/Copenhagen':'DK','Asia/Shanghai':'CN','Europe/Lisbon':'PT','Europe/Berlin':'DE','Europe/Vienna':'AT','Asia/Tokyo':'JP','Europe/London':'GB','Asia/Dubai':'AE','Europe/Oslo':'NO','Europe/Athens':'GR','Asia/Hong_Kong':'HK','Europe/Stockholm':'SE','Europe/Helsinki':'FI','Europe/Budapest':'HU','Asia/Muscat':'OM','Europe/Prague':'CZ','Europe/Brussels':'BE','Africa/Casablanca':'MA','Australia/Melbourne':'AU','Australia/Brisbane':'AU','Australia/Darwin':'AU','Australia/Sydney':'AU','Australia/Perth':'AU','Australia/Adelaide':'AU','Europe/Istanbul':'TR','Asia/Macau':'MO','Asia/Taipei':'TW','Pacific/Auckland':'NZ','Asia/Riyadh':'SA','Asia/Baku':'AZ','Asia/Singapore':'SG','Asia/Manila':'PH','Asia/Kuala_Lumpur':'MY','Asia/Kuching':'MY','Asia/Ho_Chi_Minh':'VN','Asia/Bangkok':'TH','Indian/Maldives':'MV','Asia/Kathmandu':'NP','Asia/Kolkata':'IN','Asia/Amman':'JO','America/Los_Angeles':'US','Pacific/Honolulu':'US','Asia/Seoul':'KR','Africa/Addis_Ababa':'ET','Europe/Rome':'IT','Europe/Zurich':'CH','Asia/Brunei':'BN','Europe/Paris':'FR','Europe/Amsterdam':'NL','Asia/Qatar':'QA','Africa/Johannesburg':'ZA','Asia/Dhaka':'BD','Africa/Nairobi':'KE','Asia/Colombo':'LK'};
 var WDS=['MON','TUE','WED','THU','FRI','SAT','SUN'];
 function ipCity(c){return (E.cname(c)+' '+(CCODE[E.CT[c]&&E.CT[c].tz]||'')).trim().toUpperCase()}
-function ipPort(c){return c===E.HUB?'JAKARTA INTERNATIONAL':(E.cname(c)+' AIRPORT').toUpperCase()}
-function ipTerm(l,end){var c=end==='to'?l.to:l.from;return c===E.HUB?'TERMINAL '+String(l.term||'T3').slice(1):(E.CT[c]&&E.CT[c].z==='D'?'DOMESTIC TERMINAL':'')}
+function ipPort(c){return c===E.HUB?'JAKARTA INTERNATIONAL':W.airportName(c).toUpperCase().replace(/ INTERNATIONAL/,' INTL').replace(/ AIRPORT$/,'')}
+function ipTerm(l,end){var c=end==='to'?l.to:l.from;return c===E.HUB?'TERMINAL '+String(l.term||'T3').slice(1):W.airportTerm(c).toUpperCase()}
+function ipCol(text,w){var words=String(text).split(' '),L=[],cur='';words.forEach(function(x){if((cur+' '+x).trim().length>w&&cur){L.push(cur);cur=x}else cur=(cur+' '+x).trim()});if(cur)L.push(cur);return L}
 function ipEquip(ac){ac=String(ac||'');return /^A\d/.test(ac)?'AIRBUS INDUSTRIE '+ac:/^(73|74|77|78)/.test(ac)?'BOEING '+ac:ac.toUpperCase()}
 function ipMeal(l,cab){var blk=l.arr-l.dep,t=W.lp(l.dep,l.from).min;if(blk<100)return 'SNACK';return cab==='Business'?'MEAL SERVICE':t>=240&&t<600?'BREAKFAST':t>=600&&t<960?'LUNCH':t>=960&&t<1380?'DINNER':'LIGHT MEAL'}
 function ipDur(l){var m=l.arr-l.dep;return p2(Math.floor(m/60))+':'+p2(m%60)}
@@ -449,9 +450,10 @@ function ipLines(b){var held=!!b.held,L=[],n=function(x){return Math.round(x).to
  L.push(pad('SERVICE',17)+pad('FROM',24)+pad('TO',24)+pad('DEPART',8)+'ARRIVAL');
  L.push(pad('---------------',17)+pad('----------------------',24)+pad('----------------------',24)+pad('------',8)+'-------');
  b.dirs.forEach(function(d,di){d.legs.forEach(function(l){var dn=legDay(l),cab=(b.cabs&&b.cabs[di])||b.cab,k=classOf(b,di),cabName=(/^Award/.test(b.fams[di]||'')?(b.fams[di].replace(/^Award /,'').replace(/ (Saver|Advantage)$/,'')+' AWARD '+(b.fams[di].match(/(Saver|Advantage)$/)||[''])[0]):(cab==='Premium'?'Premium Economy':cab)).toUpperCase();
-  L.push('GARUDA - '+fn(l.id));
+  L.push('GARUDA INDONESIA - '+fn(l.id));
   L.push(pad('',17)+pad(ipCity(l.from),24)+pad(ipCity(l.to),24)+pad(t4(l.dep,l.from),8)+t4(l.arr,l.to));
-  L.push(pad(WDS[dow(dn)-1]+' '+ddmon(dn),17)+pad(ipPort(l.from),24)+ipPort(l.to));
+  var fw=ipCol(ipPort(l.from),23),tw=ipCol(ipPort(l.to),23),rows=Math.max(fw.length,tw.length);
+  for(var q=0;q<rows;q++)L.push(pad(q===0?WDS[dow(dn)-1]+' '+ddmon(dn):'',17)+pad(fw[q]||'',24)+(tw[q]||''));
   L.push(pad('NON STOP',17)+pad(ipTerm(l,'from'),24)+pad(ipTerm(l,'to'),24)+'DURATION '+ipDur(l));
   L.push(pad('',17)+(held?'RESERVATION CONFIRMED - ':'TICKETED - ')+k+' '+cabName+(held?'':'   NVB '+ddmony(dn)+' NVA '+ddmony(dn)));
   L.push(pad('',17)+'ON BOARD: '+ipMeal(l,cab));
@@ -497,10 +499,10 @@ function ipLines(b){var held=!!b.held,L=[],n=function(x){return Math.round(x).to
  L.push('');
  if(!held){L.push('CHECK-IN OPENS 48 HRS BEFORE DEPARTURE - CLOSES 45 MIN DOMESTIC, 60 INTL');L.push('CARRY PHOTO ID. CARRIAGE SUBJECT TO CONDITIONS OF CARRIAGE.')}
  else if(b.contactPhone||b.contactEmail)L.push('CONTACT  '+(b.contactPhone?'AP '+b.contactPhone:'')+(b.contactEmail?'   APE '+b.contactEmail.toUpperCase():''));
- L.push('AGENT RECEIPT - NOT VALID FOR TRAVEL - SIMULATED - NOT AFFILIATED WITH GARUDA');
+ L.push('AGENT RECEIPT - NOT VALID FOR TRAVEL - SIMULATED');L.push('GARUDA INDONESIA CONCEPT - NOT AFFILIATED WITH GARUDA INDONESIA');
  return L.map(function(x){return x.replace(/\s+$/,'')})}
 function ipPrint(b){var pane=$('agent-print-itin'),rec=$('agent-print-record');if(!pane)return false;if(rec)rec.textContent='';
- pane.innerHTML='<img src="assets/garuda-logo-colour.png" alt="" style="height:34px;display:block;margin:0 0 10px"><div style="font-size:9pt;font-weight:bold;border:1.5px solid #000;display:inline-block;padding:2px 8px;margin:0 0 10px">COUNTER COPY · '+(b.held?'NOT A TICKET':'TICKETED')+'</div><pre style="margin:0;font:9pt/1.38 \'Courier New\',Courier,monospace;white-space:pre">'+C.esc(ipLines(b).join('\n'))+'</pre>';
+ pane.innerHTML='<img src="assets/garuda-logo-colour.png" alt="" style="height:34px;display:block;margin:0 0 10px"><div style="font-size:8pt;letter-spacing:.04em;border:.75pt solid #000;display:inline-block;padding:1px 7px;margin:0 0 10px">COUNTER COPY · '+(b.held?'NOT A TICKET':'TICKETED')+'</div><pre style="margin:0;font:9pt/1.38 \'Courier New\',Courier,monospace;white-space:pre">'+C.esc(ipLines(b).join('\n'))+'</pre>';
  try{window.print();return true}catch(e){return false}}
 function ip(doPrint){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','e');if(!W.etkFareSplit||!W.etkReceipt)return out('THIS PAGE IS OUT OF DATE - CLOSE IT AND REOPEN, OR RELOAD','e');if(b.cancelled)return out('BOOKING IS CANCELLED - NO ITINERARY TO PRINT','e');
  if(doPrint){var ok=ipPrint(b);return out(ok?'ITINERARY SENT TO PRINT - SIMULATED':'PRINT UNAVAILABLE - USE BROWSER PRINT',ok?'sys':'e')}

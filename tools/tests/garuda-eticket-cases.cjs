@@ -18,7 +18,7 @@ const root=path.resolve(__dirname,'../..');
  const s1=await mk();let t=await show();
  assert(/Dear Mrs Wijaya,/.test(t)&&/Thank you for choosing Garuda Indonesia/.test(t),'greeting');
  assert(/e-Ticket Receipt & Itinerary/i.test(t)&&/Scan the barcode/.test(t));assert.equal(await p.locator('.etk-pdf').count(),1);assert.equal(await p.locator('.etk-hd img').count(),1);
- assert(/WIJAYA\/RINA MRS/.test(t)&&/WIJAYA\/BUDI MR/.test(t));assert.equal((t.match(/126-\d{10}/g)||[]).length,2);
+ assert(/WIJAYA\/RINA MRS/.test(t)&&/WIJAYA\/BUDI MR/.test(t));assert(/I Gusti Ngurah Rai International Airport, Domestic terminal/.test(t),'outstation airport name and terminal on the flight card');assert(!/confirm at airport/.test(t));assert.equal((t.match(/126-\d{10}/g)||[]).length,2);
  assert.equal(await p.locator('.etk-flt').count(),2);assert(/ECONOMY \(M\)/.test(t)&&/Not before \d\dDEC26/.test(t)&&/CHECK-IN OPENS/i.test(t)&&/COUPON VALIDITY/i.test(t));
  assert(/CHNG FEE IDR250000 PER PAX/.test(t)&&/REFUND FEE IDR750000 PER PAX/.test(t));assert(/JKT GA DPS [\d.]+ GA JKT [\d.]+ IDR[\d.]+END ROE1\.000000/.test(t),'fare calculation');
  assert(/received [\d,]+/.test(t)&&/change [\d,]+/.test(t)&&/charged IDR/.test(t));assert(/RCT-JKT03-\d{6}/.test(t));assert(/GA123456789/.test(t));
