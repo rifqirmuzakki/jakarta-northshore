@@ -8,11 +8,11 @@ function boot(){C=GA_AGENT.ctx;W=C.W;E=C.E;BKS=C.BKS;store=C.store;start()}
 if(window.GA_AGENT&&GA_AGENT.ctx)setTimeout(boot,0);else document.addEventListener('ga-agent-ready',boot,{once:true});
 
 var OFFICE='JKT003';
-var ORDER='JCDIZWPSYBMEHQNKTLG';
+var ORDER='JCDIZWPSYBMEHQNKTLG'+'AOVRUX';
 var FPS={CASH:'Cash',CC:'Credit card',DC:'Debit card',QRIS:'QRIS',TRF:'Bank transfer'};
 var AC={'A350-1000':'351','A350-900':'359','787-9':'789','A330-900':'339','737-800':'738','ATR 72-600':'AT7'};
 var T={lines:[],hist:[],hi:0,draft:'',av:null,list:null,p:fresh(),cur:null,fp:null,xi:null,ri:null,started:false};
-function fresh(){return {names:[],segs:[],phone:'',email:'',tk:null,rf:'',extras:[]}}
+function fresh(){return {names:[],segs:[],phone:'',email:'',tk:null,rf:'',extras:[],member:null}}
 var $=function(id){return document.getElementById(id)};
 var pad=function(s,n){s=String(s);return s.length>=n?s:s+' '.repeat(n-s.length)},lpad=function(s,n){s=String(s);return s.length>=n?s:' '.repeat(n-s.length)+s};
 var n0=function(n){return Math.round(n/1000)*1000};
@@ -51,9 +51,9 @@ function run(raw){var up=raw.trim().toUpperCase(),c=up.replace(/\s+/g,''),m;
  if(c==='CL'||c==='CLR'||c==='CLEAR'){T.lines=[];return paint()}
  if(c==='TWD')return ticketDisplay();
  if(c==='TWP')return printRecord();
- if(c==='AMRINA')return member();
- if(c==='AWQ')return awardQuote();
- if(c==='AWX')return awardClear();
+ if(m=up.match(/^AM\s*(.*)$/))return member(m[1]);
+ if(c==='AWQ'||c==='AWX')return out('AWARD SEATS ARE SOLD LIKE ANY CLASS - AW21DECJKTDPS SHOWS THEM, SS1X2 SELLS ONE, AM<NAME> SELECTS THE MEMBER','e');
+ if(/^AW/.test(c))return an(c,true);
  if(c==='JD')return out(dayName(E.TD)+' '+ddmony(E.TD)+'  '+t4(E.nowAbs(),E.HUB)+' WIB','sys');
  if(m=up.match(/^DAC\s*([A-Z]{3})$/))return dac(m[1]);
  if(m=up.match(/^DAN\s*(.{2,})$/))return dan(m[1].trim());
@@ -120,10 +120,12 @@ function help(){out([
 '  ET                   legacy alias for TTP (simulation)',
 '  TWD                  display simulated e-ticket record',
 '  TWP                  print agent copy of the e-ticket record (simulation)',
-'AWARD REDEMPTION - SIMULATION',
-'  AMRINA               demo member balance and transaction history',
-'  AWQ                  quote award on a saved, held one-adult booking',
-'  AWX                  remove award quote before ticketing',
+'AWARD REDEMPTION - GARUDAMILES SIMULATION',
+'  AW21DECJKTDPS        award seats: classes X U economy, R V premium, O A business (Saver, Advantage)',
+'  AM  AMRINA  AMGA880014522   members, balance and activity; selects the member for this booking',
+'  SS1X2                sell award class X on line 2, then NM AP TK RF as usual and ER (needs a member)',
+'                       miles are debited at TTP, taxes and charges are paid in cash; no mixing with cash classes',
+'                       XI returns the miles less a fee; RBU3 changes an award for a miles fee',
 'RETRIEVE AND CHANGE',
 '  RTGA1234  RTWIJAYA   retrieve by locator or surname    RT  redisplay',
 '  XI  then  XIY        cancel the booking (refund or release seats)',
@@ -137,30 +139,35 @@ function dan(t){t=t.toUpperCase();var r=Object.keys(E.CT).filter(function(c){ret
 
 /* ---------- availability and sell ---------- */
 function acCode(l){return AC[l.ac]||String(l.ac).replace(/[^A-Za-z0-9]/g,'').slice(0,3).toUpperCase()}
-function classRow(it){var rows=[];W.fares(it).forEach(function(cab){cab.fam.forEach(function(f){(f.subs||[]).forEach(function(s){rows.push({k:s.k,cab:cab,fam:f,sub:s,left:s.left})})})});rows.sort(function(a,b){return ORDER.indexOf(a.k)-ORDER.indexOf(b.k)});return rows}
+function classRow(it,withAward){var rows=[];W.fares(it).forEach(function(cab){cab.fam.forEach(function(f){(f.subs||[]).forEach(function(s){rows.push({k:s.k,cab:cab,fam:f,sub:s,left:s.left})})})});
+ if(withAward)W.awardFares(it).forEach(function(a){rows.push({k:a.k,cab:{k:a.cab,left:a.left,atFare:a.left},fam:a.fam,sub:{k:a.k,left:a.left,p:0},left:a.left,award:a})});
+ rows.sort(function(a,b){return ORDER.indexOf(a.k)-ORDER.indexOf(b.k)});return rows}
 function famAt(row){return Object.assign({},row.fam,{p:row.sub.p,sub:row.k})}
-function an(c){var m=c.match(/^AN(\d{1,2}[A-Z]{3}(?:\d{2})?)([A-Z]{3})?([A-Z]{3})?$/);if(!m)return out('INVALID FORMAT - EXAMPLE  AN21DECJKTSIN','e');
+function an(c,award){var m=c.match(/^A[NW](\d{1,2}[A-Z]{3}(?:\d{2})?)([A-Z]{3})?([A-Z]{3})?$/);if(!m)return out(award?'INVALID FORMAT - EXAMPLE  AW21DECJKTSIN':'INVALID FORMAT - EXAMPLE  AN21DECJKTSIN','e');
  var dn=C.parseDate(m[1]);if(dn==null)return out('INVALID DATE','e');if(dn<=E.TD)return out('DATE MUST BE TOMORROW OR LATER','e');
  var o,d;if(m[2]&&m[3]){o=m[2];d=m[3]}else if(!m[2]&&!m[3]&&T.av){o=T.av.d;d=T.av.o}else return out('NEED CITY PAIR - EXAMPLE  AN21DECJKTSIN','e');
  if(!E.CT[o])return out(o+' UNKNOWN CITY CODE - USE DAN','e');if(!E.CT[d])return out(d+' UNKNOWN CITY CODE - USE DAN','e');if(o===d)return out('CITIES MUST DIFFER','e');
- var its=W.search(o,d,dn);T.av={o:o,d:d,dn:dn,its:its};
- out('** GARUDA INDONESIA AVAILABILITY **  '+o+' '+E.CT[o].n.toUpperCase()+' - '+d+' '+E.CT[d].n.toUpperCase()+'\n'+dayName(dn)+' '+ddmony(dn),'h');
+ var its=W.search(o,d,dn);T.av={o:o,d:d,dn:dn,its:its,award:!!award};
+ out('** GARUDA INDONESIA '+(award?'AWARD ':'')+'AVAILABILITY **  '+o+' '+E.CT[o].n.toUpperCase()+' - '+d+' '+E.CT[d].n.toUpperCase()+'\n'+dayName(dn)+' '+ddmony(dn),'h');
  if(!its.length)return out('NO FLIGHTS','e');
- out(pad(' LN FLIGHT',19)+pad('CLASSES AVAILABLE',58)+pad('ROUTE',8)+pad('DEP',5)+pad('ARR',6)+pad('+D',3)+pad('EQP',4)+'DUR','h');
- its.forEach(function(it,i){var a=it.legs[0],z=it.legs[it.legs.length-1],cr=classRow(it),dd=W.lp(z.arr,z.to).day-W.lp(a.dep,a.from).day,flt=it.legs.map(function(l){return fn(l.id)}).join('/');
-  out(lpad(i+1,3)+'  '+pad(flt,12)+'  '+pad(cr.map(function(x){return x.k+Math.min(9,x.left)}).join(' '),58)+a.from+z.to+'  '+t4(a.dep,a.from)+' '+t4(z.arr,z.to)+'  '+(dd>0?'+'+dd:' 0')+' '+pad(acCode(a),4)+E.dur(it.dur).replace(' ','').replace('h',':').replace('m','')+(it.stops?'  VIA '+a.to:''))});
- out('SELL WITH SS<SEATS><CLASS><LINE>, FOR EXAMPLE  SS2Y1','sys')}
+ out(pad(' LN FLIGHT',19)+pad(award?'AWARD CLASSES':'CLASSES AVAILABLE',award?24:58)+pad('ROUTE',8)+pad('DEP',5)+pad('ARR',6)+pad('+D',3)+pad('EQP',4)+'DUR','h');
+ its.forEach(function(it,i){var a=it.legs[0],z=it.legs[it.legs.length-1],cr=award?awardRows(it):classRow(it),dd=W.lp(z.arr,z.to).day-W.lp(a.dep,a.from).day,flt=it.legs.map(function(l){return fn(l.id)}).join('/');
+  out(lpad(i+1,3)+'  '+pad(flt,12)+'  '+pad(cr.map(function(x){return x.k+Math.min(9,x.left)}).join(' '),award?24:58)+a.from+z.to+'  '+t4(a.dep,a.from)+' '+t4(z.arr,z.to)+'  '+(dd>0?'+'+dd:' 0')+' '+pad(acCode(a),4)+E.dur(it.dur).replace(' ','').replace('h',':').replace('m','')+(it.stops?'  VIA '+a.to:''))});
+ if(award){var sig={};its.forEach(function(it,i){var k=awardRows(it).map(function(x){return pad(x.k,2)+lpad(x.miles.toLocaleString('en-US'),8)}).join('  ');(sig[k]=sig[k]||[]).push(i+1)});out('MILES PER PASSENGER, ONE WAY\n'+Object.keys(sig).map(function(k){return '  LN '+sig[k].join(',')+':  '+k}).join('\n'),'')}
+ out(award?'SELL WITH SS<SEATS><CLASS><LINE>, FOR EXAMPLE  SS1X2.  AM<NAME OR NUMBER> SELECTS THE MEMBER.  AN SHOWS CASH CLASSES':'SELL WITH SS<SEATS><CLASS><LINE>, FOR EXAMPLE  SS2Y1.  AW<DATE><CITY PAIR> SHOWS AWARD SEATS','sys')}
+function awardRows(it){return W.awardFares(it).sort(function(a,b){return 'AOVRUX'.indexOf(a.k)-'AOVRUX'.indexOf(b.k)})}
 function ss(c){var m=c.match(/^SS(\d)([A-Z])(\d{1,2})$/);if(!m)return out('INVALID FORMAT - EXAMPLE  SS2Y1  (2 SEATS, CLASS Y, LINE 1)','e');
  if(T.cur)return out('BOOKING ALREADY SAVED - IGNORE WITH IG TO START A NEW ONE','e');
  var n=+m[1],k=m[2],ln=+m[3];if(!T.av)return out('NO AVAILABILITY DISPLAYED - USE AN FIRST','e');if(n<1)return out('NUMBER OF SEATS MUST BE 1 TO 9','e');
  var it=T.av.its[ln-1];if(!it)return out('NO SUCH LINE '+ln,'e');
- var row=classRow(it).find(function(x){return x.k===k});if(!row)return out('CLASS '+k+' NOT OFFERED ON LINE '+ln,'e');
+ var row=classRow(it,true).find(function(x){return x.k===k});if(!row)return out('CLASS '+k+' NOT OFFERED ON LINE '+ln,'e');
+ if(T.p.segs.length&&!!T.p.segs[0].award!==!!row.award)return out('AWARD AND CASH CLASSES CANNOT BE MIXED IN ONE BOOKING','e');
  if(row.left<n)return out(row.left?'ONLY '+row.left+' SEAT'+(row.left>1?'S':'')+' IN CLASS '+k:'CLASS '+k+' CLOSED','e');
  var P=T.p;if(P.segs.length&&P.segs[0].n!==n)return out('SEATS MUST MATCH THE FIRST SEGMENT ('+P.segs[0].n+')','e');
  if(P.segs.some(function(s){return s.it.key===it.key}))return out('DUPLICATE SEGMENT','e');
  var last=P.segs[P.segs.length-1];if(last&&it.dep<last.it.arr)return out('SEGMENTS OUT OF SEQUENCE','e');
- P.segs.push({it:it,cls:k,cab:row.cab.k,fam:famAt(row),n:n});
- out(segLines(P.segs[P.segs.length-1],0).join('\n')+'\nOK','');paint()}
+ P.segs.push({it:it,cls:k,cab:row.cab.k,fam:famAt(row),n:n,award:row.award?{level:row.award.level,miles:row.award.miles}:null});
+ out(segLines(P.segs[P.segs.length-1],0).join('\n')+(row.award?'\nAWARD '+row.award.level.toUpperCase()+'  '+row.award.miles.toLocaleString('en-US')+' MILES PER PASSENGER, TAXES AND CHARGES IN CASH':'')+'\nOK','');paint()}
 function segLines(s,start){return s.it.legs.map(function(l,j){return lpad(start+j+1,2)+'  '+pad(fn(l.id),7)+' '+s.cls+' '+pad(ddmon(legDay(l)),6)+dow(legDay(l))+' '+l.from+l.to+'  HK'+s.n+'   '+t4(l.dep,l.from)+' '+t4(l.arr,l.to)})}
 
 /* ---------- elements ---------- */
@@ -211,6 +218,7 @@ function bookElems(b){var es=[],n=0,num=function(k,rest,extra){es.push(Object.as
  if(b.contactPhone)num('ap',' AP '+b.contactPhone);if(b.contactEmail)num('ap',' AP E-'+b.contactEmail.toUpperCase());
  if(b.held&&b.tl)num('tk',' TK TL'+tlShort(b.tl));if(!b.held&&!b.cancelled&&b.payment)num('fp',' FP '+b.paymentMethod.toUpperCase());
  if(b.rf)num('rf',' RF '+b.rf.toUpperCase());
+ if(b.award)info('    AWARD '+b.award.member+' '+(W.awardMember(b)||'')+'  '+milesTxt(b.award.miles)+' MILES  '+(b.award.issued?'DEBITED':'DEBIT AT TICKETING'));
  (b.extras||[]).forEach(function(x,i){var leg=x.d!=null&&x.l!=null&&b.dirs[x.d]?b.dirs[x.d].legs[x.l]:null;num('ex',' '+exText(x,leg,x.p!=null?x.p+1:0,1),{i:i})});
  if(!b.held&&b.issuedMs)b.names.forEach(function(x,i){info('    FA PAX '+C.ticketNo(b,i)+'/ETGA/'+ddmon(E.TD)+'/'+OFFICE+'   '+pn(b,i))});return es}
 function bookingText(b){return ['RP/'+OFFICE+'/'+OFFICE+'   '+b.ref+'   '+C.statusOf(b)[0].toUpperCase()+'   '+ddmony(E.TD)].concat(bookElems(b).map(function(e){return e.line})).join('\n')}
@@ -223,7 +231,7 @@ function build(){var P=T.p;if(!P.segs.length)return null;var a=0,c=0,i=0;P.names
  var q={from:f.from,to:z.to,type:(tt==='ret'||tt==='oj'||tt==='circle')?tt:'one',d1:d1,d2:rev?dl:d1,a:a||1,c:c,i:i,cab:'Economy'},sel=P.segs.map(function(s){return {it:s.it,fam:s.fam}});
  return {q:q,sel:sel,sum:W.priceSummary(sel,q),assumed:!a,rev:rev,tt:tt,multi:tt==='multi'}}
 function fareDisplay(c){var m=c.match(/^FQD([A-Z]{3})([A-Z]{3})$/);if(!m)return out('ENTER CITY PAIR - EXAMPLE FQDJKTSIN. USE FXX TO PRICE THE CURRENT ITINERARY','e');var o=m[1],d=m[2];if(!E.CT[o]||!E.CT[d]||o===d)return out('INVALID CITY PAIR - EXAMPLE FQDJKTSIN','e');var dn=E.TD+1,its=W.search(o,d,dn),best={};its.forEach(function(it){W.fares(it).forEach(function(cab){cab.fam.forEach(function(fam){var q={from:o,to:d,type:'one',d1:dn,d2:dn,a:1,c:0,i:0,cab:cab.k},p=W.priceFor(it,fam,q);if(!best[fam.n]||p.total<best[fam.n])best[fam.n]=p.total})})});var names=Object.keys(best);if(!names.length)return out('NO EXAMPLE FARES FOUND FOR '+o+d+' ON '+ddmon(dn),'sys');out('SIMULATED FARE DISPLAY  '+o+d+'  '+ddmon(dn)+'\nONE ADULT ONE WAY - EXAMPLE TOTALS INCLUDING TAXES AND CHARGES\n'+names.map(function(n){return '  '+pad(n.toUpperCase(),24)+'IDR '+amt(best[n])}).join('\n')+'\nINDICATIVE ONLY - USE AN TO CHOOSE FLIGHTS AND FXX TO PRICE THE BOOKING','sys')}
-function fxx(){if(T.cur&&T.cur.award){var a=T.cur.award;return out('AWARD '+T.cur.ref+'  '+a.miles.toLocaleString('en-US')+' MILES + IDR '+amt(a.cash)+' TAXES AND CHARGES\nSIMULATED AWARD '+(a.issued?'ISSUED':'QUOTE')+' - CHANGES AND REFUNDS REQUIRE MANUAL REVIEW','sys')}if(T.cur){var b=T.cur,L=['FXX  '+b.ref+'   PRICED AT BOOKING','PAX  '+b.pax.a+' ADT'+(b.pax.c?'  '+b.pax.c+' CHD':'')+(b.pax.i?'  '+b.pax.i+' INF':'')];
+function fxx(){if(T.cur&&T.cur.award)return out(awardText(T.cur),'');if(T.cur){var b=T.cur,L=['FXX  '+b.ref+'   PRICED AT BOOKING','PAX  '+b.pax.a+' ADT'+(b.pax.c?'  '+b.pax.c+' CHD':'')+(b.pax.i?'  '+b.pax.i+' INF':'')];
   if(b.dirs.length>1){var tq=(b.q&&b.q.type)||'multi';L.push('TRIP TYPE  '+({ret:'ROUND TRIP',oj:'OPEN JAW',circle:'CIRCLE TRIP'}[tq]||'MULTI-CITY'))}
   b.dirs.forEach(function(d,i){var dp=b.dirPrices&&b.dirPrices[i];L.push(lpad(i+1,2)+'  '+pad(d.legs.map(function(g){return fn(g.id)}).join('/'),14)+classOf(b,i)+'   '+pad((b.fams[i]||b.fams[0]).toUpperCase(),20)+lpad(dp?amt(dp.total):'',12))});
   L.push('FARE        '+lpad(amt(b.fare),12),'PPN         '+lpad(amt(b.tax),12),'AIRPORT CHG '+lpad(amt(b.chg),12),'TOTAL IDR   '+lpad(amt(b.total),12));return out(L.join('\n'),'')}
@@ -231,7 +239,9 @@ function fxx(){if(T.cur&&T.cur.award){var a=T.cur.award;return out('AWARD '+T.cu
  L.push(' LN FLIGHT        CL FARE                     AMOUNT');B.sel.forEach(function(s,i){var pr=W.priceFor(s.it,s.fam,q);L.push(lpad(i+1,3)+' '+pad(s.it.legs.map(function(g){return fn(g.id)}).join('/'),14)+pad(T.p.segs[i].cls,3)+pad(s.fam.n.toUpperCase(),22)+lpad(amt(pr.total),12))});
  L.push('FARE        '+lpad(amt(S.fare),12),'PPN         '+lpad(amt(S.tax),12),'AIRPORT CHG '+lpad(amt(S.chg),12),'TOTAL IDR   '+lpad(amt(S.total),12));
  if(B.sel.length>1)L.push('TRIP TYPE  '+C.P.tripName[B.tt].toUpperCase()+(B.tt==='multi'?' - EACH ITINERARY PRICED AS A ONE-WAY, NO DISCOUNT':''));if(B.tt==='ret'||B.tt==='oj'||B.tt==='circle')W.rtDetail(q,B.sel[0].it).parts.forEach(function(x){L.push(x[0].toUpperCase()+'  '+(x[1]>0?'+':'-')+Math.round(Math.abs(x[1])*100)+'%')});
- var sn=T.p.segs[0].n,ps=q.a+q.c;if(!B.assumed&&sn!==ps)L.push('WARNING  '+sn+' SEAT(S) SOLD BUT '+ps+' PASSENGER(S) NEED A SEAT');out(L.join('\n'),'')}
+ var sn=T.p.segs[0].n,ps=q.a+q.c;if(!B.assumed&&sn!==ps)L.push('WARNING  '+sn+' SEAT(S) SOLD BUT '+ps+' PASSENGER(S) NEED A SEAT');
+ if(T.p.segs[0].award){var A=awardSegs(T.p.segs,q);L.push('AWARD   '+(T.p.member?T.p.member.name+'  '+T.p.member.id:'NO MEMBER YET - ENTER AM<NAME OR NUMBER>'));A.dirs.forEach(function(d,i){L.push(lpad(i+1,3)+' '+pad(T.p.segs[i].it.legs.map(function(g){return fn(g.id)}).join('/'),14)+pad(d.k,3)+pad(d.level.toUpperCase(),22)+lpad(milesTxt(d.miles),12)+' MILES')});L.push('MILES TOTAL '+lpad(milesTxt(A.miles),12)+(T.p.member?'   BALANCE '+milesTxt(W.memberBalance(T.p.member.id)):''),'THERE IS NO FARE OR PPN ON AN AWARD - THE CASH PART IS THE AIRPORT CHARGES')}
+ out(L.join('\n'),'')}
 function fqn(){var fams=[];if(T.cur)T.cur.fams.forEach(function(f){if(fams.indexOf(f)<0)fams.push(f)});else T.p.segs.forEach(function(s){if(fams.indexOf(s.fam.n)<0)fams.push(s.fam.n)});if(!fams.length)return out('NO FARE SELECTED','e');
  out(fams.map(function(f){var r=E.RULES[f];return 'FARE FAMILY '+f.toUpperCase()+'\n  CABIN BAG   '+r.bag.toUpperCase()+'\n  CHECKED BAG '+r.chk.toUpperCase()+'\n  SEAT        '+r.seat.toUpperCase()+'\n  CHANGES     '+r.chg.toUpperCase()+'\n  REFUND      '+r.ref.toUpperCase()+'\n  MILES       '+r.mil}).join('\n'),'')}
 
@@ -243,38 +253,47 @@ function er(){if(T.cur){C.store.set(C.KEY,BKS);return out('BOOKING '+T.cur.ref+'
  if(P.segs[0].n!==q.a+q.c)return out('SEATS SOLD ('+P.segs[0].n+') DO NOT MATCH PASSENGERS NEEDING A SEAT ('+(q.a+q.c)+') - XE THE SEGMENTS AND SELL AGAIN','e');
  for(var i=0;i<P.names.length;i++){var n=P.names[i];if(n.t==='c'){var a=ageAt(n.dn,last);if(a<2||a>11)return out(nm(n)+' IS '+a+' ON THE LAST TRAVEL DATE - A CHILD IS 2 TO 11','e')}if(n.t==='i'){if(ageAt(n.dn,last)>=2)return out(nm(n)+' WILL BE 2 OR OVER - NOT AN INFANT','e')}}
  if(P.tk.ms>endOfDay(legDay(P.segs[0].it.legs[0])))return out('TIME LIMIT IS AFTER THE FIRST DEPARTURE','e');
- for(var s=0;s<P.segs.length;s++){var rw=classRow(P.segs[s].it).find(function(x){return x.k===P.segs[s].cls});if(!rw||rw.left<P.segs[0].n)return out('CLASS '+P.segs[s].cls+' IS NO LONGER AVAILABLE ON SEGMENT '+(s+1)+' - REBOOK WITH RB OR SELL AGAIN','e')}
+ for(var s=0;s<P.segs.length;s++){var rw=classRow(P.segs[s].it,true).find(function(x){return x.k===P.segs[s].cls});if(!rw||rw.left<P.segs[0].n)return out('CLASS '+P.segs[s].cls+' IS NO LONGER AVAILABLE ON SEGMENT '+(s+1)+' - REBOOK WITH RB OR SELL AGAIN','e')}
+ var aw=P.segs.some(function(x){return x.award}),A=null;if(aw){if(!P.segs.every(function(x){return x.award}))return out('AWARD AND CASH CLASSES CANNOT BE MIXED IN ONE BOOKING','e');if(!P.member)return out('AWARD BOOKING NEEDS A MEMBER - ENTER AM<NAME OR NUMBER>','e');A=awardSegs(P.segs,q);var bal=W.memberBalance(P.member.id);if(bal<A.miles)return out('INSUFFICIENT MILES  NEED '+milesTxt(A.miles)+'  BALANCE '+milesTxt(bal)+'  '+P.member.name,'e')}
  var names=P.names.map(function(x){return (x.first+' '+x.last).replace(/\s+/g,' ')}),adults=[];P.names.forEach(function(x,i){if(x.t==='a')adults.push(i)});var used={};
  var bk=W.mkBooking(q,B.sel.map(function(s){return s.it}),P.segs.map(function(s){return {cab:s.cab,fam:s.fam}}),names);
  bk.passengers=P.names.map(function(x,i){var lap=null;if(x.t==='i'){for(var k=0;k<adults.length;k++)if(!used[adults[k]]){used[adults[k]]=1;lap=names[adults[k]];break}}return {type:x.t,name:names[i],first:x.first,last:x.last,title:x.title||'',dob:x.dob||null,lapAdult:lap}});
  bk.classes=P.segs.map(function(x){return x.cls});bk.extras=P.extras.map(function(x){return {k:x.k,code:x.code||'',text:x.text||'',p:x.nameRef?P.names.indexOf(x.nameRef):null,d:x.segRef?P.segs.indexOf(x.segRef):null,l:x.leg==null?null:x.leg}});bk.contactPhone=P.phone;bk.contactEmail=P.email;bk.place=C.COUNTER;bk.rf=P.rf;bk.held=true;bk.tl=P.tk.ms;bk.dirPrices=B.sel.map(function(s){return W.priceFor(s.it,s.fam,q)});bk.savedMs=Date.now();bk.hist=[{at:Date.now(),t:'BOOKING CREATED RF '+P.rf.toUpperCase()+', SEATS HELD, TL '+tl(P.tk.ms)}];
+ if(aw)bk.award={memberId:P.member.id,member:P.member.name,dirs:A.dirs.map(function(d){return {k:d.k,level:d.level,miles:d.miles}}),miles:A.miles,cash:bk.total,issued:false,ledger:[]};
  B.sel.forEach(function(s,i){s.it.legs.forEach(function(l){W.adjustSold(l,P.segs[i].cab,P.segs[0].n)})});C.P.clear();
- E.S.bookings.unshift(bk);BKS.unshift(bk);store.set(C.KEY,BKS);T.cur=bk;T.p=fresh();
- out('OK  BOOKING SAVED   RECORD LOCATOR '+bk.ref+'\nSEATS HELD UNTIL '+tl(bk.tl)+'.  ISSUE THE TICKETS WITH FP<METHOD> THEN TTP.\n'+bookingText(bk),'ok')}
-/* Deliberately fictional, browser-local award programme for the demo member. */
-function awardBalance(){return 12480-BKS.reduce(function(n,b){return n+(b.award&&b.award.issued?b.award.miles:0)},0)}
-function awardKeys(b){return b.dirs.flatMap(function(d,i){return d.legs.map(function(l){return l.id+'|'+l.dep+'|'+((b.cabs&&b.cabs[i])||b.cab)})})}
-function awardSeats(b){var keys=awardKeys(b);return keys.every(function(k){return BKS.filter(function(x){return x!==b&&x.award&&x.award.issued&&x.award.keys.indexOf(k)>=0}).length<2})}
-function member(){var entries=BKS.filter(function(b){return b.award&&b.award.issued}).map(function(b){return '  '+b.ref+'  -'+b.award.miles.toLocaleString('en-US')+' MILES'});out('DEMO MEMBER  RINA WIJAYA\nBALANCE  '+awardBalance().toLocaleString('en-US')+' MILES\n'+(entries.length?entries.join('\n'):'NO REDEMPTIONS')+'\nSIMULATED ACCOUNT - NO IDENTITY VERIFICATION','sys')}
-function awardQuote(){var b=T.cur;if(!b||!b.held||b.cancelled)return out('RETRIEVE AN ACTIVE HELD BOOKING FIRST','e');if(b.pax.a!==1||b.pax.c||b.pax.i)return out('AWARD DEMO SUPPORTS ONE ADULT ONLY','e');if(!awardSeats(b))return out('NO SIMULATED AWARD SEATS ON THIS ITINERARY','e');var miles=b.dirs.reduce(function(n,d,i){return n+d.legs.length*8000*(((b.cabs&&b.cabs[i])||b.cab)==='Business'?3:((b.cabs&&b.cabs[i])||b.cab)==='Premium'?2:1)},0);b.award={member:'RINA WIJAYA',miles:miles,cash:b.tax+b.chg,keys:awardKeys(b),issued:false};store.set(C.KEY,BKS);out('SIMULATED AWARD QUOTE  '+b.ref+'\nMEMBER  RINA WIJAYA  (DEMO ACCOUNT)\nMILES  '+miles.toLocaleString('en-US')+'  BALANCE  '+awardBalance().toLocaleString('en-US')+'\nCASH TAXES AND CHARGES IDR '+amt(b.award.cash)+'\n2 AWARD SEATS PER FLIGHT/CABIN; SUBJECT TO RECHECK AT ISSUE\nAWARD CHANGES AND REFUNDS REQUIRE MANUAL REVIEW\nENTER FP<METHOD> THEN TTP; AWX REMOVES THE QUOTE','sys')}
-function awardClear(){var b=T.cur;if(!b||!b.held||!b.award)return out('NO HELD AWARD QUOTE','e');delete b.award;store.set(C.KEY,BKS);out('AWARD QUOTE REMOVED - CASH FARE RESTORED','sys')}
+ E.S.bookings.unshift(bk);BKS.unshift(bk);store.set(C.KEY,BKS);W.awardReset();T.cur=bk;T.p=fresh();
+ out('OK  BOOKING SAVED   RECORD LOCATOR '+bk.ref+'\nSEATS HELD UNTIL '+tl(bk.tl)+'.  ISSUE THE TICKETS WITH FP<METHOD> THEN TTP.'+(bk.award?'\nAWARD  '+milesTxt(bk.award.miles)+' MILES FOR '+bk.award.member+', DEBITED AT TICKETING.  CASH IDR '+amt(bk.total):'')+'\n'+bookingText(bk),'ok')}
+/* ---------- award redemption (GarudaMiles, simulated) ---------- */
+function milesTxt(n){return Number(n).toLocaleString('en-US')}
+function awardSegs(segs,q){var dirs=segs.map(function(s){return {k:s.cls,level:s.award.level,cab:s.cab,miles:W.awardPartyMiles(s.it,s.cab,s.award.level,q)}});return {dirs:dirs,miles:dirs.reduce(function(a,d){return a+d.miles},0)}}
+function memberLine(m){return pad(m.id,13)+pad(m.name,16)+pad(m.tier.toUpperCase(),10)+lpad(milesTxt(W.memberBalance(m.id)),10)+' MILES'}
+function member(arg){var M=W.GA_PRICING.members,q=(arg||'').replace(/\s+/g,''),hit;
+ if(!q){if(T.p.member)hit=T.p.member;else return out('GARUDAMILES MEMBERS (SIMULATED DEMO ACCOUNTS)\n'+M.map(function(m){return '  '+memberLine(m)}).join('\n')+'\nSELECT WITH AM<NAME OR NUMBER>, FOR EXAMPLE  AMRINA','sys')}
+ else{var hits=M.filter(function(m){return m.id===q||m.name.replace(/\s+/g,'').indexOf(q)>=0});if(!hits.length)return out('NO MEMBER  '+q+'  - AM LISTS THE DEMO MEMBERS','e');if(hits.length>1)return out('MORE THAN ONE MEMBER - USE THE NUMBER\n'+hits.map(function(m){return '  '+memberLine(m)}).join('\n'),'e');hit=hits[0]}
+ var act=[];BKS.forEach(function(b){if(W.awardMember(b)!==hit.id)return;var l=b.award.ledger||(b.award.issued?[{t:'REDEEMED',miles:b.award.miles}]:[]);l.forEach(function(x){act.push('  '+pad(b.ref,8)+lpad((x.miles>0?'-':'+')+milesTxt(Math.abs(x.miles)),10)+' MILES  '+x.t)})});
+ if(q&&!T.cur){T.p.member=hit}
+ out('GARUDAMILES  '+hit.name+'  '+hit.id+'  '+hit.tier.toUpperCase()+'  (SIMULATED DEMO ACCOUNT)\nBALANCE  '+milesTxt(W.memberBalance(hit.id))+' MILES\n'+(act.length?'ACTIVITY\n'+act.join('\n'):'NO REDEMPTIONS')+(q&&!T.cur?'\nSELECTED FOR THIS BOOKING':''),'sys')}
+function awardText(b){var a=b.award,L=['AWARD  '+b.ref+'   MEMBER '+a.member+'  '+(W.awardMember(b)||'')];(a.dirs||[]).forEach(function(d,i){L.push(lpad(i+1,2)+'  '+pad(b.dirs[i].legs.map(function(g){return fn(g.id)}).join('/'),14)+d.k+'   '+pad(d.level.toUpperCase(),11)+lpad(milesTxt(d.miles),9)+' MILES')});
+ L.push('MILES      '+milesTxt(a.miles)+'   '+(a.issued?'DEBITED '+milesTxt(W.awardNet(b)):'DEBITED AT TICKETING'),'CASH TAXES AND CHARGES  IDR '+amt(b.total),'MEMBER BALANCE  '+milesTxt(W.memberBalance(W.awardMember(b)))+' MILES');return L.join('\n')}
 function et(){var b=T.cur;if(b&&T.ri&&T.ri.ref===b.ref)return reissue();if(!b){return out(T.p.segs.length?'SAVE THE BOOKING WITH ER FIRST':'NO BOOKING - RETRIEVE ONE WITH RT','e')}
- if(b.cancelled)return out('BOOKING IS CANCELLED','e');if(!b.held)return out('ALREADY TICKETED','e');if(b.award&&!awardSeats(b))return out('AWARD SEATS NO LONGER AVAILABLE - USE AWX FOR CASH FARE','e');if(b.award&&awardBalance()<b.award.miles)return out('INSUFFICIENT MILES - USE AMRINA TO CHECK BALANCE','e');if(!T.fp)return out('NEED FORM OF PAYMENT - FPCASH FPCC FPDC FPQRIS FPTRF','e');
- var method=FPS[T.fp.k],due=b.award?b.award.cash:b.total,tend=T.fp.k==='CASH'?(T.fp.amount||due):due;if(tend<due)return out('AMOUNT SHORT BY IDR '+amt(due-tend),'e');if(b.award){b.award.issued=true;b.fare=0;b.total=due;b.dirPrices.forEach(function(p){p.fare=0;p.total=p.tax+p.chg})}
+ if(b.cancelled)return out('BOOKING IS CANCELLED','e');if(!b.held)return out('ALREADY TICKETED','e');if(b.award&&W.memberBalance(W.awardMember(b))<b.award.miles)return out('INSUFFICIENT MILES  NEED '+milesTxt(b.award.miles)+'  BALANCE '+milesTxt(W.memberBalance(W.awardMember(b)))+'  '+b.award.member,'e');if(!T.fp)return out('NEED FORM OF PAYMENT - FPCASH FPCC FPDC FPQRIS FPTRF','e');
+ var method=FPS[T.fp.k],due=b.total,tend=T.fp.k==='CASH'?(T.fp.amount||due):due;if(tend<due)return out('AMOUNT SHORT BY IDR '+amt(due-tend),'e');if(b.award){b.award.issued=true;b.award.ledger=[{t:'REDEEMED',miles:b.award.miles,at:Date.now()}]}
  b.held=false;b.tl=null;b.paid0=b.total;b.paid=b.total;b.confirmedAt=E.nowAbs();b.issuedMs=Date.now();b.paymentMethod=method;b.payment={method:method,tendered:tend,change:tend-b.total,approval:T.fp.k==='CASH'?'':String(100000+E.hash(b.ref+'AP')%900000)};
- C.issueTickets(b);(b.hist=b.hist||[]).push({at:Date.now(),t:'TICKETED, '+method.toUpperCase()+' IDR '+amt(b.total)});store.set(C.KEY,BKS);T.fp=null;
- out('OK  TICKETS ISSUED\n'+(b.award?'AWARD  '+b.award.miles.toLocaleString('en-US')+' MILES + CASH TAXES AND CHARGES\n':'')+b.names.map(function(x,i){return '  '+C.ticketNo(b,i)+'  '+pn(b,i)}).join('\n')+'\nTOTAL IDR '+amt(b.total)+'  '+method.toUpperCase()+(b.payment.approval?'  APPROVAL '+b.payment.approval:'')+(b.payment.change>0?'  CHANGE IDR '+amt(b.payment.change):'')+'\nTWD DISPLAYS TICKET RECORD  |  EP PRINTS CUSTOMER RECEIPT','ok')}
+ C.issueTickets(b);(b.hist=b.hist||[]).push({at:Date.now(),t:'TICKETED, '+method.toUpperCase()+' IDR '+amt(b.total)});store.set(C.KEY,BKS);W.awardReset();T.fp=null;
+ out('OK  TICKETS ISSUED\n'+(b.award?'AWARD  '+milesTxt(b.award.miles)+' MILES FROM '+b.award.member+' + CASH TAXES AND CHARGES.  BALANCE '+milesTxt(W.memberBalance(W.awardMember(b)))+'\n':'')+b.names.map(function(x,i){return '  '+C.ticketNo(b,i)+'  '+pn(b,i)}).join('\n')+'\nTOTAL IDR '+amt(b.total)+'  '+method.toUpperCase()+(b.payment.approval?'  APPROVAL '+b.payment.approval:'')+(b.payment.change>0?'  CHANGE IDR '+amt(b.payment.change):'')+'\nTWD DISPLAYS TICKET RECORD  |  EP PRINTS CUSTOMER RECEIPT','ok')}
 function reissue(){var b=T.cur,r=T.ri;if(r.collect>0&&!T.fp)return out('NEED FORM OF PAYMENT - FPCASH FPCC FPDC FPQRIS FPTRF','e');
  var method=r.collect>0?FPS[T.fp.k]:'',tend=r.collect>0?(T.fp.k==='CASH'?(T.fp.amount||r.collect):r.collect):0;if(tend<r.collect)return out('AMOUNT SHORT BY IDR '+amt(r.collect-tend),'e');
- var cc=W.fares(r.it).find(function(x){return x.k===r.row.cab.k}),rw=classRow(r.it).find(function(x){return x.k===r.k}),n=b.pax.a+b.pax.c;if(!rw||rw.left<n)return out('CLASS '+r.k+' IS NO LONGER AVAILABLE - REPEAT THE RB ENTRY','e');
+ var cc=W.fares(r.it).find(function(x){return x.k===r.row.cab.k}),rw=classRow(r.it,true).find(function(x){return x.k===r.k}),n=b.pax.a+b.pax.c;if(!rw||rw.left<n)return out('CLASS '+r.k+' IS NO LONGER AVAILABLE - REPEAT THE RB ENTRY','e');
+ if(r.award&&W.memberBalance(W.awardMember(b))<r.award.due)return out('INSUFFICIENT MILES  NEED '+milesTxt(r.award.due)+'  BALANCE '+milesTxt(W.memberBalance(W.awardMember(b))),'e');
  if(C.directionState(b,r.di)!=='OPEN')return out('COUPONS NO LONGER OPEN - REISSUE REQUIRES REVIEW','e');var prior=C.ensureTickets(b);var oldFlt=b.dirs[r.di].legs.map(function(l){return l.id}).join('/');applyChange(b,r.di,r.it,rw,famAt(rw),W.priceFor(r.it,famAt(rw),r.q),r.q,r.k);
+ if(r.award){b.award.dirs[r.di]=r.award.newDir;b.award.miles=b.award.dirs.reduce(function(a,d){return a+d.miles},0);b.award.cash=b.total;b.award.ledger=b.award.ledger||[{t:'REDEEMED',miles:0}];if(r.award.due)b.award.ledger.push({t:'CHANGED '+r.old+' TO '+r.k,miles:r.award.due,at:Date.now()})}
  prior.forEach(function(t){t.coupons.forEach(function(c){if(C.couponStatus(c)==='OPEN')c.status='EXCHANGED'})});(b.ticketHistory=b.ticketHistory||[]).push.apply(b.ticketHistory,prior);b.paid=(b.paid||b.paid0||0)+r.collect;b.tv=(b.tv||0)+1;C.issueTickets(b,prior);(b.reissues=b.reissues||[]).push({at:Date.now(),collected:r.collect,fee:r.fee,diff:r.diff,method:method,note:oldFlt+' '+r.old+' TO '+r.it.legs.map(function(l){return l.id}).join('/')+' '+r.k});
- (b.hist=b.hist||[]).push({at:Date.now(),t:'REISSUED '+oldFlt+' '+r.old+' TO '+r.it.legs.map(function(l){return l.id}).join('/')+' '+r.k+', COLLECTED '+amt(r.collect)+(method?' '+method.toUpperCase():'')});store.set(C.KEY,BKS);T.ri=null;T.fp=null;
- out('OK  REISSUED'+(r.collect?'   COLLECTED IDR '+amt(r.collect)+'  '+method.toUpperCase()+(T.fp?'':''):'   NOTHING TO COLLECT')+'\nNEW TICKETS\n'+b.names.map(function(x,i){return '  '+C.ticketNo(b,i)+'  '+pn(b,i)}).join('\n')+'\nEP PRINTS THE NEW E-TICKET','ok')}
+ (b.hist=b.hist||[]).push({at:Date.now(),t:'REISSUED '+oldFlt+' '+r.old+' TO '+r.it.legs.map(function(l){return l.id}).join('/')+' '+r.k+', COLLECTED '+amt(r.collect)+(method?' '+method.toUpperCase():'')});store.set(C.KEY,BKS);W.awardReset();T.ri=null;T.fp=null;
+ out('OK  REISSUED'+(r.award?'   MILES DEBITED '+milesTxt(r.award.due)+'  BALANCE '+milesTxt(W.memberBalance(W.awardMember(b))):'')+(r.collect?'   COLLECTED IDR '+amt(r.collect)+'  '+method.toUpperCase()+(T.fp?'':''):'   NOTHING TO COLLECT')+'\nNEW TICKETS\n'+b.names.map(function(x,i){return '  '+C.ticketNo(b,i)+'  '+pn(b,i)}).join('\n')+'\nEP PRINTS THE NEW E-TICKET','ok')}
 function recordText(b){var ts=C.ensureTickets(b),history=b.ticketHistory||[],lines=['E-TICKET COUPONS  '+b.ref+'  -  SIMULATED AGENT RECORD','OFFICE '+OFFICE+'   BOOKING '+b.ref+'   '+C.statusOf(b)[0].toUpperCase(),''];
  function show(t,kind){var dt=t.issuedAt?new Date(t.issuedAt).toISOString().slice(0,10):'NOT RECORDED';lines.push(kind+' TICKET  '+t.number+'   P'+(t.passenger+1)+' '+pn(b,t.passenger),'ISSUED '+dt+' UTC','CPN FLIGHT    DATE    ROUTE  DEP   STATUS');t.coupons.forEach(function(c,i){var status=C.couponStatus(c);lines.push(lpad(i+1,3)+' '+pad(fn(c.flight),9)+' '+pad(ddmony(W.lp(c.dep,c.from).day),7)+' '+c.from+c.to+' '+t4(c.dep,c.from)+'  '+status+(status==='FLOWN'&&c.status==='OPEN'?' (INFERRED)':''))});if(!t.coupons.length)lines.push('  NO COUPONS ON THIS RECORD');lines.push('')}
  ts.forEach(function(t){show(t,'CURRENT')});history.forEach(function(t){show(t,'PREVIOUS')});
- lines.push('BOOKING FINANCIAL SUMMARY - ALL PASSENGERS');if(b.award&&b.award.issued)lines.push('AWARD      '+b.award.miles.toLocaleString('en-US')+' MILES  MEMBER '+b.award.member,'CASH TAXES AND CHARGES IDR '+amt(b.award.cash));else lines.push('FARE       IDR '+amt(b.fare),'PPN        IDR '+amt(b.tax),'AIRPORT CHG IDR '+amt(b.chg),'BOOKING TOTAL IDR '+amt(b.total));lines.push('FORM OF PAYMENT  '+String(b.paymentMethod||'NOT RECORDED').toUpperCase());if(b.reissues&&b.reissues.length)lines.push('TOTAL COLLECTED IDR '+amt(b.paid||0),'REISSUES  '+b.reissues.length+' - TOTALS ARE CURRENT BOOKING VALUES');lines.push('','SIMULATED RECORD - NOT VALID FOR TRAVEL','FLOWN STATUS MAY BE INFERRED FROM ARRIVAL TIME');return lines.join('\n')}
+ lines.push('BOOKING FINANCIAL SUMMARY - ALL PASSENGERS');if(b.award&&b.award.issued)lines.push('AWARD      '+milesTxt(W.awardNet(b))+' MILES  MEMBER '+b.award.member,'CASH TAXES AND CHARGES IDR '+amt(b.total));else lines.push('FARE       IDR '+amt(b.fare),'PPN        IDR '+amt(b.tax),'AIRPORT CHG IDR '+amt(b.chg),'BOOKING TOTAL IDR '+amt(b.total));lines.push('FORM OF PAYMENT  '+String(b.paymentMethod||'NOT RECORDED').toUpperCase());if(b.reissues&&b.reissues.length)lines.push('TOTAL COLLECTED IDR '+amt(b.paid||0),'REISSUES  '+b.reissues.length+' - TOTALS ARE CURRENT BOOKING VALUES');lines.push('','SIMULATED RECORD - NOT VALID FOR TRAVEL','FLOWN STATUS MAY BE INFERRED FROM ARRIVAL TIME');return lines.join('\n')}
 function ticketDisplay(){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','e');if(b.held)return out('NO TICKET ISSUED','e');if(!C.ensureTickets(b).length)return out('NO TICKET RECORD AVAILABLE','e');out(recordText(b)+'\nTWP PRINTS AGENT COPY  |  EP PRINTS CUSTOMER RECEIPT','sys')}
 function printRecord(){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','e');if(b.held||!C.ensureTickets(b).length)return out('NO TICKET ISSUED','e');var pane=$('agent-print-record');pane.textContent=recordText(b);try{window.print();out('AGENT RECORD SENT TO PRINT - SIMULATED','sys')}catch(e){out('PRINT UNAVAILABLE - USE BROWSER PRINT','e')}}
 function ep(){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','e');if(b.held)return out('NOT TICKETED - USE FP AND TTP FIRST','e');if(b.cancelled)return out('BOOKING IS CANCELLED','e');C.printTicket(b.ref);out('E-TICKET SENT TO THE PRINTER','sys')}
@@ -295,18 +314,25 @@ function rb(c){var m=c.match(/^RB([A-Z])(\d{1,2})(?:\/(\d{1,2}))?$/);if(!m)retur
  var newIt=null;if(ln){if(!T.av)return out('NO AVAILABILITY DISPLAYED - USE AN FIRST','e');newIt=T.av.its[ln-1];if(!newIt)return out('NO SUCH LINE '+ln,'e')}
  var b=T.cur,di,old,spans,seatsN;
  if(!b){var e=elems()[n-1];if(!e||e.k!=='seg')return out('ELEMENT '+n+' IS NOT A FLIGHT SEGMENT','e');di=e.i;var sg=T.p.segs[di];old={it:sg.it,cls:sg.cls};seatsN=sg.n;spans=T.p.segs.map(function(x){return [x.it.dep,x.it.arr]})}
- else{if(b.award)return out('AWARD BOOKING - MANUAL CHANGE REVIEW REQUIRED; AWX REMOVES A HELD QUOTE','e');if(b.cancelled)return out('BOOKING IS CANCELLED','e');var idx=n-1-b.names.length,li=0;di=-1;for(var d=0;d<b.dirs.length;d++){if(idx>=0&&idx<li+b.dirs[d].legs.length){di=d;break}li+=b.dirs[d].legs.length}if(di<0)return out('ELEMENT '+n+' IS NOT A FLIGHT SEGMENT','e');
+ else{if(b.cancelled)return out('BOOKING IS CANCELLED','e');var idx=n-1-b.names.length,li=0;di=-1;for(var d=0;d<b.dirs.length;d++){if(idx>=0&&idx<li+b.dirs[d].legs.length){di=d;break}li+=b.dirs[d].legs.length}if(di<0)return out('ELEMENT '+n+' IS NOT A FLIGHT SEGMENT','e');
   if(!b.held&&C.directionState(b,di)!=='OPEN')return out('COUPONS ARE FLOWN OR PARTLY USED - MANUAL REVIEW REQUIRED','e');var dir=b.dirs[di],f0=dir.legs[0],key=dir.legs.map(function(l){return l.id+'|'+l.dep}).join('>'),cur=W.search(f0.from,dir.legs[dir.legs.length-1].to,legDay(f0)).find(function(x){return x.key===key});
   old={it:cur||{legs:dir.legs,key:key,stops:dir.legs.length-1,dep:f0.dep,arr:dir.legs[dir.legs.length-1].arr},cls:classOf(b,di)};seatsN=b.pax.a+b.pax.c;spans=b.dirs.map(function(x){return [x.legs[0].dep,x.legs[x.legs.length-1].arr]})}
  var target=newIt||old.it,sameFlight=target.key===old.it.key;
  if(!sameFlight){var o0=old.it.legs[0].from,d0=old.it.legs[old.it.legs.length-1].to;if(target.legs[0].from!==o0||target.legs[target.legs.length-1].to!==d0)return out('THE NEW FLIGHT MUST GO '+o0+' TO '+d0,'e');if(!seqOk(spans,di,target.dep,target.arr))return out('SEGMENTS OUT OF SEQUENCE','e')}
  else if(old.cls===k)return out('ALREADY CLASS '+k,'e');
- var row=classRow(target).find(function(x){return x.k===k});if(!row)return out('CLASS '+k+' NOT OFFERED ON THIS FLIGHT','e');if(row.left<seatsN)return out(row.left?'ONLY '+row.left+' SEAT'+(row.left>1?'S':'')+' IN CLASS '+k:'CLASS '+k+' CLOSED','e');
+ var row=classRow(target,true).find(function(x){return x.k===k});if(!row)return out('CLASS '+k+' NOT OFFERED ON THIS FLIGHT','e');var isAw=b?!!b.award:!!T.p.segs[di].award;if(!!row.award!==isAw)return out(isAw?'AN AWARD CAN ONLY BE REBOOKED INTO AN AWARD CLASS (X U R V O A) - SEE AW':'A CASH BOOKING CANNOT BE REBOOKED INTO AN AWARD CLASS','e');if(row.left<seatsN)return out(row.left?'ONLY '+row.left+' SEAT'+(row.left>1?'S':'')+' IN CLASS '+k:'CLASS '+k+' CLOSED','e');
  var fam=famAt(row);
- if(!b){var s0=T.p.segs[di];s0.it=target;s0.cls=k;s0.cab=row.cab.k;s0.fam=fam;return out('OK  REBOOKED '+old.cls+' TO '+k+(sameFlight?'':' ON '+target.legs.map(function(l){return fn(l.id)}).join('/'))+'\n'+segLines(s0,T.p.names.length+T.p.segs.slice(0,di).reduce(function(a,x){return a+x.it.legs.length},0)).join('\n')+'\nFXX SHOWS THE NEW PRICE','ok')}
+ if(!b){var s0=T.p.segs[di];s0.it=target;s0.cls=k;s0.cab=row.cab.k;s0.fam=fam;s0.award=row.award?{level:row.award.level,miles:row.award.miles}:null;return out('OK  REBOOKED '+old.cls+' TO '+k+(sameFlight?'':' ON '+target.legs.map(function(l){return fn(l.id)}).join('/'))+'\n'+segLines(s0,T.p.names.length+T.p.segs.slice(0,di).reduce(function(a,x){return a+x.it.legs.length},0)).join('\n')+'\nFXX SHOWS THE NEW PRICE','ok')}
  if(b.ticketedNo===undefined){}
  var q=Object.assign({},b.q),pr0=null;var spanQ=function(){q.d1=legDay(di===0?target.legs[0]:b.dirs[0].legs[0]);if(b.dirs.length>1)q.d2=legDay(di===1?target.legs[0]:b.dirs[1].legs[0])};spanQ();
  var pr=W.priceFor(target,fam,q),oldPr=(b.dirPrices&&b.dirPrices[di])||{total:b.total/b.dirs.length};
+ if(b.award){var AC=W.GA_PRICING.cfg.award,od=(b.award.dirs||[])[di]||{level:'Saver',miles:b.award.miles},nm=W.awardPartyMiles(target,row.cab.k,row.award.level,q),newDir={k:k,level:row.award.level,cab:row.cab.k,miles:nm},bal=W.memberBalance(W.awardMember(b)),total2=b.award.miles-od.miles+nm;
+  if(b.held){if(total2>bal)return out('INSUFFICIENT MILES  NEED '+milesTxt(total2)+'  BALANCE '+milesTxt(bal),'e');applyChange(b,di,target,row,fam,pr,q,k);b.award.dirs[di]=newDir;b.award.miles=total2;b.award.cash=b.total;(b.hist=b.hist||[]).push({at:Date.now(),t:'REBOOKED '+old.cls+' TO '+k+(sameFlight?'':' ON '+target.legs.map(function(l){return l.id}).join('/'))+', MILES '+milesTxt(total2)});store.set(C.KEY,BKS);W.awardReset();
+   return out('OK  REBOOKED '+old.cls+' TO '+k+(sameFlight?'':' ON '+target.legs.map(function(l){return fn(l.id)}).join('/'))+'   MILES '+milesTxt(total2)+'\n'+bookingText(b),'ok')}
+  if(!sameFlight||true){var feeM=Math.round(od.miles*(od.level==='Advantage'?AC.changeFeeAdv:AC.changeFeeSaver)/100)*100,diffM=Math.max(0,nm-od.miles),due=feeM+diffM,cashDiff=Math.max(0,pr.total-oldPr.total);
+   if(due>bal)return out('INSUFFICIENT MILES  NEED '+milesTxt(due)+' TO CHANGE  BALANCE '+milesTxt(bal),'e');
+   T.ri={ref:b.ref,di:di,it:target,row:row,fam:fam,pr:pr,q:q,k:k,fee:0,diff:cashDiff,collect:cashDiff,oldPr:oldPr,old:old.cls,award:{newDir:newDir,feeM:feeM,diffM:diffM,due:due}};
+   return out('AWARD REISSUE QUOTE  '+b.ref+'  '+b.award.member+'\n  OLD  '+old.it.legs.map(function(l){return fn(l.id)}).join('/')+'  '+old.cls+'  '+pad(od.level.toUpperCase(),10)+lpad(milesTxt(od.miles),9)+' MILES\n  NEW  '+target.legs.map(function(l){return fn(l.id)}).join('/')+'  '+k+'  '+pad(row.award.level.toUpperCase(),10)+lpad(milesTxt(nm),9)+' MILES\n  MILES DIFFERENCE'+lpad(milesTxt(diffM),14)+(nm<od.miles?'   (FEWER MILES ARE NOT RETURNED)':'')+'\n  CHANGE FEE '+(od.level==='Advantage'?Math.round(AC.changeFeeAdv*100):Math.round(AC.changeFeeSaver*100))+'%'+lpad(milesTxt(feeM),19)+' MILES\n  TOTAL MILES TO DEBIT '+milesTxt(due)+'   BALANCE '+milesTxt(bal)+'\n  CASH TO COLLECT IDR '+amt(cashDiff)+'\n'+(cashDiff?'ENTER FP<METHOD> THEN TTP TO REISSUE':'ENTER TTP TO REISSUE'),'sys')}}
  if(b.held){applyChange(b,di,target,row,fam,pr,q,k);var was=b.total;(b.hist=b.hist||[]).push({at:Date.now(),t:'REBOOKED '+old.cls+' TO '+k+(sameFlight?'':' ON '+target.legs.map(function(l){return l.id}).join('/'))+', TOTAL '+amt(oldTotalOf(b,oldPr,pr))+' TO '+amt(b.total)});store.set(C.KEY,BKS);
   return out('OK  REBOOKED '+old.cls+' TO '+k+(sameFlight?'':' ON '+target.legs.map(function(l){return fn(l.id)}).join('/'))+'   TOTAL IDR '+amt(oldTotalOf(b,oldPr,pr))+' TO '+amt(b.total)+'\n'+bookingText(b),'ok')}
  /* ticketed: a reissue quote, collected with FP and ET */
@@ -383,10 +409,11 @@ function st(c){var m=c.match(/^ST\/?(\d{1,2}[A-K])\/P(\d{1,2})(?:\/S(\d{1,2}))?$
  var was=l.seats&&l.seats[pi];l.seats=l.seats||{};l.seats[pi]=seat;(b.hist=b.hist||[]).push({at:Date.now(),t:'SEAT '+(was||'-')+' TO '+seat+' P'+(pi+1)+' ON '+l.id});store.set(C.KEY,BKS);
  out('OK  SEAT '+seat+'  '+pn(b,pi)+'  '+fn(l.id)+' '+ddmon(legDay(l))+(was?'   (WAS '+was+')':''),'ok')}
 function xi(confirm){if(!T.cur){if(T.p.segs.length){T.p.segs=[];return out('ITINERARY CANCELLED','sys')}return out('NO BOOKING','e')}
- var b=T.cur;if(b.award&&b.award.issued)return out('AWARD REFUND AND MILES REINSTATEMENT REQUIRE MANUAL REVIEW','e');if(b.cancelled)return out('BOOKING IS ALREADY CANCELLED','e');
+ var b=T.cur;if(b.cancelled)return out('BOOKING IS ALREADY CANCELLED','e');
  if(!b.held&&C.refundBlocked(b))return out('PARTLY FLOWN DIRECTION - MANUAL REFUND REVIEW REQUIRED','e');if(!confirm){T.xi=b.ref;if(b.held)return out('CANCEL '+b.ref+' AND RELEASE THE SEATS.  NOTHING WAS PAID.  ENTER XIY TO CONFIRM','e');var r=C.refundRows(b);
+  if(b.award&&b.award.issued){var ar=W.awardRefund(b);return out('CANCEL '+b.ref+' - AWARD REFUND  '+b.award.member+'\n  MILES ON THE FLIGHTS '+lpad(milesTxt(ar.base),9)+'   FEE KEPT '+lpad(milesTxt(ar.fee),8)+'   MILES RETURNED '+lpad(milesTxt(ar.back),9)+'\n  TAXES AND CHARGES REFUNDED IDR '+amt(r.total)+' TO '+b.paymentMethod.toUpperCase()+'  (CHANGE FEES ALREADY PAID ARE NOT RETURNED)\nENTER XIY TO CONFIRM','e')}
   return out('CANCEL '+b.ref+' - REFUND BY FARE RULES\n'+r.rows.map(function(x){return '  '+pad(x.dir,10)+pad(x.fam.toUpperCase(),20)+' PAID '+lpad(amt(x.paid),11)+'  FEE '+lpad(amt(x.fee),10)+'  REFUND '+lpad(amt(x.refund),11)}).join('\n')+'\nREFUND TO '+b.paymentMethod.toUpperCase()+'  IDR '+amt(r.total)+'.  ENTER XIY TO CONFIRM','e')}
- if(T.xi!==b.ref)return out('ENTER XI FIRST','e');T.xi=null;C.cancelBooking(b.ref);out('OK  BOOKING CANCELLED'+(b.cancelled.held?', SEATS RELEASED':'  REFUND IDR '+amt(b.cancelled.refund)+' TO '+b.paymentMethod.toUpperCase())+'\n'+bookingText(b),'ok')}
+ if(T.xi!==b.ref)return out('ENTER XI FIRST','e');T.xi=null;C.cancelBooking(b.ref);out('OK  BOOKING CANCELLED'+(b.cancelled.held?', SEATS RELEASED':'  REFUND IDR '+amt(b.cancelled.refund)+' TO '+b.paymentMethod.toUpperCase()+(b.cancelled.milesBack!=null?'  MILES RETURNED '+milesTxt(b.cancelled.milesBack):''))+'\n'+bookingText(b),'ok')}
 function qt(){var h=BKS.filter(function(b){return b.held&&!b.cancelled}).sort(function(a,b){return a.tl-b.tl});if(!h.length)return out('QUEUE EMPTY - NO HELD BOOKINGS','sys');
  out('HELD BOOKINGS BY TICKETING TIME LIMIT\n'+h.map(function(b,i){return lpad(i+1,3)+'  '+b.ref+'  TL '+pad(tlShort(b.tl),12)+pad(pn(b,0),20)+pad(b.dirs[0].legs[0].from+b.dirs[0].legs[b.dirs[0].legs.length-1].to,8)+'IDR '+amt(b.total)}).join('\n')+'\nSELECT WITH RT<REF>','');T.list=h}
 function rh(){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','e');out('HISTORY '+b.ref+'\n'+(b.hist||[]).map(function(h){var d=new Date(h.at+7*36e5);return '  '+ddmon(Math.floor(d/864e5))+' '+p2(d.getUTCHours())+p2(d.getUTCMinutes())+'  '+h.t}).join('\n'),'')}
@@ -397,7 +424,8 @@ function side(){var s=$('tside');if(!s)return;var h='<div class="pane"><h2>Booki
  var B=!T.cur&&build();if(B)h+='<div class="q-row" style="padding:8px 0 0"><span>Estimate'+(B.assumed?' (1 adult assumed)':'')+'</span><b>IDR '+amt(B.sum.total)+'</b></div>';
  h+='</div></div><div class="pane"><h2>Next</h2><div class="in">'+nextHtml()+'</div></div><div class="pane"><h2>Quick keys</h2><div class="in keys">'+['HE','AN','FXX','ER','TTP','RT','QT','IG'].map(function(k){return '<button type="button" class="ghost" data-cmd="'+k+'">'+k+'</button>'}).join('')+'</div></div>';s.innerHTML=h}
 function nextHtml(){var P=T.p,b=T.cur,tip=function(c,t){return '<div class="nx"><button type="button" class="ghost" data-cmd="'+C.esc(c)+'">'+C.esc(c)+'</button> '+C.esc(t)+'</div>'};
- if(b){if(b.cancelled)return '<div class="note" style="margin:0">Booking cancelled. IG clears the screen of it.</div>';if(b.held)return (T.fp?tip('TTP','issue tickets · IDR '+amt(b.award?b.award.cash:b.total)):tip('FXX','review the total')+tip('FQN','review fare rules')+tip('FPCASH','set form of payment'))+tip('SM3','seat map')+tip('RBT3','rebook into class T')+tip('XI','cancel and release seats');if(T.ri&&T.ri.ref===b.ref)return tip('FPCASH','form of payment')+tip('TTP','collect and reissue');return tip('TWD','display ticket record')+tip('TWP','print agent copy')+tip('SM3','seat map')+tip('EP','print the e-ticket')+tip('RBT3','change class')+tip('XI','cancel and refund')}
- if(!P.segs.length)return tip('AN'+ddmon(E.TD+21)+'JKTSIN','check availability')+(T.av?tip('SS1Y1','sell from the last display'):'');if(!P.names.length)return tip('NM1SURNAME/GIVEN','add the passengers');var named=P.names.filter(function(n){return n.t!=='i'}).length;if(named!==P.segs[0].n)return '<div class="note">'+named+' of '+P.segs[0].n+' seat-holding passengers named. Add or correct names before saving.</div>'+tip('NM1SURNAME/GIVEN','add a passenger');if(!P.phone)return tip('AP+628123456789','contact phone');if(!P.tk)return tip('TKOK','ticketing arrangement');if(!P.rf)return tip('RFNAME','received from');
+ if(b){if(b.cancelled)return '<div class="note" style="margin:0">Booking cancelled. IG clears the screen of it.</div>';if(b.held)return (T.fp?tip('TTP','issue tickets · IDR '+amt(b.total)):tip('FXX','review the total')+tip('FQN','review fare rules')+tip('FPCASH','set form of payment'))+tip('SM3','seat map')+tip('RBT3','rebook into class T')+tip('XI','cancel and release seats');if(T.ri&&T.ri.ref===b.ref)return tip('FPCASH','form of payment')+tip('TTP','collect and reissue');return tip('TWD','display ticket record')+tip('TWP','print agent copy')+tip('SM3','seat map')+tip('EP','print the e-ticket')+tip('RBT3','change class')+tip('XI','cancel and refund')}
+ if(!P.segs.length)return tip('AN'+ddmon(E.TD+21)+'JKTSIN','check availability')+tip('AW'+ddmon(E.TD+21)+'JKTSIN','award seats')+(T.av?tip('SS1Y1','sell from the last display'):'');if(!P.names.length)return tip('NM1SURNAME/GIVEN','add the passengers');var named=P.names.filter(function(n){return n.t!=='i'}).length;if(named!==P.segs[0].n)return '<div class="note">'+named+' of '+P.segs[0].n+' seat-holding passengers named. Add or correct names before saving.</div>'+tip('NM1SURNAME/GIVEN','add a passenger');if(!P.phone)return tip('AP+628123456789','contact phone');if(!P.tk)return tip('TKOK','ticketing arrangement');if(!P.rf)return tip('RFNAME','received from');
+ if(P.segs[0].award&&!P.member)return tip('AM','pick the GarudaMiles member, for example AMRINA');
  return tip('FXX','check the fare')+tip('RBT3','rebook a flight into class T')+tip('ER','save the booking')}
 })();

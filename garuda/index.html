@@ -442,10 +442,37 @@ function subClose(l,fam){const rows=SUBCLASSES[fam]||[],H=PRICE_CFG.heat,sc=heat
  return rows.map(([k,close],i)=>key?close/top*H[key]*sc:(i===rows.length-1?1:close*sc))}
 /* the cheapest family that is still on sale in a cabin */
 function openFam(c){return c.fam.find(f=>!f.out)||c.fam[0]}
+/* ---------- Award redemption (GarudaMiles, simulated) ----------
+   Award seats are their own booking classes in each cabin, Saver and Advantage, with their own small allotment per flight. The allotment follows the flight's demand strength: hot flights release few, quiet ones more.
+   Miles come from a chart by cabin, level and distance zone. Taxes and airport charges are paid in cash. Used seats are counted from the counter's bookings, so cancelling or expiring one gives the seat back. */
+const AWARD_CLASSES={Economy:[['X','Saver'],['U','Advantage']],Premium:[['R','Saver'],['V','Advantage']],Business:[['O','Saver'],['A','Advantage']]};
+const AWARD_KEY={Economy:'eco',Premium:'prem',Business:'biz'};
+const AWARD_LETTERS='AOVRUX';
+const awardFamName=(cab,level)=>'Award '+(cab==='Premium'?'Premium Economy':cab)+' '+level;
+Object.entries(AWARD_CLASSES).forEach(([cab,levels])=>levels.forEach(([k,level],i)=>{RULES[awardFamName(cab,level)]=Object.assign(cab==='Economy'?{bag:'7 kg cabin bag',chk:i?'30 kg':'25 kg',lng:'—'}:cab==='Premium'?{bag:'2 × 7 kg',chk:'2 × 25 kg',lng:'—'}:{bag:'2 × 7 kg',chk:'2 × 32 kg',lng:'Lounge'},{seat:'Free selection',chg:i?'Small miles fee':'Miles fee',ref:'Miles returned less a fee',mil:'—'})}));
+const MEMBERS=[{id:'GA123456789',name:'RINA WIJAYA',tier:'Silver',open:12480},{id:'GA880014522',name:'ADI PRATAMA',tier:'Gold',open:68000},{id:'GA550027731',name:'SARI KUSUMA',tier:'Platinum',open:240000}];
+function awardZone(it){if(!itinIntl(it))return 'Dom';return it.legs.reduce((a,l)=>a+l.arr-l.dep,0)>PRICE_CFG.roundTrip.longHours*60?'Long':'Reg'}
+function awardMiles(it,cab,level){return PRICE_CFG.award[AWARD_KEY[cab]+(level==='Saver'?'Saver':'Adv')+awardZone(it)]||0}
+function awardPartyMiles(it,cab,level,q){return Math.round(awardMiles(it,cab,level)*(q.a+q.c+q.i*PRICE_CFG.award.infant)/100)*100}
+let _awMap=null;
+function awardReset(){_awMap=null}
+function awardUsedMap(){if(_awMap)return _awMap;const m={};for(const b of counterRecords()){if(!b.award||b.cancelled||!Array.isArray(b.dirs))continue;const n=(b.pax?.a||0)+(b.pax?.c||0);b.dirs.forEach((d,i)=>{const lv=b.award.dirs?.[i]?.level||'Saver',cab=(b.cabs&&b.cabs[i])||b.cab;(d.legs||[]).forEach(l=>{if(l.status==='cancel')return;const k=l.id+'|'+l.dep+'|'+cab+'|'+lv;m[k]=(m[k]||0)+n})})}_awMap=m;setTimeout(()=>{_awMap=null},0);return m}
+function awardAllot(l,cab,li){const A=PRICE_CFG.award,h=heatOf(l),mult=li?h.scale:h.scale*h.scale,noise=0.7+0.6*seeded(l.id+'|'+lp(l.dep,l.from).day+'|'+cab+'|AW'+li);return Math.max(0,Math.round(cabinCap(l,cab)*A[AWARD_KEY[cab]+(li?'AdvShare':'SaverShare')]*mult*noise))}
+function awardLeft(l,cab,li){const A=PRICE_CFG.award,level=li?'Advantage':'Saver';if(lp(l.dep,l.from).day-TD<(li?A.advClose:A.saverClose))return 0;
+ return Math.max(0,Math.min(awardAllot(l,cab,li)-(awardUsedMap()[l.id+'|'+l.dep+'|'+cab+'|'+level]||0),loadInfo(l,cab).left))}
+function awardFam(cab,level){const n=awardFamName(cab,level);return {n,p:0,p0:0,r:RULES[n],award:true,level}}
+/* award classes offered on an itinerary: one row per class, the seats open on every flight of it, and the miles for one passenger */
+function awardFares(it){if(!PRICE_CFG.award.on)return [];const rows=[];['Economy','Premium','Business'].forEach(cab=>{if(!it.legs.every(l=>legCabs(l).includes(cab)))return;AWARD_CLASSES[cab].forEach(([k,level],li)=>rows.push({k,cab,level,li,miles:awardMiles(it,cab,level),left:Math.min(...it.legs.map(l=>awardLeft(l,cab,li))),fam:awardFam(cab,level)}))});return rows}
+/* miles on a ticketed or held award booking, and the member's balance */
+function awardNet(b){const a=b&&b.award;if(!a)return 0;return Array.isArray(a.ledger)?a.ledger.reduce((n,x)=>n+x.miles,0):a.issued?(Number(a.miles)||0):0}
+function awardMember(b){const a=b&&b.award;return a?(a.memberId||(a.member==='RINA WIJAYA'?MEMBERS[0].id:null)):null}
+function memberBalance(id){const m=MEMBERS.find(x=>x.id===id);return m?m.open-counterRecords().reduce((n,b)=>awardMember(b)===id?n+awardNet(b):n,0):0}
+/* cancelling a ticketed award returns the miles of the flights, less a fee by level; change fees already paid are not returned */
+function awardRefund(b){const A=PRICE_CFG.award,dirs=b.award.dirs||[{level:'Saver',miles:b.award.miles}];let base=0,fee=0;dirs.forEach(d=>{base+=d.miles;fee+=Math.round(d.miles*(d.level==='Advantage'?A.cancelFeeAdv:A.cancelFeeSaver)/100)*100});return {base,fee,back:Math.max(0,base-fee)}}
 const legCabs=l=>/ATR/.test(l.ac)?['Economy']:/737/.test(l.ac)?['Economy','Business']:['Economy','Premium','Business'];
 const farEnd=l=>l.from===HUB?l.to:l.from;
 /* Pricing settings. The Pricing Lab (pricing-lab.html) reads and tunes these; the defaults are the live model. */
-const PRICE_DEFAULTS={base:{intlFixed:500000,intlPerMin:12500,domFixed:250000,domPerMin:9000},tod:{peak:1.1,off:0.9,peakFrom1:360,peakTo1:540,peakFrom2:1020,peakTo2:1200,offFrom:1320,offTo:300},curve:{d0:1.75,d1:1.65,d3:1.45,d7:1.25,d14:1.08,d21:1,d30:0.95,d60:0.9},dow:{mon:1,tue:0.96,wed:0.96,thu:1,fri:1.07,sat:1.02,sun:1.08},season:{xmas:1.25,cny:1.1,lebaran:1.4,school:1.15},demand:{min:0.95,range:0.1},fam:{lite:0.9,value:1,standard:1.15,flexi:1.4,premium:1.75,bizShort:2.6,bizMid:3.1,bizLong:3.6,bizFlex:1.18,bizMidMin:240,bizLongMin:600},pax:{child:0.75,childDom:1,infant:0.1},tax:{ppn:0.11,ppnIntl:0.11},charges:{hubIntl:255000,hubDom:85000,domOther:75000,foreign:150000},connection:{discount:0.94,through:1},load:{on:1,lfEconomy:0.78,lfPremium:0.68,lfBusiness:0.58,sens:0.6,noise:0.06,lfMin:0.35,lfMax:0.98,s1:0.98,s3:0.92,s7:0.8,s14:0.62,s30:0.32,s60:0.1,f0:0.85,f30:0.95,f50:1,f70:1.18,f85:1.45,f95:1.85,f100:2.3,bucket:0.05,urgency:0.3,urgencyDays:21},heat:{hot:0.17,hotScale:0.5,lfBoost:0.12,liteClose:0.66,valueClose:0.78},roundTrip:{dom:0.05,regional:0.08,long:0.12,longHours:5,openJaw:0.08,circle:0.08,shortNights:2,shortPremium:0.06,longNights:30,longPremium:0.04,satDiscount:0.07}};
+const PRICE_DEFAULTS={base:{intlFixed:500000,intlPerMin:12500,domFixed:250000,domPerMin:9000},tod:{peak:1.1,off:0.9,peakFrom1:360,peakTo1:540,peakFrom2:1020,peakTo2:1200,offFrom:1320,offTo:300},curve:{d0:1.75,d1:1.65,d3:1.45,d7:1.25,d14:1.08,d21:1,d30:0.95,d60:0.9},dow:{mon:1,tue:0.96,wed:0.96,thu:1,fri:1.07,sat:1.02,sun:1.08},season:{xmas:1.25,cny:1.1,lebaran:1.4,school:1.15},demand:{min:0.95,range:0.1},fam:{lite:0.9,value:1,standard:1.15,flexi:1.4,premium:1.75,bizShort:2.6,bizMid:3.1,bizLong:3.6,bizFlex:1.18,bizMidMin:240,bizLongMin:600},pax:{child:0.75,childDom:1,infant:0.1},tax:{ppn:0.11,ppnIntl:0.11},charges:{hubIntl:255000,hubDom:85000,domOther:75000,foreign:150000},connection:{discount:0.94,through:1},load:{on:1,lfEconomy:0.78,lfPremium:0.68,lfBusiness:0.58,sens:0.6,noise:0.06,lfMin:0.35,lfMax:0.98,s1:0.98,s3:0.92,s7:0.8,s14:0.62,s30:0.32,s60:0.1,f0:0.85,f30:0.95,f50:1,f70:1.18,f85:1.45,f95:1.85,f100:2.3,bucket:0.05,urgency:0.3,urgencyDays:21},award:{on:1,ecoSaverDom:6000,ecoSaverReg:12500,ecoSaverLong:30000,ecoAdvDom:9000,ecoAdvReg:18000,ecoAdvLong:42000,premSaverDom:9000,premSaverReg:20000,premSaverLong:45000,premAdvDom:13000,premAdvReg:28000,premAdvLong:60000,bizSaverDom:15000,bizSaverReg:30000,bizSaverLong:75000,bizAdvDom:22000,bizAdvReg:42000,bizAdvLong:100000,ecoSaverShare:0.015,ecoAdvShare:0.05,premSaverShare:0.02,premAdvShare:0.06,bizSaverShare:0.03,bizAdvShare:0.10,saverClose:3,advClose:0,infant:0.1,cancelFeeSaver:0.25,cancelFeeAdv:0.10,changeFeeSaver:0.10,changeFeeAdv:0.05},heat:{hot:0.17,hotScale:0.5,lfBoost:0.12,liteClose:0.66,valueClose:0.78},roundTrip:{dom:0.05,regional:0.08,long:0.12,longHours:5,openJaw:0.08,circle:0.08,shortNights:2,shortPremium:0.06,longNights:30,longPremium:0.04,satDiscount:0.07}};
 const PRICE_CFG=JSON.parse(JSON.stringify(PRICE_DEFAULTS));
 try{const sv=GA_STORE.get('ga-pricing-cfg',null);if(sv)for(const g in sv)if(PRICE_CFG[g])Object.assign(PRICE_CFG[g],sv[g])}catch(e){}
 function todFactor(m,C=PRICE_CFG.tod){return (m>=C.peakFrom1&&m<=C.peakTo1)||(m>=C.peakFrom2&&m<=C.peakTo2)?C.peak:(m>=C.offFrom||m<C.offTo?C.off:1)}
@@ -531,7 +558,7 @@ reset();
 /* The passenger demo represents Rina. Only issued counter bookings containing her
    are imported; other customers' records and unpaid holds stay in the terminal. */
 function counterRecords(){const rows=GA_STORE.get('ga-agent-bookings',[]);return Array.isArray(rows)?rows:[]}
-function demoMiles(){return 12480-counterRecords().reduce((n,b)=>n+(b.award?.issued&&b.award.member==='RINA WIJAYA'?Number(b.award.miles)||0:0),0)}
+function demoMiles(){return memberBalance(MEMBERS[0].id)}
 function isDemoPassengerBooking(b){return !b.held&&!!b.issuedMs&&Array.isArray(b.names)&&b.names.some(n=>String(n).trim().replace(/\s+/g,' ').toUpperCase()==='RINA WIJAYA')&&Array.isArray(b.dirs)&&b.dirs.length&&b.dirs.every(d=>Array.isArray(d.legs)&&d.legs.length)}
 /* Other customers' counter bookings are not Rina's trips, but their seats are still sold. */
 function counterSeatRecords(){return counterRecords().filter(b=>!b.cancelled&&Array.isArray(b.dirs)&&b.dirs.every(d=>Array.isArray(d.legs)))}
@@ -822,7 +849,7 @@ const lockFam=()=>S.step===1&&S.sel[0]?{cab:S.sel[0].cab,name:S.sel[0].fam.n}:nu
 const famIn=(it,cab,name)=>{const c=fares(it).find(x=>x.k===cab);if(!c)return null;const f=c.fam.find(x=>x.n===name);return f?{c,f}:null};
 let rmEpoch=0;const _rm=new Map();
 /* Hooks for the Pricing Lab */
-window.GA_PRICING={tripType:tripType,tripName:TRIP_NAME,cfg:PRICE_CFG,defaults:PRICE_DEFAULTS,detail:legEcoDetail,through:throughDetail,rt:rtDetail,load:loadInfo,legCharge:legCharge,itinIntl:itinIntl,clear(){for(const k in pcache)delete pcache[k];_rm.clear();rmEpoch++},save(){return GA_STORE.set('ga-pricing-cfg',PRICE_CFG)},reset(){for(const g in PRICE_DEFAULTS)Object.assign(PRICE_CFG[g],PRICE_DEFAULTS[g]);GA_STORE.remove('ga-pricing-cfg');this.clear()},saved(){return GA_STORE.has('ga-pricing-cfg')}};
+window.GA_PRICING={tripType:tripType,tripName:TRIP_NAME,cfg:PRICE_CFG,defaults:PRICE_DEFAULTS,members:MEMBERS,awardClasses:AWARD_CLASSES,awardLetters:AWARD_LETTERS,detail:legEcoDetail,through:throughDetail,rt:rtDetail,load:loadInfo,legCharge:legCharge,itinIntl:itinIntl,clear(){for(const k in pcache)delete pcache[k];_rm.clear();rmEpoch++},save(){return GA_STORE.set('ga-pricing-cfg',PRICE_CFG)},reset(){for(const g in PRICE_DEFAULTS)Object.assign(PRICE_CFG[g],PRICE_DEFAULTS[g]);GA_STORE.remove('ga-pricing-cfg');this.clear()},saved(){return GA_STORE.has('ga-pricing-cfg')}};
 function retMin(cab,name){const q=S.q,k=[rmEpoch,q.to,q.from,q.d2,cab,name,S.step,S.sel[0]?S.sel[0].it.key:''].join('|');if(_rm.has(k))return _rm.get(k);let m=null;
  for(const it of search(q.to,q.from,q.d2).filter(returnEligible)){const x=famIn(it,cab,name);if(!x||x.c.left<seats(q))continue;const t=priceFor(it,x.f).total;if(m==null||t<m)m=t}
  _rm.set(k,m);return m}
@@ -1140,6 +1167,6 @@ $('#demoBtn').onclick=()=>{if(!BK()){$('#sheet').innerHTML='<div class="grab"></
 </script>
 <script src="demand.js?v=5"></script>
 <script src="loader.js?v=1"></script>
-<script src="eticket.js?v=7"></script>
+<script src="eticket.js?v=8"></script>
 </body>
 </html>

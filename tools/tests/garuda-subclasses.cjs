@@ -28,7 +28,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  o=await last(`AN${ddmon(30)}JKTDPS`);const row2=o.split('\n').find(l=>/GA 402/.test(l));assert(/G0/.test(row2)&&/L0/.test(row2));
  await run('IG');assert(/CLASS G CLOSED/.test(await last('SS1G2')));assert(/HK1/.test(await last('SS1T2')));
  /* rebook an unsaved segment, then a held booking, including across cabins */
- await run('NM1TAN/ALI');assert(/NOT OFFERED/.test(await last('RBW2')));assert(/UNKNOWN CLASS/.test(await last('RBX2')));
+ await run('NM1TAN/ALI');assert(/NOT OFFERED/.test(await last('RBW2')));assert(/UNKNOWN CLASS/.test(await last('RBF2')));
  const before=total(await last('FXX'));assert(/OK  REBOOKED T TO Y/.test(await last('RBY2')));assert(total(await last('FXX'))>before);
  assert(/ALREADY CLASS Y/.test(await last('RBY2')));assert(/NOT A FLIGHT SEGMENT/.test(await last('RBY1')));
  await run('AP+628120000111');await run('TKOK');await run('RFALI');let er=await last('ER');const ref=er.match(/RECORD LOCATOR (GA[0-9A-Z]{4})/)[1];assert(/ Y /.test(er));
