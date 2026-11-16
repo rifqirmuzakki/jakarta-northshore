@@ -502,7 +502,7 @@ function ipLines(b){var held=!!b.held,L=[],n=function(x){return Math.round(x).to
 function ipPrint(b){var pane=$('agent-print-itin'),rec=$('agent-print-record');if(!pane)return false;if(rec)rec.textContent='';
  pane.innerHTML='<img src="assets/garuda-logo-colour.png" alt="" style="height:34px;display:block;margin:0 0 10px"><div style="font-size:9pt;font-weight:bold;border:1.5px solid #000;display:inline-block;padding:2px 8px;margin:0 0 10px">COUNTER COPY · '+(b.held?'NOT A TICKET':'TICKETED')+'</div><pre style="margin:0;font:9pt/1.38 \'Courier New\',Courier,monospace;white-space:pre">'+C.esc(ipLines(b).join('\n'))+'</pre>';
  try{window.print();return true}catch(e){return false}}
-function ip(doPrint){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','e');if(b.cancelled)return out('BOOKING IS CANCELLED - NO ITINERARY TO PRINT','e');
+function ip(doPrint){var b=T.cur;if(!b)return out('NO BOOKING - RETRIEVE ONE WITH RT','e');if(!W.etkFareSplit||!W.etkReceipt)return out('THIS PAGE IS OUT OF DATE - CLOSE IT AND REOPEN, OR RELOAD','e');if(b.cancelled)return out('BOOKING IS CANCELLED - NO ITINERARY TO PRINT','e');
  if(doPrint){var ok=ipPrint(b);return out(ok?'ITINERARY SENT TO PRINT - SIMULATED':'PRINT UNAVAILABLE - USE BROWSER PRINT',ok?'sys':'e')}
  out(ipLines(b).join('\n')+'\nIPP PRINTS THE ITINERARY','')}
 
