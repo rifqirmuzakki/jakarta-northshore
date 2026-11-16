@@ -59,7 +59,7 @@
  function generate(l,cabin){var key=l.id+'|'+l.dep+'|'+cabin,hit=memo.get(key);if(hit)return hit;
   var ci=CABINS.indexOf(cabin),fnum=+String(l.id).replace(/\D/g,''),f0=FLS.find(function(f){return f.id===l.id}),D=Math.round((l.dep-(f0?f0.dep:0))/1440);
   var info=ladderFrac(l,cabin),Nx=info.cap*info.lf,N=Math.round(Nx),Dk=new Array(N),k=0,d,m,ctx={fnum:fnum,D:D,ci:ci,tm:lp(l.dep,l.from).min};
-  for(d=HORIZON;d>=0&&k<N;d--){m=Math.min(N,Math.round(Nx*soldShare(d)));while(k<m)Dk[k++]=d}
+  for(d=HORIZON;d>=0&&k<N;d--){m=Math.min(N,Math.round(Nx*soldShareFor(l,d)));while(k<m)Dk[k++]=d}
   var out=[],i=0,idx=0,shapes=[];
   while(i<N){var tag=key+'|'+idx,size=pick(tag+'|n',[[1,52],[2,28],[3,8],[4,8],[5,2],[6,2]]),j=i;while(j<N&&j-i<size&&Dk[j]===Dk[i])j++;
    var seatsN=j-i,inf=R(tag+'|inf')<0.04?1:0,kids=seatsN>=3&&R(tag+'|kid')<0.5?1:0;
