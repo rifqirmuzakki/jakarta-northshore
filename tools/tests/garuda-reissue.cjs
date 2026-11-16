@@ -33,7 +33,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  /* the new e-ticket and the shift */
  await p.evaluate(()=>{window.__pr=0;document.getElementById('eng').contentWindow.print=()=>{window.__pr++}});
  await run('EP');await p.waitForFunction(()=>window.__pr===1,null,{timeout:5000});
- const etk=await p.frameLocator('#eng').locator('#etk-sheet').innerText();assert(etk.includes(b1.flt)&&etk.includes(b1.tickets[0])&&!etk.includes(b0.tickets[0]));
+ const etk=await p.frameLocator('#eng').locator('#etk-sheet').innerText();assert(etk.includes(b1.flt)&&etk.includes(b1.tickets[0])&&/Issued in exchange for/i.test(etk)&&etk.includes(b0.tickets[0])&&/EXCHANGED/.test(etk)&&/Exchange receipt/i.test(etk)&&/Payments on this booking/i.test(etk));
  const sh=await p.evaluate(()=>GA_AGENT.shift());assert(sh.S>=b1.paid0+collect);
  /* a second change with nothing to collect (lower fare, free of fee only if the rule is free) still needs ET */
  assert.deepEqual(errors,[]);console.log('PASS: reissue: Lite blocked, quote with fee and difference, payment, new tickets, flight moved, seats moved, e-ticket, shift');

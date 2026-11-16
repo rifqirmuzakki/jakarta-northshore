@@ -42,7 +42,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  /* ticket and print: services, GarudaMiles number and seat show on the e-ticket */
  await run('FPCASH');assert(/TICKETS ISSUED/.test(await last('ET')));
  await p.evaluate(()=>{window.__pr=0;document.getElementById('eng').contentWindow.print=()=>{window.__pr++}});await run('EP');await p.waitForFunction(()=>window.__pr===1,null,{timeout:5000});
- const etk=await p.frameLocator('#eng').locator('#etk-sheet').innerText();assert(/Vegetarian meal – (RINA|Rina)/i.test(etk)&&/Wheelchair to the aircraft door – (BUDI|Budi)/i.test(etk)&&/GarudaMiles GA123456789/.test(etk)&&etk.includes(pick.free)&&!/CUSTOMER PAYS|SPOUSE IS THE PAYER|VIP CUSTOMER/i.test(etk),etk);
+ const etk=await p.frameLocator('#eng').locator('#etk-sheet').innerText();assert(/Vegetarian meal – (RINA|Rina)/i.test(etk)&&/Wheelchair to the aircraft door – (BUDI|Budi)/i.test(etk)&&/frequent flyer[\s\S]*GA123456789/i.test(etk)&&etk.includes(pick.free)&&!/CUSTOMER PAYS|SPOUSE IS THE PAYER|VIP CUSTOMER/i.test(etk),etk);
  /* a fare with seat selection at check-in refuses seats at the counter */
  await run('IG');await run(`AN${d}JKTDPS`);await run('SS1Q1');await run('NM1TAN/ALI MR');await run('AP+628120000111');await run('TKOK');await run('RFALI');await run('ER');
  o=await last('ST20A/P1');assert(/FARE RULE: SEAT SELECTION IS AT CHECK-IN ONLY \(ECONOMY VALUE\)/.test(o),o);assert(/SEATS CANNOT BE CHANGED NOW - FARE RULE/.test(await last('SM')));

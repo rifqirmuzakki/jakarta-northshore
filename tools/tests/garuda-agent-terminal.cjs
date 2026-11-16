@@ -54,7 +54,7 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  await p.evaluate(()=>GA_AGENT.bookings()[0].tickets.forEach(t=>t.coupons.filter(c=>c.d===0).forEach(c=>c.status='OPEN')));await run('RT');
  await p.evaluate(()=>{window.__pr=0;document.getElementById('eng').contentWindow.print=()=>{window.__pr++}});
  await run('EP');await p.waitForFunction(()=>window.__pr===1,null,{timeout:5000});
- const etk=await p.frameLocator('#eng').locator('#etk-sheet').innerText();assert(etk.includes(ref)&&etk.includes('Counter JKT-03'));assert(etk.includes('MRS RINA WIJAYA')&&etk.includes('MR BUDI WIJAYA')&&etk.includes('Dear Mrs Wijaya'));
+ const etk=await p.frameLocator('#eng').locator('#etk-sheet').innerText();assert(etk.includes(ref)&&etk.includes('Counter JKT-03'));assert(etk.includes('WIJAYA/RINA MRS')&&etk.includes('WIJAYA/BUDI MR')&&etk.includes('Dear Mrs Wijaya'));
  /* retrieve, history, cancel with refund */
  await run('IG');assert(/TICKETED/.test(await last('RT'+ref))===true);o=await last('RT');assert(/FA PAX 126-\d{10}\/ETGA\/\w+\/JKT003 +WIJAYA\/RINA MRS/.test(o));
  assert(/TICKETED/.test(await last('RH'))&&/BOOKING CREATED/.test(await last('RH')));
