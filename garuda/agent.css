@@ -88,7 +88,7 @@ tr.row{cursor:pointer}tr.row:hover td{background:#f2f7f9}tr.row.on td{background
 @media print{.top,.sform,.cmd{display:none}}
 /* terminal */
 .term{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px;align-items:start}
-@media(max-width:1100px){.term{grid-template-columns:1fr}}
+@media(max-width:1100px){.term{grid-template-columns:minmax(0,1fr)}}
 .scr{background:#06141a;color:#d3e9dc;border:1px solid #0b3a4a;display:flex;flex-direction:column;height:calc(100vh - 96px);min-height:420px;font:13.5px/1.5 ui-monospace,Menlo,Consolas,monospace}
 .scr .out{flex:1;overflow:auto;padding:12px 16px;white-space:pre}
 .scr .ln.cmd{color:#f0c26a;margin-top:6px}.scr .ln.e{color:#ff9d8c}.scr .ln.ok{color:#8fe0b6}.scr .ln.sys{color:#8fb7c4}.scr .ln.h{color:#7fd0e0;font-weight:600}
@@ -106,3 +106,19 @@ tr.row{cursor:pointer}tr.row:hover td{background:#f2f7f9}tr.row.on td{background
 
 .agent-print-record{display:none}
 @media print{body>*:not(.agent-print-record){display:none!important}.agent-print-record{display:block!important;margin:0;color:#000;background:#fff;white-space:pre-wrap;overflow-wrap:anywhere;font:10pt/1.5 ui-monospace,monospace}@page{size:auto;margin:15mm}}
+
+/* phone: the header wraps, the terminal fits the screen and scrolls sideways for wide lines, and inputs are 16px so iOS does not zoom in on focus */
+@media(max-width:760px){
+ .top{height:auto;flex-wrap:wrap;gap:4px 12px;padding:8px 12px 0}
+ .brand span{padding-left:10px;font-size:13px}.brand img{height:22px;width:auto}
+ .who{margin-left:auto;gap:12px;font-size:12px}
+ .tabs{order:3;width:100%;height:42px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tabs button{flex:none;white-space:nowrap;padding:0 14px}
+ main{padding:10px 10px 30px}
+ .scr{height:calc(100vh - 200px);height:calc(100dvh - 200px);min-height:300px;font-size:12px}
+ .scr .out{padding:10px;-webkit-overflow-scrolling:touch}
+ .scr form{padding:0 10px}
+ input,select,.scr input,.cmd input{font-size:16px}
+ .cmd{flex-wrap:wrap}.cmd input{flex:1 1 100%}
+ .tside{position:static}
+ .termbar{padding:8px 10px}
+}
