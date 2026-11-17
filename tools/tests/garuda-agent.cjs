@@ -24,14 +24,14 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  const names=[['Rina','Wijaya','1985-04-12'],['Budi','Wijaya','1983-09-30'],['Sari','Wijaya','2018-06-01'],['Bayu','Wijaya','2025-08-20']];
  const titles=['MRS','MR','MISS',''];for(let i=0;i<3;i++)await p.selectOption(`#p${i}t`,titles[i]);
  for(let i=0;i<4;i++){await p.fill(`#p${i}f`,names[i][0]);await p.fill(`#p${i}l`,names[i][1]);await p.fill(`#p${i}d`,names[i][2])}
- await p.fill('#c-phone','+62 812 0000 111');
+ await p.fill('#p0n','ID');await p.fill('#p0p','X1234567');await p.fill('#p0q','GA123456789');await p.fill('#c-phone','+62 812 0000 111');
  await p.click('[data-act="to-pay"]');assert(await p.locator('#work [data-pm]').count()===5);
  /* cash: issue stays disabled until enough is tendered */
  assert.equal(await p.locator('[data-act="issue"]').isDisabled(),true);
  await p.click('[data-round]');assert.equal(await p.locator('[data-act="issue"]').isDisabled(),false);assert(/Change to give/.test(await p.locator('#chg').innerText()));
  const soldBefore=await p.evaluate(()=>localStorage.getItem('ga-sold'));
  await p.click('[data-act="issue"]');
- const ref=await p.locator('.done .ref').innerText();assert(/^GA[0-9A-Z]{4}$/.test(ref));assert.equal((await p.locator('.done .tk div').allInnerTexts()).filter(x=>/126-\d{10}/.test(x)).length,4);
+ const personal=await p.evaluate(()=>({passenger:GA_AGENT.bookings()[0].passengers[0],extras:GA_AGENT.bookings()[0].extras}));assert.equal(personal.passenger.nationality,'ID');assert.equal(personal.passenger.passport,'X1234567');assert(personal.extras.some(x=>x.code==='FQTV'&&x.text==='GA123456789'));const ref=await p.locator('.done .ref').innerText();assert(/^GA[0-9A-Z]{4}$/.test(ref));assert.equal((await p.locator('.done .tk div').allInnerTexts()).filter(x=>/126-\d{10}/.test(x)).length,4);
  assert.notEqual(await p.evaluate(()=>localStorage.getItem('ga-sold')),soldBefore);assert.equal(await p.locator('#nb').innerText(),'1');
  /* print: the e-ticket opens in the engine frame with the counter as place of issue */
  await p.evaluate(()=>{window.__pr=0;document.getElementById('eng').contentWindow.print=()=>{window.__pr++}});
