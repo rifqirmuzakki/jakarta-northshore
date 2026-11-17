@@ -43,12 +43,12 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  assert(/HELD/.test(o)&&/WIJAYA\/RINA/.test(o)&&/HK2/.test(o));
  assert(/ALREADY SAVED/.test(await last('NM1X/Y')));
  /* the held booking uses up seats */
- assert.equal(await p.evaluate(()=>GA_AGENT.bookings()[0].held),true);assert.match(await p.locator('#tside').innerText(),/review the total/);
+ assert.equal(await p.evaluate(()=>GA_AGENT.bookings()[0].held),true);assert(/REASON REQUIRED/.test(await last('DO10/X')));assert(/OK  FARE OVERRIDE 10%/.test(await last('DO10/SERVICE RECOVERY')));const discounted=await p.evaluate(()=>{const b=GA_AGENT.bookings()[0];return {total:b.total,price:b.dirPrices,base:b.discount.base}});assert(discounted.price.every((d,i)=>d.fare<=discounted.base[i].fare&&d.chg===discounted.base[i].chg&&d.total===d.fare+d.tax+d.chg));assert(/FARE OVERRIDE 10%/.test(await last('FXX')));assert(/FARE OVERRIDE/.test(await last('RH')));assert(/REMOVE FARE OVERRIDE/.test(await last('RBM3')));assert(/OK  FARE OVERRIDE 0%/.test(await last('DO0/TEST RESET')));assert.equal(await p.evaluate(()=>GA_AGENT.bookings()[0].total),discounted.base.reduce((n,p)=>n+p.total,0));assert.match(await p.evaluate(()=>GA_AGENT.ctx.localEstimate('SIN',1200000)),/SGD.*100.*IDR settlement/);assert.equal(await p.evaluate(()=>GA_AGENT.ctx.localEstimate('JKT',1200000)),'');await last('DO10/SERVICE RECOVERY');assert.match(await p.locator('#tside').innerText(),/review the total/);
  /* pay and ticket */
  assert(/NEED FORM OF PAYMENT/.test(await last('ET')));
  assert(/SHORT BY/.test(await (async()=>{await run('FPCASH/1000');return last('ET')})()));
  await run('FPCC');o=await last('TTP');assert(/TICKETS ISSUED/.test(o));assert.equal((o.match(/126-\d{10}/g)||[]).length,2);assert(/APPROVAL \d{6}/.test(o));
- assert(/ALREADY TICKETED/.test(await last('ET')));
+ assert(/ALREADY TICKETED/.test(await last('ET')));assert.equal(await p.evaluate(()=>GA_AGENT.bookings()[0].discount.percent),10);assert(/FARE OVERRIDE 10%/.test(await last('TWD')));
  o=await last('TWD');assert(/E-TICKET COUPONS/.test(o)&&/OPEN/.test(o)&&/CURRENT TICKET/.test(o)&&/BOOKING FINANCIAL SUMMARY/.test(o)&&/FORM OF PAYMENT/.test(o));await p.evaluate(()=>{window.__agentPrint=0;window.print=()=>window.__agentPrint++});assert(/AGENT RECORD SENT TO PRINT/.test(await last('TWP')));assert.equal(await p.evaluate(()=>window.__agentPrint),1);const agentCopy=await p.locator('#agent-print-record').textContent();assert(agentCopy.includes(ref)&&/SIMULATED RECORD/.test(agentCopy)&&/CURRENT TICKET/.test(agentCopy));
  await p.evaluate(()=>GA_AGENT.bookings()[0].tickets.forEach(t=>t.coupons.filter(c=>c.d===0).forEach(c=>c.status='FLOWN')));
  assert(/FLOWN/.test(await last('TWD')));assert(/FLOWN OR PARTLY USED/.test(await last('RBM3')));
