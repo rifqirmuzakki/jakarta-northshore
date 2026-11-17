@@ -18,7 +18,9 @@ const ddmon=n=>{const d=new Date(Date.now()+7*36e5+n*864e5);return d.getUTCDate(
  assert(/NO AVAILABILITY/.test(await last('SS2Y1')));
  assert(/INCOMPLETE/.test(await last('ER')));
  assert(/NEED CITY PAIR/.test(await last('AN21DEC')));
- assert(/FIRST|TOMORROW|INVALID/.test(await last('AN01JAN20JKTSIN')));
+ assert(/FIRST|TODAY|INVALID/.test(await last('AN01JAN20JKTSIN')));
+ await last(`AN${ddmon(0)}JKTDPS`);assert(await p.evaluate(()=>GA_TERM.state().av.its.every(it=>it.dep>GA_AGENT.ctx.E.nowAbs())));await run('IG');
+
  /* availability and sell, return trip */
  let o=await last(`AN${ddmon(21)}JKTSIN`);assert(/GA \d+/.test(o)&&/Y\d/.test(o)&&/JKTSIN/.test(o));
  assert(/NO SUCH LINE/.test(await last('SS2Y99')));
