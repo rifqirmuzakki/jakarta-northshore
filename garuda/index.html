@@ -806,7 +806,19 @@ const DESTINATION_IMAGES={
  PRG:{file:'prague',alt:'Charles Bridge and Prague skyline',position:'50% 50%'},
  FCO:{file:'rome',alt:'The Colosseum in Rome at sunset',position:'50% 50%'},
  MAD:{file:'madrid',alt:'Gran Vía in Madrid',position:'50% 50%'},
- BCN:{file:'barcelona',alt:'Port Vell harbour in Barcelona',position:'50% 50%'}
+ BCN:{file:'barcelona',alt:'Port Vell harbour in Barcelona',position:'50% 50%'},
+ CPH:{file:'copenhagen',alt:'Nyhavn harbour in Copenhagen at sunset',position:'50% 50%'},
+ LIS:{file:'lisbon',alt:'Lisbon skyline overlooking the city',position:'50% 50%'},
+ BER:{file:'berlin',alt:'Brandenburg Gate in Berlin at night',position:'50% 50%'},
+ ARN:{file:'stockholm',alt:'Stockholm waterfront at night',position:'50% 50%'},
+ BUD:{file:'budapest',alt:'Hungarian Parliament by the Danube in Budapest',position:'50% 50%'},
+ FUK:{file:'fukuoka',alt:'Fukuoka waterfront and beach',position:'50% 50%'},
+ AKL:{file:'auckland',alt:'Auckland skyline across the harbour',position:'50% 50%'},
+ PUS:{file:'busan',alt:'Busan skyline and Gwangan Bridge',position:'50% 50%'},
+ MLE:{file:'maldives',alt:'Overwater villas in the Maldives',position:'50% 50%'},
+ BNE:{file:'brisbane',alt:'Brisbane skyline and river',position:'50% 50%'},
+ TTE:{file:'ternate',alt:'Ternate waterfront in North Maluku',position:'50% 50%'},
+ KOE:{file:'kupang',alt:'Sunset on a beach in Kupang',position:'50% 50%'}
 };
 function destinationImage(code,lazy=true){const photo=DESTINATION_IMAGES[code];return photo?`<img class="destination-photo" src="assets/${photo.file}.jpg" alt="${photo.alt}" width="1000" height="600" style="object-position:${photo.position}" loading="${lazy?'lazy':'eager'}" decoding="async">`:'';}
 function destinationThumbnail(code){return `<span class="destination-thumb" data-destination="${code}">${destinationImage(code,false)}<span class="destination-placeholder" aria-hidden="true">${IC.pin}</span></span>`;}
