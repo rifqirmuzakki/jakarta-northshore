@@ -14,6 +14,10 @@
   var x=(BigInt(fnum)<<23n)|(BigInt(d)<<11n)|(BigInt(ci)<<9n)|BigInt(idx);x=(x*MUL)%MOD;x^=x>>17n;return x.toString(36).toUpperCase().padStart(7,'0')}
  function decodeRef(ref){if(!/^[0-9A-Z]{7}$/.test(ref))return null;var x=BigInt(parseInt(ref,36));if(x>=MOD)return null;
   x^=x>>17n;x^=x>>34n;x=(x*MULINV)%MOD;return{fnum:Number(x>>23n),D:Number((x>>11n)&4095n)+DAY0,ci:Number((x>>9n)&3n),idx:Number(x&511n)}}
+ /* Through services share flight numbers, so assign each physical sector a unique
+    unused reference slot while retaining the established slots for ordinary flights. */
+ var sectorSlots=new Map(),slotFlights=new Map(),usedSlots=new Set(FLS.filter(function(f){return !f.rotation}).map(function(f){return +String(f.id).replace(/\D/g,'')}));
+ FLS.filter(function(f){return f.rotation}).slice().sort(function(a,b){return (a.rotation+'|'+a.sector).localeCompare(b.rotation+'|'+b.sector)}).forEach(function(f){var slot=1023;while(slot>=0&&usedSlots.has(slot))slot--;if(slot<0)throw Error('No demand reference slots for multi-leg sectors');usedSlots.add(slot);sectorSlots.set(f.rotation+'|'+f.sector,slot);slotFlights.set(slot,f)});
  var R=function(k){return seeded(k)};
  function pick(k,items){var t=0,i;for(i=0;i<items.length;i++)t+=items[i][1];var r=R(k)*t;for(i=0;i<items.length;i++){r-=items[i][1];if(r<0)return items[i][0]}return items[items.length-1][0]}
  var FIRST=['Budi','Siti','Agus','Dewi','Rina','Adi','Putri','Eko','Wulan','Hendra','Sri','Bayu','Ayu','Rizky','Lestari','Dimas','Maya','Fajar','Intan','Yoga','Nur','Andi','Indah','Reza','Tri'],
@@ -58,7 +62,7 @@
  /* Active bookings follow the load model exactly. Some later cancel or change; every cancelled seat is resold at the moment it is
     released, so seats sold stay equal to the model on every day. Resales are appended after the originals, so references never shift. */
  function generate(l,cabin){var key=l.id+'|'+l.dep+'|'+cabin,hit=memo.get(key);if(hit)return hit;
-  var ci=CABINS.indexOf(cabin),fnum=+String(l.id).replace(/\D/g,''),f0=FLS.find(function(f){return f.id===l.id}),D=Math.round((l.dep-(f0?f0.dep:0))/1440);
+  var ci=CABINS.indexOf(cabin),fnum=l.rotation?sectorSlots.get(l.rotation+'|'+l.sector):+String(l.id).replace(/\D/g,''),f0=FLS.find(function(f){return f.id===l.id&&(!l.rotation||f.rotation===l.rotation&&f.sector===l.sector)}),D=l.rotation?l.rotationDay:Math.round((l.dep-(f0?f0.dep:0))/1440);
   var info=ladderFrac(l,cabin),Nx=info.cap*info.lf,N=Math.round(Nx),Dk=new Array(N),k=0,d,m,ctx={fnum:fnum,D:D,ci:ci,tm:lp(l.dep,l.from).min};
   for(d=HORIZON;d>=0&&k<N;d--){m=Math.min(N,Math.round(Nx*soldShareFor(l,d)));while(k<m)Dk[k++]=d}
   var out=[],i=0,idx=0,shapes=[];
@@ -82,7 +86,7 @@
  function visible(l,cabin,now){var dn=dnowOf(l,now);return generate(l,cabin).filter(function(b){return b.dout>=dn&&!cancelledBy(b,dn)})}
  /* everything made by the scenario day, cancelled ones included */
  function history(l,cabin,now){var dn=dnowOf(l,now);return generate(l,cabin).filter(function(b){return b.dout>=dn})}
- function resolveLeg(ref){var c=decodeRef(String(ref).toUpperCase());if(!c||c.ci>2)return null;var f=FLS.find(function(x){return +String(x.id).replace(/\D/g,'')===c.fnum&&runs(x,c.D)});if(!f)return null;
+ function resolveLeg(ref){var c=decodeRef(String(ref).toUpperCase());if(!c||c.ci>2)return null;var f=slotFlights.get(c.fnum)||FLS.find(function(x){return !x.rotation&&+String(x.id).replace(/\D/g,'')===c.fnum&&runs(x,c.D)});if(!f||!runs(f,c.D))return null;
   var l=mkLeg(f,c.D),cabin=CABINS[c.ci];if(legCabs(l).indexOf(cabin)<0)return null;var rec=generate(l,cabin)[c.idx];return rec?{l:l,cabin:cabin,rec:rec}:null}
  function resolve(ref){var r=resolveLeg(ref);return r&&r.rec}
  /* the flight with this number departing on this local day (as shown to the traveller), or null */
