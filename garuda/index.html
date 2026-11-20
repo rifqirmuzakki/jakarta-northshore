@@ -794,7 +794,19 @@ const DESTINATION_IMAGES={
  PKX:{file:'beijing',alt:'The Forbidden City in Beijing',position:'50% 50%'},
  SGN:{file:'ho-chi-minh-city',alt:'Ho Chi Minh City skyline at night',position:'50% 50%'},
  HKT:{file:'phuket',alt:'Patong Beach in Phuket',position:'50% 50%'},
- IST:{file:'istanbul',alt:'Hagia Sophia in Istanbul',position:'50% 50%'}
+ IST:{file:'istanbul',alt:'Hagia Sophia in Istanbul',position:'50% 50%'},
+ EDI:{file:'edinburgh',alt:'Edinburgh skyline above Princes Street Gardens',position:'50% 50%'},
+ JFK:{file:'new-york',alt:'Lower Manhattan skyline in New York',position:'50% 50%'},
+ ORD:{file:'chicago',alt:'Chicago skyline at sunset',position:'50% 50%'},
+ BOS:{file:'boston',alt:'Boston skyline across the Charles River',position:'50% 50%'},
+ VIE:{file:'vienna',alt:'Vienna skyline across the Danube',position:'50% 50%'},
+ ATH:{file:'athens',alt:'The Acropolis in Athens',position:'50% 50%'},
+ OSL:{file:'oslo',alt:'Oslo Opera House by the waterfront',position:'50% 50%'},
+ HEL:{file:'helsinki',alt:'Helsinki Cathedral in Senate Square',position:'50% 50%'},
+ PRG:{file:'prague',alt:'Charles Bridge and Prague skyline',position:'50% 50%'},
+ FCO:{file:'rome',alt:'The Colosseum in Rome at sunset',position:'50% 50%'},
+ MAD:{file:'madrid',alt:'Gran Vía in Madrid',position:'50% 50%'},
+ BCN:{file:'barcelona',alt:'Port Vell harbour in Barcelona',position:'50% 50%'}
 };
 function destinationImage(code,lazy=true){const photo=DESTINATION_IMAGES[code];return photo?`<img class="destination-photo" src="assets/${photo.file}.jpg" alt="${photo.alt}" width="1000" height="600" style="object-position:${photo.position}" loading="${lazy?'lazy':'eager'}" decoding="async">`:'';}
 function destinationThumbnail(code){return `<span class="destination-thumb" data-destination="${code}">${destinationImage(code,false)}<span class="destination-placeholder" aria-hidden="true">${IC.pin}</span></span>`;}
