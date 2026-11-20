@@ -13,15 +13,16 @@ const root=path.resolve(__dirname,'../..');
  assert.match(await p.locator('.seat-fees').innerText(),/Extra legroom[\s\S]*Front[\s\S]*Standard\s*IDR/);
  const pick=tier=>p.evaluate(t=>{const b=BK(),l=flat(b)[0],taken=new Set(Object.values(l.seats));const s=[...document.querySelectorAll('[data-seat][data-tier="'+t+'"]:not([disabled])')].map(x=>x.dataset.seat).find(x=>!taken.has(x));return s},tier);
  const legroom=await pick('legroom'),std=await pick('standard');assert(legroom&&std);
- await p.click(`[data-seat="${legroom}"]`);assert.match(await p.locator('.seat-footer-total').innerText(),/IDR 200,000/);
+ await p.click(`[data-seat="${legroom}"]`);const F=await p.evaluate(()=>{const t=seatFeeTable(flat(BK())[0]);return{...t,min:flat(BK())[0].arr-flat(BK())[0].dep}});for(const v of [F.legroom,F.front,F.standard])assert.equal(v%5000,0,'fees are multiples of 5,000');assert.equal(F.legroom,Math.ceil(F.min*2000/5000)*5000);assert(F.legroom>F.front&&F.front>F.standard);const fmt=n=>'IDR '+n.toLocaleString('en-US');
+ assert.match(await p.locator('.seat-footer-total').innerText(),new RegExp(fmt(F.legroom)));
  assert.match(await p.locator('.ss-footer .btn').innerText(),/Continue to payment/);
  /* back out: nothing paid, nothing saved */
- await p.click('[data-seat-save]');await p.waitForSelector('[data-seat-pay]');assert.match(await p.locator('#sheet').innerText(),/IDR 200,000/);
+ await p.click('[data-seat-save]');await p.waitForSelector('[data-seat-pay]');assert.match(await p.locator('#sheet').innerText(),new RegExp(fmt(F.legroom)));
  await p.click('[data-seat-back]');await p.waitForSelector('.seat-map-grid');assert.deepEqual((await info()).extras,[]);
  /* switch that traveller to a standard seat and pay once */
- await p.click(`[data-seat="${std}"]`);assert.match(await p.locator('.seat-footer-total').innerText(),/IDR 50,000/,'a new pick replaces the earlier one for the same traveller');
+ await p.click(`[data-seat="${std}"]`);assert.match(await p.locator('.seat-footer-total').innerText(),new RegExp(fmt(F.standard)),'a new pick replaces the earlier one for the same traveller');
  await p.click('[data-seat-save]');await p.waitForSelector('[data-seat-pay]');await p.click('[data-seat-pay]');await p.waitForSelector('#sheet:not(.on)',{state:'attached'}).catch(()=>{});
- let r=await info();assert.equal(r.extras.length,1,'only the changed paid seat is billed (assignment kept free)');assert.equal(r.extras[0].amount,50000);
+ let r=await info();assert.equal(r.extras.length,1,'only the changed paid seat is billed (assignment kept free)');assert.equal(r.extras[0].amount,F.standard);
  assert.equal(r.seats[0],std);
  /* a paid seat is not billed twice, and survives a reload */
  await p.reload();await p.waitForFunction(()=>typeof saveOnlineBooking==='function');

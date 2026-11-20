@@ -13,12 +13,13 @@ function otherSeatClaims(b,l){const used=new Set();const known=new Set(S.booking
 function allocateBookingSeats(b,only=null){for(const l of only?[only]:flat(b)){const m=seatModel(b,l),used=otherSeatClaims(b,l);l.seats||={};for(let i=0;i<b.names.length;i++)if(tripPersonType(b,i)!=='i'&&l.seats[i])used.add(l.seats[i]);const open=m.seats.filter(s=>!seatBlocked(l,s)&&!used.has(s)&&(seatTier(b,l,s)==='standard'||seatTier(b,l,s)==='included'||seatFee(b,l,s)===0)),start=open.length?hash(b.ref+l.id)%Math.max(1,open.length-b.names.length):0;let cursor=start;for(let i=0;i<b.names.length;i++){if(tripPersonType(b,i)==='i'){delete l.seats[i];continue}if(!l.seats[i]){const seat=open[cursor++%open.length];if(seat)l.seats[i]=seat;}}}}
 function seatDraftValid(b,l,draft,requireAll=true){const m=seatModel(b,l),other=otherSeatClaims(b,l),seen=new Set();for(let i=0;i<b.names.length;i++){if(tripPersonType(b,i)==='i')continue;const seat=draft[i]||l.seats?.[i];if(!seat&&!requireAll)continue;if(!m.seats.includes(seat)||seatBlocked(l,seat)||other.has(seat)||seen.has(seat))return false;seen.add(seat);}return true;}
 function seatChangeAllowed(b,l,checkin=false){if(l.status==='cancel'||eD(l)<=nowAbs())return false;const cutoff=CT[farEnd(l)].z==='I'?60:45;if(eD(l)-nowAbs()<=cutoff)return false;return checkin?checkinWindow(l):tripAllowance(b,l).seat==='Free selection'||checkinWindow(l);}
-/* Prepaid seat fees (simulated). Business and Premium Economy seats are included. In Economy the first two rows
+/* Prepaid seat fees (simulated), priced by minutes in the air. Business and Premium Economy seats are included. In Economy the first two rows
    and the middle exit row are Extra legroom, the next four rows are Front, and the rest are Standard. Standard seats
    are free on fares that include selection (and for everyone once check-in opens); Flexi also includes Front. */
-const SEAT_FEES={dom:{legroom:200000,front:100000,standard:50000},intl:{legroom:400000,front:200000,standard:100000}};
+const SEAT_RATE_PER_MIN={legroom:2000,front:1000,standard:500};
 function seatTier(b,l,seat){const m=seatModel(b,l);if(m.cabin!=='Economy'||!m.seats.includes(seat))return 'included';const k=parseInt(seat,10)-m.start;return k<2||k===Math.floor(m.rows/2)?'legroom':k<6?'front':'standard';}
-function seatFeeTable(l){return SEAT_FEES[CT[farEnd(l)].z==='I'?'intl':'dom'];}
+/* IDR per minute of flight time, rounded up to the next IDR 5,000 */
+function seatFeeTable(l){const min=Math.max(1,l.arr-l.dep),f=r=>Math.ceil(r*min/5000)*5000;return{legroom:f(SEAT_RATE_PER_MIN.legroom),front:f(SEAT_RATE_PER_MIN.front),standard:f(SEAT_RATE_PER_MIN.standard)};}
 function seatFee(b,l,seat){const tier=seatTier(b,l,seat);if(tier==='included')return 0;const fee=seatFeeTable(l)[tier],di=tripDirectionIndex(b,l);
  if(tier==='standard')return tripAllowance(b,l).seat==='Free selection'||checkinWindow(l)?0:fee;
  if(tier==='front'&&b.fams?.[di]==='Economy Flexi')return 0;return fee;}
