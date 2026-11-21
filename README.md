@@ -366,6 +366,25 @@ The Economy fare selector links to the cabin experience through a compact photo 
 
 Seat maps keep their traveller/seat summary in the fixed footer instead of covering scrolling rows. Single-traveller seat selection avoids an unnecessary dropdown; selectors for groups and multi-leg journeys use a clearly sized, keyboard-accessible control. Boarding passes omit selectors when there is only one traveller and flight, and show the static demo QR code described above. Search, fare rules, seat assignment and traveller/pass switching behaviour remain covered by the existing browser suites.
 
+### Garuda booking services
+
+- **Find booking** (Trips): booking reference plus a traveller's last name opens an issued booking, including airport counter bookings, and keeps it in this browser's Trips (`ga-retrieved-refs`). Every miss gives one generic message and five misses lock the form for a minute. Test: `node tools/tests/garuda-retrieve.cjs`.
+- **Prepaid seats** (`garuda/seat-map.js`): Economy seats are Extra legroom (first two rows and the middle exit row), Front (next four rows) or Standard. Fees are IDR 2,000 / 1,000 / 500 per flight minute, rounded up to the next IDR 5,000. Standard is free on fares that include selection and for everyone once check-in opens; Flexi also includes Front. Selection and payment stay open until the airport cutoff, paid seats are not billed twice or refunded, and auto-assignment never hands out a charged seat. Test: `garuda-paid-seats.cjs`.
+- **Extra bags** (`garuda/bags.js`): 15, 20 and 30 kg bags (0.75x / 1x / 1.5x the 20 kg price), up to three per traveller per flight, priced per route zone: domestic IDR 250,000, regional (up to 3,600 km) 400,000, Asia-Pacific and Middle East (up to 8,000 km) 650,000, Europe and Americas 900,000. The airport price is shown for comparison only. Test: `garuda-extra-bags.cjs`.
+- Seat and bag purchases are saved on the booking as `extras` with `k:'svc'` (shown read-only in the agent terminal). The payment step is simulated.
+
+### Charging currency
+
+A booking is priced and paid in the currency of its **first point of origin** (the first departure of the first direction). Indonesian origins stay in IDR; every other city in the network maps to a local currency (`garuda/currency.js`, shared by the passenger app and the agent counter).
+
+- Fares are still built in IDR, then snapped **up** to whole multiples of one unit (rate x a friendly step: SGD 1, JPY 100, KRW 1,000, VND 10,000, INR 10 and so on), so lines always add up to the total and refunds are exact.
+- The rate in force when the booking is made is **locked on the booking** (`b.cur = {code, rate, asOf}`). A later rate change affects new sales only. Seats and bags use the booking's rate.
+- A **change or reissue is priced at today's rate**: the booking is first re-expressed at the new rate (every stored amount scaled by new/old, so what the customer paid in their own currency does not change), then the new fare and the change fee are priced at that rate. Refunds are paid back in the booking currency.
+- Rates are illustrative IDR per unit. To use another table, save `{asOf, rates:{CODE:n}}` as `ga-fx` in the shared store (`GA_STORE`). Fare-rule text such as "IDR 450,000 fee" is converted for display; the underlying rules stay in IDR.
+- The counter takes cash in the booking currency (tender, change and the issue button follow it). The terminal prints amounts in the booking currency; the revenue, demand and shift reports stay in IDR (a foreign sale counts at its IDR equivalent).
+
+Run `node tools/tests/garuda-currency.cjs` (passenger app, add-ons, terminal, rate change and reissue, refund) and `node tools/tests/garuda-currency-agent.cjs` (counter sale in SGD).
+
 ## Garuda loader (`garuda/loader.css`, `garuda/loader.js`)
 A branded wait (an animated wing mark, a message and a progress bar) shown on the steps that would take a moment in a real app: a short splash once per browser session, "Finding flights for you" after Search, "Confirming your seats / Issuing your e-tickets" on payment, "Checking you in", and "Updating your booking" when rebooking. It respects `prefers-reduced-motion`. Automated test runs skip the waits; add `?loader=1` to a URL to force them.
 
