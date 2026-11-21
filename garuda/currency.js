@@ -35,7 +35,7 @@
    (b.reissues||[]).forEach(function(x){sc(x,['collected','fee','diff'])});
    if(b.cancelled){sc(b.cancelled,['refund']);(b.cancelled.rows||[]).forEach(function(x){sc(x,['paid','fee','refund'])})}
    if(b.discount&&b.discount.base)b.discount.base.forEach(function(p){sc(p,P)});
-   (b.extras||[]).forEach(function(x){sc(x,['amount'])});if(b.award)sc(b.award,['cash']);
+   (b.extras||[]).forEach(function(x){sc(x,['amount'])});if(b.insurance)sc(b.insurance,['amount']);if(b.award)sc(b.award,['cash']);
    (b.dirs||[]).forEach(function(d){(d.legs||[]).forEach(function(l){Object.keys(l.extraBags||{}).forEach(function(i){l.extraBags[i].forEach(function(x){sc(x,['price'])})})})});
    b.cur={code:cur.code,rate:r,asOf:t.asOf};return true},
   ofBooking:function(b){return b&&b.cur&&b.cur.code?b.cur:{code:'IDR',rate:1}},

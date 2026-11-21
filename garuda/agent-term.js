@@ -222,6 +222,7 @@ function elems(){var P=T.p,es=[],n=0;P.names.forEach(function(x,i){es.push({k:'n
  if(P.tk)es.push({k:'tk',line:lpad(++n,2)+' TK '+(P.tk.why==='TKOK'?'OK':'TL')+tlShort(P.tk.ms)});if(T.fp)es.push({k:'fp',line:lpad(++n,2)+' FP '+FPS[T.fp.k].toUpperCase()+(T.fp.amount?'/'+amt(T.fp.amount):'')});if(P.rf)es.push({k:'rf',line:lpad(++n,2)+' RF '+P.rf.toUpperCase()});
  P.extras.forEach(function(x,i){var leg=x.segRef&&x.leg!=null?x.segRef.it.legs[x.leg]:null,pnum=x.nameRef?P.names.indexOf(x.nameRef)+1:0;es.push({k:'ex',i:i,line:lpad(++n,2)+' '+exText(x,leg,pnum,1)})});return es}
 function exText(x,leg,pnum,seatsN){var pp=pnum?'/P'+pnum:'';
+ if(x.k==='svc'&&x.type!=='seat'&&x.type!=='bag')return 'SVC '+({meal:'MEAL '+String(x.item||'').toUpperCase(),lounge:'LOUNGE ACCESS',priority:'PRIORITY BOARDING',insurance:'TRAVEL INSURANCE'}[x.type]||String(x.type).toUpperCase())+(x.flight?' '+String(x.flight).replace(/\s+/g,''):'')+pp+'  PAID';
  if(x.k==='svc')return 'SVC '+(x.type==='bag'?'EXTRA BAG '+x.count+'X'+x.kg+'KG':'SEAT '+x.seat+' '+String(x.tier||'').toUpperCase())+' '+String(x.flight).replace(/\s+/g,'')+pp+'  PAID';
  if(x.k==='rm')return 'RM '+x.text.toUpperCase();if(x.k==='rc')return 'RC '+x.text.toUpperCase()+' (CONFIDENTIAL)';if(x.k==='os')return 'OSI GA '+x.text.toUpperCase();
  return 'SSR '+x.code+' GA HK'+seatsN+(leg?' '+leg.from+leg.to+' '+String(leg.id).replace(/^\D+\s*/,'')+' '+ddmon(legDay(leg)):'')+(x.text?' '+x.text.toUpperCase():'')+pp}
