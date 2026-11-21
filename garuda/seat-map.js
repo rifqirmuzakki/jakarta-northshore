@@ -1,3 +1,6 @@
+/* Garuda serves a meal from 1h25 (85 minutes) of flight time; shorter flights get a snack. */
+const MEAL_MIN=85;
+function hasMeal(l){return l.arr-l.dep>=MEAL_MIN;}
 /* Shared simulated cabin inventory. All assignments are scoped to flight + date + cabin. */
 function bookingCabin(b,l){const di=tripDirectionIndex(b,l),fare=b.fams[di]||b.fams[0]||'';return b.cabs?.[di]||(/^Business/.test(fare)?'Business':/^Premium/.test(fare)?'Premium':'Economy');}
 function seatLayout(ac,cabin){const atr=/ATR/.test(ac),narrow=/737/.test(ac);let banks,start,rows;

@@ -8,7 +8,8 @@ const root=path.resolve(__dirname,'../..');
  const make=(from,to,cab,names)=>p.evaluate(({from,to,cab,names})=>{const q={from,to,type:'one',d1:TD+30,d2:TD+30,a:names.length,c:0,i:0,cab},it=search(from,to,q.d1).find(x=>fares(x).some(c=>c.k===cab&&c.left>=names.length)),fam=fares(it).find(c=>c.k===cab).fam.find(f=>cab!=='Economy'||f.n==='Economy Standard')||fares(it).find(c=>c.k===cab).fam[0];const b=mkBooking(q,[it],[{cab,fam}],names);b.passengers=names.map(name=>({type:'a',name}));b.paymentMethod='Credit card';b.confirmedAt=nowAbs();allocateBookingSeats(b);saveOnlineBooking(b);S.bookings.unshift(b);S.bk=0;return {ref:b.ref,cur:b.cur,total:b.total,minutes:flat(b)[0].arr-flat(b)[0].dep}},{from,to,cab,names});
  const open=async()=>{await p.evaluate(()=>{go('trip');tripTab.tab='manage';renderTrip()});await p.click('[data-addon-open]');await p.waitForSelector('.addon-h')};
  /* 1. Economy, short flight: snack boxes, paid items, one payment */
- const eco=await make('JKT','DPS','Economy',['Rina Wijaya','Adi Wijaya']);assert(eco.minutes<=180);
+ const eco=await make('JKT','TKG','Economy',['Rina Wijaya','Adi Wijaya']);assert(eco.minutes<85,'a short hop: '+eco.minutes+' min');
+ assert.deepEqual(await p.evaluate(()=>[hasMeal({dep:0,arr:84}),hasMeal({dep:0,arr:85}),hasMeal({dep:0,arr:200})]),[false,true,true],'a meal from 1h25');
  await open();assert.match(await p.locator('.addon-h').first().innerText(),/Pre-order a snack box/);assert.equal(await p.locator('[data-addon-meal]:not(.addon-clear)').count(),3);
  const price=await p.evaluate(()=>{const b=BK(),l=flat(b)[0];return {meal:addonPrice(b,l,'meal'),lounge:addonPrice(b,l,'lounge'),priority:addonPrice(b,l,'priority'),ins:addonInsurancePrice(b)}});
  assert.equal(price.meal,55000);assert.equal(price.lounge,300000);assert.equal(price.priority,90000);assert.equal(price.ins%5000,0);assert(price.ins>=Math.floor(eco.total*0.045)&&price.ins<eco.total*0.045+5000);
@@ -29,7 +30,7 @@ const root=path.resolve(__dirname,'../..');
  const term=await p.evaluate(async ref=>{const f=document.createElement('iframe');f.src='agent.html';f.style.cssText='position:fixed;left:-9999px;width:1px;height:1px';document.body.appendChild(f);for(let i=0;i<200&&!(f.contentWindow?.GA_TERM&&f.contentWindow?.GA_AGENT?.ctx);i++)await new Promise(r=>setTimeout(r,100));const w=f.contentWindow;w.GA_TERM.run('RT'+ref);return w.GA_TERM.lines().join('\n')},eco.ref);
  assert.match(term,/SVC MEAL SNACK-SWEET GA\d+\/P1  PAID/);assert.match(term,/SVC LOUNGE ACCESS/);assert.match(term,/SVC TRAVEL INSURANCE/);assert.doesNotMatch(term,/SSR undefined/);
  /* 2. Business already includes the lounge, priority boarding and a meal: nothing to pay */
- await make('JKT','DPS','Business',['Rina Wijaya']);await open();
+ await make('JKT','DPS','Business',['Rina Wijaya']);await open();assert.match(await p.locator('.addon-h').first().innerText(),/Pre-order your meal/,'Jakarta to Denpasar is long enough for a meal');
  assert.equal(await p.locator('.addon-row em',{hasText:'Included'}).count(),2);assert.match(await p.locator('.ss-footer .btn').innerText(),/Continue to payment/);
  await p.check('[data-addon-toggle="lounge"]');assert.match(await p.locator('.ss-footer .btn').innerText(),/Add included items/);assert.equal(await p.locator('.seat-footer-total').count(),0);
  await p.click('[data-addon-continue]');await p.waitForFunction(()=>!document.querySelector('#sheet.on'));assert.equal(await p.evaluate(()=>flat(BK())[0].addons[0].lounge),true);assert.equal(await p.evaluate(()=>BK().extras.find(x=>x.type==='lounge').amount),0);

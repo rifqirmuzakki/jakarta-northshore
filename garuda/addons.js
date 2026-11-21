@@ -10,7 +10,7 @@ const ADDON_INSURANCE_RATE=0.045;
 const ADDON_MEALS=[['rendang','Beef rendang with steamed rice'],['herb-chicken','Chicken in herb cream sauce'],['veg-curry','Tofu and vegetable curry']];
 const ADDON_SNACKS=[['snack-sweet','Sweet snack box'],['snack-savoury','Savoury snack box'],['snack-veg','Vegetarian snack box']];
 const addonSnap=(n,b)=>GA_CUR.snap(Math.ceil(n/5000)*5000,b.cur);
-function addonIsMeal(l){return l.arr-l.dep>180;}
+function addonIsMeal(l){return hasMeal(l);}
 function addonMenu(l){return addonIsMeal(l)?ADDON_MEALS:ADDON_SNACKS;}
 function addonIncluded(b,l,kind){const cab=bookingCabin(b,l);return kind==='lounge'?cab==='Business':kind==='priority'?cab==='Business'||cab==='Premium':kind==='meal'?cab==='Business':false;}
 function addonPrice(b,l,kind){if(addonIncluded(b,l,kind))return 0;const z=bagZone(l);return addonSnap(kind==='meal'?ADDON_MEAL_20[z]*(addonIsMeal(l)?1:.6):kind==='lounge'?ADDON_LOUNGE[z]:ADDON_PRIORITY[z],b);}
