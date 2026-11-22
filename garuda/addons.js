@@ -42,7 +42,7 @@ document.addEventListener('click',e=>{if(e.target.closest('[data-addon-open]')){
 function applyAddons(d,lines){const {b,l,i}=d;if(d.paying)return;d.paying=true;const at=nowAbs();b.extras||=[];l.addons||={};
  for(const x of lines){if(x.type==='insurance'){b.insurance={amount:x.amount,at,method:'Credit card'};b.extras.push({k:'svc',type:'insurance',p:null,flight:null,amount:x.amount,at,method:'Credit card'});continue}
   (l.addons[i]||={})[x.type]=x.type==='meal'?x.item:true;b.extras.push({k:'svc',type:x.type,p:i,flight:l.id,dep:l.dep,name:b.names[i],item:x.item||null,amount:x.amount,at,method:'Credit card'});}
- if(typeof persistCounterBookings==='function')persistCounterBookings();closeSheet();if(S.stack.at(-1)==='trip')renderTrip();const total=lines.reduce((a,x)=>a+x.amount,0);
+ if(typeof persistCounterBookings==='function')persistCounterBookings();closeSheet();if(S.stack.at(-1)==='trip')tripReturnToServices(b,l,i,'[data-addon-open]');const total=lines.reduce((a,x)=>a+x.amount,0);
  if(typeof toast==='function')toast('Extras added',total?'You paid '+idr(total)+' for your extras (simulated).':'Your included extras are added.');}
 
 /* short text for the trip services tile and the booking details rows */

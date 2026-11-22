@@ -33,5 +33,5 @@ document.addEventListener('click',e=>{if(e.target.closest('[data-bag-open]')){co
  else if(e.target.closest('[data-bag-pay]')){if(d.paying||!S.bookings.includes(b)||!flat(b).includes(l))return;const total=bagDraftTotal(d);
   if(!bagSaleOpen(b,l,i)||d.flightKey!==seatFlightKey(b,l)||bagDraftCount(d)+extraBagList(l,i).length>BAG_MAX||!total||total!==d.quoted){d.stage='pick';d.error='The bag prices or availability changed. Please review them again.';renderBagPurchase();return}
   d.paying=true;l.extraBags||={};const at=nowAbs();b.extras||=[];for(const x of bagDraftLines(d)){for(let n=0;n<x.count;n++)(l.extraBags[i]||=[]).push({kg:x.kg,price:x.each,at});b.extras.push({k:'svc',type:'bag',p:i,flight:l.id,dep:l.dep,person:i,name:b.names[i],kg:x.kg,count:x.count,amount:x.amount,at,method:'Credit card'})}
-  if(typeof persistCounterBookings==='function')persistCounterBookings();closeSheet();if(S.stack.at(-1)==='trip')renderTrip();if(typeof toast==='function')toast('Extra bags added','You paid '+idr(total)+' for extra bags (simulated).');}
+  if(typeof persistCounterBookings==='function')persistCounterBookings();closeSheet();if(S.stack.at(-1)==='trip')tripReturnToServices(b,l,i,'[data-trip-service=\"bag\"]');if(typeof toast==='function')toast('Extra bags added','You paid '+idr(total)+' for extra bags (simulated).');}
 });

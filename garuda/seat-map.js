@@ -55,7 +55,7 @@ document.addEventListener('click',e=>{const d=searchOverlay;if(d?.kind!=='seat-m
   if(total>0&&!paying){d.stage='pay';d.error='';renderSeatSelection();return}
   if(paying&&(!total||total!==d.quoted)){d.stage='pick';d.error='The seat fees changed. Please review them again.';renderSeatSelection();return}
   d.paying=true;const {b,l}=d;l.seats={...d.draft};if(total>0){l.seatPaid||={};b.extras||=[];for(const x of due){(l.seatPaid[x.i]||=[]).push(x.seat);b.extras.push({k:'svc',type:'seat',p:x.i,flight:l.id,dep:l.dep,person:x.i,name:b.names[x.i],seat:x.seat,tier:x.tier,amount:x.amount,at:nowAbs(),method:'Credit card'})}}
-  if(typeof persistCounterBookings==='function')persistCounterBookings();closeSheet();if(S.stack.at(-1)==='trip')renderTrip();if(total>0&&typeof toast==='function')toast('Seats confirmed','You paid '+idr(total)+' for your seats (simulated).');}
+  if(typeof persistCounterBookings==='function')persistCounterBookings();closeSheet();if(S.stack.at(-1)==='trip')tripReturnToServices(b,l,d.i,'[data-trip-service=\"seat\"]');if(total>0&&typeof toast==='function')toast('Seats confirmed','You paid '+idr(total)+' for your seats (simulated).');}
 });
 
 function flowSteps(labels,active){return `<ol class="journey-steps" aria-label="Progress">${labels.map((label,i)=>`<li class="${i===active?'current':i<active?'complete':''}" ${i===active?'aria-current="step"':''}><span>${i+1}</span>${label}</li>`).join('')}</ol>`;}
