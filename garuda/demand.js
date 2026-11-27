@@ -14,10 +14,15 @@
   var x=(BigInt(fnum)<<23n)|(BigInt(d)<<11n)|(BigInt(ci)<<9n)|BigInt(idx);x=(x*MUL)%MOD;x^=x>>17n;return x.toString(36).toUpperCase().padStart(7,'0')}
  function decodeRef(ref){if(!/^[0-9A-Z]{7}$/.test(ref))return null;var x=BigInt(parseInt(ref,36));if(x>=MOD)return null;
   x^=x>>17n;x^=x>>34n;x=(x*MULINV)%MOD;return{fnum:Number(x>>23n),D:Number((x>>11n)&4095n)+DAY0,ci:Number((x>>9n)&3n),idx:Number(x&511n)}}
+ /* Through services share flight numbers, so assign each physical sector a unique
+    unused reference slot while retaining the established slots for ordinary flights. */
+ var sectorSlots=new Map(),slotFlights=new Map(),usedSlots=new Set(FLS.filter(function(f){return !f.rotation}).map(function(f){return +String(f.id).replace(/\D/g,'')}));
+ FLS.filter(function(f){return f.rotation}).slice().sort(function(a,b){return (a.rotation+'|'+a.sector).localeCompare(b.rotation+'|'+b.sector)}).forEach(function(f){var slot=1023;while(slot>=0&&usedSlots.has(slot))slot--;if(slot<0)throw Error('No demand reference slots for multi-leg sectors');usedSlots.add(slot);sectorSlots.set(f.rotation+'|'+f.sector,slot);slotFlights.set(slot,f)});
  var R=function(k){return seeded(k)};
  function pick(k,items){var t=0,i;for(i=0;i<items.length;i++)t+=items[i][1];var r=R(k)*t;for(i=0;i<items.length;i++){r-=items[i][1];if(r<0)return items[i][0]}return items[items.length-1][0]}
  var FIRST=['Budi','Siti','Agus','Dewi','Rina','Adi','Putri','Eko','Wulan','Hendra','Sri','Bayu','Ayu','Rizky','Lestari','Dimas','Maya','Fajar','Intan','Yoga','Nur','Andi','Indah','Reza','Tri'],
   LAST=['Santoso','Wijaya','Pratama','Hidayat','Saputra','Kusuma','Lestari','Nugroho','Setiawan','Rahayu','Hartono','Susanto','Wibowo','Purnama','Siregar','Nasution','Halim','Tanuwijaya','Simanjuntak','Gunawan'];
+ var NATIONALITIES=[{code:'ID',first:FIRST,last:LAST},{code:'SG',first:['Wei','Mei','Jia','Daniel','Rachel'],last:['Tan','Lim','Ng','Ong']},{code:'AU',first:['Amelia','Oliver','Charlotte','Jack','Grace'],last:['Smith','Wilson','Taylor','Brown']},{code:'JP',first:['Haruto','Yui','Sakura','Kaito','Aoi'],last:['Sato','Suzuki','Tanaka','Ito']},{code:'GB',first:['James','Sophie','William','Emily','Harry'],last:['Jones','Smith','Wilson','Taylor']},{code:'NL',first:['Daan','Sophie','Lucas','Emma','Sem'],last:['Bakker','Visser','Smit','Mulder']},{code:'IN',first:['Aarav','Ananya','Arjun','Priya','Rohan'],last:['Sharma','Patel','Singh','Kumar']}];
  var CHANNELS={Economy:[['Online',40],['Travel agent',25],['OTA',13],['Counter',12],['Call centre',5],['Corporate',5]],Premium:[['Online',38],['Travel agent',27],['Corporate',15],['Counter',10],['OTA',6],['Call centre',4]],Business:[['Corporate',30],['Travel agent',30],['Online',22],['Counter',8],['Call centre',7],['OTA',3]]};
  var FAMS={Economy:[['Economy Lite',25],['Economy Value',30],['Economy Standard',30],['Economy Flexi',15]],Premium:[['Premium Economy',1]],Business:[['Business Saver',60],['Business Flex',40]]};
  var FAMKEY={'Economy Lite':'lite','Economy Value':'value','Economy Standard':'standard','Economy Flexi':'flexi'};
@@ -39,8 +44,8 @@
  /* one booking: `pos` is the cabin's sold count when it was made, `dout` the days out it was made */
  function makeBooking(l,cabin,info,ctx,idx,tag,pos,dout,seatsN,inf,kids,extra){
   var adults=seatsN-kids,types=[],names=[],a;for(a=0;a<seatsN+inf;a++)types.push(a<adults?'a':a<seatsN?'c':'i');
-  var last=LAST[hash(tag+'|ln')%LAST.length];
-  for(a=0;a<types.length;a++){var nm=FIRST[hash(tag+'|fn'+a)%FIRST.length]+' '+(a===0||R(tag+'|fam'+a)<0.8?last:LAST[hash(tag+'|ln'+a)%LAST.length]);names.push(nm==='Rina Wijaya'?'Rina Wijayanti':nm)}/* never the demo passenger, whose bookings the customer app imports */
+  var international=CT[l.from].z==='I'||CT[l.to].z==='I',profile=NATIONALITIES[international&&R(tag+'|nationality')<0.50?1+hash(tag+'|nat')%(NATIONALITIES.length-1):0],last=profile.last[hash(tag+'|ln')%profile.last.length];
+  for(a=0;a<types.length;a++){var nm=profile.first[hash(tag+'|fn'+a)%profile.first.length]+' '+(a===0||R(tag+'|fam'+a)<0.8?last:profile.last[hash(tag+'|ln'+a)%profile.last.length]);names.push(nm==='Rina Wijaya'?'Rina Wijayanti':nm)}/* never the demo passenger, whose bookings the customer app imports */
   var fam=pick(tag+'|fam',FAMS[cabin]),sub=null,fi,r,cl,rows;
   /* the class a seat is sold in is the cheapest one still open at that point of the fill; when a whole family has closed the customer moves up to the next one */
   for(fi=Math.max(0,FAMS[cabin].map(function(x){return x[0]}).indexOf(fam));fi<FAMS[cabin].length&&!sub;fi++){fam=FAMS[cabin][fi][0];rows=subRows(fam);cl=subClose(l,fam);
@@ -49,7 +54,7 @@
   var adultFare=fareAt(l,cabin,fam,sub,pos,dout),price=priceFor({legs:[l]},{p:adultFare},{a:adults,c:kids,i:inf,type:'ow'}),
    minute=dout===0?Math.floor(R(tag+'|t')*Math.max(1,ctx.tm-60)):Math.floor(R(tag+'|t')*1440);
   var rec={ref:encodeRef(ctx.fnum,ctx.D,ctx.ci,idx),gen:true,v:VERSION,flight:l.id,dep:l.dep,from:l.from,to:l.to,cabin:cabin,idx:idx,
-   seats:seatsN,pax:names.map(function(n,x){return{name:n,type:types[x]}}),channel:pick(tag+'|ch',chW),family:fam,cls:sub.k,
+   seats:seatsN,pax:names.map(function(n,x){return{name:n,type:types[x],nationality:profile.code,fqtv:R(tag+'|loyalty'+x)<0.20?'GA'+String(100000000+hash(tag+'|ff'+x)%900000000):null}}),channel:pick(tag+'|ch',chW),family:fam,cls:sub.k,
    dout:dout,bookedAt:l.dep-ctx.tm-dout*1440+minute,fare:price.fare,tax:price.tax,chg:price.chg,total:price.total,status:'HK',pos:pos};
   if(extra)for(var k in extra)rec[k]=extra[k];
   if(R(tag+'|ns')<NOSHOW_RATE[cabin]){var rf=refundFor(fam,price.fare,price.total,seatsN);rec.noShow={retained:price.total-rf.refund}}
@@ -57,7 +62,7 @@
  /* Active bookings follow the load model exactly. Some later cancel or change; every cancelled seat is resold at the moment it is
     released, so seats sold stay equal to the model on every day. Resales are appended after the originals, so references never shift. */
  function generate(l,cabin){var key=l.id+'|'+l.dep+'|'+cabin,hit=memo.get(key);if(hit)return hit;
-  var ci=CABINS.indexOf(cabin),fnum=+String(l.id).replace(/\D/g,''),f0=FLS.find(function(f){return f.id===l.id}),D=Math.round((l.dep-(f0?f0.dep:0))/1440);
+  var ci=CABINS.indexOf(cabin),fnum=l.rotation?sectorSlots.get(l.rotation+'|'+l.sector):+String(l.id).replace(/\D/g,''),f0=FLS.find(function(f){return f.id===l.id&&(!l.rotation||f.rotation===l.rotation&&f.sector===l.sector)}),D=l.rotation?l.rotationDay:Math.round((l.dep-(f0?f0.dep:0))/1440);
   var info=ladderFrac(l,cabin),Nx=info.cap*info.lf,N=Math.round(Nx),Dk=new Array(N),k=0,d,m,ctx={fnum:fnum,D:D,ci:ci,tm:lp(l.dep,l.from).min};
   for(d=HORIZON;d>=0&&k<N;d--){m=Math.min(N,Math.round(Nx*soldShareFor(l,d)));while(k<m)Dk[k++]=d}
   var out=[],i=0,idx=0,shapes=[];
@@ -81,7 +86,7 @@
  function visible(l,cabin,now){var dn=dnowOf(l,now);return generate(l,cabin).filter(function(b){return b.dout>=dn&&!cancelledBy(b,dn)})}
  /* everything made by the scenario day, cancelled ones included */
  function history(l,cabin,now){var dn=dnowOf(l,now);return generate(l,cabin).filter(function(b){return b.dout>=dn})}
- function resolveLeg(ref){var c=decodeRef(String(ref).toUpperCase());if(!c||c.ci>2)return null;var f=FLS.find(function(x){return +String(x.id).replace(/\D/g,'')===c.fnum&&runs(x,c.D)});if(!f)return null;
+ function resolveLeg(ref){var c=decodeRef(String(ref).toUpperCase());if(!c||c.ci>2)return null;var f=slotFlights.get(c.fnum)||FLS.find(function(x){return !x.rotation&&+String(x.id).replace(/\D/g,'')===c.fnum&&runs(x,c.D)});if(!f||!runs(f,c.D))return null;
   var l=mkLeg(f,c.D),cabin=CABINS[c.ci];if(legCabs(l).indexOf(cabin)<0)return null;var rec=generate(l,cabin)[c.idx];return rec?{l:l,cabin:cabin,rec:rec}:null}
  function resolve(ref){var r=resolveLeg(ref);return r&&r.rec}
  /* the flight with this number departing on this local day (as shown to the traveller), or null */
@@ -96,8 +101,8 @@
    firstAdult=rec.pax.find(function(p){return p.type==='a'}).name;
   b.ref=rec.ref;b.fare=rec.fare;b.tax=rec.tax;b.chg=rec.chg;b.total=rec.total;b.dirPrices=[{fare:rec.fare,tax:rec.tax,chg:rec.chg,total:rec.total}];b.paid0=b.paid=rec.total;
   b.classes=[rec.cls];b.confirmedAt=rec.bookedAt;b.issuedMs=ms;b.held=false;b.place=rec.channel;b.paymentMethod='Simulated';b.payment={method:'Simulated',tendered:rec.total,change:0,approval:'SIM'};
-  b.passengers=rec.pax.map(function(p){var w=p.name.split(' ');return{type:p.type,name:p.name,last:w.pop(),first:w.join(' '),title:'',dob:null,lapAdult:p.type==='i'?firstAdult:null}});
-  b.gen={v:rec.v,idx:rec.idx,channel:rec.channel,resaleOf:rec.resaleOf||null};b.hist=[{at:ms,t:'SIMULATED BOOKING CREATED VIA '+rec.channel.toUpperCase()+(rec.resaleOf?' (RESALE OF '+rec.resaleOf+')':'')}];
+  b.passengers=rec.pax.map(function(p){var w=p.name.split(' ');return{type:p.type,name:p.name,last:w.pop(),first:w.join(' '),title:'',dob:null,nationality:p.nationality||null,lapAdult:p.type==='i'?firstAdult:null}});
+  b.extras=rec.pax.map(function(p,i){return p.fqtv?{k:'ssr',code:'FQTV',text:p.fqtv,p:i,d:null,l:null}:null}).filter(Boolean);b.gen={v:rec.v,idx:rec.idx,channel:rec.channel,resaleOf:rec.resaleOf||null};b.hist=[{at:ms,t:'SIMULATED BOOKING CREATED VIA '+rec.channel.toUpperCase()+(rec.resaleOf?' (RESALE OF '+rec.resaleOf+')':'')}];
   if(cancelledBy(rec,dn)){var cx=rec.cancel,cms=(cx.at-420)*6e4;b.dirs[0].legs.forEach(function(x){x.status='cancel'});b.cancelled={at:cms,refund:Math.round(cx.refund),rows:[],held:false,expired:false,simulated:true,reason:cx.reason};b.hist.push({at:cms,t:(cx.reason==='CHANGE'?'CHANGED TO ANOTHER FLIGHT, FEE ':'CANCELLED, REFUND ')+Math.round(cx.reason==='CHANGE'?cx.retained:cx.refund)})}
   return b}
  function bump(o,k,seats,rev){var c=o[k]||(o[k]={bookings:0,pax:0,revenue:0});c.bookings++;c.pax+=seats;c.revenue+=rev}
