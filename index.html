@@ -7809,6 +7809,8 @@ function times(l){const std=l.scheduledStd??l.std,k=[l.id,l.d,std,l.from,l.to].j
   try{v=window.JN_FLIGHT_TIMES?JN_FLIGHT_TIMES(l.id,std,{day:l.d,from:l.from,to:l.to}):null}catch(e){}
   ftCache.set(k,{t:performance.now(),v});return v}
 const codeOf=c=>{try{return typeof airportCodeForCity==='function'?(airportCodeForCity(c)||''):''}catch(e){return ''}};
+/* ground speed shown on the card = how fast the marker really moves along its route, not a flat figure */
+function flownKt(l,r,now,fallback){try{if(!r||now<l.off||now>l.land)return fallback;const a=legPos(l,now,r),b=legPos(l,now+3,r),kt=Math.round(gcd([a[1],a[0]],[b[1],b[0]])/3*60/1.852);return kt>0?kt:fallback}catch(e){return fallback}}
 function renderCard(){const l=sel;if(!l)return;const now=nowAbs(),m=M(),city=String(l.city||'').split(' / ')[0]||'—';
   const u=l.land>l.off?Math.max(0,Math.min(1,(now-l.off)/(l.land-l.off))):0,r=l.city?routeFor(l):null;
   const ap=pos.find(o=>o.l.id===l.id&&o.air),air=ap&&ap.air,E=est(l,u,r);
@@ -7818,7 +7820,7 @@ function renderCard(){const l=sel;if(!l)return;const now=nowAbs(),m=M(),city=Str
   const eta=landed?ft.ata:(ft?.ata==null&&ft?.eta!=null?ft.eta:(l.eta??l.sta));
   const etaLab=landed?'ATA':live?'ETA':(ft?.eta!=null||l.eta!=null?'ETA':'STA');
   const depAbs=ft?.atd??l.std,depLab=ft?.atd!=null?'ATD':(now>=l.off?'ETD':'STD');
-  const remain=Math.max(0,Math.round(eta-now)),alt=air?air.alt:E.alt,gs=air?null:E.gs;
+  const remain=Math.max(0,Math.round(eta-now)),alt=air?air.alt:E.alt,gs=air?null:flownKt(l,r,now,E.gs);
   const done=ft&&ft.ata!=null||(now>l.land&&!air&&!l.air);
   const state=air?airState(air):(live?E.ph:(done?'Landed':(now<l.off?'Scheduled':'Landed')));
   /* the dot follows the expected arrival: on time (within 5 min), slightly late (6-14 min, amber) or late (15+ min, red) */
