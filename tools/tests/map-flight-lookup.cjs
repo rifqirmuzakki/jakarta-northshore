@@ -43,7 +43,7 @@ const root=path.resolve(__dirname,'../..');
    const cardLeg={...active,off:active.std+14,land:active.sta-8};
    T.selectLeg(cardLeg);
    const text=document.querySelector('#card').innerText;
-   check(/ETA JKT/.test(text)&&!/ATA JKT/.test(text),`${id} airborne card shows ATA`);
+   check(/Arrives/.test(text)&&!/Arrived/.test(text),`${id} airborne card shows ATA`);
    check(!/0h 00m/.test(text),`${id} zero remaining time`);
   }
   // Two sectors sharing one flight number must retain independent identities.

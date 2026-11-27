@@ -418,3 +418,9 @@ A GDS-style command screen (Amadeus, Sabre and Galileo flavour) on the same engi
 Open a booking and press **Change flight…**. Pick the direction (if more than one can still be changed), a new date, a flight and a class. The panel shows the quote; for a ticketed booking that is the fare difference, the change fee from the fare rule and the total to collect, plus a payment method (and cash received). Confirm to reissue. A held booking is rebooked with no fee. Award bookings use miles for the difference and fee.
 
 The button drives the same rebook and reissue code as the terminal (`RB`, `ET`), so fare rules and errors (for example Lite, "changes not allowed") are identical. It refuses while the terminal has an unsaved booking in progress. It is hidden for cancelled bookings and for flown directions. Test: `tools/tests/garuda-change-flight.cjs`.
+
+## Flight physics on the world map
+
+For flights leaving Jakarta, ETA and ATA follow from the actual departure (ATD) plus the airborne time: route length (the waypoint path drawn on the map) divided by the aircraft's cruise speed (by type) and a simple wind (about +30 kt eastbound, −20 kt westbound on long sectors), with the usual slower climb and descent. They no longer come from the timetable, so flights on one corridor keep their order, the card speed is the speed the marker really flies, and arrival delay is ATA minus STA. Tight timetables therefore show as late arrivals.
+
+Arrivals into Jakarta still land when the airspace engine says; their departure time at the outstation is inferred. `window.JN_PHYS.airborneMin(city, dir, aircraft)` is the single function behind both the map and flight history. Test: `tools/tests/world-physics.cjs`. `flight-telemetry` and `map-flight-lookup` were updated for the newer card layout.

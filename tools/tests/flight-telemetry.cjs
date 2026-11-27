@@ -29,7 +29,7 @@ try{const page=await browser.newPage({viewport:{width:390,height:844}}),errors=[
     JN_WORLD.select(id);W.draw();W.selectLeg(l);
     const card=document.querySelector('#card'),reg=card.querySelector('.v73-regl');
     check(reg?.getAttribute('href')==='#/aircraft/'+match?.reg,id+' rendered registration link disagrees with history');
-    const remaining=[...card.querySelectorAll('.jc-gate>div')].find(x=>x.querySelector('small')?.textContent==='Time to go')?.querySelector('b')?.textContent;
+    const remaining=card.querySelector('.wc-c b')?.textContent.replace(/\s+/g,' ');
     const mins=Math.max(0,Math.round(ft.eta-now));check(remaining===Math.floor(mins/60)+'h '+String(mins%60).padStart(2,'0')+'m',id+' rendered time-to-go differs from flight history');
     const E=W.est(l,(now-l.off)/(l.land-l.off),r);
     if(id==='GA 24')check(E.alt>=30000,'GA24 restarted climb after SID handoff');
