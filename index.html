@@ -6836,7 +6836,7 @@ function historyPhases(l,profile){
   const baseJktOut=12,baseJktIn=10;
   const block=Math.max(0,l.sta-l.std);
   // The existing block estimate includes 22 minutes of ground allowance.
-  const phys=l.kind==='sector'||!window.JN_PHYS?null:JN_PHYS.airborneMin(city,l.kind==='d'?'out':'in',l.ac||(l.ent&&((l.ent.d&&l.ent.d.ac)||(l.ent.a&&l.ent.a.ac)))||acByFlight(l.flight));
+  const phys=l.kind==='sector'||!window.JN_PHYS?null:JN_PHYS.airborneMin(city,l.kind==='d'?'out':'in',l.ac||(l.ent&&((l.ent.d&&l.ent.d.ac)||(l.ent.a&&l.ent.a.ac)))||acByFlight(l.flight),l.flight,l.d);
   const airborne=phys||Math.max(15,block-22);
   const noise=phys?0:pd(seed+'|block','o');
   const sched=Math.max(15,block-22);
@@ -7611,10 +7611,19 @@ const jnKm=new Map();
 function jnRouteKm(city){const k=String(city);let v=jnKm.get(k);if(v!==undefined)return v;
   const R=WORLD_ROUTES[k]||WORLD_ROUTES[k.split(' / ')[0].trim()]||WORLD_ROUTES[Object.keys(WORLD_ROUTES).find(n=>n.split(' / ')[0].trim()===k)],w=R&&R.o&&R.o[0];if(!w||!w.length){jnKm.set(k,null);return null}
   let L=0,pr=JKT,lon=pr[1];for(const p of w){L+=gcd(pr,p);pr=p}lon=pr[1];v={km:L,dLon:((lon-JKT[1]+540)%360)-180};jnKm.set(k,v);return v}
-function jnAirborneMin(city,dir,ac){const r=jnRouteKm(city);if(!r)return null;
+/* repeatable "random" in [-1,1] from a string: the same flight on the same day always gets the same weather */
+function jnU(str){let h=2166136261;for(let i=0;i<str.length;i++)h=Math.imul(h^str.charCodeAt(i),16777619);return ((h>>>0)%20001)/10000-1}
+function jnAirborneMin(city,dir,ac,id,day){const r=jnRouteKm(city);if(!r)return null;
   let tas=JN_TAS(ac||'');if(r.km<700)tas=Math.min(tas,340);else if(r.km<1500)tas=Math.min(tas,420);
-  const w=Math.abs(r.dLon)>20?(r.dLon>0?30:-20)*Math.min(1,r.km/5000):0,wind=dir==='out'?w:-w*(w>0?2/3:3/2);
-  return Math.max(15,Math.round(r.km/((tas+wind)*1.852)*60/0.94))}
+  const s=Math.min(1,r.km/5000),far=Math.abs(r.dLon)>20,east=(dir==='out')===(r.dLon>0);
+  let wind=far?(east?30:-20)*s:0;
+  let atc=0;
+  if(id!=null){
+    /* the jet stream changes day to day and is shared by every flight that day; each flight also picks its own speed and meets its own ATC */
+    if(far){const j=jnU('jet|'+day+'|'+(r.dLon>0?'E':'W'))*22*s;wind+=east?j:-0.6*j}
+    tas*=1+jnU('cr|'+id+'|'+day)*0.012;
+    if(r.km>1500)atc=Math.round(jnU('atc|'+id+'|'+day)*5)}
+  return Math.max(15,Math.round(r.km/((tas+wind)*1.852)*60/0.94)+atc)}
 window.JN_PHYS={airborneMin:jnAirborneMin,routeKm:c=>{const r=jnRouteKm(c);return r?r.km:null}};
 /* flights */
 const nowAbs=()=>{if(window.JN_CLK&&JN_CLK.active)return (Date.now()+7*3600000)/60000;      // playback: true absolute time, so a flight that left the day before is where it was
@@ -7630,7 +7639,7 @@ function anchor(l,day){const m=M();if(!m||!m.ent)return;const e=m.ent(l.id);if(!
   else if(l.dir==='out'&&e.dT&&e.d&&e.d.id===l.id){const t=day*1440+e.dT.t1/60,shift=e.takeoff!=null?day*1440+e.takeoff/60-(l.std+14):0,q=m.trackAt(e,'dep',e.dT.t1);l.hand=q?[q.lat,q.lon]:null;l.hhd=q?.hd;l.handAlt=q?.alt;l.off=t;l.land+=shift;l.eta=l.land+8;l.air=true;if(l.land<=l.off+2||!l.hand)l.noWorld=true}}
 function getLegs(){const S=window.SIMCORE;if(!S||!S.worldLegs)return [];const day=S.FLEET?S.FLEET.day:0,ents=M()&&M().ents?M().ents():null,A=window.AIRCORE&&AIRCORE.AIR;
   if(legs&&legsKey===day&&legsEnts===ents&&legsArrivals===A?.A&&legsDepartures===A?.D){indexWorldInstances();return legs;}
-  legs=S.worldLegs().map(l=>{const dep=l.std+14,A=l.dir==='out'&&window.JN_PHYS?JN_PHYS.airborneMin(l.city,'out',l.ac):null,arr=A?dep+A-8:l.sta-8;return Object.assign(l,{off:dep,land:Math.max(dep+20,arr)})});legsKey=day;legsEnts=ents;
+  legs=S.worldLegs().map(l=>{const dep=l.std+14,A=l.dir==='out'&&window.JN_PHYS?JN_PHYS.airborneMin(l.city,'out',l.ac,l.id,l.d):null,arr=A?dep+A-8:l.sta-8;return Object.assign(l,{off:dep,land:Math.max(dep+20,arr)})});legsKey=day;legsEnts=ents;
   legsArrivals=A?.A;legsDepartures=A?.D;
   legs.forEach(l=>anchor(l,day));indexWorldInstances();if(sel)sel=byId.get(sel.id)||sel;return legs}
 function indexWorldInstances(){
