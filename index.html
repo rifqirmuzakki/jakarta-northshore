@@ -6836,7 +6836,7 @@ function historyPhases(l,profile){
   const baseJktOut=12,baseJktIn=10;
   const block=Math.max(0,l.sta-l.std);
   // The existing block estimate includes 22 minutes of ground allowance.
-  const phys=l.kind==='sector'||!window.JN_PHYS?null:JN_PHYS.airborneMin(city,l.kind==='d'?'out':'in',l.ac||(l.ent&&((l.ent.d&&l.ent.d.ac)||(l.ent.a&&l.ent.a.ac)))||acByFlight(l.flight),l.flight,l.d);
+  const phys=l.kind==='sector'||!window.JN_PHYS?null:JN_PHYS.airborneMin(city,l.kind==='d'?'out':'in',l.ac||(l.ent&&((l.ent.d&&l.ent.d.ac)||(l.ent.a&&l.ent.a.ac)))||acByFlight(l.flight),l.flight,l.d,l.std);
   const airborne=phys||Math.max(15,block-22);
   const noise=phys?0:pd(seed+'|block','o');
   const sched=Math.max(15,block-22);
@@ -7613,7 +7613,17 @@ function jnRouteKm(city){const k=String(city);let v=jnKm.get(k);if(v!==undefined
   let L=0,pr=JKT,lon=pr[1];for(const p of w){L+=gcd(pr,p);pr=p}lon=pr[1];v={km:L,dLon:((lon-JKT[1]+540)%360)-180};jnKm.set(k,v);return v}
 /* repeatable "random" in [-1,1] from a string: the same flight on the same day always gets the same weather */
 function jnU(str){let h=2166136261;for(let i=0;i<str.length;i++)h=Math.imul(h^str.charCodeAt(i),16777619);return ((h>>>0)%20001)/10000-1}
-function jnAirborneMin(city,dir,ac,id,day){const r=jnRouteKm(city);if(!r)return null;
+/* the track actually flown on a given day: a small smooth sideways shift, and sometimes a detour around a storm cell (more often in the wet season, close to the equator).
+   Flights leaving in the same six hours and heading the same way meet the same cell. */
+function jnTrack(city,id,day,std){const r=jnRouteKm(city);if(!r||id==null||r.km<700)return null;
+  const mo=new Date(day*864e5).getUTCMonth(),wet=(mo>=10||mo<=2)?1:(mo===3||mo===9)?0.5:0.2,key='|'+day+'|'+Math.floor((std||0)/360)+'|'+(r.dLon>0?'E':'W');
+  const tk={w:jnU('wander|'+id+'|'+day)*22,det:null,extra:0};
+  if(r.km>1500&&(jnU('cell'+key)+1)/2<0.04+0.22*wet){
+    const a=(50+(jnU('ca'+key)+1)/2*90)*(jnU('cs'+key)<0?-1:1)*(1+jnU('aj|'+id+'|'+day)*0.15),c=400+(jnU('cc'+key)+1)/2*Math.min(2400,0.3*r.km),sg=120+(jnU('cw'+key)+1)/2*220;
+    tk.det={a,c,sg};tk.extra=a*a*Math.sqrt(Math.PI)/(4*sg)}
+  return tk}
+function jnAirborneMin(city,dir,ac,id,day,std){const r0=jnRouteKm(city);if(!r0)return null;
+  const tk=id!=null?jnTrack(city,id,day,std):null,r=tk?{...r0,km:r0.km+tk.extra}:r0;
   let tas=JN_TAS(ac||'');if(r.km<700)tas=Math.min(tas,340);else if(r.km<1500)tas=Math.min(tas,420);
   const s=Math.min(1,r.km/5000),far=Math.abs(r.dLon)>20,east=(dir==='out')===(r.dLon>0);
   let wind=far?(east?30:-20)*s:0;
@@ -7624,7 +7634,7 @@ function jnAirborneMin(city,dir,ac,id,day){const r=jnRouteKm(city);if(!r)return 
     tas*=1+jnU('cr|'+id+'|'+day)*0.012;
     if(r.km>1500)atc=Math.round(jnU('atc|'+id+'|'+day)*5)}
   return Math.max(15,Math.round(r.km/((tas+wind)*1.852)*60/0.94)+atc)}
-window.JN_PHYS={airborneMin:jnAirborneMin,routeKm:c=>{const r=jnRouteKm(c);return r?r.km:null}};
+window.JN_PHYS={airborneMin:jnAirborneMin,track:jnTrack,routeKm:c=>{const r=jnRouteKm(c);return r?r.km:null}};
 /* flights */
 const nowAbs=()=>{if(window.JN_CLK&&JN_CLK.active)return (Date.now()+7*3600000)/60000;      // playback: true absolute time, so a flight that left the day before is where it was
   const d=new Date(),p=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(d),g=k=>+p.find(x=>x.type===k).value;
@@ -7639,7 +7649,7 @@ function anchor(l,day){const m=M();if(!m||!m.ent)return;const e=m.ent(l.id);if(!
   else if(l.dir==='out'&&e.dT&&e.d&&e.d.id===l.id){const t=day*1440+e.dT.t1/60,shift=e.takeoff!=null?day*1440+e.takeoff/60-(l.std+14):0,q=m.trackAt(e,'dep',e.dT.t1);l.hand=q?[q.lat,q.lon]:null;l.hhd=q?.hd;l.handAlt=q?.alt;l.off=t;l.land+=shift;l.eta=l.land+8;l.air=true;if(l.land<=l.off+2||!l.hand)l.noWorld=true}}
 function getLegs(){const S=window.SIMCORE;if(!S||!S.worldLegs)return [];const day=S.FLEET?S.FLEET.day:0,ents=M()&&M().ents?M().ents():null,A=window.AIRCORE&&AIRCORE.AIR;
   if(legs&&legsKey===day&&legsEnts===ents&&legsArrivals===A?.A&&legsDepartures===A?.D){indexWorldInstances();return legs;}
-  legs=S.worldLegs().map(l=>{const dep=l.std+14,A=l.dir==='out'&&window.JN_PHYS?JN_PHYS.airborneMin(l.city,'out',l.ac,l.id,l.d):null,arr=A?dep+A-8:l.sta-8;return Object.assign(l,{off:dep,land:Math.max(dep+20,arr)})});legsKey=day;legsEnts=ents;
+  legs=S.worldLegs().map(l=>{const dep=l.std+14,A=l.dir==='out'&&window.JN_PHYS?JN_PHYS.airborneMin(l.city,'out',l.ac,l.id,l.d,l.scheduledStd??l.std):null,arr=A?dep+A-8:l.sta-8;return Object.assign(l,{off:dep,land:Math.max(dep+20,arr)})});legsKey=day;legsEnts=ents;
   legsArrivals=A?.A;legsDepartures=A?.D;
   legs.forEach(l=>anchor(l,day));indexWorldInstances();if(sel)sel=byId.get(sel.id)||sel;return legs}
 function indexWorldInstances(){
@@ -7696,8 +7706,22 @@ function legPath(l,r){if(l._pa&&l._pr===r)return l._pa;
     push(H[1],H[0]);herm([0,0],T,loc(Q[0],Q[1]),dirAt(sB)).forEach(q=>{const g=glob(q[0],q[1]);push(g[0],g[1])});
     for(let i=0;i<r.lon.length;i++)if(r.cum[i]>sB)push(r.lon[i],r.lat[i])}
   for(let i=1;i<lon.length;i++){while(lon[i]-lon[i-1]>180)lon[i]-=360;while(lon[i]-lon[i-1]<-180)lon[i]+=360}      // routes that cross the date line carry longitudes beyond 180 or below -180: keep the path continuous
+  const tk=l.city&&window.JN_PHYS?JN_PHYS.track(l.city,l.id,l.d,l.scheduledStd??l.std):null;
+  if(tk&&lon.length>3)bendTrack(lon,lat,tk,l.dir==='in');
   const cum=[0];for(let i=1;i<lon.length;i++)cum.push(cum[i-1]+gcd([lat[i-1],lon[i-1]],[lat[i],lon[i]]));
   l._pa={lon,lat,cum,len:cum[cum.length-1]};l._pr=r;return l._pa}
+/* push the middle of the path sideways (zero at both handoffs): thin it out first so the bend is smooth */
+function bendTrack(lon,lat,tk,inbound){
+  const nl=[lon[0]],nt=[lat[0]];
+  for(let i=1;i<lon.length;i++){const d=gcd([lat[i-1],lon[i-1]],[lat[i],lon[i]]),n=Math.max(1,Math.ceil(d/40));for(let k=1;k<=n;k++){nl.push(lon[i-1]+(lon[i]-lon[i-1])*k/n);nt.push(lat[i-1]+(lat[i]-lat[i-1])*k/n)}}
+  const m=nl.length,cum=[0];for(let i=1;i<m;i++)cum.push(cum[i-1]+gcd([nt[i-1],nl[i-1]],[nt[i],nl[i]]));
+  const L=cum[m-1],ol=nl.slice(),ot=nt.slice();
+  for(let i=1;i<m-1;i++){const s=cum[i],sj=inbound?L-s:s,taper=Math.min(1,s/200,(L-s)/200);
+    let off=tk.w*Math.sin(Math.PI*s/L);if(tk.det)off+=tk.det.a*Math.exp(-((sj-tk.det.c)**2)/(2*tk.det.sg*tk.det.sg));
+    off*=taper;if(!off)continue;
+    const ca=Math.cos(nt[i]*RAD),dx=(nl[i+1]-nl[i-1])*ca,dy=nt[i+1]-nt[i-1],mg=Math.hypot(dx,dy)||1;
+    ol[i]=nl[i]+(-dy/mg)*off/(KMD*ca);ot[i]=nt[i]+(dx/mg)*off/KMD}
+  lon.length=0;lat.length=0;ol.forEach((v,i)=>{lon.push(v);lat.push(ot[i])})}
 function legPos(l,now,r){const u=Math.max(0,Math.min(1,(now-l.off)/(l.land-l.off))),p=distFrac(u),P=l.hand?legPath(l,r):r,pt=at(P,p*P.len);return [pt[0],pt[1],u]}
 const cruiseFt=len=>len<700?22000:len<1800?31000:len<4500?36000:39000;
 function est(l,u,r){u=Math.max(0,Math.min(1,u));const P=r&&(l.hand?legPath(l,r):r),len=P?P.len:1500,hand=l.handAlt||0,cr=Math.max(cruiseFt(r?r.len:len),hand);

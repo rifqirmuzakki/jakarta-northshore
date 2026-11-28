@@ -10,7 +10,7 @@ const root=path.resolve(__dirname,'../..');
    const out=[],bad=[];
    for(const x of SIMCORE.worldLegs()){const l=JN_WORLD.legOf(x.id);if(!l||l.dir!=='out'||l.cx||l.noWorld||!(JN_PHYS.routeKm(l.city)>5000))continue;
     const q=JN_WORLD.posOf(l.id);if(!q||!q.active)continue;const ft=JN_FLIGHT_TIMES(l.id,l.scheduledStd??l.std,{day:l.d,from:l.from,to:l.to});if(!ft||ft.atd==null)continue;
-    const A=JN_PHYS.airborneMin(l.city,'out',l.ac,l.id,l.d);
+    const A=JN_PHYS.airborneMin(l.city,'out',l.ac,l.id,l.d,l.scheduledStd??l.std);
     if(Math.abs(ft.eta-ft.atd-A)>30)bad.push(l.id+' ETA is not ATD + physical flight time ('+Math.round(ft.eta-ft.atd)+' vs '+A+')');
     out.push({id:l.id,ac:l.ac,city:String(l.city).split(' / ')[0],atd:ft.atd,km:d({lat:-6.13,lon:106.65},q)})}
    /* same aircraft type to the same place: the earlier departure is further along unless it is more than 40 min ahead of nothing (flight times now vary by up to ~1h with weather) */
